@@ -134,21 +134,21 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 py-4 h-screen flex flex-col">
         {/* Compact Dimension Header */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 flex-shrink-0">
+        <div className="rounded-lg shadow-sm p-4 mb-4 flex-shrink-0" style={{ backgroundColor: dimensionData.color }}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 relative flex-shrink-0">
               <Image
                 src={dimensionData.sectionLogo}
                 alt={dimensionData.name}
                 fill
-                className="object-contain"
+                className="object-contain filter brightness-0 invert"
               />
             </div>
             <div className="flex-1">
-              <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: dimensionData.color }}>
+              <p className="text-xs font-bold uppercase tracking-wider mb-1 text-white">
                 {dimensionData.name} DIMENSION
               </p>
-              <p className="text-sm leading-relaxed text-gray-700">
+              <p className="text-sm leading-relaxed text-white">
                 {dimensionDesc.text}
               </p>
             </div>
@@ -163,7 +163,13 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
               <Link
                 key={key.id}
                 href={getKeyPath(key.id)}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-3 border border-gray-200 hover:border-gray-300 group flex items-center gap-4"
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-2 px-3 group flex items-center gap-3"
+                style={{ 
+                  borderLeft: `4px solid ${dimensionData.color}`,
+                  borderTop: `1px solid ${dimensionData.color}20`,
+                  borderRight: `1px solid ${dimensionData.color}20`,
+                  borderBottom: `1px solid ${dimensionData.color}20`
+                }}
               >
                 {/* Key Icon */}
                 <div className="w-10 h-10 relative flex-shrink-0">
@@ -177,13 +183,13 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 
                 {/* Key Content */}
                 <div className="flex-1">
-                  <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: dimensionData.color }}>
+                  <p className="text-xs font-bold uppercase tracking-wider mb-0.5" style={{ color: dimensionData.color }}>
                     FLOW KEY #{keyInfo.keyNumber}
                   </p>
-                  <h3 className="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-1">
+                  <h3 className="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0.5">
                     {keyInfo.name}
                   </h3>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600 leading-tight">
                     {keyInfo.description}
                   </p>
                 </div>
