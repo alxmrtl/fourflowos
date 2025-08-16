@@ -6,8 +6,7 @@ import Link from 'next/link';
 import { CONTENT_REPOSITORY, getContentByDimension, getContentByType } from '@/data/content';
 import { DIMENSIONS, MAIN_LOGO } from '@/data/framework';
 import { ContentItem, DimensionType } from '@/types/framework';
-import TopContextBar from '@/components/navigation/TopContextBar';
-import MenuButton from '@/components/navigation/MenuButton';
+import TopBar from '@/components/navigation/TopBar';
 
 type FilterType = 'all' | DimensionType | 'learn' | 'practice';
 
@@ -58,29 +57,7 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/"
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <div className="w-8 h-8 relative">
-                <Image
-                  src={MAIN_LOGO}
-                  alt="FourFlowOS"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-sm">Back to Framework</span>
-            </Link>
-          </div>
-          <MenuButton />
-        </div>
-      </header>
-
-      <TopContextBar />
+      <TopBar />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">

@@ -6,18 +6,85 @@ import Link from 'next/link';
 import { KEYS, DIMENSIONS } from '@/data/framework';
 import { getLearnContent, getPracticeContent } from '@/data/content';
 import { KeyType, DimensionType } from '@/types/framework';
-import MenuButton from '@/components/navigation/MenuButton';
+import TopBar from '@/components/navigation/TopBar';
 
 interface KeyPageProps {
   keyId: KeyType;
   dimension: DimensionType;
 }
 
+const getKeyDisplayInfo = (keyId: string) => {
+  const keyInfo: Record<string, { name: string; description: string; keyNumber: number }> = {
+    'tuned-emotions': { 
+      name: 'Tuned Emotions', 
+      description: 'Use your feelings as signals to stay in the sweet spot between bored and overwhelmed.',
+      keyNumber: 1
+    },
+    'open-mind': { 
+      name: 'Open Mind', 
+      description: 'Clear mental clutter and stay flexible so new ideas can flow naturally.',
+      keyNumber: 2
+    },
+    'focused-body': { 
+      name: 'Focused Body', 
+      description: 'Get out of your head and into your body to stop overthinking and stay present.',
+      keyNumber: 3
+    },
+    'intentional-space': { 
+      name: 'Intentional Space', 
+      description: 'Set up your environment to automatically put you in focus mode without willpower.',
+      keyNumber: 4
+    },
+    'optimized-tools': { 
+      name: 'Optimized Tools', 
+      description: 'Use the right systems and tech to get more done with less effort.',
+      keyNumber: 5
+    },
+    'feedback-systems': { 
+      name: 'Feedback Systems', 
+      description: 'Build quick ways to know if you\'re on track and course-correct fast.',
+      keyNumber: 6
+    },
+    'generative-story': { 
+      name: 'Generative Story', 
+      description: 'Create a personal narrative that makes challenges feel like adventure, not problems.',
+      keyNumber: 7
+    },
+    'worthy-mission': { 
+      name: 'Worthy Mission', 
+      description: 'Connect your daily work to something bigger that naturally motivates you.',
+      keyNumber: 8
+    },
+    'empowered-role': { 
+      name: 'Empowered Role', 
+      description: 'Know what you own and why it matters so you can work with real purpose.',
+      keyNumber: 9
+    },
+    'grounding-values': { 
+      name: 'Grounding Values', 
+      description: 'Know what you stand for so decisions become obvious and doubt disappears.',
+      keyNumber: 10
+    },
+    'visualized-vision': { 
+      name: 'Visualized Vision', 
+      description: 'See your future clearly so your brain starts noticing the right opportunities.',
+      keyNumber: 11
+    },
+    'ignited-curiosity': { 
+      name: 'Ignited Curiosity', 
+      description: 'Stay genuinely interested in your work so focus happens without forcing it.',
+      keyNumber: 12
+    }
+  };
+  return keyInfo[keyId] || { name: keyId, description: 'Flow key description', keyNumber: 0 };
+};
+
 export default function KeyPage({ keyId, dimension }: KeyPageProps) {
   const [activeTab, setActiveTab] = useState<'learn' | 'practice'>('learn');
   
   const keyData = KEYS[keyId];
   const dimensionData = DIMENSIONS[dimension];
+  const keyInfo = getKeyDisplayInfo(keyId);
   
   if (!keyData || !dimensionData) {
     return <div>Key not found</div>;
@@ -27,32 +94,19 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
   const practiceContent = getPracticeContent(dimension, keyId);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link 
-              href={`/dimension/${dimension}`}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span className="text-sm">Back to {dimensionData.name}</span>
-            </Link>
-          </div>
-          <MenuButton />
-        </div>
-      </header>
-
+      <TopBar />
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        {/* Key Header */}
-        <div className="text-center mb-8">
-          <div className="mb-6">
-            <div className="w-20 h-20 mx-auto relative mb-4">
+      <main className="max-w-6xl mx-auto px-2 py-4">
+        {/* Key Info Box - 1/5 of page height */}
+        <div 
+          className="rounded-lg shadow-sm p-4 mb-4 h-48"
+          style={{ backgroundColor: dimensionData.color }}
+        >
+          <div className="flex items-center gap-4 h-full">
+            <div className="w-16 h-16 relative flex-shrink-0">
               <Image
                 src={keyData.icon}
                 alt={keyData.name}
@@ -60,23 +114,17 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                 className="object-contain"
               />
             </div>
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <span 
-                className="text-sm font-medium px-3 py-1 rounded-full"
-                style={{ 
-                  backgroundColor: `${dimensionData.color}20`,
-                  color: dimensionData.color 
-                }}
-              >
-                {dimensionData.name}
-              </span>
+            <div className="flex-1">
+              <p className="text-xs font-bold uppercase tracking-wider mb-1 text-white">
+                FLOW KEY #{keyInfo.keyNumber}
+              </p>
+              <h1 className="text-2xl font-bold text-white mb-2">
+                {keyInfo.name}
+              </h1>
+              <p className="text-sm leading-relaxed text-white">
+                {keyInfo.description}
+              </p>
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {keyData.name}
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {keyData.description}
-            </p>
           </div>
         </div>
 
@@ -115,38 +163,49 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
             </button>
           </div>
 
-          {/* Content Area */}
+          {/* Content List */}
           <div className="p-6">
             {activeTab === 'learn' && (
-              <div className="space-y-8">
+              <div className="space-y-2">
                 {learnContent.length > 0 ? (
                   learnContent.map((item) => (
-                    <article key={item.id} className="prose prose-lg max-w-none">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                        {item.title}
-                      </h3>
-                      <p className="text-lg text-gray-600 mb-6 font-medium">
-                        {item.description}
-                      </p>
-                      <div 
-                        className="text-gray-700 leading-relaxed"
-                        style={{ whiteSpace: 'pre-line' }}
-                      >
-                        {item.content}
+                    <Link
+                      key={item.id}
+                      href={`#content-${item.id}`}
+                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3 border border-gray-200"
+                    >
+                      {/* Content Image Placeholder */}
+                      <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
                       </div>
                       
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-2 mt-6 pt-6 border-t border-gray-200">
-                        {item.tags.map((tag) => (
+                      {/* Content Info */}
+                      <div className="flex-1">
+                        <h3 className="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0 leading-tight">
+                          {item.title}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
                           <span 
-                            key={tag}
-                            className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full"
+                            className="text-xs font-medium px-2 py-1 rounded"
+                            style={{ 
+                              backgroundColor: `${dimensionData.color}20`,
+                              color: dimensionData.color 
+                            }}
                           >
-                            {tag}
+                            {dimensionData.name}
                           </span>
-                        ))}
+                          <span className="text-xs text-gray-500">•</span>
+                          <span className="text-xs text-gray-500">{keyInfo.name}</span>
+                        </div>
                       </div>
-                    </article>
+
+                      {/* Arrow */}
+                      <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
                   ))
                 ) : (
                   <div className="text-center py-12">
@@ -163,35 +222,46 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
             )}
 
             {activeTab === 'practice' && (
-              <div className="space-y-8">
+              <div className="space-y-2">
                 {practiceContent.length > 0 ? (
                   practiceContent.map((item) => (
-                    <article key={item.id} className="prose prose-lg max-w-none">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                        {item.title}
-                      </h3>
-                      <p className="text-lg text-gray-600 mb-6 font-medium">
-                        {item.description}
-                      </p>
-                      <div 
-                        className="text-gray-700 leading-relaxed"
-                        style={{ whiteSpace: 'pre-line' }}
-                      >
-                        {item.content}
+                    <Link
+                      key={item.id}
+                      href={`#content-${item.id}`}
+                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3 border border-gray-200"
+                    >
+                      {/* Content Image Placeholder */}
+                      <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
                       </div>
                       
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-2 mt-6 pt-6 border-t border-gray-200">
-                        {item.tags.map((tag) => (
+                      {/* Content Info */}
+                      <div className="flex-1">
+                        <h3 className="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0 leading-tight">
+                          {item.title}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
                           <span 
-                            key={tag}
-                            className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full"
+                            className="text-xs font-medium px-2 py-1 rounded"
+                            style={{ 
+                              backgroundColor: `${dimensionData.color}20`,
+                              color: dimensionData.color 
+                            }}
                           >
-                            {tag}
+                            {dimensionData.name}
                           </span>
-                        ))}
+                          <span className="text-xs text-gray-500">•</span>
+                          <span className="text-xs text-gray-500">{keyInfo.name}</span>
+                        </div>
                       </div>
-                    </article>
+
+                      {/* Arrow */}
+                      <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
                   ))
                 ) : (
                   <div className="text-center py-12">

@@ -10,13 +10,13 @@ export default function MenuButton() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
         aria-label="Open menu"
       >
         <div className="w-6 h-6 flex flex-col justify-center space-y-1">
-          <div className="w-full h-0.5 bg-gray-600"></div>
-          <div className="w-full h-0.5 bg-gray-600"></div>
-          <div className="w-full h-0.5 bg-gray-600"></div>
+          <div className="w-full h-0.5 bg-white"></div>
+          <div className="w-full h-0.5 bg-white"></div>
+          <div className="w-full h-0.5 bg-white"></div>
         </div>
       </button>
 

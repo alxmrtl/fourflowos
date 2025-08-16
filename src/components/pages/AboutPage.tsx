@@ -3,8 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { MAIN_LOGO, BG_CIRCLE, DIMENSIONS } from '@/data/framework';
-import TopContextBar from '@/components/navigation/TopContextBar';
-import MenuButton from '@/components/navigation/MenuButton';
+import TopBar from '@/components/navigation/TopBar';
 
 export default function AboutPage() {
   const sections = [
@@ -70,29 +69,7 @@ If you've ever felt like you're capable of more but trapped in patterns that dra
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/"
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <div className="w-8 h-8 relative">
-                <Image
-                  src={MAIN_LOGO}
-                  alt="FourFlowOS"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-sm">Back to Framework</span>
-            </Link>
-          </div>
-          <MenuButton />
-        </div>
-      </header>
-
-      <TopContextBar />
+      <TopBar />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">

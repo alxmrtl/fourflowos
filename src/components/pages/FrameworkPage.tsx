@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { DIMENSIONS, MAIN_LOGO, BG_CIRCLE } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
-import MenuButton from '@/components/navigation/MenuButton';
+import TopBar from '@/components/navigation/TopBar';
 
 export default function FrameworkPage() {
   const getDimensionPath = (dimension: DimensionType) => `/dimension/${dimension}`;
@@ -12,25 +12,7 @@ export default function FrameworkPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
-            <div className="w-12 h-12 relative">
-              <Image
-                src={MAIN_LOGO}
-                alt="FourFlowOS"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">FourFlowOS</h1>
-              <p className="text-sm text-gray-600">Awakening millions through flow</p>
-            </div>
-          </Link>
-          <MenuButton />
-        </div>
-      </header>
+      <TopBar />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 py-4 h-screen flex flex-col">
