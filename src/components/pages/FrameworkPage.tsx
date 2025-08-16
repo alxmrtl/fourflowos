@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { DIMENSIONS, MAIN_LOGO, BG_CIRCLE } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
-import TopIconBar from '@/components/navigation/TopIconBar';
 import MenuButton from '@/components/navigation/MenuButton';
 
 export default function FrameworkPage() {
@@ -16,7 +15,7 @@ export default function FrameworkPage() {
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
             <div className="w-12 h-12 relative">
               <Image
                 src={MAIN_LOGO}
@@ -29,19 +28,17 @@ export default function FrameworkPage() {
               <h1 className="text-2xl font-bold text-gray-900">FourFlowOS</h1>
               <p className="text-sm text-gray-600">Awakening millions through flow</p>
             </div>
-          </div>
+          </Link>
           <MenuButton />
         </div>
       </header>
 
-      <TopIconBar />
-
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="relative mb-6">
-            <div className="w-32 h-32 mx-auto relative">
+      <main className="max-w-6xl mx-auto px-2 py-4 h-screen flex flex-col">
+        {/* Compact Hero Section - 1/5 of space */}
+        <div className="text-center mb-4 flex-shrink-0" style={{ height: '20%' }}>
+          <div className="relative mb-3">
+            <div className="w-16 h-16 mx-auto relative">
               <Image
                 src={BG_CIRCLE}
                 alt="Background"
@@ -49,7 +46,7 @@ export default function FrameworkPage() {
                 className="object-contain opacity-20"
               />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 relative">
+                <div className="w-12 h-12 relative">
                   <Image
                     src={MAIN_LOGO}
                     alt="FourFlowOS"
@@ -61,91 +58,69 @@ export default function FrameworkPage() {
             </div>
           </div>
           
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Discover Your Flow
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-sm text-gray-600 max-w-xl mx-auto">
             A holistic framework for achieving flow states through the systematic integration of 
             Self, Space, Story, and Spirit dimensions.
           </p>
         </div>
 
-        {/* Four Dimensions Grid - Compact Layout */}
-        <div className="grid grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
-          {Object.values(DIMENSIONS).map((dimension) => (
-            <Link 
-              key={dimension.id}
-              href={getDimensionPath(dimension.id)}
-              className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 border border-gray-200 hover:border-gray-300 text-center group"
-            >
-              {/* Dimension Icon */}
-              <div className="w-20 h-20 mx-auto mb-4 relative">
-                <Image
-                  src={dimension.sectionLogo}
-                  alt={dimension.name}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              
-              {/* Dimension Name */}
-              <h3 
-                className="text-xl font-bold mb-2"
-                style={{ color: dimension.color }}
+        {/* Four Dimensions Grid - Takes up 4/5 of remaining space */}
+        <div className="flex-1 flex items-center">
+          <div className="grid grid-cols-2 gap-4 w-full max-w-5xl mx-auto">
+            {Object.values(DIMENSIONS).map((dimension) => (
+              <Link 
+                key={dimension.id}
+                href={getDimensionPath(dimension.id)}
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 border border-gray-200 hover:border-gray-300 text-center group aspect-square flex flex-col justify-center"
               >
-                {dimension.name}
-              </h3>
-              
-              {/* Keys Row */}
-              <div className="flex justify-center gap-2 mb-3">
-                {dimension.keys.map((key) => (
-                  <div 
-                    key={key.id} 
-                    className="w-8 h-8 relative opacity-60 group-hover:opacity-80 transition-opacity"
-                    title={key.name}
-                  >
-                    <Image
-                      src={key.icon}
-                      alt={key.name}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
-              
-              {/* Short Description */}
-              <p className="text-sm text-gray-600 line-clamp-2">
-                {dimension.description}
-              </p>
-            </Link>
-          ))}
-        </div>
-
-        {/* Call to Action */}
-        <div className="text-center bg-white rounded-xl shadow-sm p-8 border border-gray-200">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Start Your Flow Journey
-          </h3>
-          <p className="text-gray-600 mb-6 max-w-xl mx-auto">
-            Transform from overwhelm to clarity, apathy to engagement, through a systematic approach 
-            to flow states across all four dimensions of life.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/dimension/self"
-              className="px-6 py-3 bg-[#FF6F61] text-white rounded-lg hover:bg-[#E64A45] transition-colors font-medium"
-            >
-              Explore SELF
-            </Link>
-            <Link
-              href="/about"
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-            >
-              Learn More
-            </Link>
+                {/* Dimension Icon */}
+                <div className="w-16 h-16 mx-auto mb-3 relative">
+                  <Image
+                    src={dimension.sectionLogo}
+                    alt={dimension.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                
+                {/* Dimension Name */}
+                <h3 
+                  className="text-lg font-bold mb-2"
+                  style={{ color: dimension.color }}
+                >
+                  {dimension.name}
+                </h3>
+                
+                {/* Keys Row */}
+                <div className="flex justify-center gap-1 mb-2">
+                  {dimension.keys.map((key) => (
+                    <div 
+                      key={key.id} 
+                      className="w-6 h-6 relative opacity-60 group-hover:opacity-80 transition-opacity"
+                      title={key.name}
+                    >
+                      <Image
+                        src={key.icon}
+                        alt={key.name}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Short Description */}
+                <p className="text-xs text-gray-600 line-clamp-2">
+                  {dimension.description}
+                </p>
+              </Link>
+            ))}
           </div>
         </div>
+
       </main>
     </div>
   );

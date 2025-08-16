@@ -18,26 +18,8 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-      <div className="flex justify-around items-center py-2 px-4 max-w-md mx-auto">
-        {/* Framework/Home Button */}
-        <Link 
-          href="/" 
-          className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
-            isActive('/') ? 'bg-gray-100' : 'hover:bg-gray-50'
-          }`}
-        >
-          <div className="w-8 h-8 relative">
-            <Image
-              src={MAIN_LOGO}
-              alt="FourFlow Framework"
-              fill
-              className="object-contain"
-            />
-          </div>
-          <span className="text-xs mt-1 text-gray-600">Framework</span>
-        </Link>
-
-        {/* Dimension Buttons */}
+      <div className="grid grid-cols-4 gap-0 px-4 py-2">
+        {/* Only Dimension Buttons */}
         {Object.values(DIMENSIONS).map((dimension) => (
           <Link
             key={dimension.id}
@@ -46,7 +28,7 @@ export default function BottomNav() {
               isActive(getDimensionPath(dimension.id)) ? 'bg-gray-100' : 'hover:bg-gray-50'
             }`}
           >
-            <div className="w-8 h-8 relative">
+            <div className="w-8 h-8 relative mb-1">
               <Image
                 src={dimension.icon}
                 alt={dimension.name}
@@ -54,7 +36,12 @@ export default function BottomNav() {
                 className="object-contain"
               />
             </div>
-            <span className="text-xs mt-1 text-gray-600">{dimension.name}</span>
+            <span 
+              className="text-xs font-medium"
+              style={{ color: dimension.color }}
+            >
+              {dimension.name}
+            </span>
           </Link>
         ))}
       </div>

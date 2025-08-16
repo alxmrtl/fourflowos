@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { DIMENSIONS } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
-import TopIconBar from '@/components/navigation/TopIconBar';
 import MenuButton from '@/components/navigation/MenuButton';
 
 interface DimensionPageProps {
@@ -40,7 +39,6 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
         </div>
       </header>
 
-      <TopIconBar currentDimension={dimension} />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
