@@ -50,7 +50,7 @@ The goal isn't just productivity—it's the integration of excellence with fulfi
     },
     {
       id: 'who-its-for',
-      title: 'Who It\'s For',
+      title: 'Who It&apos;s For',
       content: `FourFlowOS is designed for individuals who:
 
 **High-Capability Professionals** experiencing overwhelm, apathy, or disconnection despite their skills and achievements.
@@ -124,7 +124,7 @@ If you've ever felt like you're capable of more but trapped in patterns that dra
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Awakening millions through flow, guiding individuals to find their unique role 
-            in life's greater synchronicity.
+            in life&apos;s greater synchronicity.
           </p>
         </div>
 
@@ -134,7 +134,7 @@ If you've ever felt like you're capable of more but trapped in patterns that dra
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
             <p className="text-lg text-gray-700 leading-relaxed">
               I envision a world where millions are awakened through <strong>flow</strong>, discovering their{' '}
-              <strong>unique role in life's greater synchronicity</strong>. My mission is to ignite this inner fire, 
+              <strong>unique role in life&apos;s greater synchronicity</strong>. My mission is to ignite this inner fire, 
               guiding others to find joy, purpose, and fulfillment in their work and lives through a holistic 
               framework that aligns Self, Space, Story, and Spirit.
             </p>

@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { DIMENSIONS, KEYS } from '@/data/framework';
 import { DimensionType, KeyType } from '@/types/framework';
 
@@ -12,7 +11,6 @@ interface TopContextBarProps {
 }
 
 export default function TopContextBar({ currentDimension, currentKey }: TopContextBarProps) {
-  const pathname = usePathname();
 
   const getKeyPath = (keyId: KeyType) => {
     const key = KEYS[keyId];

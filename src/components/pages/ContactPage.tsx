@@ -34,7 +34,7 @@ export default function ContactPage() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       setSubmitStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error) {
+    } catch {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -98,7 +98,7 @@ export default function ContactPage() {
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Ready to explore how FourFlowOS can transform your approach to work and life? 
-            We'd love to hear from you.
+            We&apos;d love to hear from you.
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export default function ContactPage() {
                   </svg>
                   <span className="font-medium">Message sent successfully!</span>
                 </div>
-                <p className="text-green-700 text-sm mt-1">We'll get back to you soon.</p>
+                <p className="text-green-700 text-sm mt-1">We&apos;ll get back to you soon.</p>
               </div>
             )}
 
@@ -219,10 +219,10 @@ export default function ContactPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
               <h3 className="text-xl font-bold text-gray-900 mb-4">Our Mission</h3>
               <p className="text-gray-600 leading-relaxed">
-                We're here to guide you from overwhelm to clarity, apathy to engagement, 
+                We&apos;re here to guide you from overwhelm to clarity, apathy to engagement, 
                 through the systematic integration of Self, Space, Story, and Spirit. 
                 Every conversation is an opportunity to ignite your inner fire and discover 
-                your unique role in life's greater synchronicity.
+                your unique role in life&apos;s greater synchronicity.
               </p>
             </div>
 
