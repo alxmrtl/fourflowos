@@ -17,12 +17,20 @@ export default function FrameworkPage() {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 py-4 h-screen flex flex-col">
         {/* Header Box */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-md border border-gray-100 p-8 mb-6 text-center relative overflow-hidden">
+          {/* Subtle background pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-4 left-4 w-8 h-8 border border-gray-300 rounded-full"></div>
+            <div className="absolute top-8 right-6 w-4 h-4 border border-gray-300 rounded-full"></div>
+            <div className="absolute bottom-6 left-8 w-6 h-6 border border-gray-300 rounded-full"></div>
+            <div className="absolute bottom-4 right-4 w-3 h-3 border border-gray-300 rounded-full"></div>
+          </div>
+          
+          <h2 className="text-2xl font-bold text-gray-900 mb-2 relative z-10" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
             Find Your Flow
           </h2>
-          <p className="text-base text-gray-700 max-w-2xl mx-auto">
-            Most people struggle with focus and motivation because they&apos;re missing key pieces. Get all four dimensions working for you.
+          <p className="text-sm text-gray-600 max-w-xl mx-auto relative z-10 leading-relaxed">
+            Stop forcing focus. Start aligning the four pieces that create it naturally.
           </p>
         </div>
 
@@ -41,7 +49,7 @@ export default function FrameworkPage() {
                 <Link 
                   key={dimension.id}
                   href={getDimensionPath(dimension.id)}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 text-center group aspect-square flex flex-col justify-center"
+                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 text-center group h-64 w-full flex flex-col justify-between"
                   style={{
                     borderLeft: `4px solid ${dimension.color}`,
                     borderTop: `1px solid ${dimension.color}20`,
@@ -50,7 +58,7 @@ export default function FrameworkPage() {
                   }}
                 >
                   {/* Dimension Icon */}
-                  <div className="w-20 h-20 mx-auto mb-4 relative">
+                  <div className="w-16 h-16 mx-auto relative flex-shrink-0">
                     <Image
                       src={dimension.sectionLogo}
                       alt={dimension.name}
@@ -59,12 +67,20 @@ export default function FrameworkPage() {
                     />
                   </div>
                   
+                  {/* 2-Word Descriptor */}
+                  <p 
+                    className="text-xs font-bold uppercase tracking-wider flex-shrink-0"
+                    style={{ color: dimension.color }}
+                  >
+                    {descriptors[dimension.id as keyof typeof descriptors]}
+                  </p>
+                  
                   {/* Keys Row */}
-                  <div className="flex justify-center gap-1 mb-4">
+                  <div className="flex justify-center gap-1 flex-shrink-0">
                     {dimension.keys.map((key) => (
                       <div 
                         key={key.id} 
-                        className="w-6 h-6 relative opacity-60 group-hover:opacity-80 transition-opacity"
+                        className="w-5 h-5 relative opacity-60 group-hover:opacity-80 transition-opacity"
                         title={key.name}
                       >
                         <Image
@@ -76,14 +92,6 @@ export default function FrameworkPage() {
                       </div>
                     ))}
                   </div>
-                  
-                  {/* 2-Word Descriptor */}
-                  <p 
-                    className="text-lg font-semibold"
-                    style={{ color: dimension.color }}
-                  >
-                    {descriptors[dimension.id as keyof typeof descriptors]}
-                  </p>
                 </Link>
               );
             })}
