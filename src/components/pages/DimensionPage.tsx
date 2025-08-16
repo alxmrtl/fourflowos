@@ -132,7 +132,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-2 py-4 h-screen flex flex-col">
+      <main className="max-w-6xl mx-auto px-2 py-4 min-h-screen flex flex-col">
         {/* Compact Dimension Header */}
         <div className="rounded-lg shadow-sm p-4 mb-4 flex-shrink-0" style={{ backgroundColor: dimensionData.color }}>
           <div className="flex items-center gap-4">
@@ -156,7 +156,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
         </div>
 
         {/* Three Key Sections */}
-        <div className="flex-1 grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-1 gap-2">
           {dimensionData.keys.map((key) => {
             const keyInfo = getKeyDisplayInfo(key.id);
             return (
