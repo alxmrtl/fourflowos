@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { DIMENSIONS, MAIN_LOGO, BG_CIRCLE } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
-import TopContextBar from '@/components/navigation/TopContextBar';
+import TopIconBar from '@/components/navigation/TopIconBar';
 import MenuButton from '@/components/navigation/MenuButton';
 
 export default function FrameworkPage() {
@@ -34,7 +34,7 @@ export default function FrameworkPage() {
         </div>
       </header>
 
-      <TopContextBar />
+      <TopIconBar />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
@@ -70,61 +70,55 @@ export default function FrameworkPage() {
           </p>
         </div>
 
-        {/* Four Dimensions Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
+        {/* Four Dimensions Grid - Compact Layout */}
+        <div className="grid grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
           {Object.values(DIMENSIONS).map((dimension) => (
-            <div key={dimension.id} className="group">
-              <Link 
-                href={getDimensionPath(dimension.id)}
-                className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6 border border-gray-200 hover:border-gray-300"
+            <Link 
+              key={dimension.id}
+              href={getDimensionPath(dimension.id)}
+              className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 border border-gray-200 hover:border-gray-300 text-center group"
+            >
+              {/* Dimension Icon */}
+              <div className="w-20 h-20 mx-auto mb-4 relative">
+                <Image
+                  src={dimension.sectionLogo}
+                  alt={dimension.name}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              
+              {/* Dimension Name */}
+              <h3 
+                className="text-xl font-bold mb-2"
+                style={{ color: dimension.color }}
               >
-                {/* Dimension Header */}
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 relative">
+                {dimension.name}
+              </h3>
+              
+              {/* Keys Row */}
+              <div className="flex justify-center gap-2 mb-3">
+                {dimension.keys.map((key) => (
+                  <div 
+                    key={key.id} 
+                    className="w-8 h-8 relative opacity-60 group-hover:opacity-80 transition-opacity"
+                    title={key.name}
+                  >
                     <Image
-                      src={dimension.sectionLogo}
-                      alt={dimension.name}
+                      src={key.icon}
+                      alt={key.name}
                       fill
                       className="object-contain"
                     />
                   </div>
-                  <div>
-                    <h3 
-                      className="text-2xl font-bold mb-1"
-                      style={{ color: dimension.color }}
-                    >
-                      {dimension.name}
-                    </h3>
-                    <p className="text-gray-600">{dimension.description}</p>
-                  </div>
-                </div>
-
-                {/* Keys */}
-                <div className="space-y-2">
-                  {dimension.keys.map((key) => (
-                    <Link
-                      key={key.id}
-                      href={getKeyPath(key.id, dimension.id)}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="w-8 h-8 relative">
-                        <Image
-                          src={key.icon}
-                          alt={key.name}
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">{key.name}</h4>
-                        <p className="text-sm text-gray-600">{key.description}</p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </Link>
-            </div>
+                ))}
+              </div>
+              
+              {/* Short Description */}
+              <p className="text-sm text-gray-600 line-clamp-2">
+                {dimension.description}
+              </p>
+            </Link>
           ))}
         </div>
 

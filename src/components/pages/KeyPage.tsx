@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { KEYS, DIMENSIONS } from '@/data/framework';
 import { getLearnContent, getPracticeContent } from '@/data/content';
 import { KeyType, DimensionType } from '@/types/framework';
-import TopContextBar from '@/components/navigation/TopContextBar';
+import TopIconBar from '@/components/navigation/TopIconBar';
 import MenuButton from '@/components/navigation/MenuButton';
 
 interface KeyPageProps {
@@ -47,7 +47,7 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
         </div>
       </header>
 
-      <TopContextBar currentDimension={dimension} currentKey={keyId} />
+      <TopIconBar currentDimension={dimension} currentKey={keyId} />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
