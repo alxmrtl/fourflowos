@@ -28,21 +28,18 @@ export default function BottomKeysNav({ currentDimension, currentKey }: BottomKe
     return DIMENSIONS[key.dimension];
   };
 
-  // Debug: Check if we have keys
-  console.log('KEYS:', Object.keys(KEYS).length, 'keys found');
-  console.log('DIMENSIONS:', Object.keys(DIMENSIONS).length, 'dimensions found');
 
   return (
-    <div className="bg-gray-50 border-t border-b border-gray-200 shadow-sm min-h-[60px]">
+    <div className="bg-gray-50 border-t border-b border-gray-200 shadow-sm">
       {/* Keys Navigation Row */}
-      <div className="grid grid-cols-4 gap-0 px-3 py-3">
+      <div className="grid grid-cols-4 gap-0 px-2 py-2">
         {Object.values(DIMENSIONS).map((dimension) => (
-          <div key={dimension.id} className="flex justify-center gap-1">
+          <div key={dimension.id} className="flex justify-center gap-0.5">
             {getKeysByDimension(dimension.id).map((key) => (
               <Link
                 key={key.id}
                 href={`/dimension/${key.dimension}/key/${key.id}`}
-                className={`p-1.5 rounded-lg transition-colors border ${
+                className={`p-1 rounded transition-colors border ${
                   isKeyActive(key.id) || (isDimensionActive(key.dimension) && !currentKey)
                     ? 'bg-white border-gray-300'
                     : 'hover:bg-white border-transparent'
@@ -54,7 +51,7 @@ export default function BottomKeysNav({ currentDimension, currentKey }: BottomKe
                     : 'white'
                 }}
               >
-                <div className="w-5 h-5 relative">
+                <div className="w-4 h-4 relative">
                   <Image
                     src={key.icon}
                     alt={key.name}
@@ -66,11 +63,6 @@ export default function BottomKeysNav({ currentDimension, currentKey }: BottomKe
             ))}
           </div>
         ))}
-      </div>
-      
-      {/* Debug info */}
-      <div className="text-xs text-center text-gray-500 pb-1">
-        Keys: {Object.keys(KEYS).length} | Dimensions: {Object.keys(DIMENSIONS).length}
       </div>
     </div>
   );
