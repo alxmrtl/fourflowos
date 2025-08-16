@@ -163,7 +163,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
               <Link
                 key={key.id}
                 href={getKeyPath(key.id)}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1 px-3 group flex items-start gap-3"
                 style={{ 
                   borderLeft: `4px solid ${dimensionData.color}`,
                   borderTop: `1px solid ${dimensionData.color}20`,
@@ -172,7 +172,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 }}
               >
                 {/* Key Icon */}
-                <div className="w-8 h-8 relative flex-shrink-0 mt-0.5">
+                <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
                     src={key.icon}
                     alt={key.name}
@@ -182,7 +182,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 </div>
                 
                 {/* Key Content */}
-                <div className="flex-1 py-0.5">
+                <div className="flex-1">
                   <p className="text-xs font-bold uppercase tracking-wider mb-0" style={{ color: dimensionData.color }}>
                     FLOW KEY #{keyInfo.keyNumber}
                   </p>
