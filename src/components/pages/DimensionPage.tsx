@@ -163,7 +163,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
               <Link
                 key={key.id}
                 href={getKeyPath(key.id)}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-2 px-3 group flex items-center gap-3"
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
                 style={{ 
                   borderLeft: `4px solid ${dimensionData.color}`,
                   borderTop: `1px solid ${dimensionData.color}20`,
@@ -172,7 +172,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 }}
               >
                 {/* Key Icon */}
-                <div className="w-10 h-10 relative flex-shrink-0">
+                <div className="w-8 h-8 relative flex-shrink-0 mt-0.5">
                   <Image
                     src={key.icon}
                     alt={key.name}
@@ -182,14 +182,14 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 </div>
                 
                 {/* Key Content */}
-                <div className="flex-1">
-                  <p className="text-xs font-bold uppercase tracking-wider mb-0.5" style={{ color: dimensionData.color }}>
+                <div className="flex-1 py-0.5">
+                  <p className="text-xs font-bold uppercase tracking-wider mb-0" style={{ color: dimensionData.color }}>
                     FLOW KEY #{keyInfo.keyNumber}
                   </p>
-                  <h3 className="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0.5">
+                  <h3 className="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0 leading-tight">
                     {keyInfo.name}
                   </h3>
-                  <p className="text-xs text-gray-600 leading-tight">
+                  <p className="text-xs text-gray-600 leading-tight mt-0.5">
                     {keyInfo.description}
                   </p>
                 </div>
