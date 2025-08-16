@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { DIMENSIONS, MAIN_LOGO, BG_CIRCLE } from '@/data/framework';
+import { DIMENSIONS } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
 
@@ -22,7 +22,7 @@ export default function FrameworkPage() {
             Find Your Flow
           </h2>
           <p className="text-base text-gray-700 max-w-2xl mx-auto">
-            Most people struggle with focus and motivation because they're missing key pieces. Get all four dimensions working for you.
+            Most people struggle with focus and motivation because they&apos;re missing key pieces. Get all four dimensions working for you.
           </p>
         </div>
 

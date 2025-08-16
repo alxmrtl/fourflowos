@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { CONTENT_REPOSITORY, getContentByDimension, getContentByType } from '@/data/content';
-import { DIMENSIONS, MAIN_LOGO } from '@/data/framework';
+import { DIMENSIONS } from '@/data/framework';
 import { ContentItem, DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
 
