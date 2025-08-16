@@ -15,32 +15,33 @@ export default function TopIconBar({ currentDimension, currentKey }: TopIconBarP
   const pathname = usePathname();
   
   const isFrameworkPage = pathname === '/';
-  
-  const isDimensionActive = (dimensionId: DimensionType) => {
-    return currentDimension === dimensionId;
-  };
 
   const isKeyActive = (keyId: KeyType) => {
     return currentKey === keyId;
   };
 
-  const getKeysByDimension = (dimensionId: DimensionType) => {
-    return Object.values(KEYS).filter(key => key.dimension === dimensionId);
+  const isDimensionActive = (dimensionId: DimensionType) => {
+    return currentDimension === dimensionId;
+  };
+
+  const getKeyDimension = (keyId: KeyType) => {
+    const key = KEYS[keyId];
+    return DIMENSIONS[key.dimension];
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-4 py-2">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-center gap-3">
+    <nav className="bg-white border-b border-gray-200 px-2 py-2">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-center gap-1 overflow-x-auto">
           {/* Framework Logo */}
           <Link 
             href="/"
-            className={`p-2 rounded-lg transition-colors ${
+            className={`p-1.5 rounded-lg transition-colors flex-shrink-0 ${
               isFrameworkPage ? 'bg-gray-100' : 'hover:bg-gray-50'
             }`}
             title="Framework"
           >
-            <div className="w-8 h-8 relative">
+            <div className="w-6 h-6 relative">
               <Image
                 src={MAIN_LOGO}
                 alt="Framework"
@@ -51,65 +52,38 @@ export default function TopIconBar({ currentDimension, currentKey }: TopIconBarP
           </Link>
 
           {/* Separator */}
-          <div className="w-px h-6 bg-gray-300" />
+          <div className="w-px h-5 bg-gray-300 mx-1 flex-shrink-0" />
 
-          {/* All Dimension and Key Icons */}
-          {Object.values(DIMENSIONS).map((dimension) => (
-            <div key={dimension.id} className="flex items-center gap-1">
-              {/* Dimension Icon */}
+          {/* All Key Icons Only */}
+          {Object.values(KEYS).map((key) => {
+            const dimension = getKeyDimension(key.id);
+            return (
               <Link
-                href={`/dimension/${dimension.id}`}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDimensionActive(dimension.id) || getKeysByDimension(dimension.id).some(key => isKeyActive(key.id))
-                    ? 'bg-gray-100' 
+                key={key.id}
+                href={`/dimension/${key.dimension}/key/${key.id}`}
+                className={`p-1 rounded transition-colors flex-shrink-0 ${
+                  isKeyActive(key.id) || (isDimensionActive(key.dimension) && !currentKey)
+                    ? 'bg-gray-100'
                     : 'hover:bg-gray-50'
                 }`}
-                title={dimension.name}
+                title={key.name}
                 style={{
-                  backgroundColor: isDimensionActive(dimension.id) || getKeysByDimension(dimension.id).some(key => isKeyActive(key.id))
+                  backgroundColor: isKeyActive(key.id) || (isDimensionActive(key.dimension) && !currentKey)
                     ? `${dimension.color}20`
                     : 'transparent'
                 }}
               >
-                <div className="w-6 h-6 relative">
+                <div className="w-5 h-5 relative">
                   <Image
-                    src={dimension.icon}
-                    alt={dimension.name}
+                    src={key.icon}
+                    alt={key.name}
                     fill
                     className="object-contain"
                   />
                 </div>
               </Link>
-
-              {/* Key Icons for this dimension */}
-              {getKeysByDimension(dimension.id).map((key) => (
-                <Link
-                  key={key.id}
-                  href={`/dimension/${key.dimension}/key/${key.id}`}
-                  className={`p-1.5 rounded transition-colors ${
-                    isKeyActive(key.id)
-                      ? 'bg-gray-100'
-                      : 'hover:bg-gray-50'
-                  }`}
-                  title={key.name}
-                  style={{
-                    backgroundColor: isKeyActive(key.id)
-                      ? `${dimension.color}20`
-                      : 'transparent'
-                  }}
-                >
-                  <div className="w-5 h-5 relative">
-                    <Image
-                      src={key.icon}
-                      alt={key.name}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </nav>
