@@ -100,13 +100,13 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 py-4">
-        {/* Key Info Box - 1/5 of page height */}
+        {/* Key Info Box */}
         <div 
-          className="rounded-lg shadow-sm p-4 mb-4 h-48"
+          className="rounded-lg shadow-sm p-3 mb-3 h-32"
           style={{ backgroundColor: dimensionData.color }}
         >
-          <div className="flex items-center gap-4 h-full">
-            <div className="w-16 h-16 relative flex-shrink-0">
+          <div className="flex items-center gap-3 h-full">
+            <div className="w-12 h-12 relative flex-shrink-0">
               <Image
                 src={keyData.icon}
                 alt={keyData.name}
@@ -118,10 +118,10 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
               <p className="text-xs font-bold uppercase tracking-wider mb-1 text-white">
                 FLOW KEY #{keyInfo.keyNumber}
               </p>
-              <h1 className="text-2xl font-bold text-white mb-2">
+              <h1 className="text-xl font-bold text-white mb-1">
                 {keyInfo.name}
               </h1>
-              <p className="text-sm leading-relaxed text-white">
+              <p className="text-xs leading-relaxed text-white">
                 {keyInfo.description}
               </p>
             </div>
@@ -172,7 +172,13 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                     <Link
                       key={item.id}
                       href={`#content-${item.id}`}
-                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3 border border-gray-200"
+                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
+                      style={{ 
+                        borderLeft: `4px solid ${dimensionData.color}`,
+                        borderTop: `1px solid ${dimensionData.color}20`,
+                        borderRight: `1px solid ${dimensionData.color}20`,
+                        borderBottom: `1px solid ${dimensionData.color}20`
+                      }}
                     >
                       {/* Content Image Placeholder */}
                       <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
@@ -228,7 +234,13 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                     <Link
                       key={item.id}
                       href={`#content-${item.id}`}
-                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3 border border-gray-200"
+                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
+                      style={{ 
+                        borderLeft: `4px solid ${dimensionData.color}`,
+                        borderTop: `1px solid ${dimensionData.color}20`,
+                        borderRight: `1px solid ${dimensionData.color}20`,
+                        borderBottom: `1px solid ${dimensionData.color}20`
+                      }}
                     >
                       {/* Content Image Placeholder */}
                       <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
@@ -277,26 +289,6 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
               </div>
             )}
           </div>
-        </div>
-
-        {/* Navigation */}
-        <div className="flex justify-between items-center bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-          <Link
-            href={`/dimension/${dimension}`}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span>All {dimensionData.name} Keys</span>
-          </Link>
-          
-          <Link
-            href="/"
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-          >
-            Explore Framework
-          </Link>
         </div>
       </main>
     </div>
