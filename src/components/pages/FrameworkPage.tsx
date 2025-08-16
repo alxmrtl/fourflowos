@@ -16,89 +16,77 @@ export default function FrameworkPage() {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 py-4 h-screen flex flex-col">
-        {/* Compact Hero Section - 1/5 of space */}
-        <div className="text-center mb-4 flex-shrink-0" style={{ height: '20%' }}>
-          <div className="relative mb-3">
-            <div className="w-16 h-16 mx-auto relative">
-              <Image
-                src={BG_CIRCLE}
-                alt="Background"
-                fill
-                className="object-contain opacity-20"
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 relative">
-                  <Image
-                    src={MAIN_LOGO}
-                    alt="FourFlowOS"
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Discover Your Flow
+        {/* Header Box */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            Find Your Flow
           </h2>
-          <p className="text-sm text-gray-600 max-w-xl mx-auto">
-            A holistic framework for achieving flow states through the systematic integration of 
-            Self, Space, Story, and Spirit dimensions.
+          <p className="text-base text-gray-700 max-w-2xl mx-auto">
+            Most people struggle with focus and motivation because they're missing key pieces. Get all four dimensions working for you.
           </p>
         </div>
 
-        {/* Four Dimensions Grid - Takes up 4/5 of remaining space */}
+        {/* Four Dimensions Grid */}
         <div className="flex-1 flex items-center">
           <div className="grid grid-cols-2 gap-4 w-full max-w-5xl mx-auto">
-            {Object.values(DIMENSIONS).map((dimension) => (
-              <Link 
-                key={dimension.id}
-                href={getDimensionPath(dimension.id)}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 border border-gray-200 hover:border-gray-300 text-center group aspect-square flex flex-col justify-center"
-              >
-                {/* Dimension Icon */}
-                <div className="w-16 h-16 mx-auto mb-3 relative">
-                  <Image
-                    src={dimension.sectionLogo}
-                    alt={dimension.name}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-                
-                {/* Dimension Name */}
-                <h3 
-                  className="text-lg font-bold mb-2"
-                  style={{ color: dimension.color }}
+            {Object.values(DIMENSIONS).map((dimension) => {
+              const descriptors = {
+                self: 'Inner Mastery',
+                space: 'Environment Design', 
+                story: 'Direction Setting',
+                spirit: 'Inner Drive'
+              };
+              
+              return (
+                <Link 
+                  key={dimension.id}
+                  href={getDimensionPath(dimension.id)}
+                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 text-center group aspect-square flex flex-col justify-center"
+                  style={{
+                    borderLeft: `4px solid ${dimension.color}`,
+                    borderTop: `1px solid ${dimension.color}20`,
+                    borderRight: `1px solid ${dimension.color}20`,
+                    borderBottom: `1px solid ${dimension.color}20`
+                  }}
                 >
-                  {dimension.name}
-                </h3>
-                
-                {/* Keys Row */}
-                <div className="flex justify-center gap-1 mb-2">
-                  {dimension.keys.map((key) => (
-                    <div 
-                      key={key.id} 
-                      className="w-6 h-6 relative opacity-60 group-hover:opacity-80 transition-opacity"
-                      title={key.name}
-                    >
-                      <Image
-                        src={key.icon}
-                        alt={key.name}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Short Description */}
-                <p className="text-xs text-gray-600 line-clamp-2">
-                  {dimension.description}
-                </p>
-              </Link>
-            ))}
+                  {/* Dimension Icon */}
+                  <div className="w-20 h-20 mx-auto mb-4 relative">
+                    <Image
+                      src={dimension.sectionLogo}
+                      alt={dimension.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  
+                  {/* Keys Row */}
+                  <div className="flex justify-center gap-1 mb-4">
+                    {dimension.keys.map((key) => (
+                      <div 
+                        key={key.id} 
+                        className="w-6 h-6 relative opacity-60 group-hover:opacity-80 transition-opacity"
+                        title={key.name}
+                      >
+                        <Image
+                          src={key.icon}
+                          alt={key.name}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* 2-Word Descriptor */}
+                  <p 
+                    className="text-lg font-semibold"
+                    style={{ color: dimension.color }}
+                  >
+                    {descriptors[dimension.id as keyof typeof descriptors]}
+                  </p>
+                </Link>
+              );
+            })}
           </div>
         </div>
 
