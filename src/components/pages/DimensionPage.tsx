@@ -13,41 +13,89 @@ interface DimensionPageProps {
 const getDimensionDescription = (dimension: DimensionType) => {
   const descriptions = {
     self: {
-      text: "When tuned emotions become your compass, an open mind embraces infinite possibilities, and a focused body channels pure presence - flow becomes inevitable.",
-      keys: ["tuned emotions", "open mind", "focused body"]
+      text: "Develop unshakeable focus and presence by integrating physical, mental, and emotional intelligence.",
+      keys: []
     },
     space: {
-      text: "Through intentional space design, optimized tools that amplify capability, and feedback systems that accelerate learning - your environment becomes your greatest ally.",
-      keys: ["space design", "optimized tools", "feedback systems"]
+      text: "Build spaces and systems that multiply your leverage while removing distractions.",
+      keys: []
     },
     story: {
-      text: "By weaving generative stories that transform obstacles into adventures, aligning with worthy missions that ignite purpose and stepping into empowered roles that unleash authentic power - you become the hero of your own epic.",
-      keys: ["generative stories", "worthy missions", "empowered roles"]
+      text: "Transform your sense of purpose into a driving force for excellence and fulfillment.",
+      keys: []
     },
     spirit: {
-      text: "Through grounding values that anchor your truth, visualized visions that magnetize your future and ignited curiosity that transforms every moment into discovery - you connect with infinite source of creative flow.",
-      keys: ["grounding values", "visualized visions", "ignited curiosity"]
+      text: "Access unlimited energy and direction through aligned values, wonder, and vision.",
+      keys: []
     }
   };
   return descriptions[dimension];
 };
 
 const getKeyDisplayInfo = (keyId: string) => {
-  const keyInfo: Record<string, { name: string; emoji: string }> = {
-    'tuned-emotions': { name: 'Tuned Emotions', emoji: '🎯' },
-    'open-mind': { name: 'Open Mind', emoji: '🧠' },
-    'focused-body': { name: 'Focused Body', emoji: '⚡' },
-    'curated-space': { name: 'Curated Space', emoji: '🏠' },
-    'optimized-tools': { name: 'Optimized Tools', emoji: '🛠️' },
-    'feedback-systems': { name: 'Feedback Systems', emoji: '📊' },
-    'generative-stories': { name: 'Generative Stories', emoji: '📖' },
-    'worthy-mission': { name: 'Worthy Mission', emoji: '🎯' },
-    'empowered-roles': { name: 'Empowered Roles', emoji: '👑' },
-    'grounding-values': { name: 'Grounding Values', emoji: '⚓' },
-    'visualized-visions': { name: 'Visualized Visions', emoji: '🔮' },
-    'ignited-curiosity': { name: 'Ignited Curiosity', emoji: '🔥' }
+  const keyInfo: Record<string, { name: string; emoji: string; description: string }> = {
+    'tuned-emotions': { 
+      name: 'Tuned Emotions', 
+      emoji: '💫', 
+      description: 'Use your feelings as signals to stay in the sweet spot between bored and overwhelmed.'
+    },
+    'open-mind': { 
+      name: 'Open Mind', 
+      emoji: '🧠', 
+      description: 'Clear mental clutter and stay flexible so new ideas can flow naturally.'
+    },
+    'focused-body': { 
+      name: 'Focused Body', 
+      emoji: '🧘', 
+      description: 'Get out of your head and into your body to stop overthinking and stay present.'
+    },
+    'intentional-space': { 
+      name: 'Intentional Space', 
+      emoji: '🏡', 
+      description: 'Set up your environment to automatically put you in focus mode without willpower.'
+    },
+    'optimized-tools': { 
+      name: 'Optimized Tools', 
+      emoji: '⚡', 
+      description: 'Use the right systems and tech to get more done with less effort.'
+    },
+    'feedback-systems': { 
+      name: 'Feedback Systems', 
+      emoji: '🔄', 
+      description: 'Build quick ways to know if you\'re on track and course-correct fast.'
+    },
+    'generative-story': { 
+      name: 'Generative Story', 
+      emoji: '📖', 
+      description: 'Create a personal narrative that makes challenges feel like adventure, not problems.'
+    },
+    'worthy-mission': { 
+      name: 'Worthy Mission', 
+      emoji: '🎯', 
+      description: 'Connect your daily work to something bigger that naturally motivates you.'
+    },
+    'empowered-role': { 
+      name: 'Empowered Role', 
+      emoji: '👑', 
+      description: 'Know what you own and why it matters so you can work with real purpose.'
+    },
+    'grounding-values': { 
+      name: 'Grounding Values', 
+      emoji: '⚖️', 
+      description: 'Know what you stand for so decisions become obvious and doubt disappears.'
+    },
+    'visualized-vision': { 
+      name: 'Visualized Vision', 
+      emoji: '✨', 
+      description: 'See your future clearly so your brain starts noticing the right opportunities.'
+    },
+    'ignited-curiosity': { 
+      name: 'Ignited Curiosity', 
+      emoji: '🔥', 
+      description: 'Stay genuinely interested in your work so focus happens without forcing it.'
+    }
   };
-  return keyInfo[keyId] || { name: keyId, emoji: '🔑' };
+  return keyInfo[keyId] || { name: keyId, emoji: '🔑', description: 'Flow key description' };
 };
 
 export default function DimensionPage({ dimension }: DimensionPageProps) {
@@ -59,15 +107,6 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
 
   const getKeyPath = (keyId: string) => `/dimension/${dimension}/key/${keyId}`;
   const dimensionDesc = getDimensionDescription(dimension);
-
-  const renderHighlightedText = (text: string, keys: string[], color: string) => {
-    let highlightedText = text;
-    keys.forEach(key => {
-      const regex = new RegExp(`(${key})`, 'gi');
-      highlightedText = highlightedText.replace(regex, `<span style="color: ${color}; font-weight: 600; text-shadow: 0 0 8px ${color}40;">$1</span>`);
-    });
-    return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -107,7 +146,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
             </div>
             <div className="flex-1 flex items-center">
               <p className="text-sm leading-relaxed text-gray-700">
-                {renderHighlightedText(dimensionDesc.text, dimensionDesc.keys, dimensionData.color)}
+                {dimensionDesc.text}
               </p>
             </div>
           </div>
@@ -136,9 +175,12 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 {/* Key Content */}
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
-                    {keyInfo.emoji} {keyInfo.name}
+                    {keyInfo.name}
                   </h3>
-                  <p className="text-xs text-gray-500 mt-1">Key to Flow</p>
+                  <p className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                    <span>{keyInfo.emoji}</span>
+                    <span>{keyInfo.description}</span>
+                  </p>
                 </div>
 
                 {/* Arrow */}
