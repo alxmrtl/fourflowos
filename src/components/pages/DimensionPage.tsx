@@ -33,69 +33,69 @@ const getDimensionDescription = (dimension: DimensionType) => {
 };
 
 const getKeyDisplayInfo = (keyId: string) => {
-  const keyInfo: Record<string, { name: string; emoji: string; description: string }> = {
+  const keyInfo: Record<string, { name: string; description: string; keyNumber: number }> = {
     'tuned-emotions': { 
       name: 'Tuned Emotions', 
-      emoji: '💫', 
-      description: 'Use your feelings as signals to stay in the sweet spot between bored and overwhelmed.'
+      description: 'Use your feelings as signals to stay in the sweet spot between bored and overwhelmed.',
+      keyNumber: 1
     },
     'open-mind': { 
       name: 'Open Mind', 
-      emoji: '🧠', 
-      description: 'Clear mental clutter and stay flexible so new ideas can flow naturally.'
+      description: 'Clear mental clutter and stay flexible so new ideas can flow naturally.',
+      keyNumber: 2
     },
     'focused-body': { 
       name: 'Focused Body', 
-      emoji: '🧘', 
-      description: 'Get out of your head and into your body to stop overthinking and stay present.'
+      description: 'Get out of your head and into your body to stop overthinking and stay present.',
+      keyNumber: 3
     },
     'intentional-space': { 
       name: 'Intentional Space', 
-      emoji: '🏡', 
-      description: 'Set up your environment to automatically put you in focus mode without willpower.'
+      description: 'Set up your environment to automatically put you in focus mode without willpower.',
+      keyNumber: 4
     },
     'optimized-tools': { 
       name: 'Optimized Tools', 
-      emoji: '⚡', 
-      description: 'Use the right systems and tech to get more done with less effort.'
+      description: 'Use the right systems and tech to get more done with less effort.',
+      keyNumber: 5
     },
     'feedback-systems': { 
       name: 'Feedback Systems', 
-      emoji: '🔄', 
-      description: 'Build quick ways to know if you\'re on track and course-correct fast.'
+      description: 'Build quick ways to know if you\'re on track and course-correct fast.',
+      keyNumber: 6
     },
     'generative-story': { 
       name: 'Generative Story', 
-      emoji: '📖', 
-      description: 'Create a personal narrative that makes challenges feel like adventure, not problems.'
+      description: 'Create a personal narrative that makes challenges feel like adventure, not problems.',
+      keyNumber: 7
     },
     'worthy-mission': { 
       name: 'Worthy Mission', 
-      emoji: '🎯', 
-      description: 'Connect your daily work to something bigger that naturally motivates you.'
+      description: 'Connect your daily work to something bigger that naturally motivates you.',
+      keyNumber: 8
     },
     'empowered-role': { 
       name: 'Empowered Role', 
-      emoji: '👑', 
-      description: 'Know what you own and why it matters so you can work with real purpose.'
+      description: 'Know what you own and why it matters so you can work with real purpose.',
+      keyNumber: 9
     },
     'grounding-values': { 
       name: 'Grounding Values', 
-      emoji: '⚖️', 
-      description: 'Know what you stand for so decisions become obvious and doubt disappears.'
+      description: 'Know what you stand for so decisions become obvious and doubt disappears.',
+      keyNumber: 10
     },
     'visualized-vision': { 
       name: 'Visualized Vision', 
-      emoji: '✨', 
-      description: 'See your future clearly so your brain starts noticing the right opportunities.'
+      description: 'See your future clearly so your brain starts noticing the right opportunities.',
+      keyNumber: 11
     },
     'ignited-curiosity': { 
       name: 'Ignited Curiosity', 
-      emoji: '🔥', 
-      description: 'Stay genuinely interested in your work so focus happens without forcing it.'
+      description: 'Stay genuinely interested in your work so focus happens without forcing it.',
+      keyNumber: 12
     }
   };
-  return keyInfo[keyId] || { name: keyId, emoji: '🔑', description: 'Flow key description' };
+  return keyInfo[keyId] || { name: keyId, description: 'Flow key description', keyNumber: 0 };
 };
 
 export default function DimensionPage({ dimension }: DimensionPageProps) {
@@ -133,10 +133,10 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 py-4 h-screen flex flex-col">
-        {/* Compact Dimension Header - 1/4 of space */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 flex-shrink-0" style={{ height: '25%' }}>
-          <div className="flex items-start gap-4 h-full">
-            <div className="w-16 h-16 relative flex-shrink-0">
+        {/* Compact Dimension Header */}
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 flex-shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 relative flex-shrink-0">
               <Image
                 src={dimensionData.sectionLogo}
                 alt={dimensionData.name}
@@ -144,7 +144,10 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 className="object-contain"
               />
             </div>
-            <div className="flex-1 flex items-center">
+            <div className="flex-1">
+              <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: dimensionData.color }}>
+                {dimensionData.name} DIMENSION
+              </p>
               <p className="text-sm leading-relaxed text-gray-700">
                 {dimensionDesc.text}
               </p>
@@ -152,18 +155,18 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
           </div>
         </div>
 
-        {/* Three Key Sections - 3/4 of space */}
-        <div className="flex-1 grid grid-cols-1 gap-3">
+        {/* Three Key Sections */}
+        <div className="flex-1 grid grid-cols-1 gap-2">
           {dimensionData.keys.map((key) => {
             const keyInfo = getKeyDisplayInfo(key.id);
             return (
               <Link
                 key={key.id}
                 href={getKeyPath(key.id)}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 border border-gray-200 hover:border-gray-300 group flex items-center gap-4"
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-3 border border-gray-200 hover:border-gray-300 group flex items-center gap-4"
               >
                 {/* Key Icon */}
-                <div className="w-12 h-12 relative flex-shrink-0">
+                <div className="w-10 h-10 relative flex-shrink-0">
                   <Image
                     src={key.icon}
                     alt={key.name}
@@ -174,17 +177,19 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 
                 {/* Key Content */}
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 group-hover:text-gray-700 transition-colors">
+                  <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: dimensionData.color }}>
+                    FLOW KEY #{keyInfo.keyNumber}
+                  </p>
+                  <h3 className="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-1">
                     {keyInfo.name}
                   </h3>
-                  <p className="text-xs text-gray-600 mt-1 flex items-center gap-1">
-                    <span>{keyInfo.emoji}</span>
-                    <span>{keyInfo.description}</span>
+                  <p className="text-xs text-gray-600">
+                    {keyInfo.description}
                   </p>
                 </div>
 
                 {/* Arrow */}
-                <svg className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
