@@ -163,7 +163,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
               <Link
                 key={key.id}
                 href={getKeyPath(key.id)}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1 px-3 group flex items-start gap-3"
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
                 style={{ 
                   borderLeft: `4px solid ${dimensionData.color}`,
                   borderTop: `1px solid ${dimensionData.color}20`,
