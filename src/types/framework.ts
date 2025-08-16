@@ -41,6 +41,25 @@ export interface ContentItem {
   type: 'learn' | 'practice';
   dimension: DimensionType;
   key: KeyType;
+  
+  // Optional enhanced fields
+  short_title?: string;
+  excerpt?: string;
+  difficulty?: 'Beginner' | 'Intermediate' | 'Advanced';
+  estimated_duration?: number;
+  read_time?: number;
+  materials_needed?: string[];
+  scientific_backing?: boolean;
+  flow_triggers?: string[];
+  target_outcomes?: string[];
+  created_date?: string;
+  meta_description?: string;
+  keywords?: string[];
+  
+  // Pinned content fields
+  is_pinned?: boolean;
+  pinned_type?: 'learn' | 'practice' | 'both';
+  pin_order?: number;
 }
 
 export interface NavigationState {
