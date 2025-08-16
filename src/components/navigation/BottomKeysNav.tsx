@@ -23,10 +23,6 @@ export default function BottomKeysNav({ currentDimension, currentKey }: BottomKe
     return Object.values(KEYS).filter(key => key.dimension === dimensionId);
   };
 
-  const getKeyDimension = (keyId: KeyType) => {
-    const key = KEYS[keyId];
-    return DIMENSIONS[key.dimension];
-  };
 
 
   return (

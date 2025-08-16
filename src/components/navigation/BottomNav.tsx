@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { DIMENSIONS, MAIN_LOGO } from '@/data/framework';
+import { DIMENSIONS } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
 
 export default function BottomNav() {

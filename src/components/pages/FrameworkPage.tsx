@@ -8,7 +8,6 @@ import MenuButton from '@/components/navigation/MenuButton';
 
 export default function FrameworkPage() {
   const getDimensionPath = (dimension: DimensionType) => `/dimension/${dimension}`;
-  const getKeyPath = (keyId: string, dimension: DimensionType) => `/dimension/${dimension}/key/${keyId}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">

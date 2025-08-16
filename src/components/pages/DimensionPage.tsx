@@ -33,7 +33,7 @@ const getDimensionDescription = (dimension: DimensionType) => {
 };
 
 const getKeyDisplayInfo = (keyId: string) => {
-  const keyInfo = {
+  const keyInfo: Record<string, { name: string; emoji: string }> = {
     'tuned-emotions': { name: 'Tuned Emotions', emoji: '🎯' },
     'open-mind': { name: 'Open Mind', emoji: '🧠' },
     'focused-body': { name: 'Focused Body', emoji: '⚡' },
@@ -115,7 +115,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
 
         {/* Three Key Sections - 3/4 of space */}
         <div className="flex-1 grid grid-cols-1 gap-3">
-          {dimensionData.keys.map((key, index) => {
+          {dimensionData.keys.map((key) => {
             const keyInfo = getKeyDisplayInfo(key.id);
             return (
               <Link
