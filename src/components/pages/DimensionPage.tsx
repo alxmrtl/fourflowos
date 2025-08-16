@@ -141,7 +141,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 src={dimensionData.sectionLogo}
                 alt={dimensionData.name}
                 fill
-                className="object-contain filter brightness-0 invert"
+                className="object-contain"
               />
             </div>
             <div className="flex-1">
