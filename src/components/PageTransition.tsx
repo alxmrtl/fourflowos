@@ -30,8 +30,8 @@ export default function PageTransition({ children }: PageTransitionProps) {
   };
 
   const pageTransition = {
-    type: 'tween',
-    ease: 'anticipate',
+    type: 'tween' as const,
+    ease: 'anticipate' as const,
     duration: 0.4
   };
 
