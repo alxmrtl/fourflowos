@@ -20,9 +20,9 @@ export default function FrameworkPage() {
         {/* Header Box */}
         <motion.div 
           className="bg-[#333333] rounded-xl shadow-md p-6 mb-4 text-left flex items-center"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0.7 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
         >
           <div>
             <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -48,11 +48,11 @@ export default function FrameworkPage() {
               return (
                 <motion.div
                   key={dimension.id}
-                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  initial={{ opacity: 0.6 }}
+                  animate={{ opacity: 1 }}
                   transition={{ 
-                    duration: 0.4, 
-                    delay: index * 0.1,
+                    duration: 0.2, 
+                    delay: index * 0.05,
                     ease: 'easeOut'
                   }}
                 >

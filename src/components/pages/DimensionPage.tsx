@@ -120,9 +120,9 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
         <motion.div 
           className="rounded-lg shadow-sm p-4 mb-4 flex-shrink-0" 
           style={{ backgroundColor: dimensionData.color }}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          initial={{ opacity: 0.7 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 relative flex-shrink-0">
@@ -151,11 +151,11 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
             return (
               <motion.div
                 key={key.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0.6 }}
+                animate={{ opacity: 1 }}
                 transition={{ 
-                  duration: 0.3, 
-                  delay: index * 0.1,
+                  duration: 0.15, 
+                  delay: index * 0.03,
                   ease: 'easeOut'
                 }}
               >
