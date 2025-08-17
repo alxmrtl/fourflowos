@@ -8,6 +8,21 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "FourFlowOS - Awakening Flow States",
   description: "A holistic framework for achieving flow states through the integration of Self, Space, Story, and Spirit dimensions.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.jpg",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "FourFlowOS",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    userScalable: false,
+  },
 };
 
 export default function RootLayout({
