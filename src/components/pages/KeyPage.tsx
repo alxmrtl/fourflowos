@@ -99,14 +99,14 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
       <TopBar />
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-2 py-4">
+      <main className="max-w-6xl mx-auto px-2 lg:px-8 py-4 lg:py-6">
         {/* Key Info Box */}
         <div 
-          className="rounded-lg shadow-sm p-3 mb-3 h-32"
+          className="rounded-lg shadow-sm p-3 lg:p-6 mb-3 lg:mb-6 h-32 lg:h-40"
           style={{ backgroundColor: dimensionData.color }}
         >
-          <div className="flex items-center gap-3 h-full">
-            <div className="w-12 h-12 relative flex-shrink-0">
+          <div className="flex items-center gap-3 lg:gap-6 h-full">
+            <div className="w-12 h-12 lg:w-16 lg:h-16 relative flex-shrink-0">
               <Image
                 src={keyData.icon}
                 alt={keyData.name}
@@ -115,13 +115,13 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
               />
             </div>
             <div className="flex-1">
-              <p className="text-xs font-bold uppercase tracking-wider mb-1 text-white">
+              <p className="text-xs lg:text-sm font-bold uppercase tracking-wider mb-1 text-white">
                 FLOW KEY #{keyInfo.keyNumber}
               </p>
-              <h1 className="text-xl font-bold text-white mb-1">
+              <h1 className="text-xl lg:text-2xl font-bold text-white mb-1">
                 {keyInfo.name}
               </h1>
-              <p className="text-xs leading-relaxed text-white">
+              <p className="text-xs lg:text-sm leading-relaxed text-white">
                 {keyInfo.description}
               </p>
             </div>
@@ -133,46 +133,46 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab('learn')}
-              className={`flex-1 px-6 py-4 text-center font-medium transition-colors ${
+              className={`flex-1 px-6 lg:px-8 py-4 lg:py-5 text-center font-medium transition-colors ${
                 activeTab === 'learn'
                   ? 'text-gray-900 border-b-2 border-gray-900 bg-gray-50'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <div className="flex items-center justify-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                Learn
+                <span className="text-sm lg:text-base">Learn</span>
               </div>
             </button>
             <button
               onClick={() => setActiveTab('practice')}
-              className={`flex-1 px-6 py-4 text-center font-medium transition-colors ${
+              className={`flex-1 px-6 lg:px-8 py-4 lg:py-5 text-center font-medium transition-colors ${
                 activeTab === 'practice'
                   ? 'text-gray-900 border-b-2 border-gray-900 bg-gray-50'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <div className="flex items-center justify-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                Practice
+                <span className="text-sm lg:text-base">Practice</span>
               </div>
             </button>
           </div>
 
           {/* Content List */}
-          <div className="p-6">
+          <div className="p-6 lg:p-8">
             {activeTab === 'learn' && (
-              <div className="space-y-2">
+              <div className="space-y-2 lg:space-y-4">
                 {learnContent.length > 0 ? (
                   learnContent.map((item) => (
                     <Link
                       key={item.id}
                       href={`/content/${item.id}`}
-                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
+                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 lg:py-3 px-3 lg:px-4 group flex items-start gap-3 lg:gap-4"
                       style={{ 
                         borderLeft: `4px solid ${dimensionData.color}`,
                         borderTop: `1px solid ${dimensionData.color}20`,
@@ -181,20 +181,20 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                       }}
                     >
                       {/* Content Image Placeholder */}
-                      <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
-                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-12 h-12 lg:w-14 lg:h-14 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                        <svg className="w-6 h-6 lg:w-7 lg:h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
                       </div>
                       
                       {/* Content Info */}
                       <div className="flex-1">
-                        <h3 className="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0 leading-tight">
+                        <h3 className="text-base lg:text-lg font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0 leading-tight">
                           {item.title}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <span 
-                            className="text-xs font-medium px-2 py-1 rounded"
+                            className="text-xs lg:text-sm font-medium px-2 py-1 rounded"
                             style={{ 
                               backgroundColor: `${dimensionData.color}20`,
                               color: dimensionData.color 
@@ -202,13 +202,13 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                           >
                             {dimensionData.name}
                           </span>
-                          <span className="text-xs text-gray-500">•</span>
-                          <span className="text-xs text-gray-500">{keyInfo.name}</span>
+                          <span className="text-xs lg:text-sm text-gray-500">•</span>
+                          <span className="text-xs lg:text-sm text-gray-500">{keyInfo.name}</span>
                         </div>
                       </div>
 
                       {/* Arrow */}
-                      <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </Link>
@@ -228,13 +228,13 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
             )}
 
             {activeTab === 'practice' && (
-              <div className="space-y-2">
+              <div className="space-y-2 lg:space-y-4">
                 {practiceContent.length > 0 ? (
                   practiceContent.map((item) => (
                     <Link
                       key={item.id}
                       href={`/content/${item.id}`}
-                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
+                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 lg:py-3 px-3 lg:px-4 group flex items-start gap-3 lg:gap-4"
                       style={{ 
                         borderLeft: `4px solid ${dimensionData.color}`,
                         borderTop: `1px solid ${dimensionData.color}20`,
@@ -243,20 +243,20 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                       }}
                     >
                       {/* Content Image Placeholder */}
-                      <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
-                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-12 h-12 lg:w-14 lg:h-14 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                        <svg className="w-6 h-6 lg:w-7 lg:h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                       </div>
                       
                       {/* Content Info */}
                       <div className="flex-1">
-                        <h3 className="text-base font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0 leading-tight">
+                        <h3 className="text-base lg:text-lg font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0 leading-tight">
                           {item.title}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <span 
-                            className="text-xs font-medium px-2 py-1 rounded"
+                            className="text-xs lg:text-sm font-medium px-2 py-1 rounded"
                             style={{ 
                               backgroundColor: `${dimensionData.color}20`,
                               color: dimensionData.color 
@@ -264,13 +264,13 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                           >
                             {dimensionData.name}
                           </span>
-                          <span className="text-xs text-gray-500">•</span>
-                          <span className="text-xs text-gray-500">{keyInfo.name}</span>
+                          <span className="text-xs lg:text-sm text-gray-500">•</span>
+                          <span className="text-xs lg:text-sm text-gray-500">{keyInfo.name}</span>
                         </div>
                       </div>
 
                       {/* Arrow */}
-                      <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </Link>
