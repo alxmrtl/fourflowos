@@ -1,13 +1,13 @@
 import { ContentItem } from '@/types/framework';
 
-// Database configuration
-const DATABASE_CONFIG = {
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '3306'),
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'fourflow_content'
-};
+// Database configuration (for future use)
+// const DATABASE_CONFIG = {
+//   host: process.env.DB_HOST || 'localhost',
+//   port: parseInt(process.env.DB_PORT || '3306'),
+//   user: process.env.DB_USER || 'root',
+//   password: process.env.DB_PASSWORD || '',
+//   database: process.env.DB_NAME || 'fourflow_content'
+// };
 
 // Mock database implementation for development
 // Replace with actual database connection (MySQL, PostgreSQL, etc.)
@@ -124,7 +124,7 @@ The ultimate goal is not emotional perfection but emotional partnership—a coll
     ];
   }
 
-  async query(sql: string, params?: any[]): Promise<any[]> {
+  async query(sql: string, params?: unknown[]): Promise<ContentItem[]> {
     // Mock implementation - replace with actual database query
     console.log('Mock DB Query:', sql, params);
     return this.data;
