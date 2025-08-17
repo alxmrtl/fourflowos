@@ -1,13 +1,14 @@
 import ContentPage from '@/components/pages/ContentPage';
 
 interface ContentPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function Content({ params }: ContentPageProps) {
-  return <ContentPage contentId={params.id} />;
+export default async function Content({ params }: ContentPageProps) {
+  const { id } = await params;
+  return <ContentPage contentId={id} />;
 }
 
 // Generate static params for all content items at build time
