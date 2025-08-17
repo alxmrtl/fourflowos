@@ -34,18 +34,21 @@ export default function PageTransition({ children }: PageTransitionProps) {
   };
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={pathname}
-        initial="initial"
-        animate="in"
-        exit="out"
-        variants={pageVariants}
-        transition={pageTransition}
-        className="w-full"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <div className="relative w-full min-h-screen">
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={pathname}
+          initial="initial"
+          animate="in"
+          exit="out"
+          variants={pageVariants}
+          transition={pageTransition}
+          className="absolute inset-0 w-full"
+          style={{ backgroundColor: '#f9fafb' }}
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
