@@ -13,20 +13,24 @@ export default function PageTransition({ children }: PageTransitionProps) {
 
   const pageVariants = {
     initial: {
-      opacity: 0.8
+      opacity: 0,
+      scale: 0.95
     },
     in: {
-      opacity: 1
+      opacity: 1,
+      scale: 1
     },
     out: {
-      opacity: 0.8
+      opacity: 0,
+      scale: 1.02
     }
   };
 
   const pageTransition = {
-    type: 'tween' as const,
-    ease: 'easeOut' as const,
-    duration: 0.15
+    type: 'spring' as const,
+    stiffness: 400,
+    damping: 25,
+    mass: 0.8
   };
 
   return (
