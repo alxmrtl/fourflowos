@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NavigationWrapper from "@/components/navigation/NavigationWrapper";
 import PageTransition from "@/components/PageTransition";
+import SwipeContainer from "@/components/SwipeContainer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,9 +36,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="min-h-screen bg-gray-50 pb-40">
-          <PageTransition>
-            {children}
-          </PageTransition>
+          <SwipeContainer>
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </SwipeContainer>
         </div>
         <NavigationWrapper />
       </body>

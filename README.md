@@ -108,8 +108,9 @@ FourFlowOS is an interactive web application that embodies the FourFlow framewor
 ## Technical Implementation
 
 ### Technology Stack
-- **Frontend**: Next.js 14+ with React
+- **Frontend**: Next.js 15+ with React 19
 - **Styling**: Tailwind CSS with custom brand color system
+- **Web App**: PWA-enabled with iOS home screen support
 - **Deployment**: Vercel (auto-deploy from main branch)
 - **Repository**: Git with submodule structure
 
@@ -321,6 +322,21 @@ npm run db:migrate   # Migrate content to database
 5. **Brevity**: Keep descriptions concise and scannable
 
 ## Recent Major Updates
+
+### Web App Configuration (August 2025)
+
+#### Progressive Web App (PWA) Setup
+- **iOS Home Screen Icon**: Configured custom FourFlowOS iOS icon for when users add the app to their home screen
+- **Browser Favicon**: Set main FourFlowOS logo as the browser tab icon for professional appearance
+- **Web App Manifest**: Created PWA manifest enabling app installation on mobile devices
+- **Apple Web App Configuration**: Optimized iOS experience with standalone display mode and proper status bar styling
+- **Professional Branding**: Consistent icon experience across all platforms and installation methods
+
+#### Technical Implementation
+- **Icon Assets**: Sourced from `REFERENCES/BRAND/LOGOS/` folder using official brand assets
+- **Manifest.json**: PWA configuration supporting app installation and standalone mode
+- **Layout Meta Tags**: Updated Next.js layout with proper web app metadata and viewport settings
+- **Cross-Platform Icons**: Optimized for both browser display and mobile home screen installation
 
 ### Complete Content Management System (August 2025)
 

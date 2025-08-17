@@ -6,12 +6,20 @@ import { motion } from 'framer-motion';
 import { DIMENSIONS } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
+import TouchRipple from '@/components/TouchRipple';
+import PullToRefresh from '@/components/PullToRefresh';
 
 export default function FrameworkPage() {
   const getDimensionPath = (dimension: DimensionType) => `/dimension/${dimension}`;
 
+  const handleRefresh = async () => {
+    // Simulate refresh action
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
       <TopBar />
 
@@ -56,16 +64,20 @@ export default function FrameworkPage() {
                     ease: 'easeOut'
                   }}
                 >
-                  <Link 
-                    href={getDimensionPath(dimension.id)}
-                    className="bg-white rounded-lg shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] active:shadow-md transition-all duration-200 p-4 group h-36 w-full touch-manipulation transform hover:-translate-y-1 block"
-                    style={{
-                      borderLeft: `4px solid ${dimension.color}`,
-                      borderTop: `1px solid ${dimension.color}20`,
-                      borderRight: `1px solid ${dimension.color}20`,
-                      borderBottom: `1px solid ${dimension.color}20`
-                    }}
+                  <TouchRipple 
+                    color={`${dimension.color}40`}
+                    className="rounded-lg"
                   >
+                    <Link 
+                      href={getDimensionPath(dimension.id)}
+                      className="bg-white rounded-lg shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] active:shadow-md transition-all duration-200 p-4 group h-36 w-full touch-manipulation transform hover:-translate-y-1 block"
+                      style={{
+                        borderLeft: `4px solid ${dimension.color}`,
+                        borderTop: `1px solid ${dimension.color}20`,
+                        borderRight: `1px solid ${dimension.color}20`,
+                        borderBottom: `1px solid ${dimension.color}20`
+                      }}
+                    >
                   {/* Top Section: Logo and Descriptor */}
                   <div className="flex items-center gap-3 mb-3">
                     {/* Dimension Icon - Top Left */}
@@ -104,7 +116,8 @@ export default function FrameworkPage() {
                       </div>
                     ))}
                   </div>
-                  </Link>
+                    </Link>
+                  </TouchRipple>
                 </motion.div>
               );
             })}
@@ -112,6 +125,7 @@ export default function FrameworkPage() {
         </div>
 
       </main>
-    </div>
+      </div>
+    </PullToRefresh>
   );
 }
