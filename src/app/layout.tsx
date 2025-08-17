@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     width: "device-width",
     initialScale: 1,
     userScalable: false,
+    viewportFit: "cover",
   },
 };
 
@@ -35,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50 pb-40">
+        <div className="min-h-screen bg-gray-50 pb-40 safe-area-top no-scroll-bounce">
           <SwipeContainer>
             <PageTransition>
               {children}

@@ -7,19 +7,12 @@ import { DIMENSIONS } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
 import TouchRipple from '@/components/TouchRipple';
-import PullToRefresh from '@/components/PullToRefresh';
 
 export default function FrameworkPage() {
   const getDimensionPath = (dimension: DimensionType) => `/dimension/${dimension}`;
 
-  const handleRefresh = async () => {
-    // Simulate refresh action
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  };
-
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
       <TopBar />
 
@@ -125,7 +118,6 @@ export default function FrameworkPage() {
         </div>
 
       </main>
-      </div>
-    </PullToRefresh>
+    </div>
   );
 }

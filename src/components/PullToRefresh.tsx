@@ -23,26 +23,35 @@ export default function PullToRefresh({
   }));
 
   const bind = useGesture({
-    onDrag: async ({ active, movement: [, my], direction: [, yDir] }) => {
+    onDrag: async ({ active, movement: [mx, my], direction: [, yDir], first, cancel }) => {
       // Only allow pull down from top
       if (my < 0 || yDir < 0) return;
 
-      // Check if we're at the top of the page
-      if (window.scrollY > 0) return;
+      // If horizontal movement is stronger, don't interfere
+      if (first && Math.abs(mx) > Math.abs(my)) {
+        cancel();
+        return;
+      }
+
+      // Check if we're at the top of the page and not scrolling
+      if (window.scrollY > 5) {
+        cancel();
+        return;
+      }
 
       const progress = Math.min(my / threshold, 1);
       const shouldRefresh = !active && my > threshold;
 
       if (active) {
         api.start({ 
-          y: my * 0.5, // Reduce the pull distance for elastic feel
+          y: my * 0.3, // Even more reduced for less interference
           rotate: progress * 180,
           immediate: true 
         });
       } else {
         if (shouldRefresh && onRefresh && !isRefreshing) {
           setIsRefreshing(true);
-          api.start({ y: 60, rotate: 180 });
+          api.start({ y: 40, rotate: 180 });
           
           try {
             await onRefresh();
@@ -59,15 +68,16 @@ export default function PullToRefresh({
     drag: {
       axis: 'y',
       bounds: { top: 0 },
-      rubberband: true
+      rubberband: true,
+      threshold: 15,
+      filterTaps: true
     }
   });
 
   return (
     <animated.div
-      {...bind()}
       style={{ y }}
-      className="touch-pan-x"
+      className="touch-pan-x no-scroll-bounce"
     >
       {/* Pull to refresh indicator */}
       <animated.div 

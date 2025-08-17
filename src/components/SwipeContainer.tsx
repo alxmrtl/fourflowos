@@ -33,9 +33,15 @@ export default function SwipeContainer({ children }: SwipeContainerProps) {
   const [{ x }, api] = useSpring(() => ({ x: 0 }));
 
   const bind = useGesture({
-    onDrag: ({ active, movement: [mx], direction: [xDir], cancel }) => {
+    onDrag: ({ active, movement: [mx, my], direction: [xDir], cancel, first }) => {
       // Only enable swipe on dimension pages, not framework page
       if (currentIndex === -1) return;
+
+      // If this is the first movement and it's more vertical than horizontal, cancel
+      if (first && Math.abs(my) > Math.abs(mx)) {
+        cancel();
+        return;
+      }
 
       const trigger = Math.abs(mx) > 50;
 
@@ -66,7 +72,9 @@ export default function SwipeContainer({ children }: SwipeContainerProps) {
     drag: {
       axis: 'x',
       bounds: { left: -100, right: 100 },
-      rubberband: true
+      rubberband: true,
+      threshold: 10,
+      filterTaps: true
     }
   });
 
@@ -74,7 +82,7 @@ export default function SwipeContainer({ children }: SwipeContainerProps) {
     <animated.div
       {...bind()}
       style={{ x }}
-      className="touch-pan-y"
+      className="touch-pan-y select-none"
     >
       {children}
     </animated.div>
