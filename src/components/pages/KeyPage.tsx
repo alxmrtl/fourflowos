@@ -171,7 +171,7 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                   learnContent.map((item) => (
                     <Link
                       key={item.id}
-                      href={`#content-${item.id}`}
+                      href={`/content/${item.id}`}
                       className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
                       style={{ 
                         borderLeft: `4px solid ${dimensionData.color}`,
@@ -233,7 +233,7 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                   practiceContent.map((item) => (
                     <Link
                       key={item.id}
-                      href={`#content-${item.id}`}
+                      href={`/content/${item.id}`}
                       className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
                       style={{ 
                         borderLeft: `4px solid ${dimensionData.color}`,

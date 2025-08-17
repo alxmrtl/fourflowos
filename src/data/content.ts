@@ -263,3 +263,7 @@ export function getPracticeContent(dimension: string, key: string) {
     item.type === 'practice'
   );
 }
+
+export function getContentById(id: string): ContentItem | null {
+  return CONTENT_REPOSITORY.find(item => item.id === id) || null;
+}
