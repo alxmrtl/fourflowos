@@ -121,6 +121,9 @@ src/
 │   ├── dimension/[dimension]/
 │   │   ├── page.tsx               # Dimension overview
 │   │   └── key/[key]/page.tsx     # Individual key pages
+│   ├── content/
+│   │   ├── page.tsx               # Content repository browser
+│   │   └── [id]/page.tsx          # Individual content articles
 │   ├── about/page.tsx
 │   ├── blog/page.tsx
 │   └── contact/page.tsx
@@ -128,16 +131,36 @@ src/
 │   ├── pages/
 │   │   ├── DimensionPage.tsx      # Main dimension page component
 │   │   ├── FrameworkPage.tsx      # Landing page component
-│   │   └── KeyPage.tsx            # Individual key component
+│   │   ├── KeyPage.tsx            # Individual key component
+│   │   └── ContentPage.tsx        # Full article display
 │   └── navigation/
 │       ├── BottomNav.tsx          # Main navigation bar
 │       ├── MenuButton.tsx         # Hamburger menu
-│       └── TopContextBar.tsx      # Contextual navigation
+│       └── TopBar.tsx             # Universal dark header
 ├── data/
 │   ├── framework.ts               # Dimension and key definitions
-│   └── content.ts                 # Content management
+│   └── content.ts                 # Content repository
+├── lib/
+│   └── database.ts                # Database connection layer
+├── scripts/
+│   ├── setup-database.sql         # Database schema
+│   └── content-upload.ts          # Automated content pipeline
 └── types/
     └── framework.ts               # TypeScript interfaces
+```
+
+### IDEAS Folder Structure
+```
+IDEAS/
+├── CONTENT-CREATION-WORKFLOW.md   # Complete workflow documentation
+├── CONTENT-FORMAT-LEARN.md        # Template for educational content
+├── CONTENT-FORMAT-PRACTICE.md     # Template for exercise content
+├── DATABASE-SCHEMA.md              # Database structure documentation
+├── WEBAPP-INTEGRATION-PLAN.md     # Database integration roadmap
+├── DATABASE-MIGRATION-PLAN.md     # Migration strategy
+└── READY/                          # Staging area for new content
+    ├── [Content].md               # Ready-to-publish articles
+    └── [metadata].yaml            # Content metadata files
 ```
 
 ### Key Components
@@ -171,28 +194,68 @@ src/
 - `KEYS`: Individual key definitions with icons and descriptions
 - Automatic key population for each dimension
 
-### Content Management
+### Content Management System
+
+#### Content Creation Workflow
+Complete system for creating, managing, and publishing FourFlow learning materials:
+
+1. **Research Phase**: Extract content from REFERENCES folder + external scientific research
+2. **Format Application**: Use standardized LEARN and PRACTICE templates
+3. **Content Creation**: Write scientifically-backed, flow-optimized content
+4. **Quality Assurance**: Review for framework integration and effectiveness
+5. **Publication**: Deploy to live website with full navigation
+
+#### Content Types
+
+**LEARN Content**: Educational articles explaining concepts and theory
+- **Structure**: Hook, Core Concept, Scientific Foundation, Framework Integration, Practical Application
+- **Length**: 1,200-1,800 words for comprehensive yet digestible content
+- **Features**: Scientific backing, cross-dimensional connections, integration guidance
+
+**PRACTICE Content**: Step-by-step exercises and implementations
+- **Structure**: Overview, Scientific Foundation, Prerequisites, Instructions, Troubleshooting, Progression
+- **Length**: 800-1,200 words focused on actionable implementation
+- **Features**: Progressive difficulty, clear success metrics, habit integration
+
+#### Pinned Content System
+- **Definitive Guides**: Each flow key has one pinned LEARN and PRACTICE piece
+- **Priority Display**: Pinned content appears first on key pages
+- **Quality Standards**: Comprehensive, scientifically-backed, framework-integrated content
 
 #### Copy Strategy
 - **Benefit-Driven**: All descriptions focus on practical outcomes
 - **Down-to-Earth**: Relatable language, no jargon
 - **Flow-Focused**: Every description connects to flow state benefits
 - **Concise**: Short, actionable descriptions
+- **Scientific**: Backed by neuroscience and psychology research
 
-#### Brand Integration
-- Consistent use of brand colors across all components
-- Systematic numbering for all 12 flow keys
-- Clean typography hierarchy
-- Minimal, professional design aesthetic
+#### Content Infrastructure
+- **Templates**: Standardized formats in `/IDEAS/CONTENT-FORMAT-*.md`
+- **Workflow**: Complete process documented in `/IDEAS/CONTENT-CREATION-WORKFLOW.md`
+- **Database**: Schema supporting metadata, tags, difficulty levels, and relationships
+- **Routing**: Individual content pages at `/content/[id]` with full navigation
 
 ## Development Workflow
 
 ### Making Content Changes
 
+#### Framework Content
 1. **Dimension Descriptions**: Update in `DimensionPage.tsx` → `getDimensionDescription()`
 2. **Key Descriptions**: Update in `DimensionPage.tsx` → `getKeyDisplayInfo()`
 3. **Brand Colors**: Defined in `framework.ts` → `DIMENSIONS`
 4. **Key Numbering**: Automatic based on order (SELF: 1-3, SPACE: 4-6, etc.)
+
+#### Article Content
+1. **Create Content**: Write using templates in `/IDEAS/CONTENT-FORMAT-*.md`
+2. **Add Metadata**: Include YAML metadata for database storage
+3. **Stage Content**: Place in `/IDEAS/READY/` folder
+4. **Quick Addition**: Add directly to `content.ts` for immediate deployment
+5. **Database Upload**: Use `npm run content:upload` for automated pipeline
+
+#### Content Management Options
+- **Immediate**: Edit `src/data/content.ts` directly for instant deployment
+- **Systematic**: Use IDEAS workflow for quality-controlled content creation
+- **Database**: Switch to database mode for unlimited content scaling
 
 ### Deployment Process
 
@@ -203,9 +266,13 @@ src/
 5. **Verification**: Check live site for updates
 
 ### Testing URLs
-- **Local**: `http://localhost:3000`
+- **Local**: `http://localhost:3004` (auto-selects available port)
 - **Production**: Deployed via Vercel
-- **Dimension Pages**: `/dimension/self`, `/dimension/space`, `/dimension/story`, `/dimension/spirit`
+- **Framework**: `/` (landing page)
+- **Dimensions**: `/dimension/self`, `/dimension/space`, `/dimension/story`, `/dimension/spirit`
+- **Keys**: `/dimension/[dimension]/key/[key]` (e.g., `/dimension/self/key/tuned-emotions`)
+- **Content**: `/content/[id]` (individual articles)
+- **Repository**: `/content` (browse all content)
 
 ## Getting Started
 
@@ -233,6 +300,9 @@ npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
+npm run content:upload  # Upload content from IDEAS/READY
+npm run db:setup     # Set up database schema
+npm run db:migrate   # Migrate content to database
 ```
 
 ## Content Reference
@@ -250,7 +320,31 @@ npm run lint         # Run ESLint
 4. **Flow**: Always connect back to flow state benefits
 5. **Brevity**: Keep descriptions concise and scannable
 
-## Recent Design Improvements
+## Recent Major Updates
+
+### Complete Content Management System (August 2025)
+
+#### Content Creation & Publication Pipeline
+- **Standardized Templates**: LEARN and PRACTICE content formats with scientific backing requirements
+- **Quality Workflow**: 5-phase process from research to publication with automated validation
+- **Pinned Content**: Definitive guides for each flow key with priority display system
+- **Individual Articles**: Full content pages with navigation, breadcrumbs, and proper SEO
+- **Content Repository**: Centralized browsing with filtering and search capabilities
+- **Database Ready**: Complete schema and migration system for unlimited content scaling
+
+#### Technical Implementation
+- **Routing System**: `/content/[id]` for individual articles with static generation
+- **Markdown Rendering**: Custom parser with typography optimization for readability
+- **Navigation Integration**: Seamless flow from framework → dimension → key → content
+- **Click-Through Experience**: Articles are fully clickable and readable with proper back navigation
+- **Build Optimization**: Next.js 15 compatibility with async params and production-ready deployment
+
+#### Content Infrastructure Achievements
+- **Templates Created**: Standardized formats ensuring consistency and quality
+- **Workflow Documented**: Complete process in `/IDEAS/CONTENT-CREATION-WORKFLOW.md`
+- **Database Schema**: Production-ready structure supporting metadata, relationships, and analytics
+- **First Definitive Content**: "Tuned Emotions: The Definitive Guide" as model implementation
+- **Automated Pipeline**: Content upload system from IDEAS/READY to live deployment
 
 ### Major UI/UX Redesign (August 2025)
 
@@ -319,10 +413,13 @@ Multiple tested versions of core messaging:
 ## Future Development
 
 ### Planned Features
-- Blog/content management system
-- User accounts and progress tracking
-- Interactive flow assessments
-- Community features
+- ✅ **Content Management System** (Completed August 2025)
+- **Database Migration**: Switch from hardcoded to dynamic content storage
+- **User Accounts**: Progress tracking and personalized content recommendations
+- **Interactive Assessments**: Flow state evaluations and dimension scoring
+- **Community Features**: Content sharing and discussion capabilities
+- **Advanced Analytics**: Content performance and user engagement tracking
+- **Mobile App**: Native iOS/Android versions of the content system
 
 ### Architecture Considerations
 - Component-based design for easy updates
@@ -331,13 +428,22 @@ Multiple tested versions of core messaging:
 - Responsive design for all devices
 
 ### Maintenance Notes
-- Brand colors are centrally managed
-- Key numbering is automatic and consistent
-- Content updates should maintain benefit-driven focus
-- Always test on both local and production environments
+- **Brand Colors**: Centrally managed in `framework.ts`
+- **Key Numbering**: Automatic and consistent across all 12 flow keys
+- **Content Standards**: Maintain benefit-driven focus and scientific backing
+- **Testing**: Always verify on both local and production environments
+- **Content Quality**: Use templates and workflow for consistency
+- **Database Ready**: Infrastructure prepared for content scaling
+
+### Current Content Status
+- **Definitive Tuned Emotions Guide**: ✅ Live and clickable
+- **Content Management System**: ✅ Fully operational
+- **Templates & Workflow**: ✅ Complete and documented
+- **Database Infrastructure**: ✅ Ready for migration
+- **Article Navigation**: ✅ Full click-through experience
 
 ---
 
 *Last Updated: August 2025*  
-*Project Status: Active Development - Interactive Web Application*  
+*Project Status: Active Development - Content Management System Complete*  
 *Repository: https://github.com/alxmrtl/fourflowos*
