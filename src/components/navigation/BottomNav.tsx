@@ -24,11 +24,11 @@ export default function BottomNav() {
           <Link
             key={dimension.id}
             href={getDimensionPath(dimension.id)}
-            className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
-              isActive(getDimensionPath(dimension.id)) ? 'bg-gray-100' : 'hover:bg-gray-50'
+            className={`flex flex-col items-center p-2 rounded-lg transition-all duration-200 touch-manipulation active:scale-95 ${
+              isActive(getDimensionPath(dimension.id)) ? 'bg-gray-100 shadow-sm' : 'hover:bg-gray-50 active:bg-gray-100'
             }`}
           >
-            <div className="w-8 h-8 relative mb-1">
+            <div className="w-8 h-8 relative mb-1 transition-transform duration-150 group-active:scale-110">
               <Image
                 src={dimension.icon}
                 alt={dimension.name}

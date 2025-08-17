@@ -35,10 +35,10 @@ export default function BottomKeysNav({ currentDimension, currentKey }: BottomKe
               <Link
                 key={key.id}
                 href={`/dimension/${key.dimension}/key/${key.id}`}
-                className={`p-1 rounded transition-colors border ${
+                className={`p-1 rounded transition-all duration-150 border touch-manipulation active:scale-110 ${
                   isKeyActive(key.id) || (isDimensionActive(key.dimension) && !currentKey)
-                    ? 'bg-white border-gray-300'
-                    : 'hover:bg-white border-transparent'
+                    ? 'bg-white border-gray-300 shadow-sm'
+                    : 'hover:bg-white hover:shadow-sm border-transparent active:bg-white'
                 }`}
                 title={key.name}
                 style={{
@@ -47,7 +47,7 @@ export default function BottomKeysNav({ currentDimension, currentKey }: BottomKe
                     : 'white'
                 }}
               >
-                <div className="w-4 h-4 relative">
+                <div className="w-4 h-4 relative transition-transform duration-100 group-active:scale-125">
                   <Image
                     src={key.icon}
                     alt={key.name}

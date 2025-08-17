@@ -8,7 +8,7 @@ export default function TopBar() {
   return (
     <header className="bg-[#333333] shadow-sm">
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+        <Link href="/" className="flex items-center hover:opacity-80 transition-all duration-200 active:scale-95 touch-manipulation">
           <div className="h-16 relative flex items-center">
             <Image
               src="/assets/FourFlowOS - Banner.png"

@@ -43,7 +43,7 @@ export default function FrameworkPage() {
                 <Link 
                   key={dimension.id}
                   href={getDimensionPath(dimension.id)}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 group h-36 w-full"
+                  className="bg-white rounded-lg shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] active:shadow-md transition-all duration-200 p-4 group h-36 w-full touch-manipulation transform hover:-translate-y-1"
                   style={{
                     borderLeft: `4px solid ${dimension.color}`,
                     borderTop: `1px solid ${dimension.color}20`,
