@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import NavigationWrapper from "@/components/navigation/NavigationWrapper";
+import PageTransition from "@/components/PageTransition";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,7 +35,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="min-h-screen bg-gray-50 pb-40">
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </div>
         <NavigationWrapper />
       </body>

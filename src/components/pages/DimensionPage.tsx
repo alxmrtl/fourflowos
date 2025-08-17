@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { DIMENSIONS } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
@@ -116,7 +117,13 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 py-4 min-h-screen flex flex-col">
         {/* Compact Dimension Header */}
-        <div className="rounded-lg shadow-sm p-4 mb-4 flex-shrink-0" style={{ backgroundColor: dimensionData.color }}>
+        <motion.div 
+          className="rounded-lg shadow-sm p-4 mb-4 flex-shrink-0" 
+          style={{ backgroundColor: dimensionData.color }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 relative flex-shrink-0">
               <Image
@@ -135,24 +142,33 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Three Key Sections */}
         <div className="grid grid-cols-1 gap-2">
-          {dimensionData.keys.map((key) => {
+          {dimensionData.keys.map((key, index) => {
             const keyInfo = getKeyDisplayInfo(key.id);
             return (
-              <Link
+              <motion.div
                 key={key.id}
-                href={getKeyPath(key.id)}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 px-3 group flex items-start gap-3"
-                style={{ 
-                  borderLeft: `4px solid ${dimensionData.color}`,
-                  borderTop: `1px solid ${dimensionData.color}20`,
-                  borderRight: `1px solid ${dimensionData.color}20`,
-                  borderBottom: `1px solid ${dimensionData.color}20`
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ 
+                  duration: 0.3, 
+                  delay: index * 0.1,
+                  ease: 'easeOut'
                 }}
               >
+                <Link
+                  href={getKeyPath(key.id)}
+                  className="bg-white rounded-lg shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-300 py-1.5 px-3 group flex items-start gap-3 block touch-manipulation"
+                  style={{ 
+                    borderLeft: `4px solid ${dimensionData.color}`,
+                    borderTop: `1px solid ${dimensionData.color}20`,
+                    borderRight: `1px solid ${dimensionData.color}20`,
+                    borderBottom: `1px solid ${dimensionData.color}20`
+                  }}
+                >
                 {/* Key Icon */}
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
@@ -180,7 +196,8 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                 <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-              </Link>
+                </Link>
+              </motion.div>
             );
           })}
         </div>

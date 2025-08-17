@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { DIMENSIONS } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
@@ -17,7 +18,12 @@ export default function FrameworkPage() {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-2 h-screen flex flex-col">
         {/* Header Box */}
-        <div className="bg-[#333333] rounded-xl shadow-md p-6 mb-4 text-left flex items-center">
+        <motion.div 
+          className="bg-[#333333] rounded-xl shadow-md p-6 mb-4 text-left flex items-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <div>
             <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
               Find Your Flow
@@ -26,12 +32,12 @@ export default function FrameworkPage() {
               Stop forcing focus. Start aligning the four pieces that create it naturally.
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Four Dimensions Grid */}
         <div className="flex-1">
           <div className="grid grid-cols-2 gap-4 w-full">
-            {Object.values(DIMENSIONS).map((dimension) => {
+            {Object.values(DIMENSIONS).map((dimension, index) => {
               const descriptors = {
                 self: 'Inner Mastery',
                 space: 'Environment Design', 
@@ -40,17 +46,26 @@ export default function FrameworkPage() {
               };
               
               return (
-                <Link 
+                <motion.div
                   key={dimension.id}
-                  href={getDimensionPath(dimension.id)}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] active:shadow-md transition-all duration-200 p-4 group h-36 w-full touch-manipulation transform hover:-translate-y-1"
-                  style={{
-                    borderLeft: `4px solid ${dimension.color}`,
-                    borderTop: `1px solid ${dimension.color}20`,
-                    borderRight: `1px solid ${dimension.color}20`,
-                    borderBottom: `1px solid ${dimension.color}20`
+                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ 
+                    duration: 0.4, 
+                    delay: index * 0.1,
+                    ease: 'easeOut'
                   }}
                 >
+                  <Link 
+                    href={getDimensionPath(dimension.id)}
+                    className="bg-white rounded-lg shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] active:shadow-md transition-all duration-200 p-4 group h-36 w-full touch-manipulation transform hover:-translate-y-1 block"
+                    style={{
+                      borderLeft: `4px solid ${dimension.color}`,
+                      borderTop: `1px solid ${dimension.color}20`,
+                      borderRight: `1px solid ${dimension.color}20`,
+                      borderBottom: `1px solid ${dimension.color}20`
+                    }}
+                  >
                   {/* Top Section: Logo and Descriptor */}
                   <div className="flex items-center gap-3 mb-3">
                     {/* Dimension Icon - Top Left */}
@@ -89,7 +104,8 @@ export default function FrameworkPage() {
                       </div>
                     ))}
                   </div>
-                </Link>
+                  </Link>
+                </motion.div>
               );
             })}
           </div>
