@@ -237,7 +237,7 @@ Tuned Emotions gives you the emotional flexibility to handle mental uncertainty.
   {
     id: 'intentional-space-essential',
     title: 'Intentional Space',
-    description: 'Your environment as a flow amplifier—removing friction and creating the perfect conditions for deep work',
+    description: 'Your environment as a flow amplifier - removing friction and creating the perfect conditions for deep work',
     content: `Your environment is working against you or for you—there's no neutral.
 
 Every cluttered surface, every uncomfortable chair, every time you have to hunt for the right tool is stealing a little bit of your focus. But when you design your space intentionally, it becomes like having a personal assistant that anticipates your every need.
@@ -315,7 +315,7 @@ Focused Body needs ergonomic support from your space design. Tuned Emotions bene
   {
     id: 'optimized-tools-essential',
     title: 'Optimized Tools',
-    description: 'The right tools configured right—extending your capabilities without getting in your way',
+    description: 'The right tools configured right - extending your capabilities without getting in your way',
     content: `The best tools disappear while you work.
 
 Think about a master craftsman with a well-worn hammer—they're not thinking about the tool, they're thinking about the work. The hammer becomes an extension of their intention. That's what optimized tools do: they amplify your capability while staying invisible.
@@ -393,7 +393,7 @@ Intentional Space provides the physical organization that supports your optimize
   {
     id: 'feedback-systems-essential',
     title: 'Feedback Systems',
-    description: 'Real-time signals that tell you if you're winning—keeping you engaged and on track',
+    description: 'Real-time signals that tell you if you\'re winning - keeping you engaged and on track',
     content: `Without feedback, you're flying blind.
 
 Imagine playing a video game where the score never updates and you can't tell if you're winning or losing. You'd lose interest fast. Yet most people work in exactly this situation—no clear signals about progress, quality, or direction.
@@ -471,7 +471,7 @@ Tuned Emotions uses your feelings as internal feedback about performance. Optimi
   {
     id: 'grounding-values-essential',
     title: 'Grounding Values',
-    description: 'Your inner compass—the core principles that keep you steady and motivated when everything else shifts',
+    description: 'Your inner compass - the core principles that keep you steady and motivated when everything else shifts',
     content: `Your values are like a mountain in a storm—everything else might shift, but they remain steady.
 
 Most people know what they're supposed to value (success, family, health), but they've never actually identified what they genuinely care about deep down. When work gets hard or goals feel distant, they have nothing solid to stand on.
@@ -549,7 +549,7 @@ Worthy Mission provides specific expression of your values through purposeful ac
   {
     id: 'ignited-curiosity-essential',
     title: 'Ignited Curiosity',
-    description: 'The fuel that turns learning from a chore into an adventure—keeping you engaged and growing',
+    description: 'The fuel that turns learning from a chore into an adventure - keeping you engaged and growing',
     content: `Curiosity is the difference between feeling drained and feeling energized by your work.
 
 When you're genuinely curious about something, time disappears. You dig deeper not because you have to, but because you want to know what you'll find. But when curiosity dies, even simple tasks feel like pushing through mud.
@@ -705,7 +705,7 @@ Grounding Values provides the foundation that makes your vision authentic and su
   {
     id: 'empowered-role-essential',
     title: 'Empowered Role',
-    description: 'Taking ownership of your part in the bigger story—acting from choice rather than obligation',
+    description: 'Taking ownership of your part in the bigger story - acting from choice rather than obligation',
     content: `The difference between feeling powerful and feeling powerless is the story you tell yourself about your role.
 
 Some people see themselves as victims of circumstance, waiting for permission or rescue. Others see themselves as the main character of their own story, responsible for their choices and capable of changing their situation. The second group gets better results and feels more engaged with their work.
@@ -783,7 +783,7 @@ Grounding Values gives you the foundation to act from principle rather than pres
   {
     id: 'generative-story-essential',
     title: 'Generative Story',
-    description: 'The narrative that creates possibility instead of limitation—turning setbacks into setups',
+    description: 'The narrative that creates possibility instead of limitation - turning setbacks into setups',
     content: `The story you tell yourself about your life is the most important story you'll ever tell.
 
 Some people have stories that limit them: "I'm not creative," "Things never work out for me," "I always struggle with this." Others have stories that empower them: "I'm learning to get better at this," "This setback is teaching me something important," "I haven't figured it out yet."
