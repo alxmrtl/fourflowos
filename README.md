@@ -519,3 +519,56 @@ Multiple tested versions of core messaging:
 *Last Updated: August 2025*  
 *Project Status: Production Ready - Cross-Platform Responsive Design Complete*  
 *Repository: https://github.com/alxmrtl/fourflowos*
+## Pinned Essential Articles
+
+### Currently Deployed
+✅ **Tuned Emotions** (`/content/tuned-emotions-essential`) - Flow navigation through emotional intelligence
+
+### Ready for Deployment (Saved in RESEARCH/PINNED_ESSENTIAL_ARTICLES/)
+🔄 **Focused Body** - Embodied presence for sustained attention
+🔄 **Open Mind** - Cognitive flexibility and mental adaptability  
+🔄 **Intentional Space** - Environmental design for automatic flow
+🔄 **Optimized Tools** - Frictionless interfaces and systems
+🔄 **Feedback Systems** - Real-time performance calibration
+🔄 **Grounding Values** - Intrinsic motivation through core principles
+🔄 **Ignited Curiosity** - Sustained engagement through active interest
+🔄 **Visualized Vision** - Future-focused direction and motivation
+🔄 **Empowered Role** - Active agency in shaping circumstances
+🔄 **Generative Story** - Empowering personal narratives
+🔄 **Worthy Mission** - Meaningful objectives beyond self-interest
+
+### Article Structure
+Each essential article follows a consistent 6-section format:
+1. **Essential Function** - Core purpose and mechanism
+2. **Flow Impact** - Neuroscience research and flow state connection
+3. **In Action** - Practical implementation steps
+4. **Observable Patterns** - Recognition indicators (present/absent)
+5. **Strengthening Protocol** - Development exercises and practices
+6. **Related Flow Keys** - Cross-dimensional connections and links
+
+## Pinned Essential Articles
+
+### Currently Deployed
+✅ **Tuned Emotions** (`/content/tuned-emotions-essential`) - Flow navigation through emotional intelligence
+
+### Ready for Deployment (Saved in RESEARCH/PINNED_ESSENTIAL_ARTICLES/)
+🔄 **Focused Body** - Embodied presence for sustained attention
+🔄 **Open Mind** - Cognitive flexibility and mental adaptability  
+🔄 **Intentional Space** - Environmental design for automatic flow
+🔄 **Optimized Tools** - Frictionless interfaces and systems
+🔄 **Feedback Systems** - Real-time performance calibration
+🔄 **Grounding Values** - Intrinsic motivation through core principles
+🔄 **Ignited Curiosity** - Sustained engagement through active interest
+🔄 **Visualized Vision** - Future-focused direction and motivation
+🔄 **Empowered Role** - Active agency in shaping circumstances
+🔄 **Generative Story** - Empowering personal narratives
+🔄 **Worthy Mission** - Meaningful objectives beyond self-interest
+
+### Article Structure
+Each essential article follows a consistent 6-section format:
+1. **Essential Function** - Core purpose and mechanism
+2. **Flow Impact** - Neuroscience research and flow state connection
+3. **In Action** - Practical implementation steps
+4. **Observable Patterns** - Recognition indicators (present/absent)
+5. **Strengthening Protocol** - Development exercises and practices
+6. **Related Flow Keys** - Cross-dimensional connections and links
