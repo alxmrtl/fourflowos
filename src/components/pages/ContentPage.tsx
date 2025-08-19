@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import TopBar from '@/components/navigation/TopBar';
 import { getContentById } from '@/data/content';
 import { ContentItem } from '@/types/framework';
-import { DIMENSIONS } from '@/data/framework';
+import { DIMENSIONS, KEYS, MAIN_LOGO } from '@/data/framework';
 
 interface ContentPageProps {
   contentId: string;
@@ -60,6 +61,7 @@ export default function ContentPage({ contentId }: ContentPageProps) {
   }
 
   const dimensionData = DIMENSIONS[content.dimension];
+  const keyData = KEYS[content.key];
   const estimatedTime = content.read_time || content.estimated_duration || 5;
 
   return (
@@ -70,24 +72,61 @@ export default function ContentPage({ contentId }: ContentPageProps) {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-6 py-8">
           {/* Breadcrumbs */}
-          <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-            <Link href="/dimension" className="hover:text-gray-700">Framework</Link>
-            <span>→</span>
+          <nav className="flex items-center space-x-3 mb-8">
+            <Link 
+              href="/dimension" 
+              className="flex items-center hover:opacity-80 transition-opacity"
+              title="FourFlowOS Framework"
+            >
+              <div className="relative w-8 h-8">
+                <Image
+                  src={MAIN_LOGO}
+                  alt="FourFlowOS"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </Link>
+            
+            <span className="text-gray-400 text-lg">→</span>
+            
             <Link 
               href={`/dimension/${content.dimension}`}
-              className="hover:text-gray-700 capitalize"
+              className="flex items-center hover:opacity-80 transition-opacity"
+              title={`${dimensionData.name} Dimension`}
             >
-              {content.dimension}
+              <div className="relative w-7 h-7">
+                <Image
+                  src={dimensionData.sectionLogo}
+                  alt={dimensionData.name}
+                  fill
+                  className="object-contain"
+                />
+              </div>
             </Link>
-            <span>→</span>
+            
+            <span className="text-gray-400 text-lg">→</span>
+            
             <Link 
               href={`/dimension/${content.dimension}/key/${content.key}`}
-              className="hover:text-gray-700"
+              className="flex items-center hover:opacity-80 transition-opacity"
+              title={keyData.name}
             >
-              {content.key.replace('-', ' ')}
+              <div className="relative w-6 h-6">
+                <Image
+                  src={keyData.icon}
+                  alt={keyData.name}
+                  fill
+                  className="object-contain"
+                />
+              </div>
             </Link>
-            <span>→</span>
-            <span className="text-gray-900">{content.type}</span>
+            
+            <span className="text-gray-400 text-lg">→</span>
+            
+            <span className="text-gray-700 font-medium text-sm truncate max-w-xs">
+              {content.title}
+            </span>
           </nav>
 
           {/* Content Header */}
@@ -133,9 +172,9 @@ export default function ContentPage({ contentId }: ContentPageProps) {
 
       {/* Content Body */}
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <article className="prose prose-lg max-w-none">
+        <article className="max-w-none">
           <div 
-            className="prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-p:text-gray-700 prose-p:leading-relaxed prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-li:my-1"
+            className="content-typography"
             dangerouslySetInnerHTML={{ 
               __html: formatMarkdownContent(content.content) 
             }} 
@@ -160,13 +199,29 @@ export default function ContentPage({ contentId }: ContentPageProps) {
         )}
 
         {/* Footer Navigation */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          <Link 
-            href={`/dimension/${content.dimension}/key/${content.key}`}
-            className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            ← Back to {content.key.replace('-', ' ')} content
-          </Link>
+        <div className="mt-16 pt-8 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <Link 
+              href={`/dimension/${content.dimension}/key/${content.key}`}
+              className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors group"
+            >
+              <svg className="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to {keyData.name} content
+            </Link>
+            
+            <div className="flex items-center space-x-4 text-sm text-gray-500">
+              {content.read_time && (
+                <span>{content.read_time} min read</span>
+              )}
+              {content.difficulty && (
+                <span className="px-2 py-1 bg-gray-100 rounded text-xs">
+                  {content.difficulty}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -175,35 +230,46 @@ export default function ContentPage({ contentId }: ContentPageProps) {
 
 // Helper function to format markdown content for display
 function formatMarkdownContent(content: string): string {
-  // Simple markdown to HTML conversion
+  // Enhanced markdown to HTML conversion with better formatting
   let html = content
-    // Convert headers
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    // Convert headers with proper spacing and styling
+    .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold text-gray-900 mt-8 mb-4 leading-tight">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold text-gray-900 mt-12 mb-6 leading-tight">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-bold text-gray-900 mt-16 mb-8 leading-tight">$1</h1>')
     
-    // Convert bold
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Convert bold with better styling
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
     
-    // Convert bullet points (simple approach)
-    .replace(/^- (.*$)/gim, '<li>$1</li>')
+    // Convert italic
+    .replace(/\*(.*?)\*/g, '<em class="italic text-gray-800">$1</em>')
+    
+    // Convert inline code
+    .replace(/`(.*?)`/g, '<code class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono">$1</code>')
+    
+    // Convert bullet points
+    .replace(/^- (.*$)/gim, '<li class="text-gray-800 leading-relaxed">$1</li>')
     
     // Convert numbered lists
-    .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+    .replace(/^\d+\. (.*$)/gim, '<li class="text-gray-800 leading-relaxed">$1</li>')
     
-    // Convert paragraphs
+    // Split into paragraphs and format
     .split('\n\n')
     .map(paragraph => {
-      if (paragraph.trim().startsWith('<h') || paragraph.trim().startsWith('<li>')) {
-        return paragraph;
+      const trimmed = paragraph.trim();
+      if (!trimmed) return '';
+      
+      if (trimmed.startsWith('<h') || trimmed.startsWith('<li>')) {
+        return trimmed;
       }
-      return paragraph.trim() ? `<p>${paragraph.trim()}</p>` : '';
+      
+      // Regular paragraph
+      return `<p class="text-gray-800 leading-relaxed mb-6 text-base">${trimmed}</p>`;
     })
     .join('\n');
 
-  // Wrap consecutive <li> elements in <ul>
-  html = html.replace(/(<li>.*?<\/li>\s*)+/g, (match) => {
-    return `<ul>${match}</ul>`;
+  // Wrap consecutive <li> elements in styled lists
+  html = html.replace(/(<li[^>]*>.*?<\/li>\s*)+/g, (match) => {
+    return `<ul class="list-disc list-inside space-y-2 mb-6 ml-4">${match}</ul>`;
   });
 
   return html;
