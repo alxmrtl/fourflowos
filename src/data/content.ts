@@ -1006,7 +1006,6 @@ Your window of tolerance isn't fixed. With practice, it expands. What once felt 
     scientific_backing: true,
     flow_triggers: ['clear-goals', 'immediate-feedback', 'challenge-skills-balance'],
     target_outcomes: ['Better emotional regulation', 'Improved stress management', 'Enhanced flow accessibility'],
-    related_concepts: ['Focused Body', 'Feedback Systems'],
     meta_description: 'Learn about your window of tolerance - the optimal emotional zone where focus and flow become effortless. Discover how to recognize and stay within this sweet spot for peak performance.',
     keywords: ['window of tolerance', 'emotional regulation', 'nervous system', 'flow states', 'stress management', 'optimal arousal zone'],
     created_date: '2025-08-19'
@@ -1087,7 +1086,6 @@ Your body has been your wisest advisor all along. It's time to start consulting 
     scientific_backing: true,
     flow_triggers: ['embodied-presence', 'intuitive-decision-making'],
     target_outcomes: ['Better decision-making', 'Improved body awareness', 'Enhanced intuition'],
-    related_concepts: ['Tuned Emotions', 'Intentional Space'],
     meta_description: 'Discover how your body provides unconscious guidance for decision-making through somatic markers. Learn to access this ancient wisdom for better choices.',
     keywords: ['somatic markers', 'body wisdom', 'decision making', 'intuition', 'embodied cognition', 'gut feelings'],
     created_date: '2025-08-19'
