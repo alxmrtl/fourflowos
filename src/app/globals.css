@@ -23,4 +23,124 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+}
+
+html {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix iOS Safari viewport issues */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Prevent overscroll bounce on iOS */
+.no-scroll-bounce {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Enhanced content typography */
+.content-typography {
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+.content-typography h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.25;
+}
+
+.content-typography h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.3;
+}
+
+.content-typography h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.content-typography h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.content-typography p {
+  color: #374151;
+  margin-bottom: 1.5rem;
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+.content-typography ul {
+  margin-bottom: 1.5rem;
+  margin-left: 1rem;
+}
+
+.content-typography li {
+  color: #374151;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.content-typography strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.content-typography em {
+  color: #4B5563;
+  font-style: italic;
+}
+
+.content-typography code {
+  background-color: #F3F4F6;
+  color: #374151;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.content-typography blockquote {
+  border-left: 4px solid #E5E7EB;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: #6B7280;
+}
+
+/* First paragraph after headings gets reduced margin */
+.content-typography h1 + p,
+.content-typography h2 + p,
+.content-typography h3 + p,
+.content-typography h4 + p {
+  margin-top: 0;
 }

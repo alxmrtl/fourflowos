@@ -26,7 +26,6 @@ interface ContentMetadata {
   scientific_backing?: boolean;
   materials_needed?: string[];
   is_pinned?: boolean;
-  pinned_type?: 'learn' | 'practice' | 'both';
   pin_order?: number;
   flow_triggers?: string[];
   target_outcomes?: string[];
@@ -123,7 +122,6 @@ class ContentUploader {
       flow_triggers: metadata.flow_triggers,
       target_outcomes: metadata.target_outcomes,
       is_pinned: metadata.is_pinned,
-      pinned_type: metadata.pinned_type,
       pin_order: metadata.pin_order,
       meta_description: metadata.meta_description,
       keywords: metadata.keywords,

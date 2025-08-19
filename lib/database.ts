@@ -115,7 +115,6 @@ The ultimate goal is not emotional perfection but emotional partnership—a coll
         key: 'tuned-emotions' as const,
         // Extended fields for pinned content
         is_pinned: true,
-        pinned_type: 'learn' as const,
         pin_order: 1,
         difficulty: 'Beginner' as const,
         read_time: 12,
@@ -164,9 +163,9 @@ The ultimate goal is not emotional perfection but emotional partnership—a coll
         item.type === 'learn'
       )
       .sort((a, b) => {
-        // Pinned learn content first
-        const aPinned = a.is_pinned && (a.pinned_type === 'learn' || a.pinned_type === 'both');
-        const bPinned = b.is_pinned && (b.pinned_type === 'learn' || b.pinned_type === 'both');
+        // Pinned content first
+        const aPinned = a.is_pinned;
+        const bPinned = b.is_pinned;
         
         if (aPinned && !bPinned) return -1;
         if (!aPinned && bPinned) return 1;
@@ -185,9 +184,9 @@ The ultimate goal is not emotional perfection but emotional partnership—a coll
         item.type === 'practice'
       )
       .sort((a, b) => {
-        // Pinned practice content first
-        const aPinned = a.is_pinned && (a.pinned_type === 'practice' || a.pinned_type === 'both');
-        const bPinned = b.is_pinned && (b.pinned_type === 'practice' || b.pinned_type === 'both');
+        // Pinned content first
+        const aPinned = a.is_pinned;
+        const bPinned = b.is_pinned;
         
         if (aPinned && !bPinned) return -1;
         if (!aPinned && bPinned) return 1;

@@ -34,7 +34,6 @@ CREATE TABLE IF NOT EXISTS fourflow_content (
   
   -- Pinned content functionality
   is_pinned BOOLEAN DEFAULT false, -- Pin to top of key page
-  pinned_type ENUM('learn', 'practice', 'both') NULL, -- Which tab(s) to pin in
   pin_order INTEGER DEFAULT 0, -- Order for multiple pinned items
   
   -- Repository management
@@ -53,7 +52,7 @@ CREATE TABLE IF NOT EXISTS fourflow_content (
   INDEX idx_key_id (key_id),
   INDEX idx_dimension_key (dimension, key_id),
   INDEX idx_status (status),
-  INDEX idx_pinned (is_pinned, pinned_type, pin_order),
+  INDEX idx_pinned (is_pinned, pin_order),
   FULLTEXT INDEX ft_content (title, description)
 );
 
@@ -77,7 +76,7 @@ INSERT INTO fourflow_content (
   flow_triggers,
   target_outcomes,
   is_pinned,
-  pinned_type,
+  -- pinned_type removed with LEARN/PRACTICE merge,
   pin_order,
   meta_description,
   keywords
