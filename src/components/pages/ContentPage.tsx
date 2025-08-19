@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import TopBar from '@/components/navigation/TopBar';
-import { getContentById } from '@/data/content';
+import { getContentById, getContentByDimension } from '@/data/content';
 import { ContentItem } from '@/types/framework';
 import { DIMENSIONS, KEYS, MAIN_LOGO } from '@/data/framework';
 
@@ -14,6 +14,7 @@ interface ContentPageProps {
 
 export default function ContentPage({ contentId }: ContentPageProps) {
   const [content, setContent] = useState<ContentItem | null>(null);
+  const [relatedArticles, setRelatedArticles] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +22,15 @@ export default function ContentPage({ contentId }: ContentPageProps) {
       try {
         const contentItem = getContentById(contentId);
         setContent(contentItem);
+        
+        if (contentItem) {
+          // Get related articles from the same dimension, excluding current article
+          const dimensionContent = getContentByDimension(contentItem.dimension);
+          const related = dimensionContent
+            .filter(item => item.id !== contentItem.id)
+            .slice(0, 3); // Limit to 3 related articles
+          setRelatedArticles(related);
+        }
       } catch (error) {
         console.error('Error loading content:', error);
       } finally {
@@ -181,19 +191,58 @@ export default function ContentPage({ contentId }: ContentPageProps) {
           />
         </article>
 
-        {/* Tags */}
-        {content.tags && content.tags.length > 0 && (
+        {/* Related Articles */}
+        {relatedArticles.length > 0 && (
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <h3 className="text-sm font-medium text-gray-900 mb-3">Related Topics</h3>
-            <div className="flex flex-wrap gap-2">
-              {content.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-                >
-                  {tag.replace('-', ' ')}
-                </span>
-              ))}
+            <h3 className="text-lg font-semibold text-gray-900 mb-6">Related Flow Keys</h3>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {relatedArticles.map((article) => {
+                const articleDimension = DIMENSIONS[article.dimension];
+                const articleKey = KEYS[article.key];
+                
+                return (
+                  <Link
+                    key={article.id}
+                    href={`/content/${article.id}`}
+                    className="block p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 group"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="relative w-8 h-8 flex-shrink-0">
+                        <Image
+                          src={articleKey.icon}
+                          alt={articleKey.name}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-gray-900 group-hover:text-gray-700 transition-colors text-sm leading-tight">
+                          {article.title}
+                        </h4>
+                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                          {article.description}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span 
+                            className="text-xs px-2 py-1 rounded font-medium"
+                            style={{ 
+                              backgroundColor: `${articleDimension.color}20`,
+                              color: articleDimension.color 
+                            }}
+                          >
+                            {articleDimension.name}
+                          </span>
+                          {article.read_time && (
+                            <span className="text-xs text-gray-500">
+                              {article.read_time} min
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}
