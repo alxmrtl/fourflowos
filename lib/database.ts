@@ -115,11 +115,11 @@ The ultimate goal is not emotional perfection but emotional partnership—a coll
         key: 'tuned-emotions' as const,
         // Extended fields for pinned content
         is_pinned: true,
-        pinned_type: 'learn' as const,
         pin_order: 1,
         difficulty: 'Beginner' as const,
         read_time: 12,
-        scientific_backing: true
+        scientific_backing: true,
+        created_date: '2024-01-15'
       }
     ];
   }
@@ -152,7 +152,10 @@ The ultimate goal is not emotional perfection but emotional partnership—a coll
         if (a.is_pinned && b.is_pinned) {
           return (a.pin_order || 0) - (b.pin_order || 0);
         }
-        return 0;
+        // For non-pinned content, sort by created date (newest first)
+        const aDate = new Date(a.created_date || '2024-01-01');
+        const bDate = new Date(b.created_date || '2024-01-01');
+        return bDate.getTime() - aDate.getTime();
       });
   }
 
@@ -164,16 +167,16 @@ The ultimate goal is not emotional perfection but emotional partnership—a coll
         item.type === 'learn'
       )
       .sort((a, b) => {
-        // Pinned learn content first
-        const aPinned = a.is_pinned && (a.pinned_type === 'learn' || a.pinned_type === 'both');
-        const bPinned = b.is_pinned && (b.pinned_type === 'learn' || b.pinned_type === 'both');
-        
-        if (aPinned && !bPinned) return -1;
-        if (!aPinned && bPinned) return 1;
-        if (aPinned && bPinned) {
+        // Pinned content first
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
+        if (a.is_pinned && b.is_pinned) {
           return (a.pin_order || 0) - (b.pin_order || 0);
         }
-        return 0;
+        // For non-pinned content, sort by created date (newest first)
+        const aDate = new Date(a.created_date || '2024-01-01');
+        const bDate = new Date(b.created_date || '2024-01-01');
+        return bDate.getTime() - aDate.getTime();
       });
   }
 
@@ -185,16 +188,16 @@ The ultimate goal is not emotional perfection but emotional partnership—a coll
         item.type === 'practice'
       )
       .sort((a, b) => {
-        // Pinned practice content first
-        const aPinned = a.is_pinned && (a.pinned_type === 'practice' || a.pinned_type === 'both');
-        const bPinned = b.is_pinned && (b.pinned_type === 'practice' || b.pinned_type === 'both');
-        
-        if (aPinned && !bPinned) return -1;
-        if (!aPinned && bPinned) return 1;
-        if (aPinned && bPinned) {
+        // Pinned content first
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
+        if (a.is_pinned && b.is_pinned) {
           return (a.pin_order || 0) - (b.pin_order || 0);
         }
-        return 0;
+        // For non-pinned content, sort by created date (newest first)
+        const aDate = new Date(a.created_date || '2024-01-01');
+        const bDate = new Date(b.created_date || '2024-01-01');
+        return bDate.getTime() - aDate.getTime();
       });
   }
 

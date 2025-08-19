@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { KEYS, DIMENSIONS } from '@/data/framework';
-import { getLearnContent, getPracticeContent } from '@/data/content';
-import { KeyType, DimensionType } from '@/types/framework';
+import { getContentByDimensionAndKey } from '@/data/content';
+import { KeyType, DimensionType, ContentItem } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
 
 interface KeyPageProps {
@@ -80,18 +80,57 @@ const getKeyDisplayInfo = (keyId: string) => {
 };
 
 export default function KeyPage({ keyId, dimension }: KeyPageProps) {
-  const [activeTab, setActiveTab] = useState<'learn' | 'practice'>('learn');
+  const [content, setContent] = useState<ContentItem[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const keyData = KEYS[keyId];
   const dimensionData = DIMENSIONS[dimension];
   const keyInfo = getKeyDisplayInfo(keyId);
   
+  useEffect(() => {
+    async function loadContent() {
+      try {
+        const keyContent = await getContentByDimensionAndKey(dimension, keyId);
+        // Sort: pinned first, then by created date (newest first)
+        const sortedContent = keyContent.sort((a, b) => {
+          if (a.is_pinned && !b.is_pinned) return -1;
+          if (!a.is_pinned && b.is_pinned) return 1;
+          if (a.is_pinned && b.is_pinned) {
+            return (a.pin_order || 0) - (b.pin_order || 0);
+          }
+          // For non-pinned content, sort by created date (newest first)
+          const aDate = new Date(a.created_date || '2024-01-01');
+          const bDate = new Date(b.created_date || '2024-01-01');
+          return bDate.getTime() - aDate.getTime();
+        });
+        setContent(sortedContent);
+      } catch (error) {
+        console.error('Error loading content:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadContent();
+  }, [dimension, keyId]);
+  
   if (!keyData || !dimensionData) {
     return <div>Key not found</div>;
   }
 
-  const learnContent = getLearnContent(dimension, keyId);
-  const practiceContent = getPracticeContent(dimension, keyId);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <TopBar />
+        <main className="max-w-6xl mx-auto px-2 lg:px-8 py-4 lg:py-6">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading content...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -128,166 +167,137 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
           </div>
         </div>
 
-        {/* Learn/Practice Toggle */}
+        {/* Content Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-          <div className="flex border-b border-gray-200">
-            <button
-              onClick={() => setActiveTab('learn')}
-              className={`flex-1 px-6 lg:px-8 py-4 lg:py-5 text-center font-medium transition-colors ${
-                activeTab === 'learn'
-                  ? 'text-gray-900 border-b-2 border-gray-900 bg-gray-50'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                <span className="text-sm lg:text-base">Learn</span>
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveTab('practice')}
-              className={`flex-1 px-6 lg:px-8 py-4 lg:py-5 text-center font-medium transition-colors ${
-                activeTab === 'practice'
-                  ? 'text-gray-900 border-b-2 border-gray-900 bg-gray-50'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                <span className="text-sm lg:text-base">Practice</span>
-              </div>
-            </button>
+          <div className="px-6 lg:px-8 py-4 lg:py-5 border-b border-gray-200">
+            <h2 className="text-lg lg:text-xl font-semibold text-gray-900">Content for {keyInfo.name}</h2>
+            <p className="text-sm text-gray-600 mt-1">Essential articles and practices to master this flow key</p>
           </div>
 
           {/* Content List */}
           <div className="p-6 lg:p-8">
-            {activeTab === 'learn' && (
-              <div className="space-y-2 lg:space-y-4">
-                {learnContent.length > 0 ? (
-                  learnContent.map((item) => (
+            <div className="space-y-3 lg:space-y-4">
+              {content.length > 0 ? (
+                content.map((item) => {
+                  const isPinned = item.is_pinned;
+                  const isLearn = item.type === 'learn';
+                  
+                  return (
                     <Link
                       key={item.id}
                       href={`/content/${item.id}`}
-                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 lg:py-3 px-3 lg:px-4 group flex items-start gap-3 lg:gap-4"
+                      className={`block rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 lg:p-6 group ${
+                        isPinned 
+                          ? 'bg-gradient-to-r from-white to-gray-50' 
+                          : 'bg-white'
+                      }`}
                       style={{ 
-                        borderLeft: `4px solid ${dimensionData.color}`,
+                        borderLeft: isPinned 
+                          ? `6px solid ${dimensionData.color}` 
+                          : `3px solid ${dimensionData.color}`,
                         borderTop: `1px solid ${dimensionData.color}20`,
                         borderRight: `1px solid ${dimensionData.color}20`,
-                        borderBottom: `1px solid ${dimensionData.color}20`
+                        borderBottom: `1px solid ${dimensionData.color}20`,
+                        boxShadow: isPinned 
+                          ? `0 4px 6px -1px ${dimensionData.color}15, 0 2px 4px -1px ${dimensionData.color}06`
+                          : undefined
                       }}
                     >
-                      {/* Content Image Placeholder */}
-                      <div className="w-12 h-12 lg:w-14 lg:h-14 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
-                        <svg className="w-6 h-6 lg:w-7 lg:h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      <div className="flex items-start gap-4">
+                        {/* Content Icon */}
+                        <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded flex-shrink-0 flex items-center justify-center ${
+                          isPinned ? 'bg-gradient-to-br from-yellow-100 to-orange-100' : 'bg-gray-100'
+                        }`}>
+                          {isPinned && (
+                            <svg className="w-6 h-6 lg:w-7 lg:h-7 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
+                          )}
+                          {!isPinned && (
+                            <svg className="w-6 h-6 lg:w-7 lg:h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              {isLearn ? (
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                              ) : (
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              )}
+                            </svg>
+                          )}
+                        </div>
+                        
+                        {/* Content Info */}
+                        <div className="flex-1">
+                          {isPinned && (
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                                Pinned Essential
+                              </span>
+                            </div>
+                          )}
+                          
+                          <h3 className={`font-bold text-gray-900 group-hover:text-gray-700 transition-colors leading-tight ${
+                            isPinned ? 'text-lg lg:text-xl mb-2' : 'text-base lg:text-lg mb-1'
+                          }`}>
+                            {item.title}
+                          </h3>
+                          
+                          {isPinned && item.description && (
+                            <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+                              {item.description}
+                            </p>
+                          )}
+                          
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span 
+                              className="text-xs lg:text-sm font-medium px-2 py-1 rounded"
+                              style={{ 
+                                backgroundColor: `${dimensionData.color}20`,
+                                color: dimensionData.color 
+                              }}
+                            >
+                              {dimensionData.name}
+                            </span>
+                            <span className="text-xs lg:text-sm text-gray-500">•</span>
+                            <span className="text-xs lg:text-sm text-gray-500">{keyInfo.name}</span>
+                            <span className="text-xs lg:text-sm text-gray-500">•</span>
+                            <span className={`text-xs lg:text-sm px-2 py-1 rounded ${
+                              isLearn 
+                                ? 'bg-blue-100 text-blue-700' 
+                                : 'bg-green-100 text-green-700'
+                            }`}>
+                              {isLearn ? 'Learn' : 'Practice'}
+                            </span>
+                            {item.read_time && (
+                              <>
+                                <span className="text-xs lg:text-sm text-gray-500">•</span>
+                                <span className="text-xs lg:text-sm text-gray-500">{item.read_time} min read</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Arrow */}
+                        <svg className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
-                      
-                      {/* Content Info */}
-                      <div className="flex-1">
-                        <h3 className="text-base lg:text-lg font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0 leading-tight">
-                          {item.title}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span 
-                            className="text-xs lg:text-sm font-medium px-2 py-1 rounded"
-                            style={{ 
-                              backgroundColor: `${dimensionData.color}20`,
-                              color: dimensionData.color 
-                            }}
-                          >
-                            {dimensionData.name}
-                          </span>
-                          <span className="text-xs lg:text-sm text-gray-500">•</span>
-                          <span className="text-xs lg:text-sm text-gray-500">{keyInfo.name}</span>
-                        </div>
-                      </div>
-
-                      {/* Arrow */}
-                      <svg className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
                     </Link>
-                  ))
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 mx-auto mb-4 text-gray-300">
-                      <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No learning content yet</h3>
-                    <p className="text-gray-600">Learning materials for this key will be added soon.</p>
+                  );
+                })
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 mx-auto mb-4 text-gray-300">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
                   </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'practice' && (
-              <div className="space-y-2 lg:space-y-4">
-                {practiceContent.length > 0 ? (
-                  practiceContent.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={`/content/${item.id}`}
-                      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 py-1.5 lg:py-3 px-3 lg:px-4 group flex items-start gap-3 lg:gap-4"
-                      style={{ 
-                        borderLeft: `4px solid ${dimensionData.color}`,
-                        borderTop: `1px solid ${dimensionData.color}20`,
-                        borderRight: `1px solid ${dimensionData.color}20`,
-                        borderBottom: `1px solid ${dimensionData.color}20`
-                      }}
-                    >
-                      {/* Content Image Placeholder */}
-                      <div className="w-12 h-12 lg:w-14 lg:h-14 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
-                        <svg className="w-6 h-6 lg:w-7 lg:h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                      </div>
-                      
-                      {/* Content Info */}
-                      <div className="flex-1">
-                        <h3 className="text-base lg:text-lg font-bold text-gray-900 group-hover:text-gray-700 transition-colors mb-0 leading-tight">
-                          {item.title}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span 
-                            className="text-xs lg:text-sm font-medium px-2 py-1 rounded"
-                            style={{ 
-                              backgroundColor: `${dimensionData.color}20`,
-                              color: dimensionData.color 
-                            }}
-                          >
-                            {dimensionData.name}
-                          </span>
-                          <span className="text-xs lg:text-sm text-gray-500">•</span>
-                          <span className="text-xs lg:text-sm text-gray-500">{keyInfo.name}</span>
-                        </div>
-                      </div>
-
-                      {/* Arrow */}
-                      <svg className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 mx-auto mb-4 text-gray-300">
-                      <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No practice content yet</h3>
-                    <p className="text-gray-600">Practice exercises for this key will be added soon.</p>
-                  </div>
-                )}
-              </div>
-            )}
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No content yet</h3>
+                  <p className="text-gray-600">Content for this key will be added soon.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>

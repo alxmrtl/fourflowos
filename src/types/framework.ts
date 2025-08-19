@@ -58,7 +58,6 @@ export interface ContentItem {
   
   // Pinned content fields
   is_pinned?: boolean;
-  pinned_type?: 'learn' | 'practice' | 'both';
   pin_order?: number;
 }
 

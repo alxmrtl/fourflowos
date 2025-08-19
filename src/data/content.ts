@@ -1,6 +1,6 @@
 import { ContentItem } from '@/types/framework';
 
-// This will be populated from the REFERENCES folder content
+// Content repository with mixed learn/practice articles, sorted by pinned status and date
 export const CONTENT_REPOSITORY: ContentItem[] = [
   // SELF - Tuned Emotions - PINNED DEFINITIVE CONTENT
   {
@@ -84,7 +84,12 @@ The ultimate goal is not emotional perfection but emotional partnership—a coll
     tags: ['emotions', 'flow-navigation', 'challenge-skills-balance', 'emotional-intelligence', 'neuroscience', 'self-awareness', 'definitive'],
     type: 'learn',
     dimension: 'self',
-    key: 'tuned-emotions'
+    key: 'tuned-emotions',
+    is_pinned: true,
+    pin_order: 1,
+    created_date: '2024-01-15',
+    read_time: 12,
+    difficulty: 'Beginner'
   },
   // SELF - Tuned Emotions - Additional Content
   {
@@ -99,7 +104,9 @@ The key is learning to distinguish between emotional reactions (which pull us ou
     tags: ['emotions', 'flow-states', 'self-awareness', 'performance'],
     type: 'learn',
     dimension: 'self',
-    key: 'tuned-emotions'
+    key: 'tuned-emotions',
+    created_date: '2024-02-01',
+    read_time: 8
   },
   {
     id: 'tuned-emotions-practice-1',
@@ -130,7 +137,9 @@ This practice builds emotional granularity—the ability to distinguish between 
     tags: ['practice', 'emotional-awareness', 'flow-preparation', 'mindfulness'],
     type: 'practice',
     dimension: 'self',
-    key: 'tuned-emotions'
+    key: 'tuned-emotions',
+    created_date: '2024-02-05',
+    read_time: 5
   },
 
   // SELF - Open Mind
@@ -153,7 +162,9 @@ The cultivation of cognitive flexibility is like physical flexibility—it requi
     tags: ['neuroscience', 'cognitive-flexibility', 'mental-models', 'adaptability'],
     type: 'learn',
     dimension: 'self',
-    key: 'open-mind'
+    key: 'open-mind',
+    created_date: '2024-01-20',
+    read_time: 10
   },
 
   // SPACE - Intentional Space
@@ -177,7 +188,9 @@ The goal is not to create a perfect space, but to create an intentional one—a 
     tags: ['environment', 'psychology', 'space-design', 'cognitive-load'],
     type: 'learn',
     dimension: 'space',
-    key: 'intentional-space'
+    key: 'intentional-space',
+    created_date: '2024-01-25',
+    read_time: 9
   },
 
   // STORY - Generative Story
@@ -200,7 +213,9 @@ The key insight is that you are both the author and the protagonist of your stor
     tags: ['narrative', 'identity', 'meaning-making', 'psychology'],
     type: 'learn',
     dimension: 'story',
-    key: 'generative-story'
+    key: 'generative-story',
+    created_date: '2024-01-30',
+    read_time: 11
   },
 
   // SPIRIT - Grounding Values
@@ -225,7 +240,9 @@ When you operate from grounded values, work becomes a form of self-expression ra
     tags: ['values', 'motivation', 'authenticity', 'self-expression'],
     type: 'learn',
     dimension: 'spirit',
-    key: 'grounding-values'
+    key: 'grounding-values',
+    created_date: '2024-02-03',
+    read_time: 8
   }
 ];
 
@@ -243,11 +260,23 @@ export function getContentByType(type: 'learn' | 'practice') {
 }
 
 export function getContentByDimensionAndKey(dimension: string, key: string) {
-  return CONTENT_REPOSITORY.filter(item => 
-    item.dimension === dimension && item.key === key
-  );
+  return CONTENT_REPOSITORY
+    .filter(item => item.dimension === dimension && item.key === key)
+    .sort((a, b) => {
+      // Sort pinned content first
+      if (a.is_pinned && !b.is_pinned) return -1;
+      if (!a.is_pinned && b.is_pinned) return 1;
+      if (a.is_pinned && b.is_pinned) {
+        return (a.pin_order || 0) - (b.pin_order || 0);
+      }
+      // For non-pinned content, sort by created date (newest first)
+      const aDate = new Date(a.created_date || '2024-01-01');
+      const bDate = new Date(b.created_date || '2024-01-01');
+      return bDate.getTime() - aDate.getTime();
+    });
 }
 
+// Legacy functions maintained for compatibility
 export function getLearnContent(dimension: string, key: string) {
   return CONTENT_REPOSITORY.filter(item => 
     item.dimension === dimension && 
