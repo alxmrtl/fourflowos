@@ -160,13 +160,18 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                 
                 <span className="text-gray-400 text-lg">→</span>
                 
-                <div className="relative w-6 h-6">
-                  <Image
-                    src={keyData.icon}
-                    alt={keyData.name}
-                    fill
-                    className="object-contain"
-                  />
+                <div className="flex items-center">
+                  <div className="relative w-6 h-6">
+                    <Image
+                      src={keyData.icon}
+                      alt={keyData.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-gray-700 font-medium text-sm ml-2">
+                    {keyInfo.name}
+                  </span>
                 </div>
               </nav>
             </div>
@@ -225,13 +230,18 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
             
             <span className="text-gray-400 text-lg">→</span>
             
-            <div className="relative w-6 h-6">
-              <Image
-                src={keyData.icon}
-                alt={keyData.name}
-                fill
-                className="object-contain"
-              />
+            <div className="flex items-center">
+              <div className="relative w-6 h-6">
+                <Image
+                  src={keyData.icon}
+                  alt={keyData.name}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-gray-700 font-medium text-sm ml-2">
+                {keyInfo.name}
+              </span>
             </div>
           </nav>
         </div>

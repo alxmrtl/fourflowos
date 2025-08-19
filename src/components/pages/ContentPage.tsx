@@ -78,11 +78,10 @@ export default function ContentPage({ contentId }: ContentPageProps) {
     <div className="min-h-screen bg-gray-50">
       <TopBar />
       
-      {/* Header */}
+      {/* Breadcrumb Navigation */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          {/* Breadcrumbs */}
-          <nav className="flex items-center space-x-3 mb-8">
+        <div className="max-w-6xl mx-auto px-2 lg:px-8 py-3">
+          <nav className="flex items-center space-x-3">
             <Link 
               href="/dimension" 
               className="flex items-center hover:opacity-80 transition-opacity"
@@ -138,8 +137,12 @@ export default function ContentPage({ contentId }: ContentPageProps) {
               {content.title}
             </span>
           </nav>
+        </div>
+      </div>
 
-          {/* Content Header */}
+      {/* Content Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-2 lg:px-8 py-4 lg:py-6">
           <div className="flex items-start gap-4">
             <div 
               className="w-3 h-20 rounded-full flex-shrink-0"
