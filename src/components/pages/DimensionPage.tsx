@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { DIMENSIONS, MAIN_LOGO } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
-import TopContextBar from '@/components/navigation/TopContextBar';
 
 interface DimensionPageProps {
   dimension: DimensionType;
@@ -114,7 +113,6 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <TopBar />
-      <TopContextBar currentDimension={dimension} />
 
       {/* Breadcrumb Navigation */}
       <div className="bg-white border-b border-gray-200">
@@ -137,18 +135,46 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
             
             <span className="text-gray-400 text-lg">→</span>
             
-            <div className="flex items-center">
-              <div className="relative w-7 h-7">
+            <div className="relative w-7 h-7">
+              <Image
+                src={dimensionData.sectionLogo}
+                alt={dimensionData.name}
+                fill
+                className="object-contain"
+              />
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      {/* Breadcrumb Navigation */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-2 lg:px-8 py-3">
+          <nav className="flex items-center space-x-3">
+            <Link 
+              href="/dimension" 
+              className="flex items-center hover:opacity-80 transition-opacity"
+              title="FourFlowOS Framework"
+            >
+              <div className="relative w-8 h-8">
                 <Image
-                  src={dimensionData.sectionLogo}
-                  alt={dimensionData.name}
+                  src={MAIN_LOGO}
+                  alt="FourFlowOS"
                   fill
                   className="object-contain"
                 />
               </div>
-              <span className="text-gray-700 font-medium text-sm ml-2">
-                {dimensionData.name}
-              </span>
+            </Link>
+            
+            <span className="text-gray-400 text-lg">→</span>
+            
+            <div className="relative w-7 h-7">
+              <Image
+                src={dimensionData.sectionLogo}
+                alt={dimensionData.name}
+                fill
+                className="object-contain"
+              />
             </div>
           </nav>
         </div>
