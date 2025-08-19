@@ -7,6 +7,7 @@ import { KEYS, DIMENSIONS } from '@/data/framework';
 import { getContentByDimensionAndKey } from '@/data/content';
 import { KeyType, DimensionType, ContentItem } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
+import TopContextBar from '@/components/navigation/TopContextBar';
 
 interface KeyPageProps {
   keyId: KeyType;
@@ -136,6 +137,7 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <TopBar />
+      <TopContextBar currentDimension={dimension} currentKey={keyId} />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 lg:px-8 py-4 lg:py-6">
@@ -169,13 +171,8 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
 
         {/* Content Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-          <div className="px-6 lg:px-8 py-4 lg:py-5 border-b border-gray-200">
-            <h2 className="text-lg lg:text-xl font-semibold text-gray-900">Content for {keyInfo.name}</h2>
-            <p className="text-sm text-gray-600 mt-1">Essential articles and practices to master this flow key</p>
-          </div>
-
           {/* Content List */}
-          <div className="p-6 lg:p-8">
+          <div className="p-4 lg:p-6">
             <div className="space-y-3 lg:space-y-4">
               {content.length > 0 ? (
                 content.map((item) => {
@@ -186,7 +183,7 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                     <Link
                       key={item.id}
                       href={`/content/${item.id}`}
-                      className={`block rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 lg:p-6 group ${
+                      className={`block rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-3 lg:p-4 group ${
                         isPinned 
                           ? 'bg-gradient-to-r from-white to-gray-50' 
                           : 'bg-white'
@@ -203,18 +200,18 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                           : undefined
                       }}
                     >
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-3">
                         {/* Content Icon */}
-                        <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded flex-shrink-0 flex items-center justify-center ${
+                        <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded flex-shrink-0 flex items-center justify-center ${
                           isPinned ? 'bg-gradient-to-br from-yellow-100 to-orange-100' : 'bg-gray-100'
                         }`}>
                           {isPinned && (
-                            <svg className="w-6 h-6 lg:w-7 lg:h-7 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 lg:w-6 lg:h-6 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
                               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
                           )}
                           {!isPinned && (
-                            <svg className="w-6 h-6 lg:w-7 lg:h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 lg:w-6 lg:h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               {isLearn ? (
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                               ) : (
@@ -238,42 +235,20 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
                           )}
                           
                           <h3 className={`font-bold text-gray-900 group-hover:text-gray-700 transition-colors leading-tight ${
-                            isPinned ? 'text-lg lg:text-xl mb-2' : 'text-base lg:text-lg mb-1'
+                            isPinned ? 'text-base lg:text-lg mb-1' : 'text-sm lg:text-base mb-1'
                           }`}>
                             {item.title}
                           </h3>
                           
                           {isPinned && item.description && (
-                            <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+                            <p className="text-xs text-gray-600 mb-2 leading-relaxed">
                               {item.description}
                             </p>
                           )}
                           
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span 
-                              className="text-xs lg:text-sm font-medium px-2 py-1 rounded"
-                              style={{ 
-                                backgroundColor: `${dimensionData.color}20`,
-                                color: dimensionData.color 
-                              }}
-                            >
-                              {dimensionData.name}
-                            </span>
-                            <span className="text-xs lg:text-sm text-gray-500">•</span>
-                            <span className="text-xs lg:text-sm text-gray-500">{keyInfo.name}</span>
-                            <span className="text-xs lg:text-sm text-gray-500">•</span>
-                            <span className={`text-xs lg:text-sm px-2 py-1 rounded ${
-                              isLearn 
-                                ? 'bg-blue-100 text-blue-700' 
-                                : 'bg-green-100 text-green-700'
-                            }`}>
-                              {isLearn ? 'Learn' : 'Practice'}
-                            </span>
                             {item.read_time && (
-                              <>
-                                <span className="text-xs lg:text-sm text-gray-500">•</span>
-                                <span className="text-xs lg:text-sm text-gray-500">{item.read_time} min read</span>
-                              </>
+                              <span className="text-xs text-gray-500">{item.read_time} min read</span>
                             )}
                           </div>
                         </div>

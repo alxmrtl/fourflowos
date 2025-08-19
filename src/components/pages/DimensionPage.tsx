@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { DIMENSIONS } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
+import TopContextBar from '@/components/navigation/TopContextBar';
 
 interface DimensionPageProps {
   dimension: DimensionType;
@@ -113,6 +114,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <TopBar />
+      <TopContextBar currentDimension={dimension} />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 lg:px-8 py-4 lg:py-6 min-h-screen flex flex-col">
