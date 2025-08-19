@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { KEYS, DIMENSIONS } from '@/data/framework';
+import { KEYS, DIMENSIONS, MAIN_LOGO } from '@/data/framework';
 import { getContentByDimensionAndKey } from '@/data/content';
 import { KeyType, DimensionType, ContentItem } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
@@ -123,6 +123,61 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
     return (
       <div className="min-h-screen bg-gray-50">
         <TopBar />
+        {keyData && dimensionData && (
+          <div className="bg-white border-b border-gray-200">
+            <div className="max-w-6xl mx-auto px-2 lg:px-8 py-3">
+              <nav className="flex items-center space-x-3">
+                <Link 
+                  href="/dimension" 
+                  className="flex items-center hover:opacity-80 transition-opacity"
+                  title="FourFlowOS Framework"
+                >
+                  <div className="relative w-8 h-8">
+                    <Image
+                      src={MAIN_LOGO}
+                      alt="FourFlowOS"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </Link>
+                
+                <span className="text-gray-400 text-lg">→</span>
+                
+                <Link 
+                  href={`/dimension/${dimension}`}
+                  className="flex items-center hover:opacity-80 transition-opacity"
+                  title={`${dimensionData.name} Dimension`}
+                >
+                  <div className="relative w-7 h-7">
+                    <Image
+                      src={dimensionData.sectionLogo}
+                      alt={dimensionData.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </Link>
+                
+                <span className="text-gray-400 text-lg">→</span>
+                
+                <div className="flex items-center">
+                  <div className="relative w-6 h-6">
+                    <Image
+                      src={keyData.icon}
+                      alt={keyData.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-gray-700 font-medium text-sm ml-2">
+                    {keyInfo.name}
+                  </span>
+                </div>
+              </nav>
+            </div>
+          </div>
+        )}
         <main className="max-w-6xl mx-auto px-2 lg:px-8 py-4 lg:py-6">
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
@@ -138,6 +193,61 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
       {/* Header */}
       <TopBar />
       <TopContextBar currentDimension={dimension} currentKey={keyId} />
+
+      {/* Breadcrumb Navigation */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-2 lg:px-8 py-3">
+          <nav className="flex items-center space-x-3">
+            <Link 
+              href="/dimension" 
+              className="flex items-center hover:opacity-80 transition-opacity"
+              title="FourFlowOS Framework"
+            >
+              <div className="relative w-8 h-8">
+                <Image
+                  src={MAIN_LOGO}
+                  alt="FourFlowOS"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </Link>
+            
+            <span className="text-gray-400 text-lg">→</span>
+            
+            <Link 
+              href={`/dimension/${dimension}`}
+              className="flex items-center hover:opacity-80 transition-opacity"
+              title={`${dimensionData.name} Dimension`}
+            >
+              <div className="relative w-7 h-7">
+                <Image
+                  src={dimensionData.sectionLogo}
+                  alt={dimensionData.name}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </Link>
+            
+            <span className="text-gray-400 text-lg">→</span>
+            
+            <div className="flex items-center">
+              <div className="relative w-6 h-6">
+                <Image
+                  src={keyData.icon}
+                  alt={keyData.name}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-gray-700 font-medium text-sm ml-2">
+                {keyInfo.name}
+              </span>
+            </div>
+          </nav>
+        </div>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-2 lg:px-8 py-4 lg:py-6">
