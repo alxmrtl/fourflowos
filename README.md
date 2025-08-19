@@ -108,8 +108,11 @@ FourFlowOS is an interactive web application that embodies the FourFlow framewor
 ## Technical Implementation
 
 ### Technology Stack
-- **Frontend**: Next.js 14+ with React
+- **Frontend**: Next.js 15+ with React 19
 - **Styling**: Tailwind CSS with custom brand color system
+- **Animations**: Framer Motion for smooth page transitions and micro-interactions
+- **Gestures**: @use-gesture/react and @react-spring/web for native app-like touch interactions
+- **Web App**: PWA-enabled with iOS home screen support and mobile-optimized experience
 - **Deployment**: Vercel (auto-deploy from main branch)
 - **Repository**: Git with submodule structure
 
@@ -121,6 +124,9 @@ src/
 │   ├── dimension/[dimension]/
 │   │   ├── page.tsx               # Dimension overview
 │   │   └── key/[key]/page.tsx     # Individual key pages
+│   ├── content/
+│   │   ├── page.tsx               # Content repository browser
+│   │   └── [id]/page.tsx          # Individual content articles
 │   ├── about/page.tsx
 │   ├── blog/page.tsx
 │   └── contact/page.tsx
@@ -128,16 +134,40 @@ src/
 │   ├── pages/
 │   │   ├── DimensionPage.tsx      # Main dimension page component
 │   │   ├── FrameworkPage.tsx      # Landing page component
-│   │   └── KeyPage.tsx            # Individual key component
-│   └── navigation/
-│       ├── BottomNav.tsx          # Main navigation bar
-│       ├── MenuButton.tsx         # Hamburger menu
-│       └── TopContextBar.tsx      # Contextual navigation
+│   │   ├── KeyPage.tsx            # Individual key component
+│   │   └── ContentPage.tsx        # Full article display
+│   ├── navigation/
+│   │   ├── BottomNav.tsx          # Main navigation bar
+│   │   ├── MenuButton.tsx         # Hamburger menu
+│   │   └── TopBar.tsx             # Universal dark header
+│   ├── PageTransition.tsx         # Smooth page transitions with center zoom
+│   ├── SwipeContainer.tsx         # Horizontal swipe navigation between dimensions
+│   ├── TouchRipple.tsx            # Material Design ripple effects
+│   └── PullToRefresh.tsx          # iOS/Android-style pull-to-refresh
 ├── data/
 │   ├── framework.ts               # Dimension and key definitions
-│   └── content.ts                 # Content management
+│   └── content.ts                 # Content repository
+├── lib/
+│   └── database.ts                # Database connection layer
+├── scripts/
+│   ├── setup-database.sql         # Database schema
+│   └── content-upload.ts          # Automated content pipeline
 └── types/
     └── framework.ts               # TypeScript interfaces
+```
+
+### IDEAS Folder Structure
+```
+IDEAS/
+├── CONTENT-CREATION-WORKFLOW.md   # Complete workflow documentation
+├── CONTENT-FORMAT-LEARN.md        # Template for educational content
+├── CONTENT-FORMAT-PRACTICE.md     # Template for exercise content
+├── DATABASE-SCHEMA.md              # Database structure documentation
+├── WEBAPP-INTEGRATION-PLAN.md     # Database integration roadmap
+├── DATABASE-MIGRATION-PLAN.md     # Migration strategy
+└── READY/                          # Staging area for new content
+    ├── [Content].md               # Ready-to-publish articles
+    └── [metadata].yaml            # Content metadata files
 ```
 
 ### Key Components
@@ -171,28 +201,68 @@ src/
 - `KEYS`: Individual key definitions with icons and descriptions
 - Automatic key population for each dimension
 
-### Content Management
+### Content Management System
+
+#### Content Creation Workflow
+Complete system for creating, managing, and publishing FourFlow learning materials:
+
+1. **Research Phase**: Extract content from REFERENCES folder + external scientific research
+2. **Format Application**: Use standardized LEARN and PRACTICE templates
+3. **Content Creation**: Write scientifically-backed, flow-optimized content
+4. **Quality Assurance**: Review for framework integration and effectiveness
+5. **Publication**: Deploy to live website with full navigation
+
+#### Content Types
+
+**LEARN Content**: Educational articles explaining concepts and theory
+- **Structure**: Hook, Core Concept, Scientific Foundation, Framework Integration, Practical Application
+- **Length**: 1,200-1,800 words for comprehensive yet digestible content
+- **Features**: Scientific backing, cross-dimensional connections, integration guidance
+
+**PRACTICE Content**: Step-by-step exercises and implementations
+- **Structure**: Overview, Scientific Foundation, Prerequisites, Instructions, Troubleshooting, Progression
+- **Length**: 800-1,200 words focused on actionable implementation
+- **Features**: Progressive difficulty, clear success metrics, habit integration
+
+#### Pinned Content System
+- **Definitive Guides**: Each flow key has one pinned LEARN and PRACTICE piece
+- **Priority Display**: Pinned content appears first on key pages
+- **Quality Standards**: Comprehensive, scientifically-backed, framework-integrated content
 
 #### Copy Strategy
 - **Benefit-Driven**: All descriptions focus on practical outcomes
 - **Down-to-Earth**: Relatable language, no jargon
 - **Flow-Focused**: Every description connects to flow state benefits
 - **Concise**: Short, actionable descriptions
+- **Scientific**: Backed by neuroscience and psychology research
 
-#### Brand Integration
-- Consistent use of brand colors across all components
-- Systematic numbering for all 12 flow keys
-- Clean typography hierarchy
-- Minimal, professional design aesthetic
+#### Content Infrastructure
+- **Templates**: Standardized formats in `/IDEAS/CONTENT-FORMAT-*.md`
+- **Workflow**: Complete process documented in `/IDEAS/CONTENT-CREATION-WORKFLOW.md`
+- **Database**: Schema supporting metadata, tags, difficulty levels, and relationships
+- **Routing**: Individual content pages at `/content/[id]` with full navigation
 
 ## Development Workflow
 
 ### Making Content Changes
 
+#### Framework Content
 1. **Dimension Descriptions**: Update in `DimensionPage.tsx` → `getDimensionDescription()`
 2. **Key Descriptions**: Update in `DimensionPage.tsx` → `getKeyDisplayInfo()`
 3. **Brand Colors**: Defined in `framework.ts` → `DIMENSIONS`
 4. **Key Numbering**: Automatic based on order (SELF: 1-3, SPACE: 4-6, etc.)
+
+#### Article Content
+1. **Create Content**: Write using templates in `/IDEAS/CONTENT-FORMAT-*.md`
+2. **Add Metadata**: Include YAML metadata for database storage
+3. **Stage Content**: Place in `/IDEAS/READY/` folder
+4. **Quick Addition**: Add directly to `content.ts` for immediate deployment
+5. **Database Upload**: Use `npm run content:upload` for automated pipeline
+
+#### Content Management Options
+- **Immediate**: Edit `src/data/content.ts` directly for instant deployment
+- **Systematic**: Use IDEAS workflow for quality-controlled content creation
+- **Database**: Switch to database mode for unlimited content scaling
 
 ### Deployment Process
 
@@ -203,9 +273,13 @@ src/
 5. **Verification**: Check live site for updates
 
 ### Testing URLs
-- **Local**: `http://localhost:3000`
+- **Local**: `http://localhost:3004` (auto-selects available port)
 - **Production**: Deployed via Vercel
-- **Dimension Pages**: `/dimension/self`, `/dimension/space`, `/dimension/story`, `/dimension/spirit`
+- **Framework**: `/` (landing page)
+- **Dimensions**: `/dimension/self`, `/dimension/space`, `/dimension/story`, `/dimension/spirit`
+- **Keys**: `/dimension/[dimension]/key/[key]` (e.g., `/dimension/self/key/tuned-emotions`)
+- **Content**: `/content/[id]` (individual articles)
+- **Repository**: `/content` (browse all content)
 
 ## Getting Started
 
@@ -233,6 +307,9 @@ npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
+npm run content:upload  # Upload content from IDEAS/READY
+npm run db:setup     # Set up database schema
+npm run db:migrate   # Migrate content to database
 ```
 
 ## Content Reference
@@ -250,7 +327,92 @@ npm run lint         # Run ESLint
 4. **Flow**: Always connect back to flow state benefits
 5. **Brevity**: Keep descriptions concise and scannable
 
-## Recent Design Improvements
+## Recent Major Updates
+
+### Desktop UI Enhancement (August 2025)
+
+#### Responsive Design Overhaul
+- **Desktop Scaling**: Enhanced all UI elements for proper desktop proportions while preserving mobile experience
+- **Bottom Navigation**: Scaled key icons from 16x16px to 24x24px on desktop (lg: breakpoints)
+- **Home Screen Buttons**: Increased height from 144px to 192px with proportional icon scaling
+- **TopBar Enhancement**: Larger logo scaling and improved padding for desktop visibility
+- **Dimension & Key Pages**: Comprehensive layout improvements with desktop-appropriate spacing
+
+#### Technical Implementation
+- **Responsive Strategy**: Mobile-first design with `lg:` Tailwind breakpoints (1024px+) for desktop-only changes
+- **Icon Scaling**: Strategic sizing increases: dimension logos (12x12 → 16x16), key icons (8x8 → 10x10 on desktop)
+- **Typography Enhancement**: Improved text scaling and visual hierarchy for desktop readability
+- **Container Optimization**: Enhanced padding and margin systems for better desktop experience
+- **Layout Preservation**: Complete mobile design preservation - zero changes to mobile layouts
+
+#### User Experience Benefits
+- **Desktop Native Feel**: Interface now feels purpose-built for desktop rather than stretched mobile
+- **Better Usability**: Larger click targets and improved spacing for desktop interaction patterns
+- **Enhanced Readability**: Optimized text sizing and visual hierarchy for desktop viewing distances
+- **Professional Appearance**: Desktop-appropriate proportions maintaining the clean, modern aesthetic
+- **Cross-Device Consistency**: Seamless experience that adapts intelligently to screen size
+
+### Native Mobile Experience Enhancement (August 2025)
+
+#### Advanced Touch Interactions & Gesture Navigation
+- **Swipe Navigation**: Horizontal swipe gestures between dimensions (Self → Space → Story → Spirit)
+- **Touch Ripple Effects**: Material Design-style ripples on all interactive elements with dimension-specific colors
+- **Smart Gesture Detection**: Direction-based gesture filtering that respects vertical scrolling priority
+- **Mobile-Optimized Animations**: Smooth center-zoom page transitions replacing jarring flash effects
+- **iOS Safe Area Support**: Proper viewport handling for all iPhone models and orientation changes
+
+#### Mobile Experience Improvements
+- **Cross-fade Page Transitions**: Eliminated white flashing between pages with overlapping animations
+- **Gesture Conflict Resolution**: Fixed scroll interference issues between native scrolling and custom gestures
+- **Touch Feedback**: Immediate visual confirmation for all touch interactions with color-matched effects
+- **Responsive Layout**: Optimized spacing and sizing for mobile viewport with proper safe area handling
+- **Native App Feel**: Professional touch interactions that rival native mobile applications
+
+#### Technical Implementation
+- **Framer Motion**: Smooth animations with spring physics for natural movement feel
+- **@use-gesture/react**: Advanced gesture recognition with proper threshold and boundary handling
+- **@react-spring/web**: Performance-optimized animations with hardware acceleration
+- **CSS Safe Areas**: Dynamic viewport adjustments for notched displays and different screen sizes
+- **Touch Optimization**: Proper touch-action controls and overscroll behavior management
+
+### Web App Configuration (August 2025)
+
+#### Progressive Web App (PWA) Setup
+- **iOS Home Screen Icon**: Configured custom FourFlowOS iOS icon for when users add the app to their home screen
+- **Browser Favicon**: Set main FourFlowOS logo as the browser tab icon for professional appearance
+- **Web App Manifest**: Created PWA manifest enabling app installation on mobile devices
+- **Apple Web App Configuration**: Optimized iOS experience with standalone display mode and proper status bar styling
+- **Professional Branding**: Consistent icon experience across all platforms and installation methods
+
+#### Technical Implementation
+- **Icon Assets**: Sourced from `REFERENCES/BRAND/LOGOS/` folder using official brand assets
+- **Manifest.json**: PWA configuration supporting app installation and standalone mode
+- **Layout Meta Tags**: Updated Next.js layout with proper web app metadata and viewport settings
+- **Cross-Platform Icons**: Optimized for both browser display and mobile home screen installation
+
+### Complete Content Management System (August 2025)
+
+#### Content Creation & Publication Pipeline
+- **Standardized Templates**: LEARN and PRACTICE content formats with scientific backing requirements
+- **Quality Workflow**: 5-phase process from research to publication with automated validation
+- **Pinned Content**: Definitive guides for each flow key with priority display system
+- **Individual Articles**: Full content pages with navigation, breadcrumbs, and proper SEO
+- **Content Repository**: Centralized browsing with filtering and search capabilities
+- **Database Ready**: Complete schema and migration system for unlimited content scaling
+
+#### Technical Implementation
+- **Routing System**: `/content/[id]` for individual articles with static generation
+- **Markdown Rendering**: Custom parser with typography optimization for readability
+- **Navigation Integration**: Seamless flow from framework → dimension → key → content
+- **Click-Through Experience**: Articles are fully clickable and readable with proper back navigation
+- **Build Optimization**: Next.js 15 compatibility with async params and production-ready deployment
+
+#### Content Infrastructure Achievements
+- **Templates Created**: Standardized formats ensuring consistency and quality
+- **Workflow Documented**: Complete process in `/IDEAS/CONTENT-CREATION-WORKFLOW.md`
+- **Database Schema**: Production-ready structure supporting metadata, relationships, and analytics
+- **First Definitive Content**: "Tuned Emotions: The Definitive Guide" as model implementation
+- **Automated Pipeline**: Content upload system from IDEAS/READY to live deployment
 
 ### Major UI/UX Redesign (August 2025)
 
@@ -319,10 +481,15 @@ Multiple tested versions of core messaging:
 ## Future Development
 
 ### Planned Features
-- Blog/content management system
-- User accounts and progress tracking
-- Interactive flow assessments
-- Community features
+- ✅ **Content Management System** (Completed August 2025)
+- ✅ **Native Mobile Experience** (Completed August 2025)
+- ✅ **Advanced Touch Interactions** (Completed August 2025)
+- **Database Migration**: Switch from hardcoded to dynamic content storage
+- **User Accounts**: Progress tracking and personalized content recommendations
+- **Interactive Assessments**: Flow state evaluations and dimension scoring
+- **Community Features**: Content sharing and discussion capabilities
+- **Advanced Analytics**: Content performance and user engagement tracking
+- **Progressive Web App**: Enhanced offline capabilities and app store distribution
 
 ### Architecture Considerations
 - Component-based design for easy updates
@@ -331,13 +498,24 @@ Multiple tested versions of core messaging:
 - Responsive design for all devices
 
 ### Maintenance Notes
-- Brand colors are centrally managed
-- Key numbering is automatic and consistent
-- Content updates should maintain benefit-driven focus
-- Always test on both local and production environments
+- **Brand Colors**: Centrally managed in `framework.ts`
+- **Key Numbering**: Automatic and consistent across all 12 flow keys
+- **Content Standards**: Maintain benefit-driven focus and scientific backing
+- **Testing**: Always verify on both local and production environments
+- **Content Quality**: Use templates and workflow for consistency
+- **Database Ready**: Infrastructure prepared for content scaling
+
+### Current Status
+- **Desktop UI Enhancement**: ✅ Complete responsive design with proper desktop scaling
+- **Content Management System**: ✅ Fully operational with live articles
+- **Native Mobile Experience**: ✅ Complete with gesture navigation and touch interactions  
+- **Advanced Animations**: ✅ Smooth page transitions and micro-interactions
+- **PWA Configuration**: ✅ iOS/Android home screen installation ready
+- **Cross-Platform Optimization**: ✅ True responsive design adapting from mobile to desktop
+- **Production Deployment**: ✅ Live on Vercel with automatic deployments
 
 ---
 
 *Last Updated: August 2025*  
-*Project Status: Active Development - Interactive Web Application*  
+*Project Status: Production Ready - Cross-Platform Responsive Design Complete*  
 *Repository: https://github.com/alxmrtl/fourflowos*
