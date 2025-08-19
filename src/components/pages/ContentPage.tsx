@@ -83,9 +83,9 @@ export default function ContentPage({ contentId }: ContentPageProps) {
         <div className="max-w-6xl mx-auto px-2 lg:px-8 py-3">
           <nav className="flex items-center space-x-3">
             <Link 
-              href="/dimension" 
+              href="/" 
               className="flex items-center hover:opacity-80 transition-opacity"
-              title="FourFlowOS Framework"
+              title="FourFlowOS Home"
             >
               <div className="relative w-8 h-8">
                 <Image
