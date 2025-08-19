@@ -76,6 +76,7 @@ export default function PullToRefresh({
 
   return (
     <animated.div
+      {...bind()}
       style={{ y }}
       className="touch-pan-x no-scroll-bounce"
     >
