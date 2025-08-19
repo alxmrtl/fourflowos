@@ -7,12 +7,13 @@
 - 4% stretch = sweet spot for sustained engagement
 - Real-time emotional feedback indicates if you're in the zone
 
-## 2. Window of Tolerance (Polyvagal Theory)
+## 2. Window of Tolerance (Polyvagal Theory) ✅ IMPLEMENTED
 **Concept**: Everyone has an optimal arousal zone where they can think clearly and perform well
 - **Hyperarousal**: Fight/flight, anxiety, overwhelm (above window)
 - **Hypoarousal**: Freeze, depression, numbness (below window)  
 - **Optimal Zone**: Calm alertness, creativity, flow (within window)
 - Emotions signal when you're leaving your window
+- **Article Created**: "Finding Your Sweet Spot: The Window of Tolerance That Changes Everything"
 
 ## 3. Affect Labeling (Lieberman's Research)
 **Concept**: Simply naming emotions reduces their intensity by 20-30%

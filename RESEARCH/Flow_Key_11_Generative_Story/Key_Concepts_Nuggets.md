@@ -7,12 +7,13 @@
 - Awareness of narrative fallacy enables more flexible story construction
 - Good stories balance coherence with acknowledgment of uncertainty
 
-## 2. Redemptive vs. Contamination Sequences (McAdams)
+## 2. Redemptive vs. Contamination Sequences (McAdams) ✅ IMPLEMENTED
 **Concept**: How people frame negative experiences affects psychological well-being
 - **Redemptive sequences**: Bad events lead to good outcomes (growth from struggle)
 - **Contamination sequences**: Good things are ruined by bad events (victimization)
 - People with more redemptive sequences show greater life satisfaction
 - Story reframing can transform contamination into redemption
+- **Article Created**: "How to Rewrite Your Story From Victim to Hero"
 
 ## 3. The Fundamental Attribution Error in Self-Narrative
 **Concept**: People attribute others' behaviors to character but their own behaviors to circumstances

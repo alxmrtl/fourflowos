@@ -1,11 +1,12 @@
 # Flow Key 8: Ignited Curiosity - Key Concepts Nuggets
 
-## 1. The Curiosity Gap Theory (Loewenstein)
+## 1. The Curiosity Gap Theory (Loewenstein) ✅ IMPLEMENTED
 **Concept**: Curiosity arises from perceived gap between what we know and what we want to know
 - Too small gap = boring (already know enough)
 - Too large gap = overwhelming (too much to learn)
 - Optimal gap = intriguing (just enough mystery to motivate exploration)
 - Effective learning progressively widens the curiosity gap
+- **Article Created**: "The Knowledge Gap That Makes Everything Interesting"
 
 ## 2. Diversive vs. Specific Curiosity (Berlyne)
 **Concept**: Two distinct types of curiosity serve different learning functions

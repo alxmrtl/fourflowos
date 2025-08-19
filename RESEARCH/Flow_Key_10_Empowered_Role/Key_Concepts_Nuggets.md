@@ -1,11 +1,12 @@
 # Flow Key 10: Empowered Role - Key Concepts Nuggets
 
-## 1. The Job Crafting Model (Wrzesniewski)
+## 1. The Job Crafting Model (Wrzesniewski) ✅ IMPLEMENTED
 **Concept**: Employees can reshape their roles through task, relational, and cognitive crafting
 - **Task crafting**: Changing number, type, or scope of job activities
 - **Relational crafting**: Altering interactions with others at work
 - **Cognitive crafting**: Changing how you think about job purpose and impact
 - Even constrained roles offer opportunities for meaningful customization
+- **Article Created**: "The Three Ways to Transform Any Job Into Your Dream Role"
 
 ## 2. Psychological Ownership Theory
 **Concept**: Sense of ownership over role and outcomes dramatically increases engagement

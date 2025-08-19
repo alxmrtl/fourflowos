@@ -935,7 +935,164 @@ Grounding Values provides the foundation for identifying missions that truly mat
     created_date: '2024-12-19',
     read_time: 2,
     difficulty: 'Beginner'
+  },
+
+  // New Articles - Generated from Key Concepts Nuggets
+
+  // Flow Key 1: Tuned Emotions - Window of Tolerance
+  {
+    id: 'tuned-emotions-window-tolerance-learn',
+    title: 'Finding Your Sweet Spot: The Window of Tolerance That Changes Everything',
+    short_title: 'Window of Tolerance',
+    description: 'You know that feeling when you\'re trying to focus but your mind is racing like a hamster on espresso? Or when you\'re so drained you can barely think straight, let alone get into flow? Welcome to life outside your window of tolerance—the invisible zone where your best work actually happens.',
+    content: `# Finding Your Sweet Spot: The Window of Tolerance That Changes Everything
+
+You know that feeling when you're trying to focus but your mind is racing like a hamster on espresso? Or when you're so drained you can barely think straight, let alone get into flow? Welcome to life outside your window of tolerance—the invisible zone where your best work actually happens.
+
+## The Hidden Operating System of Your Emotions
+
+Think of your nervous system like a thermostat. Too hot and the air conditioning kicks in. Too cold and the heat fires up. Your body has a similar system for emotional and mental states, and when you're outside the "just right" zone, everything becomes harder.
+
+This isn't some abstract psychology concept. It's the reason why you can nail a presentation one day and completely bomb a similar one the next. The difference? Whether you were operating inside or outside your optimal zone.
+
+When you're in your window of tolerance, you feel calm but alert. Your thinking is clear. Challenges feel exciting rather than overwhelming. You can handle stress without falling apart or shutting down. This is where flow lives.
+
+## The Three Zones That Rule Your Performance
+
+**Above the Window: The Anxiety Express**
+When you're pushed beyond your tolerance, your nervous system hits the panic button. Heart racing, mind spinning, everything feels urgent and chaotic. You're in fight-or-flight mode, and while this might help you escape a tiger, it's terrible for creative work or deep thinking.
+
+**Below the Window: The Shutdown State**
+Drop below your window and you enter freeze mode. Everything feels heavy and impossible. You can't muster energy for anything meaningful. It's not laziness—it's your nervous system protecting you by shutting down non-essential functions.
+
+**Inside the Window: The Sweet Spot**
+Here's where the magic happens. You're engaged but not frantic. Focused but not rigid. Challenges feel manageable and even enjoyable. Your emotions inform your decisions without overwhelming them.
+
+## Reading Your Body's GPS System
+
+Your emotions aren't random—they're data. They tell you exactly where you are in relation to your window of tolerance.
+
+Feeling anxious, irritated, or overwhelmed? You're probably above your window. Feeling numb, disconnected, or impossibly tired? You're likely below it. Feeling curious, engaged, and capable? You're in the zone.
+
+The key is learning to read these signals before you're completely out of your window. Think of emotions as your internal GPS constantly recalculating your route back to optimal performance.
+
+## Three Ways to Find Your Way Back
+
+**Cool Down When You're Overheated**
+When you notice anxiety or overwhelm creeping in, your job is to gently bring your arousal down. Try the 4-7-8 breathing technique: breathe in for 4 counts, hold for 7, exhale for 8. Take a brief walk. Do anything that signals safety to your nervous system.
+
+**Warm Up When You're Frozen**
+When you're in shutdown mode, you need gentle activation. Stand up and stretch. Listen to energizing music. Have a conversation with someone you trust. The goal isn't to rocket into high energy—it's to slowly coax your system back online.
+
+**Stay Aware of Your Edges**
+Start noticing your personal warning signs. Maybe your shoulders tense when you're getting overwhelmed. Maybe your thoughts slow down when you're dropping below your window. These early signals are gold—they let you course-correct before you're completely off track.
+
+## What Success Looks Like
+
+When you master your window of tolerance, difficult conversations become manageable. Creative projects flow instead of forcing. You can stay present during challenges instead of panicking or checking out.
+
+You'll notice you can handle bigger challenges while staying calm. Your emotional range expands—you can feel deeply without being overwhelmed. Most importantly, you'll spend more time in that sweet spot where your best work emerges naturally.
+
+This connects directly to your Focused Body—when you're in your window of tolerance, physical tension releases and your body becomes an ally rather than a distraction. It also supports your Open Mind by creating the psychological safety needed for curiosity and learning.
+
+Your window of tolerance isn't fixed. With practice, it expands. What once felt overwhelming becomes manageable. And that's when you discover what you're truly capable of.`,
+    tags: ['self', 'learn', 'emotional-regulation', 'nervous-system', 'flow-states'],
+    type: 'learn',
+    dimension: 'self',
+    key: 'tuned-emotions',
+    difficulty: 'Beginner',
+    read_time: 8,
+    estimated_duration: 15,
+    scientific_backing: true,
+    flow_triggers: ['clear-goals', 'immediate-feedback', 'challenge-skills-balance'],
+    target_outcomes: ['Better emotional regulation', 'Improved stress management', 'Enhanced flow accessibility'],
+    related_concepts: ['Focused Body', 'Feedback Systems'],
+    meta_description: 'Learn about your window of tolerance - the optimal emotional zone where focus and flow become effortless. Discover how to recognize and stay within this sweet spot for peak performance.',
+    keywords: ['window of tolerance', 'emotional regulation', 'nervous system', 'flow states', 'stress management', 'optimal arousal zone'],
+    created_date: '2025-08-19'
+  },
+
+  // Flow Key 2: Focused Body - Somatic Markers
+  {
+    id: 'focused-body-somatic-markers-learn',
+    title: 'Your Body\'s Secret Decision-Making Superpower',
+    short_title: 'Somatic Markers',
+    description: 'Ever notice how some choices just "feel right" while others make your stomach churn? That\'s not indigestion—it\'s your body\'s ancient decision-making system giving you premium intel that your thinking brain hasn\'t caught up to yet.',
+    content: `# Your Body's Secret Decision-Making Superpower
+
+Ever notice how some choices just "feel right" while others make your stomach churn? That's not indigestion—it's your body's ancient decision-making system giving you premium intel that your thinking brain hasn't caught up to yet.
+
+## The Gut Feeling That's Actually Genius
+
+Your body knows things before your mind does. When you walk into a room and instantly sense tension, that's not magic—it's your nervous system processing thousands of micro-signals your conscious mind can't track. When a job offer sounds perfect on paper but something feels off, your body is reading data your logic missed.
+
+Scientists call these "somatic markers"—physical sensations that guide your choices. Think of them as your body's way of bookmarking experiences: "This situation feels like that time when things went well" or "This reminds me of when everything fell apart."
+
+The problem is we've been trained to ignore this wisdom. We overthink ourselves out of good decisions and logic ourselves into terrible ones. Meanwhile, our body sits there like a wise friend we refuse to listen to.
+
+## Your Internal Navigation System
+
+Every option you consider creates a physical response. Pay attention next time you're weighing choices. One path might feel expansive in your chest. Another might create tension in your shoulders. A third might make your stomach drop.
+
+These aren't random sensations—they're data. Your body is running complex calculations based on every similar situation you've ever encountered, then delivering the results as felt sense. It's like having a supercomputer that runs on intuition instead of code.
+
+Research shows people with better body awareness make better decisions across the board. They're more successful in business, happier in relationships, and more satisfied with their life choices. The secret? They've learned to treat their body as a trusted advisor, not just a vehicle for their brain.
+
+## The Three Types of Body Intelligence
+
+**Your Gut: The Pattern Recognizer**
+That "gut feeling" originates in your enteric nervous system—literally a second brain in your belly with more neurons than your spinal cord. It processes emotional and social patterns faster than conscious thought. When something doesn't "sit right" with you, trust it.
+
+**Your Heart: The Values Detector**
+Your heart rate shifts when you encounter situations that align or conflict with your deepest values. A decision that honors what you truly care about creates heart coherence—a steady, smooth rhythm. Choices that violate your values create chaos you can literally feel.
+
+**Your Shoulders and Neck: The Stress Barometer**
+Tension here signals when you're taking on too much or moving in the wrong direction. Relaxation indicates alignment and flow. Your shoulders are like a stress gauge—the tighter they get, the further you're drifting from your optimal path.
+
+## How to Access Your Body's Wisdom
+
+**The Decision Body Scan**
+When facing a choice, sit quietly and imagine taking each path. Notice what happens in your body. Does your breathing deepen or become shallow? Do your muscles relax or tense? Does energy feel expansive or constricted? Your body is voting—pay attention to the results.
+
+**The 24-Hour Rule**
+Don't make big decisions when you're tired, stressed, or emotional. Your somatic markers work best when your nervous system is regulated. Sleep on important choices. Take a walk. Give your body time to process and send clear signals.
+
+**Practice with Small Decisions**
+Start noticing body responses to everyday choices. Which restaurant feels appealing? Which route home calls to you? Which project excites your system? Building this awareness with low-stakes decisions prepares you for bigger ones.
+
+## When Your Body and Mind Disagree
+
+Sometimes logic says one thing and your gut says another. This isn't a bug—it's a feature. Your thinking brain excels at analysis and planning. Your body brain excels at pattern recognition and value alignment. The best decisions integrate both.
+
+If your mind loves an opportunity but your body feels heavy, investigate. What does your body know that your mind is missing? If your gut loves something your brain thinks is impractical, explore creative ways to honor both perspectives.
+
+The goal isn't to abandon logic—it's to upgrade your decision-making by including all available intelligence.
+
+## What Changes When You Listen
+
+People who trust their somatic markers make decisions faster and with less regret. They waste less time in wrong situations because their body warns them early. They find opportunities others miss because their intuition spots patterns before their analysis does.
+
+You'll notice increased confidence in your choices because they align with your whole system, not just your thoughts. Relationships improve because you can sense what's really happening beneath surface conversations. Work flows better because you choose projects and collaborations that energize rather than drain you.
+
+This directly enhances your Tuned Emotions by giving you real-time feedback about your inner state. It also supports Intentional Space by helping you choose environments that serve your nervous system rather than work against it.
+
+Your body has been your wisest advisor all along. It's time to start consulting it.`,
+    tags: ['self', 'learn', 'body-awareness', 'decision-making', 'intuition'],
+    type: 'learn',
+    dimension: 'self',
+    key: 'focused-body',
+    difficulty: 'Beginner',
+    read_time: 7,
+    estimated_duration: 12,
+    scientific_backing: true,
+    flow_triggers: ['embodied-presence', 'intuitive-decision-making'],
+    target_outcomes: ['Better decision-making', 'Improved body awareness', 'Enhanced intuition'],
+    related_concepts: ['Tuned Emotions', 'Intentional Space'],
+    meta_description: 'Discover how your body provides unconscious guidance for decision-making through somatic markers. Learn to access this ancient wisdom for better choices.',
+    keywords: ['somatic markers', 'body wisdom', 'decision making', 'intuition', 'embodied cognition', 'gut feelings'],
+    created_date: '2025-08-19'
   }
+
 ];
 
 // Helper functions for content management
