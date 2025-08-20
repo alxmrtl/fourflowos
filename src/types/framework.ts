@@ -36,7 +36,7 @@ export interface ContentItem {
   id: string;
   title: string;
   description: string;
-  content: unknown[]; // Portable Text blocks from Sanity
+  content: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any -- Portable Text blocks from Sanity
   tags: string[];
   type: 'learn' | 'practice';
   dimension: DimensionType;

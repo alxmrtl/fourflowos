@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PortableText } from '@portabletext/react';
+import { PortableText, type PortableTextBlock } from '@portabletext/react';
 import TopBar from '@/components/navigation/TopBar';
 import { getContentById, getContentByDimension } from '@/data/content';
 import { ContentItem } from '@/types/framework';
