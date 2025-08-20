@@ -2,9 +2,18 @@ import Link from 'next/link';
 import TopBar from '@/components/navigation/TopBar';
 import { CONTENT_REPOSITORY } from '@/data/content';
 import { DIMENSIONS } from '@/data/framework';
+import { ContentItem } from '@/types/framework';
 
 export default async function ContentRepository() {
-  const content = await CONTENT_REPOSITORY();
+  let content: ContentItem[] = [];
+  
+  try {
+    content = await CONTENT_REPOSITORY();
+    console.log('Content loaded:', content.length, 'items');
+  } catch (error) {
+    console.error('Failed to load content:', error);
+    // Return empty state instead of crashing
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <TopBar />
@@ -18,8 +27,18 @@ export default async function ContentRepository() {
         </div>
 
         <div className="grid gap-6">
-          {content.map((item) => {
+          {content.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No content available. Please check your Sanity configuration.</p>
+            </div>
+          ) : content.map((item) => {
             const dimensionData = DIMENSIONS[item.dimension];
+            
+            // Skip rendering if dimension data is missing
+            if (!dimensionData) {
+              console.warn(`Missing dimension data for: ${item.dimension}`);
+              return null;
+            }
             
             return (
               <Link

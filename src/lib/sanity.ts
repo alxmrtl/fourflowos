@@ -4,7 +4,7 @@ import { ContentItem, DimensionType, KeyType } from '@/types/framework'
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'pz22ntol',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
+  useCdn: false, // Set to false for static generation and build time
   apiVersion: '2024-01-01',
   token: process.env.SANITY_API_TOKEN || 'skFsVNJgys3k7mpt1Mfrsn3y82nmd0MjNUHcesigTIGEE8RPbOvYotyQPL0NGMKtUbgw867fqrqIvdFEER9Fcr920WUw7SUZ958v1Gb4y6N7l8gV6A3jJ8dIYrMXxdX6osCrN3R3hQPSLGhR7C3mkkCK9iyunAg7zC2lHGATFsVsAHpFVA08'
 })
@@ -55,9 +55,14 @@ function transformSanityToContentItem(doc: Record<string, unknown>): ContentItem
 
 // Fetch all content items
 export async function getAllContent(): Promise<ContentItem[]> {
-  const query = `*[_type == "contentItem"] | order(pinOrder asc, _createdAt desc)`
-  const docs = await client.fetch(query)
-  return docs.map(transformSanityToContentItem)
+  try {
+    const query = `*[_type == "contentItem"] | order(pinOrder asc, _createdAt desc)`
+    const docs = await client.fetch(query)
+    return docs.map(transformSanityToContentItem)
+  } catch (error) {
+    console.error('Failed to fetch content from Sanity:', error)
+    return [] // Return empty array instead of crashing
+  }
 }
 
 // Fetch content by dimension
