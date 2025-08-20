@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { getAllContent, getContentByDimension, getContentByType } from '@/data/content';
+import { getAllContent } from '@/data/content';
 import { DIMENSIONS } from '@/data/framework';
 import { ContentItem, DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
