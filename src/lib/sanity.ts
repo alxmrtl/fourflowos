@@ -9,7 +9,7 @@ const getToken = () => {
     fallback: 'skFsVNJgys3k7mpt1Mfrsn3y82nmd0MjNUHcesigTIGEE8RPbOvYotyQPL0NGMKtUbgw867fqrqIvdFEER9Fcr920WUw7SUZ958v1Gb4y6N7l8gV6A3jJ8dIYrMXxdX6osCrN3R3hQPSLGhR7C3mkkCK9iyunAg7zC2lHGATFsVsAHpFVA08'
   }
 
-  console.log('🔧 Token resolution:', {
+  console.log('🔧🔧🔧 VERCEL TOKEN RESOLUTION DEBUG 🔧🔧🔧', {
     hasNextPublic: !!tokens.nextPublic,
     hasServer: !!tokens.server,
     nextPublicLength: tokens.nextPublic?.length || 0,
