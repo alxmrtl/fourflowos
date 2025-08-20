@@ -28,21 +28,6 @@ export const client = createClient({
   token: getToken()
 })
 
-// Helper function to convert Sanity portable text to plain string
-function portableTextToPlainText(blocks: unknown[]): string {
-  return blocks
-    .map((block: unknown) => {
-      if (typeof block === 'object' && block !== null && 'children' in block && '_type' in block) {
-        const typedBlock = block as { _type: string; children?: { text: string }[] }
-        if (typedBlock._type !== 'block' || !typedBlock.children) {
-          return ''
-        }
-        return typedBlock.children.map((child) => child.text).join('')
-      }
-      return ''
-    })
-    .join('\n\n')
-}
 
 // Transform Sanity document to ContentItem
 function transformSanityToContentItem(doc: Record<string, unknown>): ContentItem {
