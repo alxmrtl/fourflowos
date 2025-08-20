@@ -115,7 +115,7 @@ class MockDatabase {
       id: content.id || `${content.key}-${content.type}-${Date.now()}`,
       title: content.title || '',
       description: content.description || '',
-      content: content.content || '',
+      content: content.content || [],
       tags: content.tags || [],
       type: content.type || 'learn',
       dimension: content.dimension || 'self',
