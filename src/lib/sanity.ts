@@ -88,22 +88,8 @@ export async function getAllContent(): Promise<ContentItem[]> {
       console.warn('⚠️ No content items found in Sanity - check your dataset and ensure all items have dimension, key, and type fields')
     }
     
-    // Log titles to check for duplicates during transformation
-    console.log('📋 Article titles being transformed:')
-    docs.forEach((doc: Record<string, unknown>, index: number) => {
-      console.log(`  ${index + 1}. "${(doc.title as string) || 'untitled'}" (ID: ${doc._id})`)
-    })
-    
     const transformedDocs = docs.map(transformSanityToContentItem)
     console.log(`✅ Transformed ${transformedDocs.length} content items`)
-    
-    // Check for duplicate IDs after transformation
-    const ids = transformedDocs.map(item => item.id)
-    const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index)
-    if (duplicateIds.length > 0) {
-      console.warn('🚨 Duplicate IDs found after transformation:', duplicateIds)
-    }
-    
     return transformedDocs
   } catch (error: unknown) {
     console.error('❌ Failed to fetch content from Sanity:', error)
@@ -161,39 +147,27 @@ export async function getContentByType(type: 'learn' | 'practice'): Promise<Cont
 // Fetch content by dimension and key
 export async function getContentByDimensionAndKey(dimension: string, key: string): Promise<ContentItem[]> {
   const callId = Math.random().toString(36).substr(2, 9)
-  const timestamp = new Date().toISOString()
   
   try {
-    console.log(`🔄 [${callId}] ${timestamp} - Fetching content for dimension: ${dimension}, key: ${key}`)
+    console.log(`🔄 [CALL-${callId}] getContentByDimensionAndKey called for ${dimension}/${key}`)
     
     // Convert underscores to hyphens for key matching (URL format vs DB format)
     const normalizedKey = key.replace(/_/g, '-')
-    console.log(`🔧 [${callId}] Normalized key: ${key} -> ${normalizedKey}`)
     
     const query = `*[_type == "contentItem" && defined(dimension) && defined(key) && dimension == $dimension && key == $normalizedKey] | order(pinOrder asc, _createdAt desc)`
     const docs = await client.fetch(query, { dimension, normalizedKey })
-    console.log(`✅ [${callId}] Found ${docs.length} items for ${dimension}/${normalizedKey}`)
-    
-    // Log each document found
-    docs.forEach((doc: Record<string, unknown>, index: number) => {
-      console.log(`📄 [${callId}] Document ${index + 1}: "${(doc.title as string) || 'untitled'}" (ID: ${doc._id})`)
-    })
+    console.log(`✅ [CALL-${callId}] Found ${docs.length} items for ${dimension}/${normalizedKey}`)
     
     if (docs.length === 0) {
-      console.warn(`⚠️ [${callId}] No content found for dimension: ${dimension}, key: ${normalizedKey} (original: ${key})`)
-      
-      // Debug: Check what keys actually exist for this dimension
-      const debugQuery = `*[_type == "contentItem" && dimension == $dimension] { key, title }`
-      const debugDocs = await client.fetch(debugQuery, { dimension })
-      console.log(`🔍 [${callId}] Available keys for dimension ${dimension}:`, debugDocs.map(d => `${d.key} ("${d.title}")`))
+      console.warn(`⚠️ [CALL-${callId}] No content found for dimension: ${dimension}, key: ${normalizedKey}`)
     }
     
     const transformed = docs.map(transformSanityToContentItem)
-    console.log(`🔄 [${callId}] Transformed ${transformed.length} items, returning to caller`)
+    console.log(`🔄 [CALL-${callId}] Returning ${transformed.length} transformed items`)
     
     return transformed
   } catch (error) {
-    console.error(`❌ [${callId}] Failed to fetch content for ${dimension}/${key}:`, error)
+    console.error(`❌ [CALL-${callId}] Failed to fetch content for ${dimension}/${key}:`, error)
     return []
   }
 }
