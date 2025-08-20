@@ -4,7 +4,7 @@ import { ContentItem, DimensionType, KeyType } from '@/types/framework'
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'pz22ntol',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  useCdn: false, // Set to false for static generation and build time
+  useCdn: process.env.NODE_ENV === 'production', // Use CDN in production, direct API in development
   apiVersion: '2024-01-01',
   token: process.env.SANITY_API_TOKEN || 'skFsVNJgys3k7mpt1Mfrsn3y82nmd0MjNUHcesigTIGEE8RPbOvYotyQPL0NGMKtUbgw867fqrqIvdFEER9Fcr920WUw7SUZ958v1Gb4y6N7l8gV6A3jJ8dIYrMXxdX6osCrN3R3hQPSLGhR7C3mkkCK9iyunAg7zC2lHGATFsVsAHpFVA08'
 })
@@ -56,11 +56,26 @@ function transformSanityToContentItem(doc: Record<string, unknown>): ContentItem
 // Fetch all content items
 export async function getAllContent(): Promise<ContentItem[]> {
   try {
+    console.log('🔄 Fetching all content from Sanity...')
     const query = `*[_type == "contentItem"] | order(pinOrder asc, _createdAt desc)`
     const docs = await client.fetch(query)
-    return docs.map(transformSanityToContentItem)
+    console.log(`✅ Successfully fetched ${docs.length} content items from Sanity`)
+    
+    if (docs.length === 0) {
+      console.warn('⚠️ No content items found in Sanity - check your dataset')
+    }
+    
+    const transformedDocs = docs.map(transformSanityToContentItem)
+    console.log(`✅ Transformed ${transformedDocs.length} content items`)
+    return transformedDocs
   } catch (error) {
-    console.error('Failed to fetch content from Sanity:', error)
+    console.error('❌ Failed to fetch content from Sanity:', error)
+    console.error('Sanity client config:', {
+      projectId: client.config().projectId,
+      dataset: client.config().dataset,
+      useCdn: client.config().useCdn,
+      apiVersion: client.config().apiVersion
+    })
     return [] // Return empty array instead of crashing
   }
 }
@@ -88,9 +103,21 @@ export async function getContentByType(type: 'learn' | 'practice'): Promise<Cont
 
 // Fetch content by dimension and key
 export async function getContentByDimensionAndKey(dimension: string, key: string): Promise<ContentItem[]> {
-  const query = `*[_type == "contentItem" && dimension == $dimension && key == $key] | order(pinOrder asc, _createdAt desc)`
-  const docs = await client.fetch(query, { dimension, key })
-  return docs.map(transformSanityToContentItem)
+  try {
+    console.log(`🔄 Fetching content for dimension: ${dimension}, key: ${key}`)
+    const query = `*[_type == "contentItem" && dimension == $dimension && key == $key] | order(pinOrder asc, _createdAt desc)`
+    const docs = await client.fetch(query, { dimension, key })
+    console.log(`✅ Found ${docs.length} items for ${dimension}/${key}`)
+    
+    if (docs.length === 0) {
+      console.warn(`⚠️ No content found for dimension: ${dimension}, key: ${key}`)
+    }
+    
+    return docs.map(transformSanityToContentItem)
+  } catch (error) {
+    console.error(`❌ Failed to fetch content for ${dimension}/${key}:`, error)
+    return []
+  }
 }
 
 // Fetch pinned content
