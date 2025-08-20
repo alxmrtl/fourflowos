@@ -90,8 +90,8 @@ export async function getAllContent(): Promise<ContentItem[]> {
     
     // Log titles to check for duplicates during transformation
     console.log('📋 Article titles being transformed:')
-    docs.forEach((doc: any, index: number) => {
-      console.log(`  ${index + 1}. "${doc.title}" (ID: ${doc._id})`)
+    docs.forEach((doc: Record<string, unknown>, index: number) => {
+      console.log(`  ${index + 1}. "${(doc.title as string) || 'untitled'}" (ID: ${doc._id})`)
     })
     
     const transformedDocs = docs.map(transformSanityToContentItem)
@@ -175,8 +175,8 @@ export async function getContentByDimensionAndKey(dimension: string, key: string
     console.log(`✅ [${callId}] Found ${docs.length} items for ${dimension}/${normalizedKey}`)
     
     // Log each document found
-    docs.forEach((doc: any, index: number) => {
-      console.log(`📄 [${callId}] Document ${index + 1}: "${doc.title}" (ID: ${doc._id})`)
+    docs.forEach((doc: Record<string, unknown>, index: number) => {
+      console.log(`📄 [${callId}] Document ${index + 1}: "${(doc.title as string) || 'untitled'}" (ID: ${doc._id})`)
     })
     
     if (docs.length === 0) {
