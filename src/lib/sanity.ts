@@ -23,7 +23,7 @@ const getToken = () => {
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'pz22ntol',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  useCdn: process.env.NODE_ENV === 'production', // Use CDN in production, direct API in development
+  useCdn: false, // Disable CDN to avoid CORS issues with client-side requests
   apiVersion: '2024-01-01',
   token: getToken()
 })
