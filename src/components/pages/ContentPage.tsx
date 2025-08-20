@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { PortableText } from '@portabletext/react';
 import TopBar from '@/components/navigation/TopBar';
 import { getContentById, getContentByDimension } from '@/data/content';
 import { ContentItem } from '@/types/framework';
@@ -185,12 +186,32 @@ export default function ContentPage({ contentId }: ContentPageProps) {
 
       {/* Content Body */}
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <article className="max-w-none">
-          <div 
-            className="content-typography"
-            dangerouslySetInnerHTML={{ 
-              __html: formatMarkdownContent(content.content) 
-            }} 
+        <article className="max-w-none prose prose-gray prose-lg max-w-none">
+          <PortableText 
+            value={content.content}
+            components={{
+              block: {
+                h1: ({ children }) => <h1 className="text-3xl font-bold text-gray-900 mt-16 mb-8 leading-tight">{children}</h1>,
+                h2: ({ children }) => <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6 leading-tight">{children}</h2>,
+                h3: ({ children }) => <h3 className="text-xl font-bold text-gray-900 mt-8 mb-4 leading-tight">{children}</h3>,
+                normal: ({ children }) => <p className="text-gray-800 leading-relaxed mb-6 text-base">{children}</p>,
+                blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-6 italic text-gray-700 my-6">{children}</blockquote>
+              },
+              marks: {
+                strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
+                code: ({ children }) => <code className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono">{children}</code>,
+                link: ({ children, value }) => <a href={value.href} className="text-blue-600 hover:text-blue-800 underline">{children}</a>
+              },
+              list: {
+                bullet: ({ children }) => <ul className="list-disc list-inside space-y-2 mb-6 ml-4">{children}</ul>,
+                number: ({ children }) => <ol className="list-decimal list-inside space-y-2 mb-6 ml-4">{children}</ol>
+              },
+              listItem: {
+                bullet: ({ children }) => <li className="text-gray-800 leading-relaxed">{children}</li>,
+                number: ({ children }) => <li className="text-gray-800 leading-relaxed">{children}</li>
+              }
+            }}
           />
         </article>
 
@@ -280,49 +301,3 @@ export default function ContentPage({ contentId }: ContentPageProps) {
   );
 }
 
-// Helper function to format markdown content for display
-function formatMarkdownContent(content: string): string {
-  // Enhanced markdown to HTML conversion with better formatting
-  let html = content
-    // Convert headers with proper spacing and styling
-    .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold text-gray-900 mt-8 mb-4 leading-tight">$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold text-gray-900 mt-12 mb-6 leading-tight">$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-bold text-gray-900 mt-16 mb-8 leading-tight">$1</h1>')
-    
-    // Convert bold with better styling
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
-    
-    // Convert italic
-    .replace(/\*(.*?)\*/g, '<em class="italic text-gray-800">$1</em>')
-    
-    // Convert inline code
-    .replace(/`(.*?)`/g, '<code class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono">$1</code>')
-    
-    // Convert bullet points
-    .replace(/^- (.*$)/gim, '<li class="text-gray-800 leading-relaxed">$1</li>')
-    
-    // Convert numbered lists
-    .replace(/^\d+\. (.*$)/gim, '<li class="text-gray-800 leading-relaxed">$1</li>')
-    
-    // Split into paragraphs and format
-    .split('\n\n')
-    .map(paragraph => {
-      const trimmed = paragraph.trim();
-      if (!trimmed) return '';
-      
-      if (trimmed.startsWith('<h') || trimmed.startsWith('<li>')) {
-        return trimmed;
-      }
-      
-      // Regular paragraph
-      return `<p class="text-gray-800 leading-relaxed mb-6 text-base">${trimmed}</p>`;
-    })
-    .join('\n');
-
-  // Wrap consecutive <li> elements in styled lists
-  html = html.replace(/(<li[^>]*>.*?<\/li>\s*)+/g, (match) => {
-    return `<ul class="list-disc list-inside space-y-2 mb-6 ml-4">${match}</ul>`;
-  });
-
-  return html;
-}

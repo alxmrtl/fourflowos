@@ -50,7 +50,7 @@ function transformSanityToContentItem(doc: Record<string, unknown>): ContentItem
     id: doc._id as string,
     title: doc.title as string,
     description: doc.description as string,
-    content: portableTextToPlainText((doc.content as unknown[]) || []),
+    content: (doc.content as unknown[]) || [], // Preserve Portable Text blocks
     tags: (doc.tags as string[]) || [],
     type: doc.type as 'learn' | 'practice',
     dimension: doc.dimension as DimensionType,

@@ -36,7 +36,7 @@ export interface ContentItem {
   id: string;
   title: string;
   description: string;
-  content: string;
+  content: any; // Portable Text blocks from Sanity
   tags: string[];
   type: 'learn' | 'practice';
   dimension: DimensionType;
