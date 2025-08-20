@@ -90,7 +90,7 @@ export async function getAllContent(): Promise<ContentItem[]> {
     
     // Log titles to check for duplicates during transformation
     console.log('📋 Article titles being transformed:')
-    docs.forEach((doc, index) => {
+    docs.forEach((doc: any, index: number) => {
       console.log(`  ${index + 1}. "${doc.title}" (ID: ${doc._id})`)
     })
     
@@ -175,7 +175,7 @@ export async function getContentByDimensionAndKey(dimension: string, key: string
     console.log(`✅ [${callId}] Found ${docs.length} items for ${dimension}/${normalizedKey}`)
     
     // Log each document found
-    docs.forEach((doc, index) => {
+    docs.forEach((doc: any, index: number) => {
       console.log(`📄 [${callId}] Document ${index + 1}: "${doc.title}" (ID: ${doc._id})`)
     })
     
