@@ -1,13 +1,31 @@
 import { createClient } from '@sanity/client'
 import { ContentItem, DimensionType, KeyType } from '@/types/framework'
 
+// Robust token resolution with detailed logging
+const getToken = () => {
+  const tokens = {
+    nextPublic: process.env.NEXT_PUBLIC_SANITY_API_TOKEN,
+    server: process.env.SANITY_API_TOKEN,
+    fallback: 'skFsVNJgys3k7mpt1Mfrsn3y82nmd0MjNUHcesigTIGEE8RPbOvYotyQPL0NGMKtUbgw867fqrqIvdFEER9Fcr920WUw7SUZ958v1Gb4y6N7l8gV6A3jJ8dIYrMXxdX6osCrN3R3hQPSLGhR7C3mkkCK9iyunAg7zC2lHGATFsVsAHpFVA08'
+  }
+
+  console.log('🔧 Token resolution:', {
+    hasNextPublic: !!tokens.nextPublic,
+    hasServer: !!tokens.server,
+    nextPublicLength: tokens.nextPublic?.length || 0,
+    serverLength: tokens.server?.length || 0,
+    willUseFallback: !tokens.nextPublic && !tokens.server
+  })
+
+  return tokens.nextPublic || tokens.server || tokens.fallback
+}
+
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'pz22ntol',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   useCdn: process.env.NODE_ENV === 'production', // Use CDN in production, direct API in development
   apiVersion: '2024-01-01',
-  // Use client-accessible token for browser compatibility
-  token: process.env.NEXT_PUBLIC_SANITY_API_TOKEN || process.env.SANITY_API_TOKEN || 'skFsVNJgys3k7mpt1Mfrsn3y82nmd0MjNUHcesigTIGEE8RPbOvYotyQPL0NGMKtUbgw867fqrqIvdFEER9Fcr920WUw7SUZ958v1Gb4y6N7l8gV6A3jJ8dIYrMXxdX6osCrN3R3hQPSLGhR7C3mkkCK9iyunAg7zC2lHGATFsVsAHpFVA08'
+  token: getToken()
 })
 
 // Helper function to convert Sanity portable text to plain string
@@ -69,8 +87,23 @@ export async function getAllContent(): Promise<ContentItem[]> {
     const transformedDocs = docs.map(transformSanityToContentItem)
     console.log(`✅ Transformed ${transformedDocs.length} content items`)
     return transformedDocs
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to fetch content from Sanity:', error)
+    
+    // Enhanced error logging for 401 issues
+    if (error?.statusCode === 401) {
+      console.error('🚨 AUTHENTICATION ERROR: Token appears invalid or missing')
+      console.error('Check environment variables:')
+      console.error('- NEXT_PUBLIC_SANITY_API_TOKEN in Vercel dashboard')
+      console.error('- SANITY_API_TOKEN in Vercel dashboard')  
+      console.error('Current token info:', {
+        hasNextPublicToken: !!process.env.NEXT_PUBLIC_SANITY_API_TOKEN,
+        hasServerToken: !!process.env.SANITY_API_TOKEN,
+        nextPublicLength: process.env.NEXT_PUBLIC_SANITY_API_TOKEN?.length || 0,
+        serverLength: process.env.SANITY_API_TOKEN?.length || 0
+      })
+    }
+    
     console.error('Sanity client config:', {
       projectId: client.config().projectId,
       dataset: client.config().dataset,
