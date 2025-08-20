@@ -16,7 +16,8 @@ export async function generateStaticParams() {
   // Import here to avoid circular dependencies
   const { CONTENT_REPOSITORY } = await import('@/data/content');
   
-  return CONTENT_REPOSITORY.map((item) => ({
+  const content = await CONTENT_REPOSITORY();
+  return content.map((item) => ({
     id: item.id,
   }));
 }

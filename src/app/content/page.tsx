@@ -3,7 +3,8 @@ import TopBar from '@/components/navigation/TopBar';
 import { CONTENT_REPOSITORY } from '@/data/content';
 import { DIMENSIONS } from '@/data/framework';
 
-export default function ContentRepository() {
+export default async function ContentRepository() {
+  const content = await CONTENT_REPOSITORY();
   return (
     <div className="min-h-screen bg-gray-50">
       <TopBar />
@@ -17,7 +18,7 @@ export default function ContentRepository() {
         </div>
 
         <div className="grid gap-6">
-          {CONTENT_REPOSITORY.map((item) => {
+          {content.map((item) => {
             const dimensionData = DIMENSIONS[item.dimension];
             
             return (

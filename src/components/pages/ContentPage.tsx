@@ -18,14 +18,14 @@ export default function ContentPage({ contentId }: ContentPageProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadContent = () => {
+    const loadContent = async () => {
       try {
-        const contentItem = getContentById(contentId);
+        const contentItem = await getContentById(contentId);
         setContent(contentItem);
         
         if (contentItem) {
           // Get related articles from the same dimension, excluding current article
-          const dimensionContent = getContentByDimension(contentItem.dimension);
+          const dimensionContent = await getContentByDimension(contentItem.dimension);
           const related = dimensionContent
             .filter(item => item.id !== contentItem.id)
             .slice(0, 3); // Limit to 3 related articles

@@ -1,5 +1,5 @@
 import { createClient } from '@sanity/client'
-import { ContentItem } from '@/types/framework'
+import { ContentItem, DimensionType, KeyType } from '@/types/framework'
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'pz22ntol',
@@ -10,42 +10,46 @@ export const client = createClient({
 })
 
 // Helper function to convert Sanity portable text to plain string
-function portableTextToPlainText(blocks: any[]): string {
+function portableTextToPlainText(blocks: unknown[]): string {
   return blocks
-    .map((block: any) => {
-      if (block._type !== 'block' || !block.children) {
-        return ''
+    .map((block: unknown) => {
+      if (typeof block === 'object' && block !== null && 'children' in block && '_type' in block) {
+        const typedBlock = block as { _type: string; children?: { text: string }[] }
+        if (typedBlock._type !== 'block' || !typedBlock.children) {
+          return ''
+        }
+        return typedBlock.children.map((child) => child.text).join('')
       }
-      return block.children.map((child: any) => child.text).join('')
+      return ''
     })
     .join('\n\n')
 }
 
 // Transform Sanity document to ContentItem
-function transformSanityToContentItem(doc: any): ContentItem {
+function transformSanityToContentItem(doc: Record<string, unknown>): ContentItem {
   return {
-    id: doc._id,
-    title: doc.title,
-    description: doc.description,
-    content: portableTextToPlainText(doc.content || []),
-    tags: doc.tags || [],
-    type: doc.type,
-    dimension: doc.dimension,
-    key: doc.key,
-    short_title: doc.shortTitle,
-    excerpt: doc.excerpt,
-    difficulty: doc.difficulty,
-    estimated_duration: doc.estimatedDuration,
-    read_time: doc.readTime,
-    materials_needed: doc.materialsNeeded,
-    scientific_backing: doc.scientificBacking,
-    flow_triggers: doc.flowTriggers,
-    target_outcomes: doc.targetOutcomes,
-    created_date: doc.createdDate,
-    meta_description: doc.metaDescription,
-    keywords: doc.keywords,
-    is_pinned: doc.isPinned,
-    pin_order: doc.pinOrder
+    id: doc._id as string,
+    title: doc.title as string,
+    description: doc.description as string,
+    content: portableTextToPlainText((doc.content as unknown[]) || []),
+    tags: (doc.tags as string[]) || [],
+    type: doc.type as 'learn' | 'practice',
+    dimension: doc.dimension as DimensionType,
+    key: doc.key as KeyType,
+    short_title: doc.shortTitle as string | undefined,
+    excerpt: doc.excerpt as string | undefined,
+    difficulty: doc.difficulty as 'Beginner' | 'Intermediate' | 'Advanced' | undefined,
+    estimated_duration: doc.estimatedDuration as number | undefined,
+    read_time: doc.readTime as number | undefined,
+    materials_needed: doc.materialsNeeded as string[] | undefined,
+    scientific_backing: doc.scientificBacking as boolean | undefined,
+    flow_triggers: doc.flowTriggers as string[] | undefined,
+    target_outcomes: doc.targetOutcomes as string[] | undefined,
+    created_date: doc.createdDate as string | undefined,
+    meta_description: doc.metaDescription as string | undefined,
+    keywords: doc.keywords as string[] | undefined,
+    is_pinned: doc.isPinned as boolean | undefined,
+    pin_order: doc.pinOrder as number | undefined
   }
 }
 
