@@ -57,12 +57,12 @@ function transformSanityToContentItem(doc: Record<string, unknown>): ContentItem
 export async function getAllContent(): Promise<ContentItem[]> {
   try {
     console.log('🔄 Fetching all content from Sanity...')
-    const query = `*[_type == "contentItem"] | order(pinOrder asc, _createdAt desc)`
+    const query = `*[_type == "contentItem" && defined(dimension) && defined(key) && defined(type)] | order(pinOrder asc, _createdAt desc)`
     const docs = await client.fetch(query)
     console.log(`✅ Successfully fetched ${docs.length} content items from Sanity`)
     
     if (docs.length === 0) {
-      console.warn('⚠️ No content items found in Sanity - check your dataset')
+      console.warn('⚠️ No content items found in Sanity - check your dataset and ensure all items have dimension, key, and type fields')
     }
     
     const transformedDocs = docs.map(transformSanityToContentItem)
@@ -82,9 +82,14 @@ export async function getAllContent(): Promise<ContentItem[]> {
 
 // Fetch content by dimension
 export async function getContentByDimension(dimension: string): Promise<ContentItem[]> {
-  const query = `*[_type == "contentItem" && dimension == $dimension] | order(pinOrder asc, _createdAt desc)`
-  const docs = await client.fetch(query, { dimension })
-  return docs.map(transformSanityToContentItem)
+  try {
+    const query = `*[_type == "contentItem" && defined(dimension) && dimension == $dimension] | order(pinOrder asc, _createdAt desc)`
+    const docs = await client.fetch(query, { dimension })
+    return docs.map(transformSanityToContentItem)
+  } catch (error) {
+    console.error(`❌ Failed to fetch content for dimension ${dimension}:`, error)
+    return []
+  }
 }
 
 // Fetch content by key
@@ -105,7 +110,7 @@ export async function getContentByType(type: 'learn' | 'practice'): Promise<Cont
 export async function getContentByDimensionAndKey(dimension: string, key: string): Promise<ContentItem[]> {
   try {
     console.log(`🔄 Fetching content for dimension: ${dimension}, key: ${key}`)
-    const query = `*[_type == "contentItem" && dimension == $dimension && key == $key] | order(pinOrder asc, _createdAt desc)`
+    const query = `*[_type == "contentItem" && defined(dimension) && defined(key) && dimension == $dimension && key == $key] | order(pinOrder asc, _createdAt desc)`
     const docs = await client.fetch(query, { dimension, key })
     console.log(`✅ Found ${docs.length} items for ${dimension}/${key}`)
     
