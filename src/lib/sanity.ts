@@ -74,6 +74,10 @@ function transformSanityToContentItem(doc: Record<string, unknown>): ContentItem
 
 // Fetch all content items
 export async function getAllContent(): Promise<ContentItem[]> {
+  // Import and run test first
+  const { testSanityConnection } = await import('./sanity-test')
+  await testSanityConnection()
+  
   try {
     console.log('🔄 Fetching all content from Sanity...')
     const query = `*[_type == "contentItem" && defined(dimension) && defined(key) && defined(type)] | order(pinOrder asc, _createdAt desc)`
