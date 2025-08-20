@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { CONTENT_REPOSITORY, getContentByDimension, getContentByType } from '@/data/content';
+import { getAllContent, getContentByDimension, getContentByType } from '@/data/content';
 import { DIMENSIONS } from '@/data/framework';
 import { ContentItem, DimensionType } from '@/types/framework';
 import TopBar from '@/components/navigation/TopBar';
@@ -12,16 +12,35 @@ type FilterType = 'all' | DimensionType | 'learn' | 'practice';
 export default function BlogPage() {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [allContent, setAllContent] = useState<ContentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load content from Sanity
+  useEffect(() => {
+    async function loadContent() {
+      try {
+        const content = await getAllContent();
+        setAllContent(content);
+      } catch (error) {
+        console.error('Failed to load content:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadContent();
+  }, []);
 
   const filteredContent = useMemo(() => {
-    let content = CONTENT_REPOSITORY;
+    if (loading) return [];
+    
+    let content = allContent;
 
-    // Apply dimension/type filter
+    // Apply dimension/type filter using local data
     if (selectedFilter !== 'all') {
       if (['self', 'space', 'story', 'spirit'].includes(selectedFilter)) {
-        content = getContentByDimension(selectedFilter);
+        content = allContent.filter(item => item.dimension === selectedFilter);
       } else if (['learn', 'practice'].includes(selectedFilter)) {
-        content = getContentByType(selectedFilter as 'learn' | 'practice');
+        content = allContent.filter(item => item.type === selectedFilter);
       }
     }
 
@@ -36,19 +55,19 @@ export default function BlogPage() {
     }
 
     return content;
-  }, [selectedFilter, searchQuery]);
+  }, [selectedFilter, searchQuery, allContent, loading]);
 
   const getItemPath = (item: ContentItem) => {
     return `/dimension/${item.dimension}/key/${item.key}`;
   };
 
   const getFilterCount = (filter: FilterType) => {
-    if (filter === 'all') return CONTENT_REPOSITORY.length;
+    if (filter === 'all') return allContent.length;
     if (['self', 'space', 'story', 'spirit'].includes(filter)) {
-      return getContentByDimension(filter).length;
+      return allContent.filter(item => item.dimension === filter).length;
     }
     if (['learn', 'practice'].includes(filter)) {
-      return getContentByType(filter as 'learn' | 'practice').length;
+      return allContent.filter(item => item.type === filter).length;
     }
     return 0;
   };
@@ -153,7 +172,18 @@ export default function BlogPage() {
         </div>
 
         {/* Content Grid */}
-        {filteredContent.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="w-16 h-16 mx-auto mb-4 text-gray-300">
+              <svg className="animate-spin" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z" opacity="0.3"/>
+                <path d="M12 2v4c3.309 0 6 2.691 6 6h4c0-5.523-4.477-10-10-10z"/>
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Loading content...</h3>
+            <p className="text-gray-600">Fetching your Flow Keys articles from Sanity</p>
+          </div>
+        ) : filteredContent.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredContent.map((item) => {
               const dimension = DIMENSIONS[item.dimension];
