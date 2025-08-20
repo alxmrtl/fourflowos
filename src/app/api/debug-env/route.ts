@@ -16,7 +16,7 @@ export async function GET() {
     }
 
     return NextResponse.json(envDebug, { status: 200 })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to debug environment variables' },
       { status: 500 }

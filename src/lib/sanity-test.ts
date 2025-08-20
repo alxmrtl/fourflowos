@@ -17,8 +17,9 @@ export async function testSanityConnection(): Promise<{ success: boolean; count:
     const docs = await testClient.fetch(query)
     console.log('🧪 Hardcoded test successful:', docs.length, 'items found')
     return { success: true, count: docs.length }
-  } catch (error: any) {
-    console.error('🧪 Hardcoded test failed:', error?.message || error)
-    return { success: false, count: 0, error: error?.message || String(error) }
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    console.error('🧪 Hardcoded test failed:', errorMessage)
+    return { success: false, count: 0, error: errorMessage }
   }
 }

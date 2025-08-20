@@ -91,11 +91,11 @@ export async function getAllContent(): Promise<ContentItem[]> {
     const transformedDocs = docs.map(transformSanityToContentItem)
     console.log(`✅ Transformed ${transformedDocs.length} content items`)
     return transformedDocs
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ Failed to fetch content from Sanity:', error)
     
     // Enhanced error logging for 401 issues
-    if (error?.statusCode === 401) {
+    if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 401) {
       console.error('🚨 AUTHENTICATION ERROR: Token appears invalid or missing')
       console.error('Check environment variables:')
       console.error('- NEXT_PUBLIC_SANITY_API_TOKEN in Vercel dashboard')
