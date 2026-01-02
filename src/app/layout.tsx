@@ -4,12 +4,13 @@ import "./globals.css";
 import NavigationWrapper from "@/components/navigation/NavigationWrapper";
 import PageTransition from "@/components/PageTransition";
 import SwipeContainer from "@/components/SwipeContainer";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FourFlowOS - Awakening Flow States",
-  description: "A holistic framework for achieving flow states through the integration of Self, Space, Story, and Spirit dimensions.",
+  title: "FourFlowOS - The Operating System for Flow States",
+  description: "Stop forcing focus. Start aligning the four dimensions that create it naturally. A holistic framework for achieving flow states through the integration of Self, Space, Story, and Spirit.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",
@@ -19,6 +20,11 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "FourFlowOS",
+  },
+  openGraph: {
+    title: "FourFlowOS - The Operating System for Flow States",
+    description: "Stop forcing focus. Start aligning the four dimensions that create it naturally.",
+    type: "website",
   },
 };
 
@@ -37,13 +43,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50 pb-40 safe-area-top no-scroll-bounce">
+        <LayoutWrapper>
           <SwipeContainer>
             <PageTransition>
               {children}
             </PageTransition>
           </SwipeContainer>
-        </div>
+        </LayoutWrapper>
         <NavigationWrapper />
       </body>
     </html>
