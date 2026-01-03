@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function HeroSection() {
@@ -209,18 +210,18 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.8 }}
         >
-          <a
-            href="#framework"
+          <Link
+            href="/framework"
             className="px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
           >
             Discover the Framework
-          </a>
-          <a
-            href="#apps"
+          </Link>
+          <Link
+            href="/apps"
             className="px-8 py-4 border border-gray-600 text-gray-300 font-semibold rounded-full hover:bg-white/5 hover:border-gray-400 transition-all duration-300"
           >
             Explore Our Apps
-          </a>
+          </Link>
         </motion.div>
 
         {/* Scroll indicator - gentle, slow animation */}
