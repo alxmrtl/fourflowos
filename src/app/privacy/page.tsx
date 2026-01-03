@@ -87,20 +87,20 @@ export default function PrivacyPage() {
                 Apps Covered by This Policy
               </h2>
               <p className="text-gray-300 mb-4">This privacy policy applies to the following applications:</p>
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800">
                       <Image
                         src="/assets/apps/flowspace-icon.png"
-                        alt="FlowSpace"
+                        alt="FlowZone"
                         width={48}
                         height={48}
                         className="object-cover"
                       />
                     </div>
                     <div>
-                      <h4 className="text-white font-semibold">FlowSpace</h4>
+                      <h4 className="text-white font-semibold">FlowZone</h4>
                       <p className="text-gray-500 text-sm">Focus & Flow Timer</p>
                     </div>
                   </div>
@@ -110,15 +110,32 @@ export default function PrivacyPage() {
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800">
                       <Image
                         src="/assets/apps/habits-icon.png"
-                        alt="FourFlow Habits"
+                        alt="FlowHabits"
                         width={48}
                         height={48}
                         className="object-cover"
                       />
                     </div>
                     <div>
-                      <h4 className="text-white font-semibold">FourFlow Habits</h4>
+                      <h4 className="text-white font-semibold">FlowHabits</h4>
                       <p className="text-gray-500 text-sm">Habit Tracker</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800">
+                      <Image
+                        src="/assets/apps/flowrep-icon.png"
+                        alt="FlowRep"
+                        width={48}
+                        height={48}
+                        className="object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-semibold">FlowRep</h4>
+                      <p className="text-gray-500 text-sm">Daily Rep Tracker</p>
                     </div>
                   </div>
                 </div>
@@ -333,10 +350,10 @@ export default function PrivacyPage() {
               </p>
               <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
                 <a
-                  href="mailto:support@fourflow.app"
+                  href="mailto:support@fourflowos.com"
                   className="text-[#7A4DA4] hover:text-[#9A6DC4] transition-colors font-medium"
                 >
-                  support@fourflow.app
+                  support@fourflowos.com
                 </a>
               </div>
             </section>
