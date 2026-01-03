@@ -70,18 +70,23 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4">Explore</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="#framework" className="text-gray-500 hover:text-white transition-colors">
+                <Link href="/framework" className="text-gray-500 hover:text-white transition-colors">
                   The Framework
                 </Link>
               </li>
               <li>
-                <Link href="#apps" className="text-gray-500 hover:text-white transition-colors">
+                <Link href="/apps" className="text-gray-500 hover:text-white transition-colors">
                   Our Apps
                 </Link>
               </li>
               <li>
-                <Link href="/framework" className="text-gray-500 hover:text-white transition-colors">
-                  Interactive Guide
+                <Link href="/blog" className="text-gray-500 hover:text-white transition-colors">
+                  Resources
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-gray-500 hover:text-white transition-colors">
+                  About
                 </Link>
               </li>
             </ul>

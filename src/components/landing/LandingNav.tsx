@@ -28,7 +28,7 @@ export default function LandingNav() {
 
   // Main navigation links
   const mainNavLinks = [
-    { href: '#framework', label: 'Framework' },
+    { href: '/framework', label: 'Framework' },
     { href: '/apps', label: 'Apps' },
     { href: '/blog', label: 'Blog' },
     { href: '/about', label: 'About' },
