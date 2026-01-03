@@ -36,7 +36,7 @@ The app introduces Focus Reps: each time distraction pulls at your attention but
 FlowZone recognizes the Struggle Phase—the first 25% of any focus session where starting is hardest. During this phase, the app provides gentle ambient encouragement to help you push through.
 
 Integrated breathwork exercises help you transition from scattered thinking to focused presence. Choose from various patterns like Box Breathing, 4-7-8, or Coherent Breathing to find what works best for you.`,
-    icon: '/assets/apps/flowspace-icon.png',
+    icon: '/assets/apps/flowzone-icon.png',
     screenshots: [],
     platforms: ['ios', 'web'],
     appStoreUrl: '#',
@@ -85,7 +85,7 @@ Each habit you create can be assigned to a pillar, helping you maintain balance 
 The app tracks streaks, completion rates, and provides gentle accountability without guilt. Miss a day? The app helps you understand why and get back on track rather than making you feel bad.
 
 Simple, focused, and designed to help you build the foundational habits that enable flow states.`,
-    icon: '/assets/apps/habits-icon.png',
+    icon: '/assets/apps/flowhabits-icon.png',
     screenshots: [],
     platforms: ['ios'],
     appStoreUrl: '#',
@@ -166,6 +166,54 @@ Regular practice with FlowRead helps you enter a reading flow state where words 
     gradient: 'from-[#5B84B1] to-[#7A4DA4]',
     accentColor: '#5B84B1',
     relatedPillars: ['self', 'story'],
+    comingSoon: false,
+  },
+  flowrep: {
+    id: 'flowrep',
+    name: 'FlowRep',
+    tagline: 'Daily Exercise Tracker',
+    description: 'A minimalist exercise rep tracker that helps you build consistent movement habits. Track push-ups, squats, pull-ups and more with daily targets and streak tracking.',
+    fullDescription: `FlowRep is a focused exercise tracker built around the philosophy of accumulating reps throughout the day rather than formal workout sessions.
+
+Set daily targets for exercises like push-ups, squats, chin-ups, and pull-ups. Throughout the day, log your reps with a single tap. The app tracks your progress toward daily goals and celebrates when you hit your targets.
+
+Streak tracking keeps you motivated by showing consecutive days of hitting your targets. The minimalist interface gets out of the way so you can focus on movement.
+
+Built for people who want to build consistent exercise habits without the complexity of traditional workout apps.`,
+    icon: '/assets/apps/flowrep-icon.png',
+    screenshots: [],
+    platforms: ['ios'],
+    appStoreUrl: '#',
+    features: [
+      {
+        title: 'Daily Rep Tracking',
+        description: 'Log reps throughout the day with a single tap for each exercise.',
+      },
+      {
+        title: 'Daily Targets',
+        description: 'Set achievable daily goals for each exercise to build consistency.',
+      },
+      {
+        title: 'Streak Tracking',
+        description: 'Track consecutive days of hitting your targets to stay motivated.',
+      },
+      {
+        title: 'Custom Exercises',
+        description: 'Add your own exercises beyond the built-in presets.',
+      },
+      {
+        title: 'History View',
+        description: 'Review your progress over time with daily logs and statistics.',
+      },
+      {
+        title: 'Minimalist Design',
+        description: 'Clean interface that stays out of the way so you can focus on movement.',
+      },
+    ],
+    gradient: 'from-[#FF6F61] to-[#5B84B1]',
+    accentColor: '#FF6F61',
+    relatedPillars: ['self'],
+    version: '1.0',
     comingSoon: false,
   },
 };
