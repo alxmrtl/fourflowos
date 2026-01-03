@@ -66,7 +66,7 @@ export default function BlogPage() {
   }, [selectedFilter, searchQuery, allContent, loading]);
 
   const getItemPath = (item: ContentItem) => {
-    return `/dimension/${item.dimension}/key/${item.key}`;
+    return `/content/${item.id}`;
   };
 
   const getFilterCount = (filter: FilterType) => {
