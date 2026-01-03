@@ -41,11 +41,6 @@
       "source": "/home",
       "destination": "/",
       "permanent": true
-    },
-    {
-      "source": "/framework",
-      "destination": "/#framework",
-      "permanent": false
     }
   ]
 }
