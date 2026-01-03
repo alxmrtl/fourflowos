@@ -8,9 +8,13 @@ import { DimensionType, KeyType } from '@/types/framework';
 export default function NavigationWrapper() {
   const pathname = usePathname();
 
-  // Hide navigation on landing page, privacy page, and other non-framework pages
-  const hideNavPages = ['/', '/privacy'];
-  if (hideNavPages.includes(pathname)) {
+  // Only show bottom navigation in Framework area
+  const isFrameworkArea =
+    pathname === '/framework' ||
+    pathname.startsWith('/dimension') ||
+    pathname.startsWith('/content');
+
+  if (!isFrameworkArea) {
     return null;
   }
 
