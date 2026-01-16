@@ -3,8 +3,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
-import { getAllContent } from '@/data/content';
 import { DIMENSIONS } from '@/data/framework';
 import { ContentItem, DimensionType } from '@/types/framework';
 import PageLayout from '@/components/layout/PageLayout';
@@ -23,12 +21,17 @@ export default function BlogPage() {
   const heroInView = useInView(heroRef, { once: true });
   const contentInView = useInView(contentRef, { once: true, margin: '-50px' });
 
-  // Load content from Sanity
+  // Load content from API (server-side Sanity fetch to avoid CORS)
   useEffect(() => {
     async function loadContent() {
       try {
-        const content = await getAllContent();
-        setAllContent(content);
+        const response = await fetch('/api/content');
+        const data = await response.json();
+        if (data.success && data.content) {
+          setAllContent(data.content);
+        } else {
+          console.error('Failed to load content:', data.error);
+        }
       } catch (error) {
         console.error('Failed to load content:', error);
       } finally {
