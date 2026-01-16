@@ -190,7 +190,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.8 }}
         >
-          The Operating System for Flow States
+          Awaken Your Flow
         </motion.p>
 
         {/* Sub-tagline */}
@@ -200,7 +200,7 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.8 }}
         >
-          Stop forcing focus. Start aligning the four dimensions that create it naturally.
+          When Self, Space, Story, and Spirit align, focus becomes effortless and work becomes wonder.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -214,13 +214,13 @@ export default function HeroSection() {
             href="/framework"
             className="px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
           >
-            Discover the Framework
+            Explore the Framework
           </Link>
           <Link
             href="/apps"
             className="px-8 py-4 border border-gray-600 text-gray-300 font-semibold rounded-full hover:bg-white/5 hover:border-gray-400 transition-all duration-300"
           >
-            Explore Our Apps
+            See the Apps
           </Link>
         </motion.div>
 

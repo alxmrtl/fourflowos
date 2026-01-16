@@ -14,25 +14,25 @@ const transformationSteps = [
   {
     before: 'Overwhelmed',
     after: 'Centered',
-    description: 'From scattered attention to focused presence',
+    description: 'From mental chaos to grounded clarity',
     color: '#FF6F61',
   },
   {
-    before: 'Chaotic Environment',
-    after: 'Intentional Space',
-    description: 'From distractions everywhere to flow-optimized settings',
+    before: 'Chaotic',
+    after: 'Intentional',
+    description: 'From fighting your environment to flowing with it',
     color: '#6BA292',
   },
   {
     before: 'Directionless',
     after: 'Purpose-Driven',
-    description: 'From random tasks to meaningful missions',
+    description: 'From wandering to walking your path',
     color: '#5B84B1',
   },
   {
     before: 'Disconnected',
     after: 'Aligned',
-    description: 'From going through the motions to living your values',
+    description: 'From fragmented to whole',
     color: '#7A4DA4',
   },
 ];
@@ -40,7 +40,7 @@ const transformationSteps = [
 const principles = [
   {
     title: 'Flow Over Force',
-    description: 'Stop grinding. Start aligning. When the four dimensions work together, effort becomes effortless.',
+    description: 'Stop pushing. Start aligning. Effort becomes effortless when the dimensions work as one.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -48,8 +48,8 @@ const principles = [
     ),
   },
   {
-    title: 'Holistic Integration',
-    description: 'Your body affects your mind. Your environment shapes your mood. Everything is connected.',
+    title: 'Holistic by Nature',
+    description: 'Mind shapes body. Space shapes mood. Spirit shapes action. Honor the connections.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -57,8 +57,8 @@ const principles = [
     ),
   },
   {
-    title: 'Struggle is Part of the Path',
-    description: 'The first 25% of any focus session is the hardest. Knowing this changes everything.',
+    title: 'The Struggle Phase',
+    description: 'Every session begins with resistance. The first 25% is the gateway—not the obstacle.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -66,8 +66,8 @@ const principles = [
     ),
   },
   {
-    title: 'Play, Not Grind',
-    description: 'Personal development becomes engaging when framed as a game with progression and mastery.',
+    title: 'Work as Play',
+    description: 'Transform development into a game. Progression and mastery make the journey joyful.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -79,20 +79,20 @@ const principles = [
 
 const whoItsFor = [
   {
-    title: 'High-Performers Feeling Stuck',
-    description: 'You have the skills but something is missing. Success without fulfillment.',
+    title: 'High-Performers',
+    description: 'Skilled but unfulfilled. Ready to add meaning to success.',
   },
   {
     title: 'Entrepreneurs & Creatives',
-    description: 'You need sustainable focus, not burnout cycles. Creative energy that flows.',
+    description: 'Done with burnout. Ready for sustainable, flowing energy.',
   },
   {
-    title: 'Leaders Building Teams',
-    description: 'Flow is contagious. When you find it, your team feels it too.',
+    title: 'Leaders',
+    description: 'Your flow becomes your team\'s flow. Alignment is contagious.',
   },
   {
-    title: 'Anyone in Transition',
-    description: 'New chapter? New career? The framework helps you find clarity fast.',
+    title: 'Career Changers',
+    description: 'In transition? Find clarity through the four dimensions.',
   },
 ];
 
@@ -164,13 +164,10 @@ export default function LandingPage() {
                     Our Mission
                   </h2>
                   <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-6">
-                    We envision a world where millions are awakened through <span className="text-white font-semibold">flow</span>,
-                    discovering their unique role in life&apos;s greater synchronicity.
+                    Millions moving from scattered to centered. From going through the motions to <span className="text-white font-semibold">fully alive</span>.
                   </p>
                   <p className="text-gray-400 leading-relaxed">
-                    Our mission is to ignite this inner fire, guiding others to find joy, purpose,
-                    and fulfillment in their work and lives through a holistic framework that aligns
-                    Self, Space, Story, and Spirit.
+                    We cultivate presence and clarity through a framework that harmonizes your inner world with your outer environment. This is the path from distraction to flow.
                   </p>
                 </div>
               </div>
@@ -189,10 +186,10 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              The Transformation
+              The Shift
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              From disengaged to fully alive. This is the journey FourFlowOS facilitates.
+              This is what changes when the four dimensions align.
             </p>
           </motion.div>
 
@@ -326,10 +323,10 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Core Philosophy
+              Guiding Principles
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              The principles that guide everything we build
+              The philosophy behind the framework.
             </p>
           </motion.div>
 
@@ -373,10 +370,10 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Who This Is For
+              Built For
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              FourFlowOS is built for people ready to transform how they work and live
+              People ready to transform how they work and live.
             </p>
           </motion.div>
 
@@ -411,22 +408,17 @@ export default function LandingPage() {
           >
             <div className="p-8 md:p-12 bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 rounded-2xl">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-center">
-                The Origin Story
+                Where This Came From
               </h2>
               <div className="prose prose-invert prose-lg max-w-none">
                 <p className="text-gray-300 leading-relaxed mb-6 text-center md:text-left">
-                  My path led me from the haze of hesitation to the clear rhythm of inspired action.
-                  I used to dance with distraction. Now, I choreograph high-flow lifestyles that bridge
-                  science and spirituality to cultivate presence and clarity.
+                  I spent years scattered—starting projects, losing focus, burning out. I read the research on flow states and peak performance. I studied consciousness and presence practices. Slowly, patterns emerged.
                 </p>
                 <p className="text-gray-400 leading-relaxed mb-6 text-center md:text-left">
-                  In flow, we harmonize effort with ease, replace apathy with inspiration, and leave behind
-                  grinding for thriving in joy and simplicity. Work, wellness, and wonder resonate in unison.
+                  Four areas kept showing up: how I managed myself, my environment, my sense of direction, and what actually drove me. When these aligned, focus stopped being a fight.
                 </p>
                 <p className="text-gray-400 leading-relaxed text-center md:text-left">
-                  This framework emerged from years of studying peak performance, consciousness research,
-                  and the practical application of flow science in real-world contexts. It&apos;s not just
-                  theory&mdash;it&apos;s a lived methodology for sustainable excellence.
+                  This framework is what I built to stay in that alignment. It&apos;s practical, tested, and it works.
                 </p>
               </div>
             </div>
@@ -448,10 +440,10 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Begin?
+              Start Here
             </h2>
             <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-              Start your flow journey today. Explore the framework, try our apps, or get in touch.
+              Explore the framework. Try the apps. See what alignment feels like.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

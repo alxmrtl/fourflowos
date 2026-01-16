@@ -8,8 +8,8 @@ const apps = [
   {
     id: 'flowzone',
     name: 'FlowZone',
-    tagline: 'Enter Your Flow State',
-    description: 'A focus timer with breathwork, Focus Reps tracking, and ambient encouragement during the Struggle Phase. Build your focus muscle over time.',
+    tagline: 'Train Your Focus',
+    description: 'Focus timer with breathwork, distraction tracking, and support through the hard first 25%. Build your focus muscle session by session.',
     features: [
       'Focus Reps tracking',
       'Struggle Phase support',
@@ -26,8 +26,8 @@ const apps = [
   {
     id: 'flowhabits',
     name: 'FlowHabits',
-    tagline: 'Build Flow-Aligned Habits',
-    description: 'A habit tracker organized around the Four Pillars—SELF, SPACE, STORY, SPIRIT—helping you build balanced routines that support flow.',
+    tagline: 'Balanced Daily Habits',
+    description: 'Habit tracker organized by the four dimensions. Build routines that support flow across Self, Space, Story, and Spirit.',
     features: [
       'Four Pillars organization',
       'Streak tracking',
@@ -44,8 +44,8 @@ const apps = [
   {
     id: 'flowread',
     name: 'FlowRead',
-    tagline: 'Speed Reading Trainer',
-    description: 'Train your reading speed with RSVP, word chunking, and progressive speed training to expand your reading capacity and enter reading flow.',
+    tagline: 'Read Faster, Focus Deeper',
+    description: 'Speed reading trainer using RSVP and chunking. Expand your reading capacity and find flow in text.',
     features: [
       'RSVP training',
       'Word chunking',
@@ -64,8 +64,8 @@ const apps = [
   {
     id: 'flowrep',
     name: 'FlowRep',
-    tagline: 'Daily Exercise Tracker',
-    description: 'A minimalist exercise rep tracker for building consistent movement habits. Track push-ups, squats, pull-ups with daily targets and streaks.',
+    tagline: 'Simple Movement Tracking',
+    description: 'Minimalist rep counter for daily exercise. Set targets, track streaks, build consistency.',
     features: [
       'Daily rep tracking',
       'Daily targets',
@@ -109,17 +109,16 @@ export default function AppsSection() {
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.2 }}
           >
-            The Ecosystem
+            The Apps
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            Apps Built on{' '}
+            Tools That Put It{' '}
             <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
-              FourFlowOS
+              Into Practice
             </span>
           </h2>
           <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto">
-            Practical tools that bring the framework to life. Each app is designed to help you
-            master specific aspects of flow—privacy-first, beautifully crafted, endlessly useful.
+            Each app targets a specific aspect of flow. All privacy-first, all local data, no accounts required.
           </p>
         </motion.div>
 
@@ -220,25 +219,6 @@ export default function AppsSection() {
           ))}
         </div>
 
-        {/* Privacy callout */}
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.8 }}
-        >
-          <div className="inline-flex items-center gap-3 px-6 py-4 bg-white/5 border border-white/10 rounded-2xl">
-            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-              <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <div className="text-left">
-              <p className="text-white font-medium">Privacy First</p>
-              <p className="text-sm text-gray-400">All data stored locally. No accounts. No tracking.</p>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

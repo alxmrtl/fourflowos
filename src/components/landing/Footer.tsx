@@ -128,14 +128,7 @@ export default function Footer() {
             &copy; {currentYear} FourFlowOS. All rights reserved.
           </p>
           <p className="text-gray-600 text-sm flex items-center gap-2">
-            Made with
-            <motion.span
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
-            >
-              ❤️
-            </motion.span>
-            for flow seekers
+            Made for those who seek flow
           </p>
         </motion.div>
       </div>
