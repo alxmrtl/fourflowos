@@ -1,75 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PortableText } from '@portabletext/react';
 import TopBar from '@/components/navigation/TopBar';
-import { getContentById, getContentByDimension } from '@/data/content';
 import { ContentItem } from '@/types/framework';
 import { DIMENSIONS, KEYS } from '@/data/framework';
 
 interface ContentPageProps {
-  contentId: string;
+  initialContent: ContentItem;
+  initialRelatedArticles?: ContentItem[];
 }
 
-export default function ContentPage({ contentId }: ContentPageProps) {
-  const [content, setContent] = useState<ContentItem | null>(null);
-  const [relatedArticles, setRelatedArticles] = useState<ContentItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadContent = async () => {
-      try {
-        const contentItem = await getContentById(contentId);
-        setContent(contentItem);
-
-        if (contentItem) {
-          // Get related articles from the same dimension, excluding current article
-          const dimensionContent = await getContentByDimension(contentItem.dimension);
-          const related = dimensionContent
-            .filter(item => item.id !== contentItem.id)
-            .slice(0, 3); // Limit to 3 related articles
-          setRelatedArticles(related);
-        }
-      } catch (error) {
-        console.error('Error loading content:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadContent();
-  }, [contentId]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading content...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!content) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a]">
-        <TopBar />
-        <div className="max-w-4xl mx-auto px-6 py-12 text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Content Not Found</h1>
-          <p className="text-gray-400 mb-6">The content you&apos;re looking for could not be found.</p>
-          <Link
-            href="/framework"
-            className="text-[#7A4DA4] hover:text-[#9A6DC4] font-medium"
-          >
-            Back to Framework
-          </Link>
-        </div>
-      </div>
-    );
-  }
+export default function ContentPage({ initialContent, initialRelatedArticles = [] }: ContentPageProps) {
+  const content = initialContent;
+  const relatedArticles = initialRelatedArticles;
 
   const dimensionData = DIMENSIONS[content.dimension];
   const keyData = KEYS[content.key];

@@ -1,17 +1,17 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { KEYS, DIMENSIONS } from '@/data/framework';
-import { getContentByDimensionAndKey } from '@/data/content';
 import { KeyType, DimensionType, ContentItem } from '@/types/framework';
 import PageLayout from '@/components/layout/PageLayout';
 
 interface KeyPageProps {
   keyId: KeyType;
   dimension: DimensionType;
+  initialContent?: ContentItem[];
 }
 
 const getKeyDisplayInfo = (keyId: string) => {
@@ -80,9 +80,9 @@ const getKeyDisplayInfo = (keyId: string) => {
   return keyInfo[keyId] || { name: keyId, description: 'Flow key description', keyNumber: 0 };
 };
 
-export default function KeyPage({ keyId, dimension }: KeyPageProps) {
-  const [content, setContent] = useState<ContentItem[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPageProps) {
+  const content = initialContent;
+  const loading = false;
 
   const heroRef = useRef(null);
   const contentRef = useRef(null);
@@ -92,31 +92,6 @@ export default function KeyPage({ keyId, dimension }: KeyPageProps) {
   const keyData = KEYS[keyId];
   const dimensionData = DIMENSIONS[dimension];
   const keyInfo = getKeyDisplayInfo(keyId);
-
-  useEffect(() => {
-    async function loadContent() {
-      try {
-        const keyContent = await getContentByDimensionAndKey(dimension, keyId);
-        const sortedContent = keyContent.sort((a, b) => {
-          if (a.is_pinned && !b.is_pinned) return -1;
-          if (!a.is_pinned && b.is_pinned) return 1;
-          if (a.is_pinned && b.is_pinned) {
-            return (a.pin_order || 0) - (b.pin_order || 0);
-          }
-          const aDate = new Date(a.created_date || '2024-01-01');
-          const bDate = new Date(b.created_date || '2024-01-01');
-          return bDate.getTime() - aDate.getTime();
-        });
-        setContent(sortedContent);
-      } catch (error) {
-        console.error('Error loading content:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadContent();
-  }, [dimension, keyId]);
 
   if (!keyData || !dimensionData) {
     return <div>Key not found</div>;
