@@ -9,11 +9,15 @@ import PageLayout from '@/components/layout/PageLayout';
 
 type FilterType = 'all' | DimensionType | 'learn' | 'practice';
 
-export default function BlogPage() {
+interface BlogPageProps {
+  initialContent?: ContentItem[];
+}
+
+export default function BlogPage({ initialContent }: BlogPageProps) {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [allContent, setAllContent] = useState<ContentItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [allContent, setAllContent] = useState<ContentItem[]>(initialContent || []);
+  const [loading, setLoading] = useState(!initialContent);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const heroRef = useRef(null);
@@ -21,8 +25,12 @@ export default function BlogPage() {
   const heroInView = useInView(heroRef, { once: true });
   const contentInView = useInView(contentRef, { once: true, margin: '-50px' });
 
-  // Load content from API (server-side Sanity fetch to avoid CORS)
+  // Load content from API if not provided via SSR
   useEffect(() => {
+    if (initialContent && initialContent.length > 0) {
+      return; // Content already provided via SSR
+    }
+
     async function loadContent() {
       try {
         const response = await fetch('/api/content');
@@ -39,7 +47,7 @@ export default function BlogPage() {
       }
     }
     loadContent();
-  }, []);
+  }, [initialContent]);
 
   const filteredContent = useMemo(() => {
     if (loading) return [];
