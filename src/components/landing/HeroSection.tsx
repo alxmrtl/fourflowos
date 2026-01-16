@@ -224,20 +224,6 @@ export default function HeroSection() {
           </Link>
         </motion.div>
 
-        {/* Scroll indicator - gentle, slow animation */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <div className="w-6 h-10 border-2 border-gray-600/50 rounded-full flex items-start justify-center p-1">
-            <motion.div
-              className="w-1.5 h-3 bg-gray-500 rounded-full"
-              animate={{ y: [0, 12, 0], opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          </div>
-        </motion.div>
       </div>
     </section>
   );
