@@ -30,6 +30,10 @@ export interface Key {
     learn: ContentItem[];
     practice: ContentItem[];
   };
+  // Essence Card content
+  coreInsight: string;
+  flowConnection: string;
+  withoutThis: string;
 }
 
 export interface ContentItem {

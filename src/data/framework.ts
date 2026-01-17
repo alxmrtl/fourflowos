@@ -47,7 +47,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'self',
     description: 'Using emotions as a compass for flow navigation',
     icon: '/assets/LOGOS/TUNED EMOTIONS.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'Your emotions are a real-time dashboard showing whether you\'re in flow, approaching it, or drifting away.',
+    flowConnection: 'Flow lives in the channel between boredom and anxiety—tuned emotions let you navigate there.',
+    withoutThis: 'You\'ll burn out chasing intensity or stall out in apathy, never finding the sweet spot.'
   },
   'open-mind': {
     id: 'open-mind',
@@ -55,7 +58,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'self',
     description: 'Cognitive flexibility and growth mindset',
     icon: '/assets/LOGOS/OPEN MIND.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'A cluttered mind is a closed door to flow—mental flexibility creates space for insight and adaptation.',
+    flowConnection: 'Flow requires releasing fixed patterns so new solutions can emerge moment-to-moment.',
+    withoutThis: 'You\'ll get stuck in loops, miss obvious solutions, and fight reality instead of flowing with it.'
   },
   'focused-body': {
     id: 'focused-body',
@@ -63,7 +69,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'self',
     description: 'Deep embodiment and physical optimization',
     icon: '/assets/LOGOS/FOCUSED BODY.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'Your body is your anchor to the present moment—when you\'re in your body, you can\'t be lost in worry or distraction.',
+    flowConnection: 'Flow is an embodied state—physical presence pulls you out of mental noise and into direct experience.',
+    withoutThis: 'You\'ll overthink, disconnect from intuition, and exhaust yourself in your head while your body goes numb.'
   },
   
   // Space Keys
@@ -73,7 +82,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'space',
     description: 'Curated environments that support flow',
     icon: '/assets/LOGOS/INTENTIONAL SPACE.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'Your environment is either pulling you toward flow or pushing you away—there is no neutral.',
+    flowConnection: 'The right space eliminates friction and decision fatigue, letting you drop into focus automatically.',
+    withoutThis: 'You\'ll waste willpower fighting your surroundings instead of using it for the work itself.'
   },
   'optimized-tools': {
     id: 'optimized-tools',
@@ -81,7 +93,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'space',
     description: 'Systems and technology that amplify productivity',
     icon: '/assets/LOGOS/OPTIMIZED TOOLS.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'The right tools disappear—they extend your capability without demanding your attention.',
+    flowConnection: 'Seamless tools remove the gap between intention and action, keeping you in unbroken focus.',
+    withoutThis: 'You\'ll stumble over friction, break immersion constantly, and never build momentum.'
   },
   'feedback-systems': {
     id: 'feedback-systems',
@@ -89,7 +104,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'space',
     description: 'Loops that enable continuous improvement',
     icon: '/assets/LOGOS/FEEDBACK SYSTEMS.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'Flow requires knowing how you\'re doing right now—not tomorrow, not next week.',
+    flowConnection: 'Immediate feedback creates the tight action-response loop that flow states require.',
+    withoutThis: 'You\'ll work in the dark, lose motivation, and miss the chance to course-correct before it\'s too late.'
   },
   
   // Story Keys
@@ -99,7 +117,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'story',
     description: 'Compelling narratives that drive action',
     icon: '/assets/LOGOS/GENERATIVE STORY.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'The story you tell about your work determines whether challenges feel like obstacles or adventures.',
+    flowConnection: 'A compelling narrative transforms effort into meaning, making struggle feel purposeful rather than pointless.',
+    withoutThis: 'Setbacks will drain you instead of fuel you, and difficulty will feel like punishment.'
   },
   'worthy-mission': {
     id: 'worthy-mission',
@@ -107,7 +128,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'story',
     description: 'Purpose-driven goals that inspire engagement',
     icon: '/assets/LOGOS/WORTHY MISSION.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'Flow follows meaning—when work matters deeply, focus becomes effortless.',
+    flowConnection: 'A mission bigger than yourself provides the intrinsic motivation that sustains flow through resistance.',
+    withoutThis: 'You\'ll need constant external motivation, and even success will feel hollow.'
   },
   'empowered-role': {
     id: 'empowered-role',
@@ -115,7 +139,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'story',
     description: 'Clear identity and meaningful contribution',
     icon: '/assets/LOGOS/EMPOWERED ROLE.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'Knowing exactly what you own and why it matters turns scattered effort into directed power.',
+    flowConnection: 'A clear role creates autonomy and mastery—two core conditions for flow states.',
+    withoutThis: 'You\'ll feel like a cog, uncertain of your contribution, working hard without ownership.'
   },
   
   // Spirit Keys
@@ -125,7 +152,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'spirit',
     description: 'Core principles that guide decisions',
     icon: '/assets/LOGOS/GROUNDING VALUES.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'Values are decision-making shortcuts—when you know what you stand for, choices become obvious.',
+    flowConnection: 'Aligned values eliminate internal conflict, freeing energy for full engagement.',
+    withoutThis: 'You\'ll second-guess constantly, feel pulled in multiple directions, and act against yourself.'
   },
   'visualized-vision': {
     id: 'visualized-vision',
@@ -133,7 +163,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'spirit',
     description: 'Clear future states that attract success',
     icon: '/assets/LOGOS/VISUALIZED VISION.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'A clear vision acts like a magnet—it organizes your attention and reveals relevant opportunities.',
+    flowConnection: 'Vision provides direction that makes each action feel like progress, sustaining flow over time.',
+    withoutThis: 'You\'ll drift without direction, react to circumstances, and lose the thread of your life.'
   },
   'ignited-curiosity': {
     id: 'ignited-curiosity',
@@ -141,7 +174,10 @@ export const KEYS: Record<KeyType, Key> = {
     dimension: 'spirit',
     description: 'Wonder and exploration that fuel growth',
     icon: '/assets/LOGOS/IGNITED CURIOSITY.png',
-    content: { learn: [], practice: [] }
+    content: { learn: [], practice: [] },
+    coreInsight: 'Genuine interest is the most renewable fuel for focus—you can\'t force attention, but you can follow fascination.',
+    flowConnection: 'Curiosity transforms work into play, making the exploration itself rewarding.',
+    withoutThis: 'Everything becomes obligation, attention becomes effortful, and burnout becomes inevitable.'
   }
 };
 

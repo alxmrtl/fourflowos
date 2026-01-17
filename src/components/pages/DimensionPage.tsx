@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { DIMENSIONS } from '@/data/framework';
-import { DimensionType } from '@/types/framework';
+import { DIMENSIONS, KEYS } from '@/data/framework';
+import { DimensionType, KeyType } from '@/types/framework';
 import PageLayout from '@/components/layout/PageLayout';
 
 interface DimensionPageProps {
@@ -34,70 +34,30 @@ const getDimensionDescription = (dimension: DimensionType) => {
   return descriptions[dimension];
 };
 
+const KEY_NUMBERS: Record<string, number> = {
+  'tuned-emotions': 1,
+  'open-mind': 2,
+  'focused-body': 3,
+  'intentional-space': 4,
+  'optimized-tools': 5,
+  'feedback-systems': 6,
+  'generative-story': 7,
+  'worthy-mission': 8,
+  'empowered-role': 9,
+  'grounding-values': 10,
+  'visualized-vision': 11,
+  'ignited-curiosity': 12
+};
+
 const getKeyDisplayInfo = (keyId: string) => {
-  const keyInfo: Record<string, { name: string; description: string; keyNumber: number }> = {
-    'tuned-emotions': {
-      name: 'Tuned Emotions',
-      description: 'Use your feelings as signals to stay in the sweet spot between bored and overwhelmed.',
-      keyNumber: 1
-    },
-    'open-mind': {
-      name: 'Open Mind',
-      description: 'Clear mental clutter and stay flexible so new ideas can flow naturally.',
-      keyNumber: 2
-    },
-    'focused-body': {
-      name: 'Focused Body',
-      description: 'Get out of your head and into your body to stop overthinking and stay present.',
-      keyNumber: 3
-    },
-    'intentional-space': {
-      name: 'Intentional Space',
-      description: 'Set up your environment to automatically put you in focus mode without willpower.',
-      keyNumber: 4
-    },
-    'optimized-tools': {
-      name: 'Optimized Tools',
-      description: 'Use the right systems and tech to get more done with less effort.',
-      keyNumber: 5
-    },
-    'feedback-systems': {
-      name: 'Feedback Systems',
-      description: 'Build quick ways to know if you\'re on track and course-correct fast.',
-      keyNumber: 6
-    },
-    'generative-story': {
-      name: 'Generative Story',
-      description: 'Create a personal narrative that makes challenges feel like adventure, not problems.',
-      keyNumber: 7
-    },
-    'worthy-mission': {
-      name: 'Worthy Mission',
-      description: 'Connect your daily work to something bigger that naturally motivates you.',
-      keyNumber: 8
-    },
-    'empowered-role': {
-      name: 'Empowered Role',
-      description: 'Know what you own and why it matters so you can work with real purpose.',
-      keyNumber: 9
-    },
-    'grounding-values': {
-      name: 'Grounding Values',
-      description: 'Know what you stand for so decisions become obvious and doubt disappears.',
-      keyNumber: 10
-    },
-    'visualized-vision': {
-      name: 'Visualized Vision',
-      description: 'See your future clearly so your brain starts noticing the right opportunities.',
-      keyNumber: 11
-    },
-    'ignited-curiosity': {
-      name: 'Ignited Curiosity',
-      description: 'Stay genuinely interested in your work so focus happens without forcing it.',
-      keyNumber: 12
-    }
+  const keyData = KEYS[keyId as KeyType];
+  return {
+    name: keyData?.name || keyId,
+    keyNumber: KEY_NUMBERS[keyId] || 0,
+    coreInsight: keyData?.coreInsight || '',
+    flowConnection: keyData?.flowConnection || '',
+    withoutThis: keyData?.withoutThis || ''
   };
-  return keyInfo[keyId] || { name: keyId, description: 'Flow key description', keyNumber: 0 };
 };
 
 export default function DimensionPage({ dimension }: DimensionPageProps) {
@@ -244,7 +204,7 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                     className="group block"
                   >
                     <div
-                      className="relative p-5 md:p-6 rounded-xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden"
+                      className="relative p-6 md:p-8 rounded-xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden"
                       style={{
                         boxShadow: `0 0 0 0 ${dimensionData.color}00`,
                       }}
@@ -263,47 +223,86 @@ export default function DimensionPage({ dimension }: DimensionPageProps) {
                         }}
                       />
 
-                      <div className="flex items-start gap-4 md:gap-6 relative z-10">
-                        {/* Key Icon */}
-                        <div
-                          className="relative w-12 h-12 md:w-14 md:h-14 rounded-lg flex-shrink-0"
-                          style={{ background: `${dimensionData.color}15` }}
-                        >
-                          <Image
-                            src={key.icon}
-                            alt={key.name}
-                            fill
-                            className="object-contain p-2"
-                          />
+                      <div className="relative z-10">
+                        {/* Header Row */}
+                        <div className="flex items-start gap-4 md:gap-5 mb-5">
+                          {/* Key Icon */}
+                          <div
+                            className="relative w-14 h-14 md:w-16 md:h-16 rounded-xl flex-shrink-0"
+                            style={{ background: `${dimensionData.color}15` }}
+                          >
+                            <Image
+                              src={key.icon}
+                              alt={key.name}
+                              fill
+                              className="object-contain p-2"
+                            />
+                          </div>
+
+                          {/* Key Title */}
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className="text-xs font-bold uppercase tracking-wider mb-1"
+                              style={{ color: dimensionData.color }}
+                            >
+                              Flow Key #{keyInfo.keyNumber}
+                            </p>
+                            <h3 className="text-xl md:text-2xl font-semibold text-white group-hover:translate-x-1 transition-transform">
+                              {keyInfo.name}
+                            </h3>
+                          </div>
+
+                          {/* Arrow */}
+                          <div className="flex-shrink-0 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all mt-2">
+                            <svg
+                              className="w-5 h-5"
+                              style={{ color: dimensionData.color }}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
                         </div>
 
-                        {/* Key Content */}
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className="text-xs font-bold uppercase tracking-wider mb-1"
-                            style={{ color: dimensionData.color }}
-                          >
-                            Flow Key #{keyInfo.keyNumber}
-                          </p>
-                          <h3 className="text-lg md:text-xl font-semibold text-white mb-1 group-hover:translate-x-1 transition-transform">
-                            {keyInfo.name}
-                          </h3>
-                          <p className="text-sm text-gray-400 leading-relaxed">
-                            {keyInfo.description}
-                          </p>
-                        </div>
+                        {/* Essence Card Content */}
+                        <div className="space-y-4 pl-0 md:pl-[4.5rem]">
+                          {/* Core Insight */}
+                          <div>
+                            <p
+                              className="text-[10px] font-bold uppercase tracking-widest mb-1.5"
+                              style={{ color: dimensionData.color }}
+                            >
+                              Core Insight
+                            </p>
+                            <p className="text-[15px] text-gray-200 leading-relaxed">
+                              {keyInfo.coreInsight}
+                            </p>
+                          </div>
 
-                        {/* Arrow */}
-                        <div className="flex-shrink-0 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                          <svg
-                            className="w-5 h-5"
-                            style={{ color: dimensionData.color }}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
+                          {/* The Flow Connection */}
+                          <div>
+                            <p
+                              className="text-[10px] font-bold uppercase tracking-widest mb-1.5"
+                              style={{ color: dimensionData.color }}
+                            >
+                              The Flow Connection
+                            </p>
+                            <p className="text-[15px] text-gray-300 leading-relaxed">
+                              {keyInfo.flowConnection}
+                            </p>
+                          </div>
+
+                          {/* Without This */}
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5 text-gray-500">
+                              Without This
+                            </p>
+                            <p className="text-[15px] text-gray-400 leading-relaxed italic">
+                              {keyInfo.withoutThis}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -3,22 +3,8 @@
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import { useRef } from 'react';
-import { DIMENSIONS } from '@/data/framework';
-
-const keyElevatorPitches: Record<string, string> = {
-  'tuned-emotions': 'Use your feelings as signals to stay in the sweet spot between bored and overwhelmed.',
-  'open-mind': 'Cultivate cognitive flexibility that turns obstacles into opportunities.',
-  'focused-body': 'Anchor yourself in physical presence to amplify mental clarity.',
-  'intentional-space': 'Design environments that make flow states inevitable.',
-  'optimized-tools': 'Leverage systems that multiply your output and minimize friction.',
-  'feedback-systems': 'Build loops that accelerate learning and maintain momentum.',
-  'generative-story': 'Craft a narrative that transforms challenges into compelling adventures.',
-  'worthy-mission': 'Pursue goals that pull you forward with magnetic purpose.',
-  'empowered-role': 'Embody an identity that naturally produces peak performance.',
-  'grounding-values': 'Anchor decisions in principles that create lasting fulfillment.',
-  'visualized-vision': 'See your future so clearly it becomes an irresistible destination.',
-  'ignited-curiosity': 'Fuel endless growth with wonder that turns work into play.',
-};
+import { DIMENSIONS, KEYS } from '@/data/framework';
+import { KeyType } from '@/types/framework';
 
 export default function KeysSection() {
   const containerRef = useRef(null);
@@ -161,9 +147,9 @@ export default function KeysSection() {
                           {key.name}
                         </h3>
 
-                        {/* Elevator pitch */}
+                        {/* Core insight */}
                         <p className="text-sm text-gray-500 leading-relaxed">
-                          {keyElevatorPitches[key.id] || key.description}
+                          {KEYS[key.id as KeyType]?.coreInsight || key.description}
                         </p>
                       </div>
                     </div>
