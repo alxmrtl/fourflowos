@@ -7,6 +7,10 @@ import { useRef } from 'react';
 import { DIMENSIONS } from '@/data/framework';
 import LandingNav from './LandingNav';
 import HeroSection from './HeroSection';
+import ResonanceSection from './ResonanceSection';
+import NameBreakdownSection from './NameBreakdownSection';
+import ShapeSymbolismSection from './ShapeSymbolismSection';
+import SectionTransition from './SectionTransition';
 import AppsSection from './AppsSection';
 import Footer from './Footer';
 
@@ -77,106 +81,38 @@ const principles = [
   },
 ];
 
-const whoItsFor = [
-  {
-    title: 'High-Performers',
-    description: 'Skilled but unfulfilled. Ready to add meaning to success.',
-  },
-  {
-    title: 'Entrepreneurs & Creatives',
-    description: 'Done with burnout. Ready for sustainable, flowing energy.',
-  },
-  {
-    title: 'Leaders',
-    description: 'Your flow becomes your team\'s flow. Alignment is contagious.',
-  },
-  {
-    title: 'Career Changers',
-    description: 'In transition? Find clarity through the four dimensions.',
-  },
-];
-
 export default function LandingPage() {
-  const missionRef = useRef(null);
   const transformRef = useRef(null);
   const principlesRef = useRef(null);
-  const whoRef = useRef(null);
   const storyRef = useRef(null);
 
-  const missionInView = useInView(missionRef, { once: true, margin: '-100px' });
   const transformInView = useInView(transformRef, { once: true, margin: '-100px' });
   const principlesInView = useInView(principlesRef, { once: true, margin: '-100px' });
-  const whoInView = useInView(whoRef, { once: true, margin: '-100px' });
   const storyInView = useInView(storyRef, { once: true, margin: '-100px' });
 
   return (
     <div className="bg-[#0a0a0a] min-h-screen">
       <LandingNav />
+
+      {/* 1. Hero */}
       <HeroSection />
 
-      {/* Mission Section */}
-      <section ref={missionRef} className="relative py-16 md:py-24 bg-[#050505]">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      {/* 2. Is This You? - Immediate qualification */}
+      <ResonanceSection />
 
-        <div className="max-w-6xl mx-auto px-6">
-          <motion.div
-            className="relative rounded-2xl overflow-hidden"
-            initial={{ opacity: 0, y: 40 }}
-            animate={missionInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
-          >
-            {/* Gradient border effect */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] opacity-20" />
-            <div className="absolute inset-[1px] rounded-2xl bg-[#0a0a0a]" />
+      {/* Transition */}
+      <SectionTransition variant="dots" />
 
-            <div className="relative p-8 md:p-12 lg:p-16">
-              <div className="grid lg:grid-cols-5 gap-8 items-center">
-                {/* Logo */}
-                <div className="lg:col-span-2 flex justify-center">
-                  <motion.div
-                    className="relative w-40 h-40 md:w-56 md:h-56"
-                    animate={{
-                      scale: [1, 1.02, 1],
-                    }}
-                    transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                  >
-                    {/* Glow ring */}
-                    <div
-                      className="absolute inset-0 rounded-full"
-                      style={{
-                        background: 'conic-gradient(from 0deg, #FF6F61, #6BA292, #5B84B1, #7A4DA4, #FF6F61)',
-                        filter: 'blur(30px)',
-                        opacity: 0.3,
-                      }}
-                    />
-                    <Image
-                      src="/assets/LOGOS/FOURFLOW - MAIN LOGO.png"
-                      alt="FourFlowOS"
-                      fill
-                      className="object-contain relative z-10"
-                    />
-                  </motion.div>
-                </div>
+      {/* 3. What is FourFlowOS? - Name breakdown */}
+      <NameBreakdownSection />
 
-                {/* Mission text */}
-                <div className="lg:col-span-3">
-                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                    Our Mission
-                  </h2>
-                  <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-6">
-                    Millions moving from scattered to centered. From going through the motions to <span className="text-white font-semibold">fully alive</span>.
-                  </p>
-                  <p className="text-gray-400 leading-relaxed">
-                    We cultivate presence and clarity through a framework that harmonizes your inner world with your outer environment. This is the path from distraction to flow.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* 4. The Four Shapes - Visual symbolism */}
+      <ShapeSymbolismSection />
 
-      {/* Transformation Section */}
+      {/* Transition */}
+      <SectionTransition fromColor="#7A4DA4" toColor="#FF6F61" />
+
+      {/* 5. Transformation Section - The Shift */}
       <section ref={transformRef} className="relative py-16 md:py-24 bg-[#0a0a0a]">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -240,7 +176,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Four Dimensions Quick View */}
+      {/* 6. Four Dimensions Quick View */}
       <section className="relative py-16 md:py-24 bg-[#050505]">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
@@ -313,7 +249,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Core Principles */}
+      {/* 7. Core Principles */}
       <section ref={principlesRef} className="relative py-16 md:py-24 bg-[#0a0a0a]">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -358,46 +294,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Who It's For */}
-      <section ref={whoRef} className="relative py-16 md:py-24 bg-[#050505]">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      {/* 8. Apps Section */}
+      <AppsSection />
 
-        <div className="max-w-6xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-12 md:mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={whoInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Built For
-            </h2>
-            <p className="text-gray-400 max-w-xl mx-auto">
-              People ready to transform how they work and live.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {whoItsFor.map((item, index) => (
-              <motion.div
-                key={index}
-                className="text-center p-6"
-                initial={{ opacity: 0, y: 30 }}
-                animate={whoInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-              >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">{index + 1}</span>
-                </div>
-                <h3 className="font-semibold text-white mb-2">{item.title}</h3>
-                <p className="text-sm text-gray-400">{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Origin Story */}
+      {/* 9. Origin Story - Moved toward end */}
       <section ref={storyRef} className="relative py-16 md:py-24 bg-[#0a0a0a]">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div
@@ -426,9 +326,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <AppsSection />
-
-      {/* CTA Section */}
+      {/* 10. CTA Section */}
       <section className="relative py-16 md:py-24 bg-[#050505]">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
