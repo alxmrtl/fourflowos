@@ -85,10 +85,15 @@ export default function LandingPage() {
   const transformRef = useRef(null);
   const principlesRef = useRef(null);
   const storyRef = useRef(null);
+  const dimensionsRef = useRef(null);
+  const ctaRef = useRef(null);
 
-  const transformInView = useInView(transformRef, { once: true, margin: '-100px' });
-  const principlesInView = useInView(principlesRef, { once: true, margin: '-100px' });
-  const storyInView = useInView(storyRef, { once: true, margin: '-100px' });
+  // Removed once: true to enable bidirectional scroll animations
+  const transformInView = useInView(transformRef, { amount: 0.25 });
+  const principlesInView = useInView(principlesRef, { amount: 0.25 });
+  const storyInView = useInView(storyRef, { amount: 0.3 });
+  const dimensionsInView = useInView(dimensionsRef, { amount: 0.25 });
+  const ctaInView = useInView(ctaRef, { amount: 0.3 });
 
   return (
     <div className="bg-[#0a0a0a] min-h-screen">
@@ -119,10 +124,10 @@ export default function LandingPage() {
           initial="hidden"
           animate={transformInView ? 'visible' : 'hidden'}
           variants={{
-            hidden: { opacity: 0 },
+            hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
             visible: {
               opacity: 1,
-              transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+              transition: { duration: 0.5, staggerChildren: 0.1, delayChildren: 0.1 },
             },
           }}
         >
@@ -200,19 +205,18 @@ export default function LandingPage() {
       </section>
 
       {/* 6. Four Dimensions Quick View */}
-      <section className="relative py-16 md:py-24 bg-[#050505]">
+      <section ref={dimensionsRef} className="relative py-16 md:py-24 bg-[#050505]">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
         <motion.div
           className="max-w-6xl mx-auto px-6"
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
+          animate={dimensionsInView ? 'visible' : 'hidden'}
           variants={{
-            hidden: { opacity: 0 },
+            hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
             visible: {
               opacity: 1,
-              transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+              transition: { duration: 0.5, staggerChildren: 0.1, delayChildren: 0.1 },
             },
           }}
         >
@@ -305,10 +309,10 @@ export default function LandingPage() {
           initial="hidden"
           animate={principlesInView ? 'visible' : 'hidden'}
           variants={{
-            hidden: { opacity: 0 },
+            hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
             visible: {
               opacity: 1,
-              transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+              transition: { duration: 0.5, staggerChildren: 0.1, delayChildren: 0.1 },
             },
           }}
         >
@@ -376,10 +380,10 @@ export default function LandingPage() {
           initial="hidden"
           animate={storyInView ? 'visible' : 'hidden'}
           variants={{
-            hidden: { opacity: 0 },
+            hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
             visible: {
               opacity: 1,
-              transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+              transition: { duration: 0.5, staggerChildren: 0.12, delayChildren: 0.1 },
             },
           }}
         >
@@ -416,19 +420,18 @@ export default function LandingPage() {
       </section>
 
       {/* 10. CTA Section */}
-      <section className="relative py-16 md:py-24 bg-[#050505]">
+      <section ref={ctaRef} className="relative py-16 md:py-24 bg-[#050505]">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
         <motion.div
           className="max-w-4xl mx-auto px-6 text-center"
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
+          animate={ctaInView ? 'visible' : 'hidden'}
           variants={{
-            hidden: { opacity: 0 },
+            hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
             visible: {
               opacity: 1,
-              transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+              transition: { duration: 0.5, staggerChildren: 0.12, delayChildren: 0.1 },
             },
           }}
         >

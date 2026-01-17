@@ -83,14 +83,15 @@ const apps = [
 
 export default function AppsSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { amount: 0.2 }); // Removed once: true
 
   const containerVariants: Variants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        duration: 0.5,
+        staggerChildren: 0.12,
         delayChildren: 0.1,
       },
     },

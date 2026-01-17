@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 
 interface SectionTransitionProps {
   variant?: 'wave' | 'gradient' | 'dots';
@@ -13,9 +14,12 @@ export default function SectionTransition({
   fromColor = '#FF6F61',
   toColor = '#7A4DA4',
 }: SectionTransitionProps) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { amount: 0.5 });
+
   if (variant === 'wave') {
     return (
-      <div className="relative h-24 overflow-hidden bg-transparent">
+      <div ref={ref} className="relative h-24 overflow-hidden bg-transparent">
         <svg
           className="absolute inset-0 w-full h-full"
           viewBox="0 0 1440 100"
@@ -25,9 +29,8 @@ export default function SectionTransition({
             d="M0,50 C360,100 720,0 1080,50 C1260,75 1440,50 1440,50 L1440,100 L0,100 Z"
             fill="url(#waveGradient)"
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 0.1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
+            animate={{ opacity: isInView ? 0.1 : 0 }}
+            transition={{ duration: 0.6 }}
           />
           <defs>
             <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -41,17 +44,20 @@ export default function SectionTransition({
   }
 
   if (variant === 'dots') {
+    const colors = [fromColor, '#6BA292', '#5B84B1', toColor];
     return (
-      <div className="relative py-8 flex justify-center items-center gap-3">
-        {[fromColor, '#6BA292', '#5B84B1', toColor].map((color, index) => (
+      <div ref={ref} className="relative py-8 flex justify-center items-center gap-3">
+        {colors.map((color, index) => (
           <motion.div
             key={index}
             className="w-2 h-2 rounded-full"
             style={{ background: color }}
             initial={{ opacity: 0, scale: 0 }}
-            whileInView={{ opacity: 0.6, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.4 }}
+            animate={{
+              opacity: isInView ? 0.6 : 0,
+              scale: isInView ? 1 : 0,
+            }}
+            transition={{ delay: isInView ? index * 0.08 : 0, duration: 0.4 }}
           />
         ))}
       </div>
@@ -61,14 +67,17 @@ export default function SectionTransition({
   // Default: gradient line
   return (
     <motion.div
+      ref={ref}
       className="h-px w-full"
       style={{
         background: `linear-gradient(90deg, transparent, ${fromColor}40, ${toColor}40, transparent)`,
       }}
       initial={{ scaleX: 0, opacity: 0 }}
-      whileInView={{ scaleX: 1, opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 1, ease: 'easeOut' }}
+      animate={{
+        scaleX: isInView ? 1 : 0,
+        opacity: isInView ? 1 : 0,
+      }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
     />
   );
 }

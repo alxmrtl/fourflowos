@@ -1,12 +1,15 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const sectionRef = useRef<HTMLElement>(null);
+  // Fade out when less than 15% of the hero is visible
+  const isInView = useInView(sectionRef, { amount: 0.15 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -21,7 +24,10 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
+    <section
+      ref={sectionRef}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]"
+    >
       {/* Subtle mandala background - very slow rotation */}
       <motion.div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -115,13 +121,14 @@ export default function HeroSection() {
       <motion.div
         className="relative z-10 max-w-6xl mx-auto px-6 text-center"
         initial="hidden"
-        animate="visible"
+        animate={isInView ? 'visible' : 'hidden'}
         variants={{
-          hidden: { opacity: 0 },
+          hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
           visible: {
             opacity: 1,
             transition: {
-              staggerChildren: 0.2,
+              duration: 0.6,
+              staggerChildren: 0.15,
               delayChildren: 0.1,
             },
           },

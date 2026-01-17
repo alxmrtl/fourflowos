@@ -1,7 +1,8 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
+import { useRef } from 'react';
 
 const shapes = [
   {
@@ -39,8 +40,11 @@ const shapes = [
 ];
 
 export default function ShapeSymbolismSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { amount: 0.25 });
+
   return (
-    <section className="relative py-20 md:py-28 bg-[#050505] overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#050505] overflow-hidden">
       {/* Background circle decoration */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <motion.div
@@ -56,14 +60,14 @@ export default function ShapeSymbolismSection() {
       <motion.div
         className="relative max-w-6xl mx-auto px-6"
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
+        animate={isInView ? 'visible' : 'hidden'}
         variants={{
-          hidden: { opacity: 0 },
+          hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
           visible: {
             opacity: 1,
             transition: {
-              staggerChildren: 0.15,
+              duration: 0.5,
+              staggerChildren: 0.12,
               delayChildren: 0.1,
             },
           },

@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 
 const nameBreakdown = [
   {
@@ -24,8 +25,11 @@ const nameBreakdown = [
 ];
 
 export default function NameBreakdownSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { amount: 0.25 });
+
   return (
-    <section className="relative py-20 md:py-28 bg-[#0a0a0a] overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#0a0a0a] overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-[0.02]">
         <div
@@ -42,14 +46,14 @@ export default function NameBreakdownSection() {
       <motion.div
         className="relative max-w-4xl mx-auto px-6"
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
+        animate={isInView ? 'visible' : 'hidden'}
         variants={{
-          hidden: { opacity: 0 },
+          hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
           visible: {
             opacity: 1,
             transition: {
-              staggerChildren: 0.2,
+              duration: 0.5,
+              staggerChildren: 0.15,
               delayChildren: 0.1,
             },
           },
@@ -124,10 +128,10 @@ export default function NameBreakdownSection() {
                   style={{
                     background: `linear-gradient(90deg, transparent, ${item.color}30, transparent)`,
                   }}
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
+                  variants={{
+                    hidden: { scaleX: 0 },
+                    visible: { scaleX: 1, transition: { duration: 0.8, delay: 0.3 } },
+                  }}
                 />
               )}
             </motion.div>

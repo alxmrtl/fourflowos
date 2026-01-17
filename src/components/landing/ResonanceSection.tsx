@@ -1,10 +1,14 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 
 export default function ResonanceSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { amount: 0.3 });
+
   return (
-    <section className="relative py-20 md:py-28 bg-[#050505] overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#050505] overflow-hidden">
       {/* Subtle gradient orb */}
       <motion.div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]"
@@ -20,14 +24,14 @@ export default function ResonanceSection() {
       <motion.div
         className="relative max-w-3xl mx-auto px-6 text-center"
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
+        animate={isInView ? 'visible' : 'hidden'}
         variants={{
-          hidden: { opacity: 0 },
+          hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
           visible: {
             opacity: 1,
             transition: {
-              staggerChildren: 0.15,
+              duration: 0.5,
+              staggerChildren: 0.12,
               delayChildren: 0.1,
             },
           },
