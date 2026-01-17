@@ -5,3 +5,4 @@ export { default as KeysSection } from './KeysSection';
 export { default as AppsSection } from './AppsSection';
 export { default as LandingNav } from './LandingNav';
 export { default as Footer } from './Footer';
+export { default as SynergyConstellation } from './SynergyConstellation';

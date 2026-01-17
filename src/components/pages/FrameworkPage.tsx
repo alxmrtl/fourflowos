@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { DIMENSIONS } from '@/data/framework';
 import PageLayout from '@/components/layout/PageLayout';
+import SynergyConstellation from '@/components/landing/SynergyConstellation';
 
 const dimensionDetails = {
   self: {
@@ -358,6 +359,9 @@ export default function FrameworkPage() {
           </div>
         </div>
       </section>
+
+      {/* Synergy Constellation - Key Connections */}
+      <SynergyConstellation />
 
       {/* All Keys Overview Section */}
       <section ref={keysRef} className="relative py-16 md:py-24 bg-[#050505]">

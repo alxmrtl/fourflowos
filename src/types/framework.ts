@@ -70,3 +70,9 @@ export interface NavigationState {
   currentKey: KeyType | null;
   isOnFrameworkPage: boolean;
 }
+
+export interface KeySynergy {
+  from: KeyType;
+  to: KeyType;
+  statement: string;
+}

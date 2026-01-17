@@ -189,3 +189,26 @@ DIMENSIONS.spirit.keys = [KEYS['grounding-values'], KEYS['visualized-vision'], K
 
 export const MAIN_LOGO = '/assets/LOGOS/FOURFLOW - MAIN LOGO.png';
 export const BG_CIRCLE = '/assets/LOGOS/MAIN LOGO - ELEMENTS/BG CIRCLE.png';
+
+// Key Synergy Connections - How the 12 keys interplay across dimensions
+export const KEY_SYNERGIES = [
+  // Spirit ↔ Story
+  { from: 'grounding-values', to: 'empowered-role', question: 'Does your role honor what you stand for?' },
+  { from: 'visualized-vision', to: 'worthy-mission', question: 'Is your vision manifesting through a worthy mission?' },
+  { from: 'ignited-curiosity', to: 'generative-story', question: 'Is curiosity inspiring your story?' },
+
+  // Story ↔ Self
+  { from: 'worthy-mission', to: 'tuned-emotions', question: 'Is your mission igniting inspired emotions?' },
+  { from: 'empowered-role', to: 'focused-body', question: 'Does ownership bring your body to attention?' },
+  { from: 'generative-story', to: 'open-mind', question: 'Is your story opening your mind to possibilities?' },
+
+  // Self ↔ Space
+  { from: 'open-mind', to: 'optimized-tools', question: 'Is your mind supported by the right tools?' },
+  { from: 'focused-body', to: 'intentional-space', question: 'Is your space allowing your body to perform?' },
+  { from: 'tuned-emotions', to: 'feedback-systems', question: 'Are your emotions responding to progress signals?' },
+
+  // Space ↔ Spirit
+  { from: 'feedback-systems', to: 'visualized-vision', question: 'Is feedback sharpening your vision?' },
+  { from: 'intentional-space', to: 'grounding-values', question: 'Does your space reflect your values?' },
+  { from: 'optimized-tools', to: 'ignited-curiosity', question: 'Are your tools unlocking new curiosities?' },
+] as const;
