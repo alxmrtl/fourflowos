@@ -14,70 +14,30 @@ interface KeyPageProps {
   initialContent?: ContentItem[];
 }
 
+const KEY_NUMBERS: Record<string, number> = {
+  'tuned-emotions': 1,
+  'open-mind': 2,
+  'focused-body': 3,
+  'intentional-space': 4,
+  'optimized-tools': 5,
+  'feedback-systems': 6,
+  'generative-story': 7,
+  'worthy-mission': 8,
+  'empowered-role': 9,
+  'grounding-values': 10,
+  'visualized-vision': 11,
+  'ignited-curiosity': 12
+};
+
 const getKeyDisplayInfo = (keyId: string) => {
-  const keyInfo: Record<string, { name: string; description: string; keyNumber: number }> = {
-    'tuned-emotions': {
-      name: 'Tuned Emotions',
-      description: 'Use your feelings as signals to stay in the sweet spot between bored and overwhelmed.',
-      keyNumber: 1
-    },
-    'open-mind': {
-      name: 'Open Mind',
-      description: 'Clear mental clutter and stay flexible so new ideas can flow naturally.',
-      keyNumber: 2
-    },
-    'focused-body': {
-      name: 'Focused Body',
-      description: 'Get out of your head and into your body to stop overthinking and stay present.',
-      keyNumber: 3
-    },
-    'intentional-space': {
-      name: 'Intentional Space',
-      description: 'Set up your environment to automatically put you in focus mode without willpower.',
-      keyNumber: 4
-    },
-    'optimized-tools': {
-      name: 'Optimized Tools',
-      description: 'Use the right systems and tech to get more done with less effort.',
-      keyNumber: 5
-    },
-    'feedback-systems': {
-      name: 'Feedback Systems',
-      description: 'Build quick ways to know if you\'re on track and course-correct fast.',
-      keyNumber: 6
-    },
-    'generative-story': {
-      name: 'Generative Story',
-      description: 'Create a personal narrative that makes challenges feel like adventure, not problems.',
-      keyNumber: 7
-    },
-    'worthy-mission': {
-      name: 'Worthy Mission',
-      description: 'Connect your daily work to something bigger that naturally motivates you.',
-      keyNumber: 8
-    },
-    'empowered-role': {
-      name: 'Empowered Role',
-      description: 'Know what you own and why it matters so you can work with real purpose.',
-      keyNumber: 9
-    },
-    'grounding-values': {
-      name: 'Grounding Values',
-      description: 'Know what you stand for so decisions become obvious and doubt disappears.',
-      keyNumber: 10
-    },
-    'visualized-vision': {
-      name: 'Visualized Vision',
-      description: 'See your future clearly so your brain starts noticing the right opportunities.',
-      keyNumber: 11
-    },
-    'ignited-curiosity': {
-      name: 'Ignited Curiosity',
-      description: 'Stay genuinely interested in your work so focus happens without forcing it.',
-      keyNumber: 12
-    }
+  const keyData = KEYS[keyId as KeyType];
+  return {
+    name: keyData?.name || keyId,
+    keyNumber: KEY_NUMBERS[keyId] || 0,
+    coreInsight: keyData?.coreInsight || '',
+    flowConnection: keyData?.flowConnection || '',
+    withoutThis: keyData?.withoutThis || ''
   };
-  return keyInfo[keyId] || { name: keyId, description: 'Flow key description', keyNumber: 0 };
 };
 
 export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPageProps) {
@@ -184,12 +144,48 @@ export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPa
                   >
                     Flow Key #{keyInfo.keyNumber}
                   </p>
-                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
                     {keyInfo.name}
                   </h1>
-                  <p className="text-gray-400 leading-relaxed">
-                    {keyInfo.description}
-                  </p>
+
+                  {/* Essence Card Content */}
+                  <div className="space-y-4">
+                    {/* Core Insight */}
+                    <div>
+                      <p
+                        className="text-[10px] font-bold uppercase tracking-widest mb-1.5"
+                        style={{ color: dimensionData.color }}
+                      >
+                        Core Insight
+                      </p>
+                      <p className="text-[15px] text-gray-200 leading-relaxed">
+                        {keyInfo.coreInsight}
+                      </p>
+                    </div>
+
+                    {/* The Flow Connection */}
+                    <div>
+                      <p
+                        className="text-[10px] font-bold uppercase tracking-widest mb-1.5"
+                        style={{ color: dimensionData.color }}
+                      >
+                        The Flow Connection
+                      </p>
+                      <p className="text-[15px] text-gray-300 leading-relaxed">
+                        {keyInfo.flowConnection}
+                      </p>
+                    </div>
+
+                    {/* Without This */}
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5 text-gray-500">
+                        Without This
+                      </p>
+                      <p className="text-[15px] text-gray-400 leading-relaxed italic">
+                        {keyInfo.withoutThis}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
