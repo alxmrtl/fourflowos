@@ -114,12 +114,29 @@ export default function LandingPage() {
 
       {/* 5. Transformation Section - The Shift */}
       <section ref={transformRef} className="relative py-16 md:py-24 bg-[#0a0a0a]">
-        <div className="max-w-6xl mx-auto px-6">
+        <motion.div
+          className="max-w-6xl mx-auto px-6"
+          initial="hidden"
+          animate={transformInView ? 'visible' : 'hidden'}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+            },
+          }}
+        >
           <motion.div
             className="text-center mb-12 md:mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={transformInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
+            variants={{
+              hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.7, ease: 'easeOut' },
+              },
+            }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               The Shift
@@ -134,9 +151,15 @@ export default function LandingPage() {
               <motion.div
                 key={index}
                 className="relative"
-                initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
-                animate={transformInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: index * 0.15, duration: 0.6 }}
+                variants={{
+                  hidden: { opacity: 0, x: index % 2 === 0 ? -50 : 50, filter: 'blur(8px)' },
+                  visible: {
+                    opacity: 1,
+                    x: 0,
+                    filter: 'blur(0px)',
+                    transition: { duration: 0.7, ease: 'easeOut' },
+                  },
+                }}
               >
                 <div
                   className="relative p-6 rounded-xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all duration-300 group"
@@ -173,20 +196,37 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* 6. Four Dimensions Quick View */}
       <section className="relative py-16 md:py-24 bg-[#050505]">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-        <div className="max-w-6xl mx-auto px-6">
+        <motion.div
+          className="max-w-6xl mx-auto px-6"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+            },
+          }}
+        >
           <motion.div
             className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            variants={{
+              hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.7, ease: 'easeOut' },
+              },
+            }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               The Four Dimensions
@@ -201,10 +241,15 @@ export default function LandingPage() {
               <motion.div
                 key={dimension.id}
                 className="text-center p-6 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all duration-300 group"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
+                variants={{
+                  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    filter: 'blur(0px)',
+                    transition: { duration: 0.6, ease: 'easeOut' },
+                  },
+                }}
                 whileHover={{ y: -4 }}
               >
                 <div
@@ -226,10 +271,14 @@ export default function LandingPage() {
 
           <motion.div
             className="text-center mt-10"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.6, ease: 'easeOut' },
+              },
+            }}
           >
             <Link
               href="/framework"
@@ -246,17 +295,34 @@ export default function LandingPage() {
               </svg>
             </Link>
           </motion.div>
-        </div>
+        </motion.div>
       </section>
 
       {/* 7. Core Principles */}
       <section ref={principlesRef} className="relative py-16 md:py-24 bg-[#0a0a0a]">
-        <div className="max-w-6xl mx-auto px-6">
+        <motion.div
+          className="max-w-6xl mx-auto px-6"
+          initial="hidden"
+          animate={principlesInView ? 'visible' : 'hidden'}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+            },
+          }}
+        >
           <motion.div
             className="text-center mb-12 md:mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={principlesInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
+            variants={{
+              hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.7, ease: 'easeOut' },
+              },
+            }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Guiding Principles
@@ -271,9 +337,15 @@ export default function LandingPage() {
               <motion.div
                 key={index}
                 className="p-6 rounded-xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all duration-300"
-                initial={{ opacity: 0, y: 30 }}
-                animate={principlesInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
+                variants={{
+                  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    filter: 'blur(0px)',
+                    transition: { duration: 0.6, ease: 'easeOut' },
+                  },
+                }}
               >
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FF6F61]/20 to-[#7A4DA4]/20 flex items-center justify-center text-white flex-shrink-0">
@@ -291,7 +363,7 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* 8. Apps Section */}
@@ -299,12 +371,29 @@ export default function LandingPage() {
 
       {/* 9. Origin Story - Moved toward end */}
       <section ref={storyRef} className="relative py-16 md:py-24 bg-[#0a0a0a]">
-        <div className="max-w-4xl mx-auto px-6">
+        <motion.div
+          className="max-w-4xl mx-auto px-6"
+          initial="hidden"
+          animate={storyInView ? 'visible' : 'hidden'}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+            },
+          }}
+        >
           <motion.div
             className="relative rounded-2xl overflow-hidden"
-            initial={{ opacity: 0, y: 40 }}
-            animate={storyInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
+            variants={{
+              hidden: { opacity: 0, y: 50, filter: 'blur(12px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.9, ease: 'easeOut' },
+              },
+            }}
           >
             <div className="p-8 md:p-12 bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 rounded-2xl">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-center">
@@ -323,42 +412,79 @@ export default function LandingPage() {
               </div>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       </section>
 
       {/* 10. CTA Section */}
       <section className="relative py-16 md:py-24 bg-[#050505]">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+        <motion.div
+          className="max-w-4xl mx-auto px-6 text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+            },
+          }}
+        >
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold text-white mb-6"
+            variants={{
+              hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.7, ease: 'easeOut' },
+              },
+            }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Start Here
-            </h2>
-            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-              Explore the framework. Try the apps. See what alignment feels like.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/framework"
-                className="px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
-              >
-                Explore the Framework
-              </Link>
-              <Link
-                href="/contact"
-                className="px-8 py-4 border border-gray-600 text-gray-300 font-semibold rounded-full hover:bg-white/5 hover:border-gray-400 transition-all duration-300"
-              >
-                Get in Touch
-              </Link>
-            </div>
+            Start Here
+          </motion.h2>
+          <motion.p
+            className="text-gray-400 mb-8 max-w-xl mx-auto"
+            variants={{
+              hidden: { opacity: 0, y: 25, filter: 'blur(8px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.7, ease: 'easeOut' },
+              },
+            }}
+          >
+            Explore the framework. Try the apps. See what alignment feels like.
+          </motion.p>
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.6, ease: 'easeOut' },
+              },
+            }}
+          >
+            <Link
+              href="/framework"
+              className="px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
+            >
+              Explore the Framework
+            </Link>
+            <Link
+              href="/contact"
+              className="px-8 py-4 border border-gray-600 text-gray-300 font-semibold rounded-full hover:bg-white/5 hover:border-gray-400 transition-all duration-300"
+            >
+              Get in Touch
+            </Link>
           </motion.div>
-        </div>
+        </motion.div>
       </section>
 
       <Footer />

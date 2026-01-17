@@ -112,7 +112,21 @@ export default function HeroSection() {
       />
 
       {/* Main content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+      <motion.div
+        className="relative z-10 max-w-6xl mx-auto px-6 text-center"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.2,
+              delayChildren: 0.1,
+            },
+          },
+        }}
+      >
         {/* Animated logo */}
         <motion.div
           className="relative w-40 h-40 md:w-56 md:h-56 mx-auto mb-8"
@@ -120,13 +134,19 @@ export default function HeroSection() {
             x: mousePosition.x,
             y: mousePosition.y,
           }}
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{
-            type: 'spring',
-            stiffness: 100,
-            damping: 20,
-            duration: 1.5,
+          variants={{
+            hidden: { scale: 0, rotate: -180, opacity: 0 },
+            visible: {
+              scale: 1,
+              rotate: 0,
+              opacity: 1,
+              transition: {
+                type: 'spring',
+                stiffness: 80,
+                damping: 15,
+                duration: 1.2,
+              },
+            },
           }}
         >
           {/* Outer breathing glow */}
@@ -160,12 +180,12 @@ export default function HeroSection() {
           />
 
           {/* Logo image */}
-          <div className="absolute inset-4 rounded-full overflow-hidden bg-[#0a0a0a]">
+          <div className="absolute inset-1 rounded-full overflow-hidden bg-[#0a0a0a]">
             <Image
               src="/assets/LOGOS/FOURFLOW - MAIN LOGO.png"
               alt="FourFlowOS"
               fill
-              className="object-contain p-4"
+              className="object-contain p-2"
               priority
             />
           </div>
@@ -174,9 +194,15 @@ export default function HeroSection() {
         {/* Title with gradient text */}
         <motion.h1
           className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
+          variants={{
+            hidden: { opacity: 0, y: 40, filter: 'blur(10px)' },
+            visible: {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              transition: { duration: 0.8, ease: 'easeOut' },
+            },
+          }}
         >
           <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
             FourFlowOS
@@ -186,9 +212,15 @@ export default function HeroSection() {
         {/* Tagline */}
         <motion.p
           className="text-xl md:text-2xl lg:text-3xl text-gray-300 mb-4 font-light"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
+          variants={{
+            hidden: { opacity: 0, y: 30, filter: 'blur(8px)' },
+            visible: {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              transition: { duration: 0.7, ease: 'easeOut' },
+            },
+          }}
         >
           Awaken Your Flow
         </motion.p>
@@ -196,9 +228,15 @@ export default function HeroSection() {
         {/* Sub-tagline */}
         <motion.p
           className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.8 }}
+          variants={{
+            hidden: { opacity: 0, y: 25, filter: 'blur(6px)' },
+            visible: {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              transition: { duration: 0.7, ease: 'easeOut' },
+            },
+          }}
         >
           When Self, Space, Story, and Spirit align, focus becomes effortless and work becomes wonder.
         </motion.p>
@@ -206,9 +244,14 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <motion.div
           className="flex flex-col sm:flex-row gap-4 justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.8 }}
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.6, ease: 'easeOut' },
+            },
+          }}
         >
           <Link
             href="/framework"
@@ -224,7 +267,7 @@ export default function HeroSection() {
           </Link>
         </motion.div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

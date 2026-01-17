@@ -53,14 +53,34 @@ export default function ShapeSymbolismSection() {
         />
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-6">
+      <motion.div
+        className="relative max-w-6xl mx-auto px-6"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-100px' }}
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.15,
+              delayChildren: 0.1,
+            },
+          },
+        }}
+      >
         {/* Section header */}
         <motion.div
           className="text-center mb-16 md:mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
+          variants={{
+            hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+            visible: {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              transition: { duration: 0.7, ease: 'easeOut' },
+            },
+          }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             The Four Shapes
@@ -76,10 +96,15 @@ export default function ShapeSymbolismSection() {
             <motion.div
               key={shape.name}
               className="relative group"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              variants={{
+                hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  filter: 'blur(0px)',
+                  transition: { duration: 0.7, ease: 'easeOut' },
+                },
+              }}
             >
               <div className="flex items-start gap-6">
                 {/* Shape image */}
@@ -152,14 +177,18 @@ export default function ShapeSymbolismSection() {
         {/* Combined logo hint */}
         <motion.p
           className="text-center text-gray-500 mt-16 text-sm"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.6, ease: 'easeOut' },
+            },
+          }}
         >
           Together, they form the FourFlow symbol—four forces in harmony.
         </motion.p>
-      </div>
+      </motion.div>
     </section>
   );
 }

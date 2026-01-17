@@ -39,14 +39,34 @@ export default function NameBreakdownSection() {
         />
       </div>
 
-      <div className="relative max-w-4xl mx-auto px-6">
+      <motion.div
+        className="relative max-w-4xl mx-auto px-6"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-100px' }}
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.2,
+              delayChildren: 0.1,
+            },
+          },
+        }}
+      >
         {/* Section intro */}
         <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
+          variants={{
+            hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+            visible: {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              transition: { duration: 0.7, ease: 'easeOut' },
+            },
+          }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             What is{' '}
@@ -63,10 +83,15 @@ export default function NameBreakdownSection() {
             <motion.div
               key={item.word}
               className="relative"
-              initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.7, delay: index * 0.1 }}
+              variants={{
+                hidden: { opacity: 0, x: index % 2 === 0 ? -50 : 50, filter: 'blur(8px)' },
+                visible: {
+                  opacity: 1,
+                  x: 0,
+                  filter: 'blur(0px)',
+                  transition: { duration: 0.8, ease: 'easeOut' },
+                },
+              }}
             >
               <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
                 {/* The word */}
@@ -108,7 +133,7 @@ export default function NameBreakdownSection() {
             </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

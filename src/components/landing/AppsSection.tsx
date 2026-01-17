@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, Variants } from 'framer-motion';
 import Image from 'next/image';
 import { useRef } from 'react';
 
@@ -85,6 +85,27 @@ export default function AppsSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 40, filter: 'blur(10px)' },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: { duration: 0.7, ease: 'easeOut' as const },
+    },
+  };
+
   return (
     <section
       id="apps"
@@ -95,19 +116,17 @@ export default function AppsSection() {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#7A4DA4]/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#FF6F61]/10 rounded-full blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <motion.div
+        className="max-w-7xl mx-auto px-6 relative z-10"
+        initial="hidden"
+        animate={isInView ? 'visible' : 'hidden'}
+        variants={containerVariants}
+      >
         {/* Section header */}
-        <motion.div
-          className="text-center mb-16 md:mb-20"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-        >
+        <motion.div className="text-center mb-16 md:mb-20" variants={itemVariants}>
           <motion.span
             className="inline-block px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-gray-400 mb-6"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ delay: 0.2 }}
+            variants={itemVariants}
           >
             The Apps
           </motion.span>
@@ -128,9 +147,7 @@ export default function AppsSection() {
             <motion.div
               key={app.id}
               className="group relative"
-              initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 + index * 0.2, duration: 0.6 }}
+              variants={itemVariants}
             >
               <div className="relative p-8 lg:p-10 rounded-3xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden h-full">
                 {/* Gradient background on hover */}
@@ -176,19 +193,16 @@ export default function AppsSection() {
                   {/* Features list */}
                   <ul className="space-y-3 mb-8">
                     {app.features.map((feature, featureIndex) => (
-                      <motion.li
+                      <li
                         key={featureIndex}
                         className="flex items-center gap-3 text-sm text-gray-300"
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ delay: 0.5 + index * 0.2 + featureIndex * 0.05 }}
                       >
                         <div
                           className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                           style={{ background: app.accentColor }}
                         />
                         {feature}
-                      </motion.li>
+                      </li>
                     ))}
                   </ul>
 
@@ -219,7 +233,7 @@ export default function AppsSection() {
           ))}
         </div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }
