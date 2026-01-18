@@ -256,6 +256,7 @@ export default function DimensionsSection() {
                       >
                         {dimension.keys.map((keyId, keyIndex) => {
                           const key = KEYS[keyId as keyof typeof KEYS];
+                          if (!key) return null;
                           return (
                             <motion.div
                               key={keyId}
@@ -359,6 +360,7 @@ export default function DimensionsSection() {
                       </div>
                       {dimension.keys.map((keyId, keyIndex) => {
                         const key = KEYS[keyId as keyof typeof KEYS];
+                        if (!key) return null;
                         return (
                           <motion.div
                             key={keyId}
