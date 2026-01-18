@@ -6,7 +6,7 @@ export type KeyType =
   // Space keys  
   | 'intentional-space' | 'optimized-tools' | 'feedback-systems'
   // Story keys
-  | 'generative-story' | 'worthy-mission' | 'empowered-role'
+  | 'generative-story' | 'clear-mission' | 'empowered-role'
   // Spirit keys
   | 'grounding-values' | 'visualized-vision' | 'ignited-curiosity';
 

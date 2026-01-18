@@ -18,7 +18,7 @@ const dimensionDetails = {
   },
   story: {
     descriptor: 'Direction Setting',
-    fullDescription: 'Crafting narratives that drive meaningful action. Develop a generative story, pursue a worthy mission, and embody an empowered role in your journey.',
+    fullDescription: 'Crafting narratives that drive meaningful action. Develop a generative story, build a clear mission, and embody an empowered role in your journey.',
     gradient: 'from-[#5B84B1]/20 to-transparent',
   },
   spirit: {

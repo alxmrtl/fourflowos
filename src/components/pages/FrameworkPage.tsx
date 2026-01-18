@@ -24,7 +24,7 @@ const dimensionDetails = {
   story: {
     descriptor: 'Direction Setting',
     question: 'What are you building?',
-    fullDescription: 'Craft narratives that drive meaningful action. Develop a generative story, pursue a worthy mission, and embody an empowered role in your journey.',
+    fullDescription: 'Craft narratives that drive meaningful action. Develop a generative story, build a clear mission, and embody an empowered role in your journey.',
     gradient: 'from-[#5B84B1] to-[#7DA3C9]',
   },
   spirit: {

@@ -122,16 +122,16 @@ export const KEYS: Record<KeyType, Key> = {
     flowConnection: 'A compelling narrative transforms effort into meaning, making struggle feel purposeful rather than pointless.',
     withoutThis: 'Setbacks will drain you instead of fuel you, and difficulty will feel like punishment.'
   },
-  'worthy-mission': {
-    id: 'worthy-mission',
-    name: 'Worthy Mission',
+  'clear-mission': {
+    id: 'clear-mission',
+    name: 'Clear Mission',
     dimension: 'story',
-    description: 'Purpose-driven goals that inspire engagement',
-    icon: '/assets/LOGOS/WORTHY MISSION.png',
+    description: 'Goal hierarchy from vision to daily action',
+    icon: '/assets/LOGOS/CLEAR MISSION.png',
     content: { learn: [], practice: [] },
-    coreInsight: 'Flow follows meaning—when work matters deeply, focus becomes effortless.',
-    flowConnection: 'A mission bigger than yourself provides the intrinsic motivation that sustains flow through resistance.',
-    withoutThis: 'You\'ll need constant external motivation, and even success will feel hollow.'
+    coreInsight: 'Clarity creates momentum—when you know exactly what to do next, action becomes effortless.',
+    flowConnection: 'A clear mission hierarchy connects today\'s task to your larger vision, making each action feel purposeful.',
+    withoutThis: 'You\'ll drift between tasks without direction, unsure if your effort is moving you forward.'
   },
   'empowered-role': {
     id: 'empowered-role',
@@ -184,7 +184,7 @@ export const KEYS: Record<KeyType, Key> = {
 // Populate dimension keys
 DIMENSIONS.self.keys = [KEYS['tuned-emotions'], KEYS['open-mind'], KEYS['focused-body']];
 DIMENSIONS.space.keys = [KEYS['intentional-space'], KEYS['optimized-tools'], KEYS['feedback-systems']];
-DIMENSIONS.story.keys = [KEYS['generative-story'], KEYS['worthy-mission'], KEYS['empowered-role']];
+DIMENSIONS.story.keys = [KEYS['generative-story'], KEYS['clear-mission'], KEYS['empowered-role']];
 DIMENSIONS.spirit.keys = [KEYS['grounding-values'], KEYS['visualized-vision'], KEYS['ignited-curiosity']];
 
 export const MAIN_LOGO = '/assets/LOGOS/FOURFLOW - MAIN LOGO.png';
@@ -194,11 +194,11 @@ export const BG_CIRCLE = '/assets/LOGOS/MAIN LOGO - ELEMENTS/BG CIRCLE.png';
 export const KEY_SYNERGIES = [
   // Spirit ↔ Story
   { from: 'grounding-values', to: 'empowered-role', question: 'Does your role honor what you stand for?' },
-  { from: 'visualized-vision', to: 'worthy-mission', question: 'Is your vision manifesting through a worthy mission?' },
+  { from: 'visualized-vision', to: 'clear-mission', question: 'Is your vision broken down into a clear mission?' },
   { from: 'ignited-curiosity', to: 'generative-story', question: 'Is curiosity inspiring your story?' },
 
   // Story ↔ Self
-  { from: 'worthy-mission', to: 'tuned-emotions', question: 'Is your mission igniting inspired emotions?' },
+  { from: 'clear-mission', to: 'tuned-emotions', question: 'Is your mission clarity bringing calm focus?' },
   { from: 'empowered-role', to: 'focused-body', question: 'Does ownership bring your body to attention?' },
   { from: 'generative-story', to: 'open-mind', question: 'Is your story opening your mind to possibilities?' },
 

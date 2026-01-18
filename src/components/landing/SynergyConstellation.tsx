@@ -21,7 +21,7 @@ const KEY_HOME_POSITIONS: Record<KeyType, { x: number; y: number }> = {
   'ignited-curiosity': { x: 38, y: 15 },
   // Story (top-right quadrant)
   'generative-story': { x: 62, y: 15 },
-  'worthy-mission': { x: 75, y: 28 },
+  'clear-mission': { x: 75, y: 28 },
   'empowered-role': { x: 88, y: 18 },
   // Self (bottom-left quadrant)
   'tuned-emotions': { x: 12, y: 82 },

@@ -22,7 +22,7 @@ const KEY_NUMBERS: Record<string, number> = {
   'optimized-tools': 5,
   'feedback-systems': 6,
   'generative-story': 7,
-  'worthy-mission': 8,
+  'clear-mission': 8,
   'empowered-role': 9,
   'grounding-values': 10,
   'visualized-vision': 11,

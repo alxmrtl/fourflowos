@@ -546,7 +546,7 @@ Consciously connect daily tasks to underlying values. Create explicit bridges be
 Develop a clear process for using values in choices. When uncertain, let your principles be your guide.
 
 ## Related Keys
-Worthy Mission provides specific expression of your values through purposeful action. Ignited Curiosity often emerges when exploring things aligned with your values. Visualized Vision translates abstract values into concrete future outcomes.`,
+Clear Mission provides specific expression of your values through actionable goals. Ignited Curiosity often emerges when exploring things aligned with your values. Visualized Vision translates abstract values into concrete future outcomes.`,
     tags: ['values', 'principles', 'meaning', 'inner-compass', 'foundation'],
     type: 'learn',
     dimension: 'spirit',
@@ -702,7 +702,7 @@ Create visual representations—images, words, symbols—that remind you of your
 Regularly ask yourself: "What would my future self do in this situation?" Use your vision as a decision-making filter.
 
 ## Related Keys
-Grounding Values provides the foundation that makes your vision authentic and sustainable. Worthy Mission translates your vision into specific actions and goals. Ignited Curiosity helps you explore possibilities for your future.`,
+Grounding Values provides the foundation that makes your vision authentic and sustainable. Clear Mission translates your vision into specific actions and goals. Ignited Curiosity helps you explore possibilities for your future.`,
     tags: ['vision', 'future-focus', 'motivation', 'goal-setting', 'clarity'],
     type: 'learn',
     dimension: 'spirit',
@@ -780,7 +780,7 @@ Write about situations where you've successfully influenced outcomes or overcome
 When facing problems, always ask "What's one thing I can do about this?" Take that action, however small, before planning or analyzing further.
 
 ## Related Keys
-Grounding Values gives you the foundation to act from principle rather than pressure. Worthy Mission provides direction for your empowered actions. Generative Story helps you see how your role fits into the bigger narrative.`,
+Grounding Values gives you the foundation to act from principle rather than pressure. Clear Mission provides direction for your empowered actions. Generative Story helps you see how your role fits into the bigger narrative.`,
     tags: ['agency', 'ownership', 'responsibility', 'empowerment', 'choice'],
     type: 'learn',
     dimension: 'story',
@@ -860,7 +860,7 @@ When facing challenges, ask: "What would the hero of my story do in this situati
 For any difficult experience, practice finding the redemptive elements—the growth, learning, or opportunity that came from it.
 
 ## Related Keys
-Empowered Role gives you agency to act on your generative stories. Worthy Mission provides direction for your story's next chapter. Grounding Values ensures your stories align with what truly matters to you.`,
+Empowered Role gives you agency to act on your generative stories. Clear Mission provides direction for your story's next chapter. Grounding Values ensures your stories align with what truly matters to you.`,
     tags: ['narrative', 'mindset', 'resilience', 'growth', 'possibility'],
     type: 'learn',
     dimension: 'story',
@@ -872,77 +872,84 @@ Empowered Role gives you agency to act on your generative stories. Worthy Missio
     createdDate: '2024-12-19'
   },
 
-  // Flow Key 12: Worthy Mission
+  // Flow Key 12: Clear Mission
   {
-    id: 'worthy-mission-essential',
-    title: 'Worthy Mission',
-    description: 'A purpose bigger than yourself that makes the hard work worth it and gives meaning to the struggle',
-    content: `When your work serves something bigger than yourself, you tap into an endless source of motivation.
+    id: 'clear-mission-essential',
+    title: 'Clear Mission',
+    description: 'A goal hierarchy from vision to daily action that creates unstoppable momentum',
+    content: `Without a clear breakdown of what you're building, vision stays a dream.
 
-Most people burn out because they're running on willpower alone. They're working for external rewards—money, status, approval—that never quite satisfy. But when you have a worthy mission, something you genuinely care about improving or serving, the work itself becomes the reward.
+Most people have aspirations but no roadmap. They know where they want to end up but can't see the path from here to there. A clear mission bridges that gap—translating your inspiring vision into concrete goals you can execute on today.
 
-## Your North Star Purpose
+## Your Goal Architecture
 
-A worthy mission isn't about being a saint or saving the world (though it could be). It's about connecting your daily work to something that matters beyond your own benefit. Maybe it's helping people solve problems. Maybe it's creating beauty. Maybe it's advancing knowledge or building something lasting.
+A clear mission isn't just a single goal—it's a hierarchy. Think of it like a telescope that can zoom from the stars down to the ground:
 
-The key is that it feels worthy to you—not because someone told you it should, but because it resonates with your values and speaks to what you want your life to contribute.
+- **5-year vision**: The inspiring future you're building toward
+- **1-year milestone**: The major achievement that proves you're on track
+- **Quarterly objective**: The focused outcome for the next 90 days
+- **Monthly target**: The specific deliverable you're working on now
+- **Weekly focus**: The key priorities for this week
+- **Daily action**: The one thing that moves the needle today
+
+When every level connects, your daily work feels purposeful because you can trace it all the way up to your ultimate vision.
 
 ## How It Works
 
-When psychologists study what motivates people long-term, they find that meaning beats money every time. People will work harder, longer, and with more creativity when they believe their work serves a larger purpose.
+Your brain craves clarity. When you know exactly what to do next, action becomes effortless. When you're uncertain, you procrastinate, overthink, and spin your wheels.
 
-Your brain's reward systems light up differently when you're working for something meaningful. Instead of the quick hits and crashes of external motivation, you get sustained energy from knowing your effort matters. This isn't just feel-good psychology—it's measurable in brain scans and performance data.
+Research shows that people who break big goals into smaller steps are far more likely to achieve them. This isn't just motivation—it's how your brain processes complexity. Clear missions reduce cognitive load, making each step feel doable rather than overwhelming.
 
 ## What You'll Do
 
-**Identify Your Service**
-Think about how your unique skills and interests could address real problems or needs. What would you work on even if no one paid you? What breaks your heart that you might help fix?
+**Map Your Goal Hierarchy**
+Start with your inspiring vision and work backward. What needs to happen in 5 years? 1 year? This quarter? This month? This week? Today?
 
-**Connect Daily Work to Mission**
-Find explicit links between routine tasks and your larger purpose. Even mundane work feels different when you can see how it serves something meaningful.
+**Connect Every Level**
+Make sure each layer explicitly serves the one above it. Your daily task should connect to your weekly focus, which connects to your monthly target, all the way up.
 
-**Measure Mission Impact**
-Track how your work creates positive outcomes for others. Make the connection between effort and service visible and tangible.
+**Review and Adjust**
+Weekly: Check if daily actions served weekly focus. Monthly: Did weekly work hit the monthly target? Quarterly: Reassess the path to your annual milestone.
 
-**Choose Mission-Aligned Opportunities**
-When facing decisions about projects or commitments, ask: "Which option better serves my mission?" Let purpose guide your priorities.
+**Clarify Your Next Action**
+At any moment, you should be able to answer: "What's the one thing I need to do next to move my mission forward?"
 
 ## What You'll Notice
 
 **When It's Working:**
-- Work feels inherently meaningful beyond personal rewards
-- Natural willingness to invest sustained effort in challenging projects
-- Resilience during difficult periods because the mission matters
-- Clear criteria for evaluating opportunities and commitments
-- Energy increases when connecting work to larger purpose
+- Clear sense of what to do next without overthinking
+- Daily tasks feel connected to something bigger
+- Progress feels tangible and measurable
+- Easy to say no to distractions that don't serve your mission
+- Momentum builds as completed steps compound
 
 **When It's Not:**
-- Motivation depends primarily on external rewards or recognition
-- Difficulty sustaining effort during challenging or lengthy projects
-- Unclear about why specific work matters beyond personal benefit
-- Decision-making based primarily on personal advantage
-- Energy depletes when work feels disconnected from larger meaning
+- Feeling busy but not productive
+- Unclear how today's work connects to long-term goals
+- Jumping between tasks without clear priority
+- Vision feels inspiring but distant and unreachable
+- Difficulty deciding what deserves your attention
 
 ## Build This Skill
 
-**Purpose Exploration**
-Examine how your work and capabilities could serve meaningful purposes. Look for connections between personal skills and real needs in the world.
+**Goal Cascade**
+Practice breaking one big goal into progressively smaller timeframes. Get comfortable translating "someday" into "today."
 
-**Impact Documentation**
-Track and celebrate the positive outcomes your work creates for others. Make mission impact visible through stories and data.
+**Weekly Planning**
+Every week, identify 3-5 outcomes that will meaningfully advance your mission. Plan your days around these priorities.
 
-**Mission Evolution**
-Allow your understanding of purpose to evolve as you grow and learn. Your mission can deepen and expand over time.
+**Daily Clarity Ritual**
+Start each day by identifying your single most important task—the one action that would make the day a win for your mission.
 
-**Service Integration**
-Look for ways to increase the positive impact of your work on others. How can you serve more effectively through what you're already doing?
+**Milestone Mapping**
+For any major goal, identify the key checkpoints that prove you're making progress. Create visible markers along the path.
 
 ## Related Keys
-Grounding Values provides the foundation for identifying missions that truly matter to you. Visualized Vision helps you imagine what mission fulfillment would look like. Empowered Role gives you the agency to act toward mission objectives.`,
-    tags: ['mission', 'purpose', 'service', 'meaning', 'contribution'],
+Visualized Vision provides the inspiring destination that your clear mission breaks down into steps. Grounding Values ensures your mission hierarchy reflects what truly matters to you. Empowered Role gives you the agency to execute on your mission objectives.`,
+    tags: ['mission', 'goals', 'clarity', 'planning', 'execution'],
     type: 'learn',
     dimension: 'story',
-    key: 'worthy-mission',
+    key: 'clear-mission',
     isPinned: true,
     pinOrder: 12,
     difficulty: 'Beginner',
