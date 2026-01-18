@@ -9,7 +9,7 @@ export default function ResonanceSection() {
 
   return (
     <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#050505] overflow-hidden">
-      {/* Subtle gradient orb */}
+      {/* Breathing coral orb */}
       <motion.div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]"
         style={{
@@ -21,6 +21,33 @@ export default function ResonanceSection() {
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
       />
 
+      {/* Scattered particle streams */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 rounded-full"
+            style={{
+              background: ['#FF6F61', '#6BA292', '#5B84B1', '#7A4DA4'][i % 4],
+              left: `${20 + (i * 5)}%`,
+              top: '50%',
+            }}
+            animate={{
+              x: [0, (i % 2 === 0 ? 1 : -1) * (50 + i * 10), (i % 2 === 0 ? -1 : 1) * 30],
+              y: [0, (i % 3 === 0 ? -1 : 1) * (40 + i * 8), (i % 3 === 0 ? 1 : -1) * 20],
+              opacity: [0.4, 0.2, 0.4],
+              scale: [1, 0.8, 1],
+            }}
+            transition={{
+              duration: 8 + i * 0.5,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: i * 0.3,
+            }}
+          />
+        ))}
+      </div>
+
       <motion.div
         className="relative max-w-3xl mx-auto px-6 text-center"
         initial="hidden"
@@ -31,7 +58,7 @@ export default function ResonanceSection() {
             opacity: 1,
             transition: {
               duration: 0.5,
-              staggerChildren: 0.12,
+              staggerChildren: 0.15,
               delayChildren: 0.1,
             },
           },
@@ -53,59 +80,42 @@ export default function ResonanceSection() {
           Is This You?
         </motion.h2>
 
-        {/* Flowing text - each line staggers in */}
-        <div className="space-y-6 md:space-y-8">
-          <motion.p
-            className="text-xl md:text-2xl lg:text-3xl text-gray-200 font-light leading-relaxed"
-            variants={{
-              hidden: { opacity: 0, y: 25, filter: 'blur(8px)' },
-              visible: {
-                opacity: 1,
-                y: 0,
-                filter: 'blur(0px)',
-                transition: { duration: 0.7, ease: 'easeOut' },
-              },
-            }}
-          >
-            Skilled but scattered.{' '}
-            <span className="text-gray-400">Ambitious but exhausted.</span>{' '}
-            <span className="text-gray-500">Starting strong, fading fast.</span>
-          </motion.p>
+        {/* Core pain points - single impactful line */}
+        <motion.p
+          className="text-2xl md:text-3xl lg:text-4xl text-gray-200 font-light leading-relaxed mb-12"
+          variants={{
+            hidden: { opacity: 0, y: 25, filter: 'blur(8px)' },
+            visible: {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              transition: { duration: 0.7, ease: 'easeOut' },
+            },
+          }}
+        >
+          Skilled but scattered.{' '}
+          <span className="text-gray-400">Ambitious but exhausted.</span>{' '}
+          <span className="text-gray-500">Start strong, fade fast.</span>
+        </motion.p>
 
-          <motion.p
-            className="text-lg md:text-xl text-gray-400 leading-relaxed"
-            variants={{
-              hidden: { opacity: 0, y: 25, filter: 'blur(8px)' },
-              visible: {
-                opacity: 1,
-                y: 0,
-                filter: 'blur(0px)',
-                transition: { duration: 0.7, ease: 'easeOut' },
-              },
-            }}
-          >
-            You've tried the apps, the routines, the hacks.{' '}
-            <span className="text-gray-500">They work for a week. Then life happens.</span>
-          </motion.p>
-
-          <motion.p
-            className="text-xl md:text-2xl text-white font-medium leading-relaxed"
-            variants={{
-              hidden: { opacity: 0, y: 25, filter: 'blur(8px)' },
-              visible: {
-                opacity: 1,
-                y: 0,
-                filter: 'blur(0px)',
-                transition: { duration: 0.7, ease: 'easeOut' },
-              },
-            }}
-          >
-            What if the problem isn't discipline?{' '}
-            <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent">
-              What if it's disconnection?
-            </span>
-          </motion.p>
-        </div>
+        {/* The reframe */}
+        <motion.p
+          className="text-xl md:text-2xl text-white font-medium leading-relaxed"
+          variants={{
+            hidden: { opacity: 0, y: 25, filter: 'blur(8px)' },
+            visible: {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              transition: { duration: 0.7, ease: 'easeOut' },
+            },
+          }}
+        >
+          What if the problem isn&apos;t discipline?{' '}
+          <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent">
+            What if it&apos;s disconnection?
+          </span>
+        </motion.p>
       </motion.div>
     </section>
   );

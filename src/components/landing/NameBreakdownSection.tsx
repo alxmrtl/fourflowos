@@ -1,32 +1,40 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
+import Image from 'next/image';
 import { useRef } from 'react';
 
 const nameBreakdown = [
   {
     word: 'FOUR',
-    meaning: 'Four dimensions of life that create flow:',
-    highlight: 'Self, Space, Story, Spirit.',
+    meaning: 'dimensions of life tuned to generate',
+    connector: '...',
     color: '#FF6F61',
   },
   {
     word: 'FLOW',
-    meaning: 'Effortless action. Deep engagement.',
-    highlight: 'Work that feels like play.',
+    meaning: '— effortless action, peak engagement — through your own',
+    connector: '...',
     color: '#6BA292',
   },
   {
     word: 'OS',
-    meaning: 'An operating system for life.',
-    highlight: 'A lens you see through.',
+    meaning: '— an operating system for how you live.',
+    connector: '',
     color: '#7A4DA4',
   },
 ];
 
+const shapeImages = [
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SELF - Frequencies.png', color: '#FF6F61' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPACE - Sqaure.png', color: '#6BA292' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/STORY - Cross.png', color: '#5B84B1' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png', color: '#7A4DA4' },
+];
+
 export default function NameBreakdownSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { amount: 0.25 });
+  const isInView = useInView(sectionRef, { amount: 0.2 });
 
   return (
     <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#0a0a0a] overflow-hidden">
@@ -72,12 +80,11 @@ export default function NameBreakdownSection() {
             },
           }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            What is{' '}
+          <p className="text-gray-500 text-sm uppercase tracking-widest mb-4">Introducing</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
             <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
               FourFlowOS
             </span>
-            ?
           </h2>
         </motion.div>
 
@@ -114,9 +121,11 @@ export default function NameBreakdownSection() {
 
                 {/* The meaning */}
                 <div className="flex-1">
-                  <p className="text-lg md:text-xl text-gray-400 leading-relaxed">
-                    {item.meaning}{' '}
-                    <span className="text-white font-medium">{item.highlight}</span>
+                  <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
+                    {item.meaning}
+                    {item.connector && (
+                      <span className="text-gray-500 ml-1">{item.connector}</span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -137,6 +146,101 @@ export default function NameBreakdownSection() {
             </motion.div>
           ))}
         </div>
+
+        {/* Four shapes merging visual */}
+        <motion.div
+          className="mt-16 md:mt-20 flex justify-center"
+          variants={{
+            hidden: { opacity: 0, y: 30 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.8, ease: 'easeOut', delay: 0.5 },
+            },
+          }}
+        >
+          <div className="relative w-32 h-32 md:w-40 md:h-40">
+            {/* Four shapes that animate toward center */}
+            {shapeImages.map((shape, index) => (
+              <motion.div
+                key={index}
+                className="absolute w-10 h-10 md:w-12 md:h-12"
+                style={{
+                  top: '50%',
+                  left: '50%',
+                }}
+                initial={{
+                  x: `${(index === 0 || index === 3 ? -1 : 1) * 60}%`,
+                  y: `${(index < 2 ? -1 : 1) * 60}%`,
+                  opacity: 0,
+                  scale: 0.5,
+                }}
+                animate={isInView ? {
+                  x: '-50%',
+                  y: '-50%',
+                  opacity: 0.8,
+                  scale: 1,
+                } : {
+                  x: `${(index === 0 || index === 3 ? -1 : 1) * 60}%`,
+                  y: `${(index < 2 ? -1 : 1) * 60}%`,
+                  opacity: 0,
+                  scale: 0.5,
+                }}
+                transition={{
+                  duration: 1.2,
+                  delay: 0.8 + index * 0.15,
+                  ease: 'easeOut',
+                }}
+              >
+                <div
+                  className="absolute inset-0 rounded-full blur-xl opacity-40"
+                  style={{ background: shape.color }}
+                />
+                <Image
+                  src={shape.src}
+                  alt=""
+                  fill
+                  className="object-contain"
+                />
+              </motion.div>
+            ))}
+
+            {/* Center logo that fades in */}
+            <motion.div
+              className="absolute inset-0"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.8, delay: 1.8, ease: 'easeOut' }}
+            >
+              <Image
+                src="/assets/LOGOS/FOURFLOW - MAIN LOGO.png"
+                alt="FourFlowOS"
+                fill
+                className="object-contain"
+              />
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Closing statement */}
+        <motion.div
+          className="mt-12 text-center space-y-2"
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.7, ease: 'easeOut', delay: 0.6 },
+            },
+          }}
+        >
+          <p className="text-lg text-gray-400">
+            Not another app. <span className="text-white">A way of seeing.</span>
+          </p>
+          <p className="text-lg text-gray-400">
+            Not a hack. <span className="text-white">An alignment practice.</span>
+          </p>
+        </motion.div>
       </motion.div>
     </section>
   );
