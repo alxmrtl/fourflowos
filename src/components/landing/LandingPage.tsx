@@ -5,11 +5,9 @@ import Link from 'next/link';
 import { useRef } from 'react';
 import LandingNav from './LandingNav';
 import HeroSection from './HeroSection';
-import ResonanceSection from './ResonanceSection';
-import RealProblemSection from './RealProblemSection';
-import DifferentApproachSection from './DifferentApproachSection';
 import NameBreakdownSection from './NameBreakdownSection';
 import DimensionsSection from './DimensionsSection';
+import SignalSection from './SignalSection';
 import SectionTransition from './SectionTransition';
 import AppsSection from './AppsSection';
 import Footer from './Footer';
@@ -28,28 +26,19 @@ export default function LandingPage() {
       {/* 1. Hero */}
       <HeroSection />
 
-      {/* 2. Is This You? - Immediate qualification */}
-      <ResonanceSection />
-
-      {/* 3. The Real Problem - Reframes the issue */}
-      <RealProblemSection />
-
-      {/* 4. A Different Approach - Philosophy/Principles */}
-      <DifferentApproachSection />
-
-      {/* Transition */}
-      <SectionTransition variant="dots" />
-
-      {/* 5. What is FourFlowOS? - Name breakdown */}
+      {/* 2. What is FourFlowOS? - Name breakdown */}
       <NameBreakdownSection />
 
-      {/* 6. The Four Dimensions - Unified shapes, symbolism, and keys */}
+      {/* 3. The Four Dimensions */}
       <DimensionsSection />
+
+      {/* 4. The Signal - Philosophy/Theory */}
+      <SignalSection />
 
       {/* Transition */}
       <SectionTransition fromColor="#7A4DA4" toColor="#FF6F61" />
 
-      {/* 7. Apps Section */}
+      {/* 5. Apps Section */}
       <AppsSection />
 
       {/* 9. Origin Story - Moved toward end */}
