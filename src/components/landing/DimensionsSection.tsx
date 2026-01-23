@@ -55,11 +55,11 @@ const dimensionData = [
 export default function DimensionsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { amount: 0.15 });
-  const [expandedDimension, setExpandedDimension] = useState<string | null>(null);
+  const [revealedDimension, setRevealedDimension] = useState<string | null>(null);
   const [showAllKeys, setShowAllKeys] = useState(false);
 
   const toggleDimension = (id: string) => {
-    setExpandedDimension(expandedDimension === id ? null : id);
+    setRevealedDimension(revealedDimension === id ? null : id);
   };
 
   return (
@@ -129,7 +129,7 @@ export default function DimensionsSection() {
               }}
             >
               <motion.div
-                className="relative rounded-2xl overflow-hidden cursor-pointer group"
+                className="relative rounded-2xl overflow-hidden cursor-pointer group h-[280px] md:h-[260px]"
                 style={{
                   background: `linear-gradient(135deg, ${dimension.color}08, ${dimension.color}03)`,
                   border: `1px solid ${dimension.color}20`,
@@ -138,8 +138,14 @@ export default function DimensionsSection() {
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 onClick={() => toggleDimension(dimension.id)}
               >
-                {/* Main card content */}
-                <div className="p-6 md:p-8">
+                {/* Front content - Dimension info */}
+                <motion.div
+                  className="absolute inset-0 p-6 md:p-8"
+                  animate={{
+                    opacity: revealedDimension === dimension.id ? 0 : 1,
+                  }}
+                  transition={{ duration: 0.3, delay: revealedDimension === dimension.id ? 0 : 0.3 }}
+                >
                   <div className="flex items-start gap-5">
                     {/* Shape */}
                     <motion.div
@@ -168,22 +174,17 @@ export default function DimensionsSection() {
 
                     {/* Text */}
                     <div className="flex-1 min-w-0">
-                      {/* Name + Shape label */}
-                      <div className="flex items-baseline gap-3 mb-2">
-                        <h3
-                          className="text-2xl md:text-3xl font-bold tracking-tight"
-                          style={{ color: dimension.color }}
-                        >
-                          {dimension.name}
-                        </h3>
-                        <span className="text-xs text-gray-600 font-medium uppercase tracking-widest">
-                          {dimension.shape}
-                        </span>
-                      </div>
+                      {/* Name */}
+                      <h3
+                        className="text-2xl md:text-3xl font-bold tracking-tight mb-2"
+                        style={{ color: dimension.color }}
+                      >
+                        {dimension.name}
+                      </h3>
 
-                      {/* Symbolism */}
+                      {/* Question */}
                       <p className="text-lg text-white font-medium mb-1">
-                        {dimension.symbolism}
+                        "{dimension.question}"
                       </p>
 
                       {/* Meta explainer */}
@@ -191,18 +192,18 @@ export default function DimensionsSection() {
                         {dimension.meta}
                       </p>
 
-                      {/* Question */}
+                      {/* Shape + Symbolism */}
                       <p
                         className="text-sm font-medium italic"
                         style={{ color: `${dimension.color}99` }}
                       >
-                        "{dimension.question}"
+                        {dimension.shape} — {dimension.symbolism}
                       </p>
                     </div>
                   </div>
 
                   {/* Keys teaser bar */}
-                  <div className="mt-5 pt-4 border-t border-white/5">
+                  <div className="absolute bottom-6 left-6 right-6 pt-4 border-t border-white/5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-600 uppercase tracking-wider">
@@ -218,79 +219,97 @@ export default function DimensionsSection() {
                           ))}
                         </div>
                       </div>
-                      <motion.div
-                        animate={{ rotate: expandedDimension === dimension.id ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <svg
-                          className="w-5 h-5 text-gray-500 group-hover:text-gray-300 transition-colors"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </motion.div>
+                      <span className="text-xs text-gray-600">Tap to reveal</span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Expanded keys section */}
-                <AnimatePresence>
-                  {expandedDimension === dimension.id && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: 'easeInOut' }}
-                      className="overflow-hidden"
+                {/* Radial ink spread overlay */}
+                <motion.div
+                  className="absolute inset-0 origin-[15%_18%] md:origin-[12%_20%]"
+                  initial={false}
+                  animate={{
+                    clipPath: revealedDimension === dimension.id
+                      ? 'circle(150% at 15% 18%)'
+                      : 'circle(0% at 15% 18%)',
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.4, 0, 0.2, 1],
+                  }}
+                  style={{
+                    background: `linear-gradient(135deg, ${dimension.color}25, ${dimension.color}15)`,
+                  }}
+                />
+
+                {/* Back content - Flow Keys */}
+                <motion.div
+                  className="absolute inset-0 p-6 md:p-8 flex"
+                  initial={false}
+                  animate={{
+                    opacity: revealedDimension === dimension.id ? 1 : 0,
+                    pointerEvents: revealedDimension === dimension.id ? 'auto' : 'none',
+                  }}
+                  transition={{ duration: 0.3, delay: revealedDimension === dimension.id ? 0.3 : 0 }}
+                >
+                  {/* Vertical title on left */}
+                  <div className="flex flex-col items-center justify-center mr-6 md:mr-8 pl-1">
+                    <h3
+                      className="text-sm font-bold tracking-widest uppercase whitespace-nowrap"
+                      style={{
+                        color: dimension.color,
+                        writingMode: 'vertical-rl',
+                        transform: 'rotate(180deg)',
+                      }}
                     >
-                      <div
-                        className="px-6 md:px-8 pb-6 md:pb-8 pt-2 space-y-3"
-                        style={{ background: `${dimension.color}05` }}
-                      >
-                        {dimension.keys.map((keyId, keyIndex) => {
-                          const key = KEYS[keyId as keyof typeof KEYS];
-                          if (!key) return null;
-                          return (
-                            <motion.div
-                              key={keyId}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: keyIndex * 0.1 }}
-                              className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
-                            >
-                              <div
-                                className="relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden"
-                                style={{ background: `${dimension.color}15` }}
-                              >
-                                <Image
-                                  src={key.icon}
-                                  alt={key.name}
-                                  fill
-                                  className="object-contain p-1.5"
-                                />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="text-sm font-semibold text-white">
-                                  {key.name}
-                                </h4>
-                                <p className="text-xs text-gray-500 truncate">
-                                  {key.description}
-                                </p>
-                              </div>
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      {dimension.name}
+                    </h3>
+                  </div>
+
+                  {/* Keys list */}
+                  <div className="flex-1 flex flex-col justify-center space-y-2">
+                    {dimension.keys.map((keyId, keyIndex) => {
+                      const key = KEYS[keyId as keyof typeof KEYS];
+                      if (!key) return null;
+                      return (
+                        <motion.div
+                          key={keyId}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{
+                            opacity: revealedDimension === dimension.id ? 1 : 0,
+                            x: revealedDimension === dimension.id ? 0 : -20
+                          }}
+                          transition={{
+                            duration: 0.4,
+                            delay: revealedDimension === dimension.id ? 0.35 + keyIndex * 0.08 : 0,
+                            ease: 'easeOut'
+                          }}
+                          className="flex items-center gap-3 p-3 rounded-xl bg-black/30 backdrop-blur-sm"
+                        >
+                          <div
+                            className="relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden"
+                            style={{ background: `${dimension.color}30` }}
+                          >
+                            <Image
+                              src={key.icon}
+                              alt={key.name}
+                              fill
+                              className="object-contain p-1.5"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-semibold text-white">
+                              {key.name}
+                            </h4>
+                            <p className="text-xs text-white/50 truncate">
+                              {key.description}
+                            </p>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
 
                 {/* Hover border glow */}
                 <div
