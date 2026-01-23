@@ -4,72 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 
-// 1. THE SPLIT - Two orbs drifting apart (CSS keyframes for reliability)
-function SplitAnimation() {
-  return (
-    <div className="relative w-full h-56 flex items-center justify-center">
-      <style jsx>{`
-        @keyframes drift-left {
-          0%, 100% { transform: translateX(0); opacity: 0.7; }
-          50% { transform: translateX(-60px); opacity: 1; }
-        }
-        @keyframes drift-right {
-          0%, 100% { transform: translateX(0); opacity: 0.7; }
-          50% { transform: translateX(60px); opacity: 1; }
-        }
-        @keyframes fade-line {
-          0%, 100% { opacity: 0.4; transform: scaleX(1); }
-          50% { opacity: 0.1; transform: scaleX(1.3); }
-        }
-        .orb-left {
-          animation: drift-left 4s ease-in-out infinite;
-        }
-        .orb-right {
-          animation: drift-right 4s ease-in-out infinite;
-        }
-        .connection-line {
-          animation: fade-line 4s ease-in-out infinite;
-        }
-      `}</style>
-
-      {/* Left orb - Productivity */}
-      <div
-        className="orb-left absolute w-24 h-24 rounded-full"
-        style={{
-          background: 'radial-gradient(circle, #5B84B1 0%, #5B84B150 40%, transparent 70%)',
-          boxShadow: '0 0 60px #5B84B160',
-        }}
-      />
-
-      {/* Right orb - Fulfillment */}
-      <div
-        className="orb-right absolute w-24 h-24 rounded-full"
-        style={{
-          background: 'radial-gradient(circle, #FF6F61 0%, #FF6F6150 40%, transparent 70%)',
-          boxShadow: '0 0 60px #FF6F6160',
-        }}
-      />
-
-      {/* Fading connection line */}
-      <div
-        className="connection-line absolute h-[2px] w-40"
-        style={{
-          background: 'linear-gradient(90deg, #5B84B1, transparent 40%, transparent 60%, #FF6F61)',
-        }}
-      />
-
-      {/* Labels */}
-      <span className="absolute left-1/4 -translate-x-full bottom-4 text-xs text-[#5B84B1]/70 uppercase tracking-wider font-medium">
-        Productivity
-      </span>
-      <span className="absolute right-1/4 translate-x-full bottom-4 text-xs text-[#FF6F61]/70 uppercase tracking-wider font-medium">
-        Fulfillment
-      </span>
-    </div>
-  );
-}
-
-// 2. THE BODY KNOWS - Breathing pulse (CSS keyframes)
+// BREATHING PULSE - Core insight animation
 function BreathingPulse() {
   return (
     <div className="relative w-full h-48 flex items-center justify-center">
@@ -105,7 +40,7 @@ function BreathingPulse() {
   );
 }
 
-// 4. FOURFLOW EMBLEM - Four shapes coming together
+// FOURFLOW EMBLEM - Four shapes coming together
 function EmblemAnimation() {
   return (
     <div className="relative w-full h-64 flex items-center justify-center">
@@ -137,7 +72,7 @@ function EmblemAnimation() {
         .center-glow { animation: center-glow 5s ease-in-out infinite; }
       `}</style>
 
-      {/* Four shapes in quadrants - z-order: Frequencies(top) > Cross > Square > Circle(bottom) */}
+      {/* Four shapes in quadrants */}
       <div className="shape-br absolute w-16 h-16 translate-x-8 translate-y-8" style={{ zIndex: 1 }}>
         <Image
           src="/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png"
@@ -189,188 +124,222 @@ function EmblemAnimation() {
   );
 }
 
-// 5. FOUR FREQUENCIES - Scrambled to aligned with saturation change
-function FrequencyAnimation({ inView }: { inView: boolean }) {
-  const [phase, setPhase] = useState<'scramble' | 'tuning' | 'aligned'>('scramble');
+// CIRCULAR FREQUENCY ANIMATION - Four arcs with center text
+type TuningPhase = 'scramble' | 'spirit' | 'story' | 'space' | 'self' | 'aligned';
+
+function CircularFrequencyAnimation({ inView }: { inView: boolean }) {
+  const [phase, setPhase] = useState<TuningPhase>('scramble');
 
   useEffect(() => {
     if (!inView) return;
 
     const cycle = () => {
       setPhase('scramble');
-      setTimeout(() => setPhase('tuning'), 2000);
-      setTimeout(() => setPhase('aligned'), 4000);
+      setTimeout(() => setPhase('spirit'), 1500);
+      setTimeout(() => setPhase('story'), 3000);
+      setTimeout(() => setPhase('space'), 4500);
+      setTimeout(() => setPhase('self'), 6000);
+      setTimeout(() => setPhase('aligned'), 7500);
     };
 
     cycle();
-    const interval = setInterval(cycle, 6000);
+    const interval = setInterval(cycle, 10000);
     return () => clearInterval(interval);
   }, [inView]);
 
-  const colors = [
-    { name: 'Self', base: '#FF6F61', dim: '#FF6F6140' },
-    { name: 'Space', base: '#6BA292', dim: '#6BA29240' },
-    { name: 'Story', base: '#5B84B1', dim: '#5B84B140' },
-    { name: 'Spirit', base: '#7A4DA4', dim: '#7A4DA440' },
+  const phaseOrder: TuningPhase[] = ['scramble', 'spirit', 'story', 'space', 'self', 'aligned'];
+
+  const isFrequencyTuned = (tuneAt: TuningPhase) => {
+    const currentIndex = phaseOrder.indexOf(phase);
+    const tuneIndex = phaseOrder.indexOf(tuneAt);
+    return currentIndex >= tuneIndex;
+  };
+
+  // Dimensions with their positions (clockwise from top: Spirit, Story, Space, Self)
+  const dimensions = [
+    { name: 'SPIRIT', tuneAt: 'spirit' as TuningPhase, color: '#7A4DA4', position: 'top', angle: -90 },
+    { name: 'STORY', tuneAt: 'story' as TuningPhase, color: '#5B84B1', position: 'right', angle: 0 },
+    { name: 'SPACE', tuneAt: 'space' as TuningPhase, color: '#6BA292', position: 'bottom', angle: 90 },
+    { name: 'SELF', tuneAt: 'self' as TuningPhase, color: '#FF6F61', position: 'left', angle: 180 },
   ];
 
-  // Different random patterns for scramble phase
-  const scramblePatterns = [
-    [3, 8, 2, 6, 9, 4, 7, 1, 5, 8, 3, 6, 2, 9, 4, 7, 5, 8, 3, 6],
-    [7, 2, 9, 4, 6, 1, 8, 5, 3, 7, 9, 2, 6, 4, 8, 1, 5, 9, 3, 7],
-    [5, 9, 3, 7, 2, 8, 4, 6, 1, 5, 3, 9, 7, 2, 8, 6, 4, 1, 5, 3],
-    [2, 6, 8, 1, 5, 9, 3, 7, 4, 2, 8, 6, 1, 5, 9, 7, 3, 4, 2, 8],
+  // Relationships (clockwise flow)
+  const relationships = [
+    { from: 'SPIRIT', to: 'STORY', verb: 'inspires', showAt: 'story' as TuningPhase },
+    { from: 'STORY', to: 'SPACE', verb: 'guides', showAt: 'space' as TuningPhase },
+    { from: 'SPACE', to: 'SELF', verb: 'supports', showAt: 'self' as TuningPhase },
+    { from: 'SELF', to: 'SPIRIT', verb: 'honors', showAt: 'aligned' as TuningPhase },
   ];
 
-  // Aligned pattern (sine wave)
-  const alignedPattern = [...Array(20)].map((_, i) =>
-    5 + Math.sin(i * 0.4) * 4
-  );
+  // Get current relationship text
+  const getCurrentRelationship = () => {
+    if (phase === 'scramble') return null;
+    if (phase === 'spirit') return { text: 'SPIRIT', subtext: null };
+
+    const rel = relationships.find(r => r.showAt === phase);
+    if (rel) {
+      return {
+        text: `${rel.from} ${rel.verb} ${rel.to}`,
+        subtext: phase === 'aligned' ? 'The cycle continues' : null,
+      };
+    }
+    return null;
+  };
+
+  const currentRel = getCurrentRelationship();
+
+  // Generate frequency bars for an arc
+  const generateBars = (isTuned: boolean, scrambleOffset: number) => {
+    const barCount = 12;
+    return [...Array(barCount)].map((_, i) => {
+      const scrambleHeight = ((i * 7 + scrambleOffset) % 9) + 1;
+      const alignedHeight = 5 + Math.sin(i * 0.5) * 4;
+      return isTuned ? alignedHeight : scrambleHeight;
+    });
+  };
+
+  const circleSize = 320;
+  const arcRadius = circleSize / 2 - 30;
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto space-y-6">
-      {/* Phase indicator */}
-      <div className="flex justify-center gap-4 mb-8">
-        {['scramble', 'tuning', 'aligned'].map((p) => (
-          <div
-            key={p}
-            className={`text-xs uppercase tracking-wider transition-all duration-500 ${
-              phase === p ? 'text-white' : 'text-gray-600'
-            }`}
-          >
-            {p === 'scramble' ? 'Interference' : p === 'tuning' ? 'Tuning...' : 'Aligned'}
-          </div>
-        ))}
-      </div>
+    <div className="relative w-full flex items-center justify-center">
+      <div
+        className="relative"
+        style={{ width: circleSize, height: circleSize }}
+      >
+        {/* Outer circle guide */}
+        <div
+          className="absolute inset-0 rounded-full border border-white/5"
+        />
 
-      {colors.map((color, i) => {
-        const pattern = phase === 'aligned'
-          ? alignedPattern
-          : phase === 'tuning'
-            ? alignedPattern.map((v, j) => v + (scramblePatterns[i][j] - 5) * (1 - (j / 20)))
-            : scramblePatterns[i];
+        {/* Four frequency arcs */}
+        {dimensions.map((dim, idx) => {
+          const isTuned = isFrequencyTuned(dim.tuneAt);
+          const bars = generateBars(isTuned, idx * 3);
 
-        const currentColor = phase === 'aligned' ? color.base : color.dim;
-        const glowIntensity = phase === 'aligned' ? '40' : '10';
+          // Position calculations for each arc
+          const positions: Record<string, { x: number; y: number; rotation: number }> = {
+            top: { x: circleSize / 2, y: 25, rotation: 0 },
+            right: { x: circleSize - 25, y: circleSize / 2, rotation: 90 },
+            bottom: { x: circleSize / 2, y: circleSize - 25, rotation: 180 },
+            left: { x: 25, y: circleSize / 2, rotation: 270 },
+          };
 
-        return (
-          <div key={i} className="flex items-center gap-4">
-            <span
-              className="text-xs font-semibold uppercase tracking-wider w-14 text-right transition-all duration-700"
-              style={{
-                color: phase === 'aligned' ? color.base : `${color.base}60`,
-              }}
-            >
-              {color.name}
-            </span>
+          const pos = positions[dim.position];
 
+          return (
             <div
-              className="flex-1 h-14 relative overflow-hidden rounded-lg transition-all duration-700"
+              key={dim.name}
+              className="absolute"
               style={{
-                background: phase === 'aligned'
-                  ? `linear-gradient(90deg, ${color.base}10, ${color.base}05)`
-                  : 'rgba(255,255,255,0.02)',
-                boxShadow: phase === 'aligned' ? `0 0 30px ${color.base}${glowIntensity}` : 'none',
+                left: pos.x,
+                top: pos.y,
+                transform: `translate(-50%, -50%) rotate(${pos.rotation}deg)`,
               }}
             >
-              {/* Bars */}
-              <div className="absolute inset-0 flex items-center justify-around px-3">
-                {pattern.map((height, j) => (
+              {/* Dimension label */}
+              <span
+                className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-wider transition-all duration-500 whitespace-nowrap"
+                style={{
+                  color: isTuned ? dim.color : `${dim.color}40`,
+                  transform: `translateX(-50%) rotate(-${pos.rotation}deg)`,
+                  textShadow: isTuned ? `0 0 15px ${dim.color}60` : 'none',
+                }}
+              >
+                {dim.name}
+              </span>
+
+              {/* Frequency bars */}
+              <div className="flex items-end justify-center gap-[3px] h-10">
+                {bars.map((height, j) => (
                   <div
                     key={j}
-                    className="w-1.5 rounded-full transition-all"
+                    className="w-1 rounded-full transition-all"
                     style={{
-                      backgroundColor: currentColor,
-                      height: `${height * 4 + 8}px`,
-                      transitionDuration: phase === 'scramble' ? '200ms' : '700ms',
-                      transitionDelay: `${j * 20}ms`,
-                      boxShadow: phase === 'aligned' ? `0 0 8px ${color.base}` : 'none',
+                      backgroundColor: isTuned ? dim.color : `${dim.color}30`,
+                      height: `${height * 3 + 4}px`,
+                      transitionDuration: isTuned ? '500ms' : '100ms',
+                      transitionDelay: isTuned ? `${j * 30}ms` : '0ms',
+                      boxShadow: isTuned ? `0 0 6px ${dim.color}` : 'none',
                     }}
                   />
                 ))}
               </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+          );
+        })}
 
-// 6. ALIGNMENT - Four dots converging (CSS keyframes)
-function AlignmentAnimation() {
-  return (
-    <div className="relative w-full h-48 flex items-center justify-center">
-      <style jsx>{`
-        @keyframes converge-tl {
-          0%, 10% { transform: translate(-50px, -35px); }
-          40%, 60% { transform: translate(0, 0); }
-          90%, 100% { transform: translate(-50px, -35px); }
-        }
-        @keyframes converge-tr {
-          0%, 10% { transform: translate(50px, -35px); }
-          40%, 60% { transform: translate(0, 0); }
-          90%, 100% { transform: translate(50px, -35px); }
-        }
-        @keyframes converge-bl {
-          0%, 10% { transform: translate(-50px, 35px); }
-          40%, 60% { transform: translate(0, 0); }
-          90%, 100% { transform: translate(-50px, 35px); }
-        }
-        @keyframes converge-br {
-          0%, 10% { transform: translate(50px, 35px); }
-          40%, 60% { transform: translate(0, 0); }
-          90%, 100% { transform: translate(50px, 35px); }
-        }
-        @keyframes glow-pulse {
-          0%, 10% { transform: scale(0.3); opacity: 0; }
-          40%, 60% { transform: scale(1.5); opacity: 1; }
-          90%, 100% { transform: scale(0.3); opacity: 0; }
-        }
-        .dot-tl { animation: converge-tl 4s ease-in-out infinite; }
-        .dot-tr { animation: converge-tr 4s ease-in-out infinite; }
-        .dot-bl { animation: converge-bl 4s ease-in-out infinite; }
-        .dot-br { animation: converge-br 4s ease-in-out infinite; }
-        .center-pulse { animation: glow-pulse 4s ease-in-out infinite; }
-      `}</style>
+        {/* Connection arrows between dimensions */}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          viewBox={`0 0 ${circleSize} ${circleSize}`}
+        >
+          {/* Clockwise arrows */}
+          {[
+            { from: 'spirit', to: 'story', path: `M ${circleSize/2 + 40} 40 Q ${circleSize - 60} 60 ${circleSize - 40} ${circleSize/2 - 40}` },
+            { from: 'story', to: 'space', path: `M ${circleSize - 40} ${circleSize/2 + 40} Q ${circleSize - 60} ${circleSize - 60} ${circleSize/2 + 40} ${circleSize - 40}` },
+            { from: 'space', to: 'self', path: `M ${circleSize/2 - 40} ${circleSize - 40} Q 60 ${circleSize - 60} 40 ${circleSize/2 + 40}` },
+            { from: 'self', to: 'spirit', path: `M 40 ${circleSize/2 - 40} Q 60 60 ${circleSize/2 - 40} 40` },
+          ].map((arrow, i) => {
+            const fromTuned = isFrequencyTuned(arrow.from as TuningPhase);
+            const toTuned = isFrequencyTuned(arrow.to as TuningPhase);
+            const isActive = fromTuned && toTuned;
 
-      {/* Four converging dots */}
-      <div
-        className="dot-tl absolute w-8 h-8 rounded-full"
-        style={{
-          backgroundColor: '#FF6F61',
-          boxShadow: '0 0 25px #FF6F61',
-        }}
-      />
-      <div
-        className="dot-tr absolute w-8 h-8 rounded-full"
-        style={{
-          backgroundColor: '#6BA292',
-          boxShadow: '0 0 25px #6BA292',
-        }}
-      />
-      <div
-        className="dot-bl absolute w-8 h-8 rounded-full"
-        style={{
-          backgroundColor: '#5B84B1',
-          boxShadow: '0 0 25px #5B84B1',
-        }}
-      />
-      <div
-        className="dot-br absolute w-8 h-8 rounded-full"
-        style={{
-          backgroundColor: '#7A4DA4',
-          boxShadow: '0 0 25px #7A4DA4',
-        }}
-      />
+            return (
+              <path
+                key={i}
+                d={arrow.path}
+                fill="none"
+                stroke={isActive ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.05)'}
+                strokeWidth="1.5"
+                strokeDasharray="4 4"
+                className="transition-all duration-500"
+              />
+            );
+          })}
+        </svg>
 
-      {/* Center glow when aligned */}
-      <div
-        className="center-pulse absolute w-20 h-20 rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 40%, transparent 70%)',
-        }}
-      />
+        {/* Center text */}
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center text-center px-8"
+        >
+          {currentRel ? (
+            <>
+              <p
+                className="text-lg md:text-xl font-medium transition-all duration-500"
+                style={{
+                  color: phase === 'spirit' ? '#7A4DA4' : 'white',
+                  textShadow: '0 0 30px rgba(0,0,0,0.5)',
+                }}
+              >
+                {currentRel.text}
+              </p>
+              {currentRel.subtext && (
+                <p className="text-xs text-white/50 mt-2 uppercase tracking-widest">
+                  {currentRel.subtext}
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-white/30 uppercase tracking-widest">
+              Tuning...
+            </p>
+          )}
+        </div>
+
+        {/* Center glow on aligned */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-700"
+          style={{ opacity: phase === 'aligned' ? 1 : 0 }}
+        >
+          <div
+            className="w-32 h-32 rounded-full"
+            style={{
+              background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)',
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
@@ -414,85 +383,57 @@ export default function SignalSection() {
             The Signal
           </p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
-            What Flow Is Actually{' '}
+            Your{' '}
             <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent">
-              Telling You
+              Biological Compass
             </span>
           </h2>
         </motion.div>
 
-        {/* Block 1: The Split */}
+        {/* Block 1: The Core Insight */}
         <motion.div
           className="mb-28"
           initial={{ opacity: 0, y: 40 }}
           animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
-          <SplitAnimation />
-          <p className="text-lg md:text-xl text-gray-400 text-center mt-8 max-w-2xl mx-auto">
-            Somewhere along the way, work got split from meaning —
-            <span className="text-gray-500"> as if they were separate problems.</span>
+          <BreathingPulse />
+          <p className="text-2xl md:text-3xl text-white font-light text-center mt-8 max-w-2xl mx-auto">
+            That feeling when everything clicks? That&apos;s flow — your body signaling you&apos;ve found the{' '}
+            <span className="italic">sweet spot</span> between{' '}
+            <span className="text-[#FF6F61]">SELF</span>,{' '}
+            <span className="text-[#6BA292]">SPACE</span>,{' '}
+            <span className="text-[#5B84B1]">STORY</span>, and{' '}
+            <span className="text-[#7A4DA4]">SPIRIT</span>.
           </p>
         </motion.div>
 
-        {/* Block 2: The Body Knows */}
+        {/* Block 2: Circular Frequency Animation */}
         <motion.div
           className="mb-28"
           initial={{ opacity: 0, y: 40 }}
           animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <BreathingPulse />
-          <p className="text-2xl md:text-3xl text-white font-light italic text-center mt-6">
-            But the body knows something different.
+          <p className="text-lg text-gray-500 text-center mb-12">
+            Like tuning into a frequency — each dimension locks in, one by one.
           </p>
-          <p className="text-base text-gray-500 text-center mt-3">
-            It&apos;s a <span className="text-[#FF6F61]">biological signal</span> that something has aligned.
-          </p>
+          <CircularFrequencyAnimation inView={hasEntered} />
         </motion.div>
 
-        {/* Block 3: The Emblem (replaced Zone) */}
+        {/* Block 3: The Emblem */}
         <motion.div
-          className="mb-28"
           initial={{ opacity: 0, y: 40 }}
           animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           <EmblemAnimation />
-          <p className="text-xl md:text-2xl text-white text-center mt-6 font-medium">
-            Flow sits at the intersection.
-          </p>
-          <p className="text-sm text-gray-500 text-center mt-2 max-w-lg mx-auto">
-            Where what the world needs meets what makes a person come alive.
-          </p>
-        </motion.div>
-
-        {/* Block 4: Four Frequencies */}
-        <motion.div
-          className="mb-28"
-          initial={{ opacity: 0, y: 40 }}
-          animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          <p className="text-lg text-gray-500 text-center mb-10">
-            Four frequencies keep appearing — in research, in tradition, in lived experience.
-          </p>
-          <FrequencyAnimation inView={hasEntered} />
-        </motion.div>
-
-        {/* Block 5: Alignment */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 0.8, delay: 0.7 }}
-        >
-          <AlignmentAnimation />
           <div className="text-center mt-8 space-y-3">
             <p className="text-xl md:text-2xl text-white">
-              When these align, people come alive.
+              Flow is the proof that you&apos;ve found the intersection.
             </p>
-            <p className="text-base text-gray-500">
-              Not by adding more — by uncovering what was always trying to emerge.
+            <p className="text-base text-gray-500 max-w-lg mx-auto">
+              Where what you do, where you do it, why you do it, and who you are all converge.
             </p>
           </div>
         </motion.div>
