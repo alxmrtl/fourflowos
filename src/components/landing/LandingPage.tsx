@@ -13,10 +13,8 @@ import AppsSection from './AppsSection';
 import Footer from './Footer';
 
 export default function LandingPage() {
-  const storyRef = useRef(null);
   const ctaRef = useRef(null);
 
-  const storyInView = useInView(storyRef, { amount: 0.3 });
   const ctaInView = useInView(ctaRef, { amount: 0.3 });
 
   return (
@@ -41,53 +39,7 @@ export default function LandingPage() {
       {/* 5. Apps Section */}
       <AppsSection />
 
-      {/* 9. Origin Story - Moved toward end */}
-      <section ref={storyRef} className="relative py-16 md:py-24 bg-[#0a0a0a]">
-        <motion.div
-          className="max-w-4xl mx-auto px-6"
-          initial="hidden"
-          animate={storyInView ? 'visible' : 'hidden'}
-          variants={{
-            hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
-            visible: {
-              opacity: 1,
-              transition: { duration: 0.5, staggerChildren: 0.12, delayChildren: 0.1 },
-            },
-          }}
-        >
-          <motion.div
-            className="relative rounded-2xl overflow-hidden"
-            variants={{
-              hidden: { opacity: 0, y: 50, filter: 'blur(12px)' },
-              visible: {
-                opacity: 1,
-                y: 0,
-                filter: 'blur(0px)',
-                transition: { duration: 0.9, ease: 'easeOut' },
-              },
-            }}
-          >
-            <div className="p-8 md:p-12 bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 rounded-2xl">
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-center">
-                Where This Came From
-              </h2>
-              <div className="prose prose-invert prose-lg max-w-none">
-                <p className="text-gray-300 leading-relaxed mb-6 text-center md:text-left">
-                  I spent years scattered—starting projects, losing focus, burning out. I read the research on flow states and peak performance. I studied consciousness and presence practices. Slowly, patterns emerged.
-                </p>
-                <p className="text-gray-400 leading-relaxed mb-6 text-center md:text-left">
-                  Four areas kept showing up: how I managed myself, my environment, my sense of direction, and what actually drove me. When these aligned, focus stopped being a fight.
-                </p>
-                <p className="text-gray-400 leading-relaxed text-center md:text-left">
-                  This framework is what I built to stay in that alignment. It&apos;s practical, tested, and it works.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* 10. CTA Section */}
+      {/* CTA Section */}
       <section ref={ctaRef} className="relative py-16 md:py-24 bg-[#050505]">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
