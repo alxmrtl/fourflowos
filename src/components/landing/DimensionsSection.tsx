@@ -1,9 +1,10 @@
 'use client';
 
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRef, useState } from 'react';
-import { DIMENSIONS, KEYS } from '@/data/framework';
+import { KEYS } from '@/data/framework';
 
 const dimensionData = [
   {
@@ -56,7 +57,6 @@ export default function DimensionsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { amount: 0.15 });
   const [revealedDimension, setRevealedDimension] = useState<string | null>(null);
-  const [showAllKeys, setShowAllKeys] = useState(false);
 
   const toggleDimension = (id: string) => {
     setRevealedDimension(revealedDimension === id ? null : id);
@@ -323,7 +323,7 @@ export default function DimensionsSection() {
           ))}
         </div>
 
-        {/* 12 Keys summary */}
+        {/* Explore Framework CTA */}
         <motion.div
           className="mt-12 md:mt-16 text-center"
           variants={{
@@ -335,86 +335,27 @@ export default function DimensionsSection() {
             },
           }}
         >
-          <button
-            onClick={() => setShowAllKeys(!showAllKeys)}
+          <Link
+            href="/framework"
             className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/[0.03] border border-white/10 hover:border-white/20 hover:bg-white/[0.05] transition-all duration-300 group"
           >
             <span className="text-gray-400 group-hover:text-white transition-colors">
-              {showAllKeys ? 'Hide' : 'Explore'} the 12 Flow Keys
+              Explore the Framework
             </span>
-            <motion.svg
-              className="w-4 h-4 text-gray-500"
+            <svg
+              className="w-4 h-4 text-gray-500 group-hover:text-white group-hover:translate-x-0.5 transition-all"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              animate={{ rotate: showAllKeys ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M19 9l-7 7-7-7"
+                d="M9 5l7 7-7 7"
               />
-            </motion.svg>
-          </button>
-
-          <AnimatePresence>
-            {showAllKeys && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.4, ease: 'easeInOut' }}
-                className="overflow-hidden"
-              >
-                <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {dimensionData.map((dimension) => (
-                    <div key={dimension.id} className="space-y-2">
-                      <div
-                        className="text-xs font-semibold uppercase tracking-wider mb-3"
-                        style={{ color: dimension.color }}
-                      >
-                        {dimension.name}
-                      </div>
-                      {dimension.keys.map((keyId, keyIndex) => {
-                        const key = KEYS[keyId as keyof typeof KEYS];
-                        if (!key) return null;
-                        return (
-                          <motion.div
-                            key={keyId}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: keyIndex * 0.05 }}
-                            className="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.05] transition-colors cursor-default"
-                          >
-                            <div
-                              className="w-6 h-6 rounded flex-shrink-0 overflow-hidden"
-                              style={{ background: `${dimension.color}15` }}
-                            >
-                              <Image
-                                src={key.icon}
-                                alt={key.name}
-                                width={24}
-                                height={24}
-                                className="object-contain p-0.5"
-                              />
-                            </div>
-                            <span className="text-xs text-gray-400 truncate">
-                              {key.name}
-                            </span>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-6 text-sm text-gray-600">
-                  Each dimension contains three keys — practices and principles for unlocking flow.
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </svg>
+          </Link>
         </motion.div>
 
         {/* Combined logo hint */}
