@@ -271,89 +271,166 @@ export default function SynergyConstellation() {
             preserveAspectRatio="none"
           >
             <defs>
-              {/* Gradient for tunnel */}
+              {/* Gradient for cord - smooth fade between colors */}
               <linearGradient id="tunnel-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={fromColor} stopOpacity="0.6" />
-                <stop offset="50%" stopColor={`${fromColor}80`} stopOpacity="0.3" />
-                <stop offset="50%" stopColor={`${toColor}80`} stopOpacity="0.3" />
-                <stop offset="100%" stopColor={toColor} stopOpacity="0.6" />
+                <stop offset="0%" stopColor={fromColor} stopOpacity="0.7" />
+                <stop offset="30%" stopColor={fromColor} stopOpacity="0.5" />
+                <stop offset="50%" stopColor={fromColor} stopOpacity="0.25" />
+                <stop offset="50%" stopColor={toColor} stopOpacity="0.25" />
+                <stop offset="70%" stopColor={toColor} stopOpacity="0.5" />
+                <stop offset="100%" stopColor={toColor} stopOpacity="0.7" />
               </linearGradient>
 
-              {/* Glow filter */}
+              {/* Smooth blended gradient for inner glow */}
+              <linearGradient id="tunnel-blend" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor={fromColor} stopOpacity="0.4" />
+                <stop offset="35%" stopColor={fromColor} stopOpacity="0.2" />
+                <stop offset="50%" stopColor="white" stopOpacity="0.08" />
+                <stop offset="65%" stopColor={toColor} stopOpacity="0.2" />
+                <stop offset="100%" stopColor={toColor} stopOpacity="0.4" />
+              </linearGradient>
+
+              {/* Glow filter - softer */}
               <filter id="tunnel-glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="8" result="coloredBlur" />
+                <feGaussianBlur stdDeviation="12" result="coloredBlur" />
                 <feMerge>
                   <feMergeNode in="coloredBlur" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
 
-              {/* Inner glow gradient */}
+              {/* Inner glow gradient - smooth fade */}
               <linearGradient id="tunnel-inner" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={fromColor} stopOpacity="0.15" />
-                <stop offset="50%" stopColor="white" stopOpacity="0.05" />
-                <stop offset="100%" stopColor={toColor} stopOpacity="0.15" />
+                <stop offset="0%" stopColor={fromColor} stopOpacity="0.12" />
+                <stop offset="40%" stopColor={fromColor} stopOpacity="0.06" />
+                <stop offset="50%" stopColor="white" stopOpacity="0.04" />
+                <stop offset="60%" stopColor={toColor} stopOpacity="0.06" />
+                <stop offset="100%" stopColor={toColor} stopOpacity="0.12" />
+              </linearGradient>
+
+              {/* Flowing energy gradient */}
+              <linearGradient id="energy-flow" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor={fromColor} stopOpacity="0" />
+                <stop offset="20%" stopColor={fromColor} stopOpacity="0.6" />
+                <stop offset="50%" stopColor="white" stopOpacity="0.3" />
+                <stop offset="80%" stopColor={toColor} stopOpacity="0.6" />
+                <stop offset="100%" stopColor={toColor} stopOpacity="0" />
               </linearGradient>
             </defs>
 
-            {/* Energy tunnel - outer glow */}
+            {/* Umbilical cord - outer glow layer */}
             <AnimatePresence mode="wait">
-              <motion.ellipse
-                key={`tunnel-outer-${currentSynergyIndex}`}
-                cx="50%"
-                cy="50%"
-                rx="28%"
-                ry="8%"
+              <motion.rect
+                key={`cord-outer-${currentSynergyIndex}`}
+                x="22%"
+                y="47%"
+                width="56%"
+                height="6%"
+                rx="20"
+                ry="20"
                 fill="none"
-                stroke="url(#tunnel-gradient)"
-                strokeWidth="40"
+                stroke="url(#tunnel-blend)"
+                strokeWidth="24"
                 filter="url(#tunnel-glow)"
                 initial={{ opacity: 0, scaleX: 0 }}
-                animate={{ opacity: 1, scaleX: 1 }}
+                animate={{ opacity: 0.6, scaleX: 1 }}
                 exit={{ opacity: 0, scaleX: 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
                 style={{ transformOrigin: 'center' }}
               />
             </AnimatePresence>
 
-            {/* Energy tunnel - inner fill */}
+            {/* Umbilical cord - main body */}
             <AnimatePresence mode="wait">
-              <motion.ellipse
-                key={`tunnel-inner-${currentSynergyIndex}`}
-                cx="50%"
-                cy="50%"
-                rx="26%"
-                ry="6%"
+              <motion.rect
+                key={`cord-main-${currentSynergyIndex}`}
+                x="23%"
+                y="48%"
+                width="54%"
+                height="4%"
+                rx="15"
+                ry="15"
                 fill="url(#tunnel-inner)"
+                stroke="url(#tunnel-gradient)"
+                strokeWidth="2"
                 initial={{ opacity: 0, scaleX: 0 }}
                 animate={{ opacity: 1, scaleX: 1 }}
                 exit={{ opacity: 0, scaleX: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
+                transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
                 style={{ transformOrigin: 'center' }}
               />
             </AnimatePresence>
 
-            {/* Energy flow particles */}
+            {/* Energy flow - pulsing light traveling along the cord */}
             <AnimatePresence mode="wait">
-              <motion.line
-                key={`flow-${currentSynergyIndex}`}
-                x1="24%"
-                y1="50%"
-                x2="76%"
-                y2="50%"
-                stroke="url(#tunnel-gradient)"
-                strokeWidth="2"
-                strokeDasharray="8 12"
-                initial={{ opacity: 0, pathLength: 0 }}
+              <motion.rect
+                key={`energy-pulse-${currentSynergyIndex}`}
+                x="23%"
+                y="48.5%"
+                width="12%"
+                height="3%"
+                rx="10"
+                ry="10"
+                fill="url(#energy-flow)"
+                initial={{ opacity: 0, x: 0 }}
                 animate={{
                   opacity: [0, 0.8, 0.8, 0],
-                  pathLength: 1,
-                  strokeDashoffset: [0, -100]
+                  x: ['0%', '42%'],
                 }}
                 transition={{
-                  opacity: { duration: 0.5 },
-                  pathLength: { duration: 0.6, delay: 0.2 },
-                  strokeDashoffset: { duration: 3, repeat: Infinity, ease: 'linear' }
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  repeatDelay: 0.5,
+                }}
+              />
+            </AnimatePresence>
+
+            {/* Secondary energy pulse (opposite direction for bidirectional feel) */}
+            <AnimatePresence mode="wait">
+              <motion.rect
+                key={`energy-pulse-reverse-${currentSynergyIndex}`}
+                x="65%"
+                y="48.5%"
+                width="10%"
+                height="3%"
+                rx="10"
+                ry="10"
+                fill="url(#energy-flow)"
+                initial={{ opacity: 0, x: 0 }}
+                animate={{
+                  opacity: [0, 0.5, 0.5, 0],
+                  x: ['0%', '-42%'],
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: 1.25,
+                  repeatDelay: 0.5,
+                }}
+              />
+            </AnimatePresence>
+
+            {/* Subtle center glow point */}
+            <AnimatePresence mode="wait">
+              <motion.circle
+                key={`center-glow-${currentSynergyIndex}`}
+                cx="50%"
+                cy="50%"
+                r="2%"
+                fill="white"
+                filter="url(#tunnel-glow)"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{
+                  opacity: [0.1, 0.25, 0.1],
+                  scale: [0.8, 1.2, 0.8],
+                }}
+                exit={{ opacity: 0, scale: 0 }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
                 }}
               />
             </AnimatePresence>
