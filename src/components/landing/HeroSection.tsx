@@ -2,14 +2,37 @@
 
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
+import { useAudience, AudienceType } from '@/context/AudienceContext';
+
+const audienceOptions = [
+  {
+    id: 'individual' as const,
+    title: 'Master your own flow',
+    description: 'For creators, professionals, builders, seekers',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    ),
+  },
+  {
+    id: 'leader' as const,
+    title: 'Cultivate flow in others',
+    description: 'For managers, coaches, founders, facilitators',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    ),
+  },
+];
 
 export default function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const sectionRef = useRef<HTMLElement>(null);
-  // Fade out when less than 15% of the hero is visible
   const isInView = useInView(sectionRef, { amount: 0.15 });
+  const { audience, setAudience, hasSelected } = useAudience();
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -22,6 +45,10 @@ export default function HeroSection() {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  const handleAudienceSelect = (id: AudienceType) => {
+    setAudience(id);
+  };
 
   return (
     <section
@@ -136,7 +163,7 @@ export default function HeroSection() {
       >
         {/* Animated logo */}
         <motion.div
-          className="relative w-40 h-40 md:w-56 md:h-56 mx-auto mb-8"
+          className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-6"
           style={{
             x: mousePosition.x,
             y: mousePosition.y,
@@ -198,9 +225,9 @@ export default function HeroSection() {
           </div>
         </motion.div>
 
-        {/* Title with gradient text */}
+        {/* Main headline - user-focused */}
         <motion.h1
-          className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
+          className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 text-white"
           variants={{
             hidden: { opacity: 0, y: 40, filter: 'blur(10px)' },
             visible: {
@@ -211,30 +238,15 @@ export default function HeroSection() {
             },
           }}
         >
+          Flow isn&apos;t forced.{' '}
           <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
-            FourFlowOS
+            It&apos;s cultivated.
           </span>
         </motion.h1>
 
-        {/* Tagline */}
-        <motion.p
-          className="text-xl md:text-2xl lg:text-3xl text-gray-300 mb-4 font-light"
-          variants={{
-            hidden: { opacity: 0, y: 30, filter: 'blur(8px)' },
-            visible: {
-              opacity: 1,
-              y: 0,
-              filter: 'blur(0px)',
-              transition: { duration: 0.7, ease: 'easeOut' },
-            },
-          }}
-        >
-          Awaken Your Flow
-        </motion.p>
-
         {/* Sub-tagline */}
         <motion.p
-          className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto mb-12"
+          className="text-base md:text-lg text-gray-400 max-w-2xl mx-auto mb-10"
           variants={{
             hidden: { opacity: 0, y: 25, filter: 'blur(6px)' },
             visible: {
@@ -245,12 +257,12 @@ export default function HeroSection() {
             },
           }}
         >
-          When Self, Space, Story, and Spirit align, focus becomes effortless and work becomes wonder.
+          Align the four dimensions that create effortless focus and meaningful engagement.
         </motion.p>
 
-        {/* CTA Buttons */}
+        {/* Audience Selection Cards */}
         <motion.div
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          className="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto"
           variants={{
             hidden: { opacity: 0, y: 20 },
             visible: {
@@ -260,20 +272,88 @@ export default function HeroSection() {
             },
           }}
         >
-          <Link
-            href="/framework"
-            className="px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
-          >
-            Explore the Framework
-          </Link>
-          <Link
-            href="/apps"
-            className="px-8 py-4 border border-gray-600 text-gray-300 font-semibold rounded-full hover:bg-white/5 hover:border-gray-400 transition-all duration-300"
-          >
-            See the Apps
-          </Link>
+          {audienceOptions.map((option) => {
+            const isSelected = audience === option.id;
+            return (
+              <motion.button
+                key={option.id}
+                onClick={() => handleAudienceSelect(option.id)}
+                className={`
+                  relative flex-1 p-6 rounded-2xl text-left transition-all duration-300
+                  ${isSelected
+                    ? 'bg-white/10 border-2 border-white/30'
+                    : 'bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] hover:border-white/20'
+                  }
+                `}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {/* Selected indicator */}
+                {isSelected && (
+                  <motion.div
+                    className="absolute top-3 right-3 w-6 h-6 rounded-full bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  >
+                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </motion.div>
+                )}
+
+                {/* Icon */}
+                <div className={`mb-3 ${isSelected ? 'text-white' : 'text-gray-400'}`}>
+                  {option.icon}
+                </div>
+
+                {/* Title */}
+                <h3 className={`text-lg font-semibold mb-1 ${isSelected ? 'text-white' : 'text-gray-200'}`}>
+                  {option.title}
+                </h3>
+
+                {/* Description */}
+                <p className={`text-sm ${isSelected ? 'text-gray-300' : 'text-gray-500'}`}>
+                  {option.description}
+                </p>
+
+                {/* Arrow indicator */}
+                <div className={`mt-4 flex items-center gap-2 text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-500'}`}>
+                  <span>{isSelected ? 'Selected' : 'Select'}</span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${isSelected ? '' : 'group-hover:translate-x-0.5'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </motion.button>
+            );
+          })}
         </motion.div>
 
+        {/* Scroll indicator - only show when audience is selected */}
+        {hasSelected && (
+          <motion.div
+            className="mt-12"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <motion.div
+              className="flex flex-col items-center gap-2 text-gray-500"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <span className="text-sm">Explore the framework</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </motion.div>
+          </motion.div>
+        )}
       </motion.div>
     </section>
   );

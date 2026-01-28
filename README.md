@@ -4,6 +4,8 @@
 
 FourFlowOS is an interactive web application that embodies the FourFlow framework - a holistic approach to achieving flow states through the systematic integration of Self, Space, Story, and Spirit dimensions. The application serves as both a practical navigation tool for personal development and a sophisticated expression of the integrated four-dimensional approach to flow states.
 
+**See also:** [WEBSITE_DIRECTION.md](./WEBSITE_DIRECTION.md) for strategic direction, target audiences, and value delivery strategy.
+
 ## Framework Philosophy
 
 **Mission**: Awakening millions through flow, guiding individuals to find their unique role in life's greater synchronicity.
@@ -34,7 +36,7 @@ FourFlowOS is an interactive web application that embodies the FourFlow framewor
 **Dimension Description**: "Transform your sense of purpose into a driving force for excellence and fulfillment."
 
 - **FLOW KEY #7 - Generative Story**: Create a personal narrative that makes challenges feel like adventure, not problems.
-- **FLOW KEY #8 - Worthy Mission**: Connect your daily work to something bigger that naturally motivates you.
+- **FLOW KEY #8 - Clear Mission**: Break your vision into clear goals from years to quarters to days.
 - **FLOW KEY #9 - Empowered Role**: Know what you own and why it matters so you can work with real purpose.
 
 ### 🟣 SPIRIT (Amethyst #7A4DA4) - Flow Keys #10-12
@@ -542,7 +544,7 @@ Multiple tested versions of core messaging:
 🔄 **Visualized Vision** - Future-focused direction and motivation
 🔄 **Empowered Role** - Active agency in shaping circumstances
 🔄 **Generative Story** - Empowering personal narratives
-🔄 **Worthy Mission** - Meaningful objectives beyond self-interest
+🔄 **Clear Mission** - Goal hierarchy from vision to daily action
 
 ### Article Structure
 Each essential article follows a consistent 6-section format:

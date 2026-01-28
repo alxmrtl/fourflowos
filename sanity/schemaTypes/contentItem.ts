@@ -111,7 +111,7 @@ export const contentItem = defineType({
           {title: 'Feedback Systems', value: 'feedback-systems'},
           // Story keys
           {title: 'Generative Story', value: 'generative-story'},
-          {title: 'Worthy Mission', value: 'worthy-mission'},
+          {title: 'Clear Mission', value: 'clear-mission'},
           {title: 'Empowered Role', value: 'empowered-role'},
           // Spirit keys
           {title: 'Grounding Values', value: 'grounding-values'},

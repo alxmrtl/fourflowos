@@ -4,7 +4,9 @@ import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
-import { KEYS } from '@/data/framework';
+import { KEYS, DIMENSION_AUDIENCE_COPY, KEY_AUDIENCE_COPY } from '@/data/framework';
+import { useAudience } from '@/context/AudienceContext';
+import { KeyType } from '@/types/framework';
 
 const dimensionData = [
   {
@@ -16,7 +18,7 @@ const dimensionData = [
     meta: 'Your inner state — body, mind, emotions',
     question: 'How am I right now?',
     color: '#FF6F61',
-    keys: ['tuned-emotions', 'open-mind', 'focused-body'],
+    keys: ['tuned-emotions', 'open-mind', 'focused-body'] as KeyType[],
   },
   {
     id: 'space',
@@ -27,7 +29,7 @@ const dimensionData = [
     meta: 'Your environment — setting, systems, tools',
     question: 'What supports my flow?',
     color: '#6BA292',
-    keys: ['intentional-space', 'optimized-tools', 'feedback-systems'],
+    keys: ['intentional-space', 'optimized-tools', 'feedback-systems'] as KeyType[],
   },
   {
     id: 'story',
@@ -38,7 +40,7 @@ const dimensionData = [
     meta: 'Your direction — narrative, mission, role',
     question: 'What am I building?',
     color: '#5B84B1',
-    keys: ['generative-story', 'clear-mission', 'empowered-role'],
+    keys: ['generative-story', 'clear-mission', 'empowered-role'] as KeyType[],
   },
   {
     id: 'spirit',
@@ -49,7 +51,7 @@ const dimensionData = [
     meta: 'Your core — values, vision, curiosity',
     question: 'What drives me?',
     color: '#7A4DA4',
-    keys: ['grounding-values', 'visualized-vision', 'ignited-curiosity'],
+    keys: ['grounding-values', 'visualized-vision', 'ignited-curiosity'] as KeyType[],
   },
 ];
 
@@ -57,9 +59,23 @@ export default function DimensionsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { amount: 0.15 });
   const [revealedDimension, setRevealedDimension] = useState<string | null>(null);
+  const { audience, isLeader, hasSelected } = useAudience();
 
   const toggleDimension = (id: string) => {
     setRevealedDimension(revealedDimension === id ? null : id);
+  };
+
+  // Get audience-specific copy or default to individual
+  const getAudienceCopy = (dimensionId: string) => {
+    const copy = DIMENSION_AUDIENCE_COPY[dimensionId as keyof typeof DIMENSION_AUDIENCE_COPY];
+    if (!copy) return null;
+    return audience === 'leader' ? copy.leader : copy.individual;
+  };
+
+  const getKeyCopy = (keyId: KeyType) => {
+    const copy = KEY_AUDIENCE_COPY[keyId];
+    if (!copy) return null;
+    return audience === 'leader' ? copy.leader : copy.individual;
   };
 
   return (
@@ -91,7 +107,7 @@ export default function DimensionsSection() {
           },
         }}
       >
-        {/* Section header */}
+        {/* Section header - audience aware */}
         <motion.div
           className="text-center mb-12 md:mb-16"
           variants={{
@@ -108,219 +124,246 @@ export default function DimensionsSection() {
             The Four Dimensions
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Four interconnected areas of life. When aligned, they create the conditions for flow.
+            {hasSelected ? (
+              isLeader
+                ? 'Four areas to cultivate in your team. When aligned, they create the conditions for collective flow.'
+                : 'Four interconnected areas of life. When aligned, they create the conditions for your flow.'
+            ) : (
+              'Four interconnected areas of life. When aligned, they create the conditions for flow.'
+            )}
           </p>
+
+          {/* Audience indicator badge */}
+          {hasSelected && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10"
+            >
+              <span className="text-xs text-gray-400">
+                Viewing as:
+              </span>
+              <span className="text-xs font-medium text-white">
+                {isLeader ? 'Leader' : 'Individual'}
+              </span>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Four dimension cards */}
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          {dimensionData.map((dimension, index) => (
-            <motion.div
-              key={dimension.id}
-              className="relative"
-              variants={{
-                hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                  filter: 'blur(0px)',
-                  transition: { duration: 0.7, ease: 'easeOut' },
-                },
-              }}
-            >
-              <motion.div
-                className="relative rounded-2xl overflow-hidden cursor-pointer group h-[280px] md:h-[260px]"
-                style={{
-                  background: `linear-gradient(135deg, ${dimension.color}08, ${dimension.color}03)`,
-                  border: `1px solid ${dimension.color}20`,
-                }}
-                whileHover={{ scale: 1.01 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                onClick={() => toggleDimension(dimension.id)}
-              >
-                {/* Front content - Dimension info */}
-                <motion.div
-                  className="absolute inset-0 p-6 md:p-8"
-                  animate={{
-                    opacity: revealedDimension === dimension.id ? 0 : 1,
-                  }}
-                  transition={{ duration: 0.3, delay: revealedDimension === dimension.id ? 0 : 0.3 }}
-                >
-                  <div className="flex items-start gap-5">
-                    {/* Shape */}
-                    <motion.div
-                      className="relative flex-shrink-0 w-20 h-20 md:w-24 md:h-24"
-                      animate={{
-                        scale: [1, 1.03, 1],
-                      }}
-                      transition={{
-                        duration: 4 + index,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      }}
-                    >
-                      {/* Glow */}
-                      <div
-                        className="absolute inset-0 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"
-                        style={{ background: dimension.color }}
-                      />
-                      <Image
-                        src={dimension.shapeImage}
-                        alt={dimension.shape}
-                        fill
-                        className="object-contain relative z-10"
-                      />
-                    </motion.div>
+          {dimensionData.map((dimension, index) => {
+            const audienceCopy = getAudienceCopy(dimension.id);
 
-                    {/* Text */}
-                    <div className="flex-1 min-w-0">
-                      {/* Name */}
+            return (
+              <motion.div
+                key={dimension.id}
+                className="relative"
+                variants={{
+                  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    filter: 'blur(0px)',
+                    transition: { duration: 0.7, ease: 'easeOut' },
+                  },
+                }}
+              >
+                <motion.div
+                  className="relative rounded-2xl overflow-hidden cursor-pointer group h-[280px] md:h-[280px]"
+                  style={{
+                    background: `linear-gradient(135deg, ${dimension.color}08, ${dimension.color}03)`,
+                    border: `1px solid ${dimension.color}20`,
+                  }}
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  onClick={() => toggleDimension(dimension.id)}
+                >
+                  {/* Front content - Dimension info */}
+                  <motion.div
+                    className="absolute inset-0 p-6 md:p-8"
+                    animate={{
+                      opacity: revealedDimension === dimension.id ? 0 : 1,
+                    }}
+                    transition={{ duration: 0.3, delay: revealedDimension === dimension.id ? 0 : 0.3 }}
+                  >
+                    <div className="flex items-start gap-5">
+                      {/* Shape */}
+                      <motion.div
+                        className="relative flex-shrink-0 w-20 h-20 md:w-24 md:h-24"
+                        animate={{
+                          scale: [1, 1.03, 1],
+                        }}
+                        transition={{
+                          duration: 4 + index,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                        }}
+                      >
+                        {/* Glow */}
+                        <div
+                          className="absolute inset-0 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"
+                          style={{ background: dimension.color }}
+                        />
+                        <Image
+                          src={dimension.shapeImage}
+                          alt={dimension.shape}
+                          fill
+                          className="object-contain relative z-10"
+                        />
+                      </motion.div>
+
+                      {/* Text */}
+                      <div className="flex-1 min-w-0">
+                        {/* Name */}
+                        <h3
+                          className="text-2xl md:text-3xl font-bold tracking-tight mb-2"
+                          style={{ color: dimension.color }}
+                        >
+                          {dimension.name}
+                        </h3>
+
+                        {/* Audience-aware tagline */}
+                        <p className="text-lg text-white font-medium mb-1">
+                          {audienceCopy ? `"${audienceCopy.tagline}"` : `"${dimension.question}"`}
+                        </p>
+
+                        {/* Audience-aware description */}
+                        <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+                          {audienceCopy ? audienceCopy.description : dimension.meta}
+                        </p>
+
+                        {/* Shape + Symbolism */}
+                        <p
+                          className="text-sm font-medium italic"
+                          style={{ color: `${dimension.color}99` }}
+                        >
+                          {dimension.shape} — {dimension.symbolism}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Keys teaser bar */}
+                    <div className="absolute bottom-6 left-6 right-6 pt-4 border-t border-white/5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-600 uppercase tracking-wider">
+                            3 Flow Keys
+                          </span>
+                          <div className="flex gap-1">
+                            {dimension.keys.map((keyId) => (
+                              <div
+                                key={keyId}
+                                className="w-1.5 h-1.5 rounded-full"
+                                style={{ background: dimension.color }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <span className="text-xs text-gray-600">Tap to reveal</span>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Radial ink spread overlay */}
+                  <motion.div
+                    className="absolute inset-0 origin-[15%_18%] md:origin-[12%_20%]"
+                    initial={false}
+                    animate={{
+                      clipPath: revealedDimension === dimension.id
+                        ? 'circle(150% at 15% 18%)'
+                        : 'circle(0% at 15% 18%)',
+                    }}
+                    transition={{
+                      duration: 0.6,
+                      ease: [0.4, 0, 0.2, 1],
+                    }}
+                    style={{
+                      background: `linear-gradient(135deg, ${dimension.color}25, ${dimension.color}15)`,
+                    }}
+                  />
+
+                  {/* Back content - Flow Keys with audience-aware copy */}
+                  <motion.div
+                    className="absolute inset-0 p-6 md:p-8 flex"
+                    initial={false}
+                    animate={{
+                      opacity: revealedDimension === dimension.id ? 1 : 0,
+                      pointerEvents: revealedDimension === dimension.id ? 'auto' : 'none',
+                    }}
+                    transition={{ duration: 0.3, delay: revealedDimension === dimension.id ? 0.3 : 0 }}
+                  >
+                    {/* Vertical title on left */}
+                    <div className="flex flex-col items-center justify-center mr-6 md:mr-8 pl-1">
                       <h3
-                        className="text-2xl md:text-3xl font-bold tracking-tight mb-2"
-                        style={{ color: dimension.color }}
+                        className="text-sm font-bold tracking-widest uppercase whitespace-nowrap"
+                        style={{
+                          color: dimension.color,
+                          writingMode: 'vertical-rl',
+                          transform: 'rotate(180deg)',
+                        }}
                       >
                         {dimension.name}
                       </h3>
-
-                      {/* Question */}
-                      <p className="text-lg text-white font-medium mb-1">
-                        "{dimension.question}"
-                      </p>
-
-                      {/* Meta explainer */}
-                      <p className="text-gray-500 text-sm mb-3">
-                        {dimension.meta}
-                      </p>
-
-                      {/* Shape + Symbolism */}
-                      <p
-                        className="text-sm font-medium italic"
-                        style={{ color: `${dimension.color}99` }}
-                      >
-                        {dimension.shape} — {dimension.symbolism}
-                      </p>
                     </div>
-                  </div>
 
-                  {/* Keys teaser bar */}
-                  <div className="absolute bottom-6 left-6 right-6 pt-4 border-t border-white/5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-600 uppercase tracking-wider">
-                          3 Flow Keys
-                        </span>
-                        <div className="flex gap-1">
-                          {dimension.keys.map((keyId) => (
-                            <div
-                              key={keyId}
-                              className="w-1.5 h-1.5 rounded-full"
-                              style={{ background: dimension.color }}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      <span className="text-xs text-gray-600">Tap to reveal</span>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Radial ink spread overlay */}
-                <motion.div
-                  className="absolute inset-0 origin-[15%_18%] md:origin-[12%_20%]"
-                  initial={false}
-                  animate={{
-                    clipPath: revealedDimension === dimension.id
-                      ? 'circle(150% at 15% 18%)'
-                      : 'circle(0% at 15% 18%)',
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    ease: [0.4, 0, 0.2, 1],
-                  }}
-                  style={{
-                    background: `linear-gradient(135deg, ${dimension.color}25, ${dimension.color}15)`,
-                  }}
-                />
-
-                {/* Back content - Flow Keys */}
-                <motion.div
-                  className="absolute inset-0 p-6 md:p-8 flex"
-                  initial={false}
-                  animate={{
-                    opacity: revealedDimension === dimension.id ? 1 : 0,
-                    pointerEvents: revealedDimension === dimension.id ? 'auto' : 'none',
-                  }}
-                  transition={{ duration: 0.3, delay: revealedDimension === dimension.id ? 0.3 : 0 }}
-                >
-                  {/* Vertical title on left */}
-                  <div className="flex flex-col items-center justify-center mr-6 md:mr-8 pl-1">
-                    <h3
-                      className="text-sm font-bold tracking-widest uppercase whitespace-nowrap"
-                      style={{
-                        color: dimension.color,
-                        writingMode: 'vertical-rl',
-                        transform: 'rotate(180deg)',
-                      }}
-                    >
-                      {dimension.name}
-                    </h3>
-                  </div>
-
-                  {/* Keys list */}
-                  <div className="flex-1 flex flex-col justify-center space-y-2">
-                    {dimension.keys.map((keyId, keyIndex) => {
-                      const key = KEYS[keyId as keyof typeof KEYS];
-                      if (!key) return null;
-                      return (
-                        <motion.div
-                          key={keyId}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{
-                            opacity: revealedDimension === dimension.id ? 1 : 0,
-                            x: revealedDimension === dimension.id ? 0 : -20
-                          }}
-                          transition={{
-                            duration: 0.4,
-                            delay: revealedDimension === dimension.id ? 0.35 + keyIndex * 0.08 : 0,
-                            ease: 'easeOut'
-                          }}
-                          className="flex items-center gap-3 p-3 rounded-xl bg-black/30 backdrop-blur-sm"
-                        >
-                          <div
-                            className="relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden"
-                            style={{ background: `${dimension.color}30` }}
+                    {/* Keys list */}
+                    <div className="flex-1 flex flex-col justify-center space-y-2">
+                      {dimension.keys.map((keyId, keyIndex) => {
+                        const key = KEYS[keyId as keyof typeof KEYS];
+                        const keyCopy = getKeyCopy(keyId);
+                        if (!key) return null;
+                        return (
+                          <motion.div
+                            key={keyId}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{
+                              opacity: revealedDimension === dimension.id ? 1 : 0,
+                              x: revealedDimension === dimension.id ? 0 : -20
+                            }}
+                            transition={{
+                              duration: 0.4,
+                              delay: revealedDimension === dimension.id ? 0.35 + keyIndex * 0.08 : 0,
+                              ease: 'easeOut'
+                            }}
+                            className="flex items-center gap-3 p-3 rounded-xl bg-black/30 backdrop-blur-sm"
                           >
-                            <Image
-                              src={key.icon}
-                              alt={key.name}
-                              fill
-                              className="object-contain p-1.5"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-semibold text-white">
-                              {key.name}
-                            </h4>
-                            <p className="text-xs text-white/50 truncate">
-                              {key.description}
-                            </p>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
+                            <div
+                              className="relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden"
+                              style={{ background: `${dimension.color}30` }}
+                            >
+                              <Image
+                                src={key.icon}
+                                alt={key.name}
+                                fill
+                                className="object-contain p-1.5"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-semibold text-white">
+                                {key.name}
+                              </h4>
+                              <p className="text-xs text-white/50 line-clamp-2">
+                                {keyCopy ? keyCopy.focus : key.description}
+                              </p>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
 
-                {/* Hover border glow */}
-                <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{
-                    boxShadow: `inset 0 0 30px ${dimension.color}10, 0 0 40px ${dimension.color}08`,
-                  }}
-                />
+                  {/* Hover border glow */}
+                  <div
+                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{
+                      boxShadow: `inset 0 0 30px ${dimension.color}10, 0 0 40px ${dimension.color}08`,
+                    }}
+                  />
+                </motion.div>
               </motion.div>
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Explore Framework CTA */}

@@ -1,5 +1,111 @@
 import { Dimension, Key, DimensionType, KeyType } from '@/types/framework';
 
+// Audience-specific copy for dimensions
+export const DIMENSION_AUDIENCE_COPY: Record<DimensionType, {
+  individual: { tagline: string; description: string };
+  leader: { tagline: string; description: string };
+}> = {
+  self: {
+    individual: {
+      tagline: 'Your inner state',
+      description: 'Tune YOUR emotions, mind, and body as flow signals. Learn to read your internal dashboard and navigate directly to your flow channel.',
+    },
+    leader: {
+      tagline: 'Team inner states',
+      description: 'Help your TEAM tune their emotions, minds, and bodies. When you understand flow signals, you can create conditions where people naturally find their optimal state.',
+    },
+  },
+  space: {
+    individual: {
+      tagline: 'Your environment',
+      description: 'Design YOUR environment for automatic focus. Set up spaces, systems, and tools that remove friction so flow becomes the default.',
+    },
+    leader: {
+      tagline: 'Team environment',
+      description: 'Design TEAM environments that amplify flow. Create spaces and systems where your people do their best work without willpower battles.',
+    },
+  },
+  story: {
+    individual: {
+      tagline: 'Your direction',
+      description: 'Craft YOUR narrative, mission, and role. Transform effort into meaning so challenges feel like adventures, not obstacles.',
+    },
+    leader: {
+      tagline: 'Team direction',
+      description: 'Shape compelling TEAM narratives and clear missions. Help people find meaning in their work and understand how their role contributes to something larger.',
+    },
+  },
+  spirit: {
+    individual: {
+      tagline: 'Your core',
+      description: 'Connect with YOUR values, vision, and curiosity. Align with what truly drives you so energy and direction become effortless.',
+    },
+    leader: {
+      tagline: 'Team purpose',
+      description: 'Cultivate shared VALUES and collective vision. Create alignment that makes team effort feel purposeful and intrinsically motivated.',
+    },
+  },
+};
+
+// Audience-specific copy for keys
+export const KEY_AUDIENCE_COPY: Record<KeyType, {
+  individual: { focus: string };
+  leader: { focus: string };
+}> = {
+  // Self Keys
+  'tuned-emotions': {
+    individual: { focus: 'Use your feelings as signals to stay in the sweet spot between bored and overwhelmed.' },
+    leader: { focus: 'Help team members recognize emotional signals and create conditions that keep them in their flow zone.' },
+  },
+  'open-mind': {
+    individual: { focus: 'Clear mental clutter and stay flexible so new ideas can flow naturally.' },
+    leader: { focus: 'Foster psychological safety where team members feel free to experiment and share ideas.' },
+  },
+  'focused-body': {
+    individual: { focus: 'Get out of your head and into your body to stop overthinking and stay present.' },
+    leader: { focus: 'Design work rhythms that honor physical needs - movement, rest, and embodied breaks.' },
+  },
+  // Space Keys
+  'intentional-space': {
+    individual: { focus: 'Set up your environment to automatically put you in focus mode without willpower.' },
+    leader: { focus: 'Design physical and digital workspaces that eliminate distractions for your team.' },
+  },
+  'optimized-tools': {
+    individual: { focus: 'Use the right systems and tech to get more done with less effort.' },
+    leader: { focus: 'Equip your team with tools that extend their capability without demanding attention.' },
+  },
+  'feedback-systems': {
+    individual: { focus: 'Build quick ways to know if you\'re on track and course-correct fast.' },
+    leader: { focus: 'Create tight feedback loops so team members always know how they\'re doing.' },
+  },
+  // Story Keys
+  'generative-story': {
+    individual: { focus: 'Create a personal narrative that makes challenges feel like adventure, not problems.' },
+    leader: { focus: 'Craft team narratives that transform obstacles into growth opportunities.' },
+  },
+  'clear-mission': {
+    individual: { focus: 'Break your vision into clear goals from years to quarters to days.' },
+    leader: { focus: 'Cascade clarity from company vision to team objectives to individual tasks.' },
+  },
+  'empowered-role': {
+    individual: { focus: 'Know what you own and why it matters so you can work with real purpose.' },
+    leader: { focus: 'Define roles clearly so each person knows their contribution and has autonomy to own it.' },
+  },
+  // Spirit Keys
+  'grounding-values': {
+    individual: { focus: 'Know what you stand for so decisions become obvious and doubt disappears.' },
+    leader: { focus: 'Establish team values that guide decisions when you\'re not in the room.' },
+  },
+  'visualized-vision': {
+    individual: { focus: 'See your future clearly so your brain starts noticing the right opportunities.' },
+    leader: { focus: 'Paint a compelling picture of where the team is heading that pulls people forward.' },
+  },
+  'ignited-curiosity': {
+    individual: { focus: 'Stay genuinely interested in your work so focus happens without forcing it.' },
+    leader: { focus: 'Create space for exploration and learning that keeps engagement high.' },
+  },
+};
+
 export const DIMENSIONS: Record<DimensionType, Dimension> = {
   self: {
     id: 'self',
