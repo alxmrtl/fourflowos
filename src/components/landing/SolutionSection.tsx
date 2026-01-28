@@ -5,35 +5,77 @@ import { useRef } from 'react';
 import { useAudience } from '@/context/AudienceContext';
 
 const individualContent = {
-  opener: 'Flow isn\'t random.',
-  intro: 'It emerges when certain conditions line up:',
-  conditions: [
-    { text: 'What you\'re doing matters to you', color: '#7A4DA4' },
-    { text: 'Your environment supports deep work', color: '#6BA292' },
-    { text: 'Your energy is there to give', color: '#FF6F61' },
-    { text: 'You have a reason bigger than the task', color: '#5B84B1' },
-  ],
-  outcomes: [
-    'When these align, effort becomes effortless.',
-    'Focus becomes natural.',
-    'Work becomes meaningful.',
+  paragraphs: [
+    {
+      text: 'There\'s a word for what happens when everything clicks.',
+      style: 'opener' as const,
+    },
+    {
+      text: 'Flow.',
+      style: 'highlight' as const,
+    },
+    {
+      text: 'That state where time disappears, focus sharpens, and effort feels effortless. Athletes call it the zone. Musicians call it being in the pocket. You\'ve felt it — and you\'ve noticed it\'s never there when you chase it.',
+      style: 'body' as const,
+    },
+    {
+      text: 'Psychologists have spent decades studying these moments. What they found changes everything:',
+      style: 'body' as const,
+    },
+    {
+      text: 'Flow isn\'t luck. It\'s a response to specific, repeatable conditions.',
+      style: 'emphasis' as const,
+    },
+    {
+      text: 'Not willpower. Not motivation hacks. Conditions.',
+      style: 'body' as const,
+    },
+    {
+      text: 'FourFlow OS gives you a lens to see which conditions are met and which aren\'t — so you can stop waiting for flow and start creating it.',
+      style: 'closing' as const,
+    },
   ],
 };
 
 const leaderContent = {
-  opener: 'Flow isn\'t just personal.',
-  intro: 'It emerges when conditions support it:',
-  conditions: [
-    { text: 'When people connect their work to meaning', color: '#7A4DA4' },
-    { text: 'When environments enable instead of interrupt', color: '#6BA292' },
-    { text: 'When energy is protected, not extracted', color: '#FF6F61' },
-    { text: 'When purpose runs deeper than the paycheck', color: '#5B84B1' },
+  paragraphs: [
+    {
+      text: 'There\'s a word for what happens when someone hits their stride.',
+      style: 'opener' as const,
+    },
+    {
+      text: 'Flow.',
+      style: 'highlight' as const,
+    },
+    {
+      text: 'That state where challenge meets skill, where people lose themselves in work that matters. It\'s not just a nice feeling — research shows it\'s where the best thinking, deepest creativity, and strongest engagement live.',
+      style: 'body' as const,
+    },
+    {
+      text: 'Here\'s what changes everything:',
+      style: 'body' as const,
+    },
+    {
+      text: 'Flow isn\'t random, and it isn\'t just individual.',
+      style: 'emphasis' as const,
+    },
+    {
+      text: 'It emerges from specific, designable conditions — ones already woven into how your team works, communicates, and finds meaning.',
+      style: 'body' as const,
+    },
+    {
+      text: 'FourFlow OS gives leaders a framework for seeing and shaping these conditions — turning peak performance from sporadic to structural.',
+      style: 'closing' as const,
+    },
   ],
-  outcomes: [
-    'When you create these conditions,',
-    'people don\'t just perform better.',
-    'They come alive.',
-  ],
+};
+
+const styleClasses: Record<string, string> = {
+  opener: 'text-2xl md:text-3xl lg:text-4xl text-white font-light',
+  highlight: 'text-3xl md:text-4xl lg:text-5xl font-semibold bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent',
+  body: 'text-lg md:text-xl text-gray-400 leading-relaxed',
+  emphasis: 'text-xl md:text-2xl lg:text-3xl text-white font-medium',
+  closing: 'text-lg md:text-xl text-gray-300 leading-relaxed',
 };
 
 export default function SolutionSection() {
@@ -74,7 +116,7 @@ export default function SolutionSection() {
       </div>
 
       <motion.div
-        className="relative max-w-3xl mx-auto px-6"
+        className="relative max-w-3xl mx-auto px-6 space-y-8 md:space-y-10"
         initial="hidden"
         animate={isInView ? 'visible' : 'hidden'}
         variants={{
@@ -83,108 +125,29 @@ export default function SolutionSection() {
             opacity: 1,
             transition: {
               duration: 0.4,
-              staggerChildren: 0.2,
+              staggerChildren: 0.25,
               delayChildren: 0.1,
             },
           },
         }}
       >
-        {/* Opener */}
-        <motion.p
-          className="text-2xl md:text-3xl lg:text-4xl text-white font-light mb-8"
-          variants={{
-            hidden: { opacity: 0, y: 30, filter: 'blur(8px)' },
-            visible: {
-              opacity: 1,
-              y: 0,
-              filter: 'blur(0px)',
-              transition: { duration: 0.8, ease: 'easeOut' },
-            },
-          }}
-        >
-          {content.opener}
-        </motion.p>
-
-        {/* Intro */}
-        <motion.p
-          className="text-lg md:text-xl text-gray-400 mb-10"
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: { duration: 0.6, ease: 'easeOut' },
-            },
-          }}
-        >
-          {content.intro}
-        </motion.p>
-
-        {/* Conditions list */}
-        <motion.div
-          className="space-y-5 mb-16 md:mb-20 pl-4 border-l-2 border-white/10"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.15 },
-            },
-          }}
-        >
-          {content.conditions.map((condition, index) => (
-            <motion.div
-              key={index}
-              className="flex items-start gap-4"
-              variants={{
-                hidden: { opacity: 0, x: -20 },
-                visible: {
-                  opacity: 1,
-                  x: 0,
-                  transition: { duration: 0.5, ease: 'easeOut' },
-                },
-              }}
-            >
-              <span
-                className="w-2 h-2 rounded-full mt-2.5 flex-shrink-0"
-                style={{ background: condition.color }}
-              />
-              <p className="text-lg md:text-xl text-gray-300">{condition.text}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Outcomes */}
-        <motion.div
-          className="text-center"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.15, delayChildren: 0.2 },
-            },
-          }}
-        >
-          {content.outcomes.map((line, index) => (
-            <motion.p
-              key={index}
-              className={`text-xl md:text-2xl ${
-                index === content.outcomes.length - 1
-                  ? 'text-white font-medium mt-2'
-                  : 'text-gray-400'
-              }`}
-              variants={{
-                hidden: { opacity: 0, y: 15 },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.6, ease: 'easeOut' },
-                },
-              }}
-            >
-              {line}
-            </motion.p>
-          ))}
-        </motion.div>
+        {content.paragraphs.map((para, index) => (
+          <motion.p
+            key={index}
+            className={styleClasses[para.style]}
+            variants={{
+              hidden: { opacity: 0, y: 25, filter: 'blur(6px)' },
+              visible: {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                transition: { duration: 0.7, ease: 'easeOut' },
+              },
+            }}
+          >
+            {para.text}
+          </motion.p>
+        ))}
       </motion.div>
     </section>
   );
