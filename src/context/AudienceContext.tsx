@@ -20,12 +20,9 @@ export function AudienceProvider({ children }: { children: ReactNode }) {
   const [audience, setAudienceState] = useState<AudienceType>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load from localStorage on mount
+  // Mark as hydrated on mount - don't restore from localStorage
+  // (fresh start each visit, selection only persists during session)
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'individual' || stored === 'leader') {
-      setAudienceState(stored);
-    }
     setIsHydrated(true);
   }, []);
 

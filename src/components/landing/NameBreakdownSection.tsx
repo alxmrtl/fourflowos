@@ -3,8 +3,9 @@
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import { useRef } from 'react';
+import { useAudience } from '@/context/AudienceContext';
 
-const nameBreakdown = [
+const individualNameBreakdown = [
   {
     word: 'FOUR',
     meaning: 'dimensions of life tuned to generate',
@@ -19,7 +20,28 @@ const nameBreakdown = [
   },
   {
     word: 'OS',
-    meaning: '— an operating system for how you live.',
+    meaning: '— an operating system for how you work and live.',
+    connector: '',
+    color: '#7A4DA4',
+  },
+];
+
+const leaderNameBreakdown = [
+  {
+    word: 'FOUR',
+    meaning: 'dimensions that unlock engagement in',
+    connector: '...',
+    color: '#FF6F61',
+  },
+  {
+    word: 'FLOW',
+    meaning: '— the state where people do their best work — through a shared',
+    connector: '...',
+    color: '#6BA292',
+  },
+  {
+    word: 'OS',
+    meaning: '— an operating system for how teams thrive.',
     connector: '',
     color: '#7A4DA4',
   },
@@ -35,6 +57,9 @@ const shapeImages = [
 export default function NameBreakdownSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { amount: 0.2 });
+  const { isLeader } = useAudience();
+
+  const nameBreakdown = isLeader ? leaderNameBreakdown : individualNameBreakdown;
 
   return (
     <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#0a0a0a] overflow-hidden">
@@ -234,12 +259,25 @@ export default function NameBreakdownSection() {
             },
           }}
         >
-          <p className="text-lg text-gray-400">
-            Not another app. <span className="text-white">A way of seeing.</span>
-          </p>
-          <p className="text-lg text-gray-400">
-            Not a hack. <span className="text-white">An alignment practice.</span>
-          </p>
+          {isLeader ? (
+            <>
+              <p className="text-lg text-gray-400">
+                Not another management tool. <span className="text-white">A lens for seeing.</span>
+              </p>
+              <p className="text-lg text-gray-400">
+                Not a productivity push. <span className="text-white">A cultivation practice.</span>
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-lg text-gray-400">
+                Not another app. <span className="text-white">A way of seeing.</span>
+              </p>
+              <p className="text-lg text-gray-400">
+                Not a hack. <span className="text-white">An alignment practice.</span>
+              </p>
+            </>
+          )}
         </motion.div>
       </motion.div>
     </section>

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
 import { useAudience, AudienceType } from '@/context/AudienceContext';
@@ -9,22 +9,26 @@ const audienceOptions = [
   {
     id: 'individual' as const,
     title: 'Master your own flow',
-    description: 'For creators, professionals, builders, seekers',
+    subtitle: 'A personal practice',
+    description: 'For creators, professionals, builders, and anyone who wants to do their best work',
     icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     ),
+    gradient: 'from-[#FF6F61] to-[#7A4DA4]',
   },
   {
     id: 'leader' as const,
     title: 'Cultivate flow in others',
-    description: 'For managers, coaches, founders, facilitators',
+    subtitle: 'A leadership framework',
+    description: 'For managers, coaches, founders, and those who help others thrive',
     icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     ),
+    gradient: 'from-[#6BA292] to-[#5B84B1]',
   },
 ];
 
@@ -48,6 +52,13 @@ export default function HeroSection() {
 
   const handleAudienceSelect = (id: AudienceType) => {
     setAudience(id);
+    // Auto-scroll to next section after a brief delay for the animation
+    setTimeout(() => {
+      window.scrollTo({
+        top: window.innerHeight,
+        behavior: 'smooth',
+      });
+    }, 600);
   };
 
   return (
@@ -260,9 +271,24 @@ export default function HeroSection() {
           Align the four dimensions that create effortless focus and meaningful engagement.
         </motion.p>
 
+        {/* Choice Prompt */}
+        <motion.p
+          className="text-gray-400 text-lg mb-3"
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.5, ease: 'easeOut' },
+            },
+          }}
+        >
+          Which describes you?
+        </motion.p>
+
         {/* Audience Selection Cards */}
         <motion.div
-          className="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto"
+          className="flex flex-col sm:flex-row gap-5 justify-center max-w-4xl mx-auto"
           variants={{
             hidden: { opacity: 0, y: 20 },
             visible: {
@@ -274,86 +300,117 @@ export default function HeroSection() {
         >
           {audienceOptions.map((option) => {
             const isSelected = audience === option.id;
+            const isOtherSelected = hasSelected && !isSelected;
+
             return (
               <motion.button
                 key={option.id}
                 onClick={() => handleAudienceSelect(option.id)}
-                className={`
-                  relative flex-1 p-6 rounded-2xl text-left transition-all duration-300
-                  ${isSelected
-                    ? 'bg-white/10 border-2 border-white/30'
-                    : 'bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] hover:border-white/20'
-                  }
-                `}
-                whileHover={{ scale: 1.02 }}
+                className="relative flex-1 group"
+                animate={{
+                  opacity: isOtherSelected ? 0.25 : 1,
+                  scale: isOtherSelected ? 0.95 : 1,
+                }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                whileHover={!hasSelected ? { scale: 1.03 } : {}}
                 whileTap={{ scale: 0.98 }}
               >
-                {/* Selected indicator */}
-                {isSelected && (
+                {/* Animated gradient border */}
+                <motion.div
+                  className={`absolute -inset-[2px] rounded-3xl bg-gradient-to-r ${option.gradient} opacity-0 blur-sm`}
+                  animate={{
+                    opacity: isSelected ? 0.8 : 0,
+                  }}
+                  transition={{ duration: 0.3 }}
+                />
+                <motion.div
+                  className={`absolute -inset-[1px] rounded-3xl bg-gradient-to-r ${option.gradient}`}
+                  animate={{
+                    opacity: isSelected ? 1 : 0,
+                  }}
+                  transition={{ duration: 0.3 }}
+                />
+
+                {/* Card content */}
+                <div
+                  className={`
+                    relative p-8 md:p-10 rounded-3xl text-left transition-all duration-300
+                    ${isSelected
+                      ? 'bg-[#0a0a0a]'
+                      : 'bg-white/[0.03] border border-white/10 group-hover:bg-white/[0.06] group-hover:border-white/20'
+                    }
+                  `}
+                >
+                  {/* Selected checkmark */}
+                  <AnimatePresence>
+                    {isSelected && (
+                      <motion.div
+                        className={`absolute top-4 right-4 w-8 h-8 rounded-full bg-gradient-to-r ${option.gradient} flex items-center justify-center`}
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0, rotate: 180 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                      >
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Icon */}
                   <motion.div
-                    className="absolute top-3 right-3 w-6 h-6 rounded-full bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    className={`mb-5 ${isSelected ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'}`}
+                    animate={{ scale: isSelected ? 1.1 : 1 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                   >
-                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
+                    {option.icon}
                   </motion.div>
-                )}
 
-                {/* Icon */}
-                <div className={`mb-3 ${isSelected ? 'text-white' : 'text-gray-400'}`}>
-                  {option.icon}
-                </div>
+                  {/* Subtitle */}
+                  <p className={`text-xs uppercase tracking-widest mb-2 ${isSelected ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {option.subtitle}
+                  </p>
 
-                {/* Title */}
-                <h3 className={`text-lg font-semibold mb-1 ${isSelected ? 'text-white' : 'text-gray-200'}`}>
-                  {option.title}
-                </h3>
+                  {/* Title */}
+                  <h3 className={`text-xl md:text-2xl font-semibold mb-3 ${isSelected ? 'text-white' : 'text-gray-200'}`}>
+                    {option.title}
+                  </h3>
 
-                {/* Description */}
-                <p className={`text-sm ${isSelected ? 'text-gray-300' : 'text-gray-500'}`}>
-                  {option.description}
-                </p>
+                  {/* Description */}
+                  <p className={`text-sm md:text-base leading-relaxed ${isSelected ? 'text-gray-300' : 'text-gray-500'}`}>
+                    {option.description}
+                  </p>
 
-                {/* Arrow indicator */}
-                <div className={`mt-4 flex items-center gap-2 text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-500'}`}>
-                  <span>{isSelected ? 'Selected' : 'Select'}</span>
-                  <svg
-                    className={`w-4 h-4 transition-transform ${isSelected ? '' : 'group-hover:translate-x-0.5'}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                  {/* CTA indicator */}
+                  <motion.div
+                    className={`mt-6 flex items-center gap-2 text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-500 group-hover:text-gray-400'}`}
+                    animate={{ x: isSelected ? 0 : 0 }}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                    <span>{isSelected ? 'Continue below' : 'Choose this path'}</span>
+                    <motion.svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      animate={{
+                        rotate: isSelected ? 90 : 0,
+                        x: isSelected ? 0 : [0, 4, 0],
+                      }}
+                      transition={{
+                        rotate: { duration: 0.3 },
+                        x: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+                      }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </motion.svg>
+                  </motion.div>
                 </div>
               </motion.button>
             );
           })}
         </motion.div>
 
-        {/* Scroll indicator - only show when audience is selected */}
-        {hasSelected && (
-          <motion.div
-            className="mt-12"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            <motion.div
-              className="flex flex-col items-center gap-2 text-gray-500"
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              <span className="text-sm">Explore the framework</span>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </motion.div>
-          </motion.div>
-        )}
       </motion.div>
     </section>
   );
