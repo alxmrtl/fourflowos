@@ -31,7 +31,7 @@ const individualContent = {
       style: 'body' as const,
     },
     {
-      text: 'FourFlow OS gives you a lens to see which conditions are met and which aren\'t — so you can stop waiting for flow and start creating it.',
+      text: 'FourFlowOS gives you a lens to see which conditions are met and which aren\'t — so you can stop waiting for flow and start creating it.',
       style: 'closing' as const,
     },
   ],
@@ -64,7 +64,7 @@ const leaderContent = {
       style: 'body' as const,
     },
     {
-      text: 'FourFlow OS gives leaders a framework for seeing and shaping these conditions — turning peak performance from sporadic to structural.',
+      text: 'FourFlowOS gives leaders a framework for seeing and shaping these conditions — turning peak performance from sporadic to structural.',
       style: 'closing' as const,
     },
   ],
@@ -145,7 +145,12 @@ export default function SolutionSection() {
               },
             }}
           >
-            {para.text}
+            {para.style === 'closing' && para.text.startsWith('FourFlowOS')
+              ? <>
+                  <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent font-medium">FourFlowOS</span>
+                  {para.text.slice('FourFlowOS'.length)}
+                </>
+              : para.text}
           </motion.p>
         ))}
       </motion.div>
