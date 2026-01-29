@@ -117,10 +117,6 @@ function calculatePositions(count: number, containerWidth: number, containerHeig
   return positions;
 }
 
-// Get the center point of a pill given its base position
-function pillCenter(pos: { x: number; y: number }) {
-  return { cx: pos.x + PILL_W / 2, cy: pos.y + PILL_H / 2 };
-}
 
 export default function CuriosityPool({
   items,
@@ -141,6 +137,9 @@ export default function CuriosityPool({
   const [isMobile, setIsMobile] = useState(false);
   const [hoveredIntersection, setHoveredIntersection] = useState<string | null>(null);
   const poolRef = useRef<HTMLDivElement>(null);
+  const pillRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const svgRef = useRef<SVGSVGElement>(null);
+  const rafRef = useRef<number>(0);
   const [containerSize, setContainerSize] = useState({ w: 800, h: 350 });
 
   useEffect(() => {
@@ -222,24 +221,29 @@ export default function CuriosityPool({
       ? intersections.find(ix => ix.id === hoveredIntersection)?.itemIds.includes(item.id)
       : false;
 
+    const active = isSelected || isHighlightedByHover;
+
     return (
       <div
-        className="px-3.5 py-2 rounded-full text-sm border transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap"
+        className="rounded-full border transition-all duration-200 flex items-center whitespace-nowrap"
         style={{
-          background: isSelected || isHighlightedByHover
+          padding: active ? '8px 14px' : '5px 10px',
+          fontSize: active ? '0.875rem' : '0.75rem',
+          gap: active ? '6px' : '4px',
+          background: active
             ? `${tint}30`
             : isConnected
-              ? `${tint}18`
-              : `${tint}0a`,
-          borderColor: isSelected || isHighlightedByHover
+              ? `${tint}10`
+              : `${tint}06`,
+          borderColor: active
             ? tint
             : isConnected
-              ? `${tint}50`
-              : 'rgba(255,255,255,0.1)',
-          color: isSelected || isHighlightedByHover ? '#e0d0f0' : '#d0d0d0',
+              ? `${tint}30`
+              : 'rgba(255,255,255,0.06)',
+          color: active ? '#e0d0f0' : '#999',
         }}
       >
-        <span className="opacity-60 flex-shrink-0"><SourceIcon source={item.source} /></span>
+        <span className={`flex-shrink-0 ${active ? 'opacity-60' : 'opacity-30'}`}><SourceIcon source={item.source} /></span>
         {isEditing ? (
           <input
             type="text"
@@ -266,32 +270,83 @@ export default function CuriosityPool({
     );
   };
 
-  // Build SVG connection lines for saved intersections
-  const connectionLines = useMemo(() => {
-    if (isMobile) return null;
-    return intersections.map(ix => {
-      const validIds = ix.itemIds.filter(id => idToIndex.has(id));
-      if (validIds.length < 2) return null;
-      const centers = validIds.map(id => {
-        const pos = positions[idToIndex.get(id)!];
-        return pos ? pillCenter(pos) : null;
-      }).filter(Boolean) as { cx: number; cy: number }[];
-      if (centers.length < 2) return null;
+  // Live-track connection lines to follow drifting pills via RAF
+  useEffect(() => {
+    if (isMobile || intersections.length === 0) return;
 
-      // Draw lines between all pairs
-      const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
-      for (let a = 0; a < centers.length; a++) {
-        for (let b = a + 1; b < centers.length; b++) {
-          lines.push({ x1: centers[a].cx, y1: centers[a].cy, x2: centers[b].cx, y2: centers[b].cy });
-        }
+    const update = () => {
+      const pool = poolRef.current;
+      const svg = svgRef.current;
+      if (pool && svg) {
+        const poolRect = pool.getBoundingClientRect();
+
+        intersections.forEach(ix => {
+          const groupEl = svg.querySelector(`[data-conn-id="${ix.id}"]`);
+          if (!groupEl) return;
+
+          const centers: { cx: number; cy: number }[] = [];
+          ix.itemIds.forEach(id => {
+            const el = pillRefs.current.get(id);
+            if (!el) return;
+            const r = el.getBoundingClientRect();
+            centers.push({
+              cx: r.left + r.width / 2 - poolRect.left,
+              cy: r.top + r.height / 2 - poolRect.top,
+            });
+          });
+
+          let lineIdx = 0;
+          for (let a = 0; a < centers.length; a++) {
+            for (let b = a + 1; b < centers.length; b++) {
+              const visLine = groupEl.querySelector(`[data-line="${lineIdx}"]`) as SVGLineElement | null;
+              const hitLine = groupEl.querySelector(`[data-hit="${lineIdx}"]`) as SVGLineElement | null;
+              if (visLine) {
+                visLine.setAttribute('x1', String(centers[a].cx));
+                visLine.setAttribute('y1', String(centers[a].cy));
+                visLine.setAttribute('x2', String(centers[b].cx));
+                visLine.setAttribute('y2', String(centers[b].cy));
+              }
+              if (hitLine) {
+                hitLine.setAttribute('x1', String(centers[a].cx));
+                hitLine.setAttribute('y1', String(centers[a].cy));
+                hitLine.setAttribute('x2', String(centers[b].cx));
+                hitLine.setAttribute('y2', String(centers[b].cy));
+              }
+              lineIdx++;
+            }
+          }
+
+          if (centers.length >= 2) {
+            const midX = centers.reduce((s, c) => s + c.cx, 0) / centers.length;
+            const midY = centers.reduce((s, c) => s + c.cy, 0) / centers.length;
+            const tooltip = pool.querySelector(`[data-tooltip="${ix.id}"]`) as HTMLElement | null;
+            if (tooltip) {
+              tooltip.style.left = `${midX}px`;
+              tooltip.style.top = `${midY}px`;
+            }
+          }
+        });
       }
-      // Midpoint for the tooltip/label
-      const midX = centers.reduce((s, c) => s + c.cx, 0) / centers.length;
-      const midY = centers.reduce((s, c) => s + c.cy, 0) / centers.length;
 
-      return { id: ix.id, description: ix.description, lines, midX, midY };
-    }).filter(Boolean) as { id: string; description: string; lines: { x1: number; y1: number; x2: number; y2: number }[]; midX: number; midY: number }[];
-  }, [intersections, positions, idToIndex, isMobile]);
+      rafRef.current = requestAnimationFrame(update);
+    };
+
+    rafRef.current = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [isMobile, intersections]);
+
+  // Pre-compute line pair counts for rendering SVG elements
+  const connectionLineData = useMemo(() => {
+    return intersections.map(ix => {
+      const validCount = ix.itemIds.filter(id => idToIndex.has(id)).length;
+      if (validCount < 2) return null;
+      const pairCount = (validCount * (validCount - 1)) / 2;
+      return { id: ix.id, description: ix.description, pairCount };
+    }).filter(Boolean) as { id: string; description: string; pairCount: number }[];
+  }, [intersections, idToIndex]);
+
+  const MAX_SPARKS = 7;
+  const emptySlots = Math.max(0, MAX_SPARKS - intersections.length);
 
   return (
     <div>
@@ -373,7 +428,10 @@ export default function CuriosityPool({
         </button>
       </div>
 
+      {/* Pool + Sparks sidebar */}
+      <div className={isMobile ? '' : 'flex gap-4'}>
       {/* Pool of items */}
+      <div className={isMobile ? '' : 'flex-1 min-w-0'}>
       {isMobile ? (
         <div className="flex flex-wrap gap-2.5 mb-6">
           <AnimatePresence>
@@ -437,35 +495,31 @@ export default function CuriosityPool({
             background: 'radial-gradient(ellipse at center, rgba(122,77,164,0.04) 0%, transparent 70%)',
           }}
         >
-          {/* SVG connection lines */}
-          {connectionLines && connectionLines.length > 0 && (
+          {/* SVG connection lines - live tracked */}
+          {connectionLineData.length > 0 && (
             <svg
+              ref={svgRef}
               className="absolute inset-0 w-full h-full pointer-events-none"
               style={{ zIndex: 0 }}
             >
-              {connectionLines.map(conn => (
-                <g key={conn.id}>
-                  {conn.lines.map((line, li) => (
+              {connectionLineData.map(conn => (
+                <g key={conn.id} data-conn-id={conn.id}>
+                  {Array.from({ length: conn.pairCount }).map((_, li) => (
                     <line
                       key={li}
-                      x1={line.x1}
-                      y1={line.y1}
-                      x2={line.x2}
-                      y2={line.y2}
-                      stroke={hoveredIntersection === conn.id ? `${AMETHYST}90` : `${AMETHYST}30`}
+                      data-line={li}
+                      x1={0} y1={0} x2={0} y2={0}
+                      stroke={hoveredIntersection === conn.id ? `${AMETHYST}90` : `${AMETHYST}25`}
                       strokeWidth={hoveredIntersection === conn.id ? 2 : 1}
-                      strokeDasharray={hoveredIntersection === conn.id ? 'none' : '4 4'}
+                      strokeDasharray={hoveredIntersection === conn.id ? 'none' : '4 6'}
                       style={{ transition: 'stroke 0.2s, stroke-width 0.2s' }}
                     />
                   ))}
-                  {/* Invisible wider hit area for hover */}
-                  {conn.lines.map((line, li) => (
+                  {Array.from({ length: conn.pairCount }).map((_, li) => (
                     <line
                       key={`hit-${li}`}
-                      x1={line.x1}
-                      y1={line.y1}
-                      x2={line.x2}
-                      y2={line.y2}
+                      data-hit={li}
+                      x1={0} y1={0} x2={0} y2={0}
                       stroke="transparent"
                       strokeWidth={14}
                       style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
@@ -478,21 +532,22 @@ export default function CuriosityPool({
             </svg>
           )}
 
-          {/* Hover tooltip for connection */}
+          {/* Hover tooltip for connection - position updated by RAF */}
           <AnimatePresence>
-            {hoveredIntersection && connectionLines && (() => {
-              const conn = connectionLines.find(c => c.id === hoveredIntersection);
+            {hoveredIntersection && (() => {
+              const conn = connectionLineData.find(c => c.id === hoveredIntersection);
               if (!conn) return null;
               return (
                 <motion.div
                   key={conn.id}
+                  data-tooltip={conn.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   className="absolute z-20 px-3 py-1.5 rounded-lg text-xs text-gray-200 max-w-[220px] text-center pointer-events-none"
                   style={{
-                    left: conn.midX,
-                    top: conn.midY,
+                    left: 0,
+                    top: 0,
                     transform: 'translate(-50%, -50%)',
                     background: 'rgba(20,15,30,0.92)',
                     border: `1px solid ${AMETHYST}40`,
@@ -524,16 +579,20 @@ export default function CuriosityPool({
               const glowValue = isSelected
                 ? `0 0 20px ${tint}80`
                 : isConnected
-                  ? `0 0 12px ${tint}40`
+                  ? `0 0 8px ${tint}25`
                   : undefined;
 
               return (
                 <motion.div
                   key={item.id}
+                  ref={(el: HTMLDivElement | null) => {
+                    if (el) pillRefs.current.set(item.id, el);
+                    else pillRefs.current.delete(item.id);
+                  }}
                   initial={{ opacity: 0, scale: 0.8, x: pos.x, y: pos.y }}
                   animate={{
-                    opacity: 1,
-                    scale: isSelected ? 1.12 : 1,
+                    opacity: isSelected ? 1 : 0.7,
+                    scale: isSelected ? 1.15 : 0.88,
                     x: [pos.x - 15, pos.x + 15, pos.x - 15],
                     y: [pos.y - 10, pos.y + 10, pos.y - 10],
                   }}
@@ -597,6 +656,79 @@ export default function CuriosityPool({
           )}
         </div>
       )}
+
+      </div>{/* end pool column */}
+
+      {/* Curiosity Sparks sidebar - desktop only */}
+      {!isMobile && (
+        <div className="w-56 flex-shrink-0">
+          <div className="flex items-center gap-2 mb-3">
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={AMETHYST} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: AMETHYST }}>
+              Curiosity Sparks
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {intersections.map((ix, i) => (
+              <motion.div
+                key={ix.id}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="group px-3 py-2 rounded-lg border transition-colors cursor-default"
+                style={{
+                  background: hoveredIntersection === ix.id ? `${AMETHYST}15` : 'rgba(255,255,255,0.02)',
+                  borderColor: hoveredIntersection === ix.id ? `${AMETHYST}40` : 'rgba(255,255,255,0.06)',
+                }}
+                onMouseEnter={() => setHoveredIntersection(ix.id)}
+                onMouseLeave={() => setHoveredIntersection(null)}
+              >
+                <div className="flex items-start justify-between gap-1">
+                  <p className="text-xs text-gray-300 leading-relaxed">{ix.description}</p>
+                  <button
+                    onClick={() => onRemoveIntersection(ix.id)}
+                    className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 transition-all text-xs flex-shrink-0 mt-0.5"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <AnimatePresence>
+                  {hoveredIntersection === ix.id && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="flex flex-wrap gap-1 mt-1.5 overflow-hidden"
+                    >
+                      {ix.itemIds.map(id => {
+                        const item = items.find(i => i.id === id);
+                        return item ? (
+                          <span key={id} className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: `${AMETHYST}15`, color: '#b09cd0' }}>
+                            {item.text}
+                          </span>
+                        ) : null;
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+            {/* Empty placeholder slots */}
+            {Array.from({ length: emptySlots }).map((_, i) => (
+              <div
+                key={`empty-${i}`}
+                className="px-3 py-2 rounded-lg border border-dashed border-white/5 flex items-center gap-2"
+              >
+                <div className="w-1.5 h-1.5 rounded-full" style={{ background: `${AMETHYST}20` }} />
+                <span className="text-[11px] text-gray-700 italic">undiscovered</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      </div>{/* end flex row */}
 
       {/* Mobile-only: saved intersections list */}
       {isMobile && intersections.length > 0 && (

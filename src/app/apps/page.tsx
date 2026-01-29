@@ -123,22 +123,50 @@ export default function AppsPage() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-              Apps Built for{' '}
+              Tools &amp; Apps for{' '}
               <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
                 Flow
               </span>
             </h1>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Tools designed to help you enter flow states, build meaningful habits,
+              Interactive tools and apps designed to help you enter flow states, build meaningful habits,
               and align your life with the Four Pillars framework.
             </p>
           </motion.div>
         </div>
       </section>
 
+      {/* Tools Section */}
+      <section className="pb-12 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">Interactive Tools</h2>
+          <Link
+            href="/dimension/spirit/key/ignited-curiosity#curiosity-explorer"
+            className="group block p-6 rounded-2xl bg-gradient-to-br from-[#7A4DA4]/10 to-transparent border border-[#7A4DA4]/20 hover:border-[#7A4DA4]/40 transition-all duration-300 max-w-2xl"
+          >
+            <div className="flex items-start gap-5">
+              <div className="w-12 h-12 rounded-xl bg-[#7A4DA4]/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-[#7A4DA4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-white mb-1 group-hover:translate-x-1 transition-transform">Curiosity Explorer</h3>
+                <p className="text-sm text-[#7A4DA4] font-medium mb-2">Spirit &middot; Ignited Curiosity</p>
+                <p className="text-gray-400 text-sm">Surface your curiosities and find unique intersections where your flow lives.</p>
+              </div>
+              <svg className="w-5 h-5 text-[#7A4DA4] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* Apps Grid */}
       <section className="pb-20 px-6">
         <div className="max-w-6xl mx-auto">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">Apps</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {apps.map((app, index) => (
               <AppCard key={app.id} app={app} index={index} />

@@ -2,6 +2,7 @@
 
 import { motion, useInView, Variants } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRef } from 'react';
 
 const apps = [
@@ -129,7 +130,7 @@ export default function AppsSection() {
             className="inline-block px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-gray-400 mb-6"
             variants={itemVariants}
           >
-            The Apps
+            Tools &amp; Apps
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             Tools That Put It{' '}
@@ -142,7 +143,41 @@ export default function AppsSection() {
           </p>
         </motion.div>
 
+        {/* Interactive Tools */}
+        <motion.div className="mb-16" variants={itemVariants}>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">Interactive Tools</h3>
+          <Link
+            href="/dimension/spirit/key/ignited-curiosity#curiosity-explorer"
+            className="group block p-6 lg:p-8 rounded-2xl bg-gradient-to-br from-[#7A4DA4]/10 to-transparent border border-[#7A4DA4]/20 hover:border-[#7A4DA4]/40 transition-all duration-300"
+          >
+            <div className="flex items-start gap-5">
+              <div className="w-12 h-12 rounded-xl bg-[#7A4DA4]/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-[#7A4DA4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h4 className="text-lg font-bold text-white mb-1 group-hover:translate-x-1 transition-transform">
+                  Curiosity Explorer
+                </h4>
+                <p className="text-sm text-[#7A4DA4] font-medium mb-2">Spirit &middot; Ignited Curiosity</p>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  Surface your curiosities from multiple angles, then find unique intersections where your flow lives. A guided braindump that connects to your vision, values, and purpose.
+                </p>
+              </div>
+              <div className="flex-shrink-0 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                <svg className="w-5 h-5 text-[#7A4DA4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </Link>
+        </motion.div>
+
         {/* Apps grid */}
+        <motion.div variants={itemVariants}>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">Apps</h3>
+        </motion.div>
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
           {apps.map((app, index) => (
             <motion.div

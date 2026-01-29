@@ -29,7 +29,7 @@ export default function LandingNav() {
   // Main navigation links
   const mainNavLinks = [
     { href: '/framework', label: 'Framework' },
-    { href: '/apps', label: 'Apps' },
+    { href: '/apps', label: 'Tools' },
     { href: '/blog', label: 'Blog' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
