@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { KEYS, DIMENSIONS } from '@/data/framework';
 import { KeyType, DimensionType, ContentItem } from '@/types/framework';
 import PageLayout from '@/components/layout/PageLayout';
+import CuriosityExplorer from '@/components/tools/CuriosityExplorer';
 
 interface KeyPageProps {
   keyId: KeyType;
@@ -192,6 +193,9 @@ export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPa
           </motion.div>
         </div>
       </section>
+
+      {/* Curiosity Explorer Tool (only on ignited-curiosity) */}
+      {keyId === 'ignited-curiosity' && <CuriosityExplorer />}
 
       {/* Content Section */}
       <section ref={contentRef} className="relative py-8 md:py-16">
