@@ -92,7 +92,7 @@ export default function PrivacyPage() {
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800">
                       <Image
-                        src="/assets/apps/flowspace-icon.png"
+                        src="/assets/apps/flowzone-icon.png"
                         alt="FlowZone"
                         width={48}
                         height={48}
@@ -109,7 +109,7 @@ export default function PrivacyPage() {
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800">
                       <Image
-                        src="/assets/apps/habits-icon.png"
+                        src="/assets/apps/flowhabits-icon.png"
                         alt="FlowHabits"
                         width={48}
                         height={48}
@@ -250,7 +250,7 @@ export default function PrivacyPage() {
               <div className="mb-6 p-6 bg-white/5 border border-white/10 rounded-xl">
                 <h3 className="text-white font-semibold mb-4 flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg overflow-hidden">
-                    <Image src="/assets/apps/flowspace-icon.png" alt="FlowSpace" width={32} height={32} />
+                    <Image src="/assets/apps/flowzone-icon.png" alt="FlowSpace" width={32} height={32} />
                   </div>
                   FlowSpace
                 </h3>
@@ -267,7 +267,7 @@ export default function PrivacyPage() {
               <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
                 <h3 className="text-white font-semibold mb-4 flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg overflow-hidden">
-                    <Image src="/assets/apps/habits-icon.png" alt="FourFlow Habits" width={32} height={32} />
+                    <Image src="/assets/apps/flowhabits-icon.png" alt="FourFlow Habits" width={32} height={32} />
                   </div>
                   FourFlow Habits
                 </h3>

@@ -8,7 +8,7 @@ import Image from 'next/image';
 interface FAQItem {
   question: string;
   answer: string;
-  category: 'general' | 'flowzone' | 'flowhabits' | 'flowread';
+  category: 'general' | 'flowzone' | 'flowhabits' | 'flowread' | 'flowrep';
 }
 
 const faqs: FAQItem[] = [
@@ -53,6 +53,16 @@ const faqs: FAQItem[] = [
     category: 'flowhabits',
   },
   {
+    question: 'How do streaks work in FlowRep?',
+    answer: 'Streaks count consecutive days where all exercise targets were met. Rest days don\'t break your streak — they\'re part of the process. Yesterday counts toward your streak, but today only counts once you hit all targets.',
+    category: 'flowrep',
+  },
+  {
+    question: 'Can I export my FlowRep data?',
+    answer: 'Yes! Go to Settings > Export Backup to save your data as a JSON file. You can import it later using Settings > Import Backup. All data stays on your device — no cloud sync required.',
+    category: 'flowrep',
+  },
+  {
     question: 'How does FlowRead improve reading speed?',
     answer: 'FlowRead uses techniques like RSVP (Rapid Serial Visual Presentation) and word chunking to train your eyes and brain to process text faster. Regular practice with increasing speeds helps expand your reading capacity.',
     category: 'flowread',
@@ -73,6 +83,7 @@ export default function SupportPage() {
     flowzone: 'FlowZone',
     flowhabits: 'FlowHabits',
     flowread: 'FlowRead',
+    flowrep: 'FlowRep',
   };
 
   const categoryColors = {
@@ -80,6 +91,7 @@ export default function SupportPage() {
     flowzone: '#FF6F61',
     flowhabits: '#6BA292',
     flowread: '#5B84B1',
+    flowrep: '#FF6F61',
   };
 
   return (
@@ -185,7 +197,7 @@ export default function SupportPage() {
       {/* App-Specific Help */}
       <section className="mb-12">
         <h2 className="text-2xl font-bold text-white mb-6">App Resources</h2>
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
             <div className="w-12 h-12 rounded-xl bg-[#FF6F61]/20 flex items-center justify-center mb-4">
               <span className="text-2xl">🎯</span>
@@ -214,6 +226,16 @@ export default function SupportPage() {
             <p className="text-gray-500 text-sm mb-3">Speed reading trainer</p>
             <p className="text-gray-400 text-sm">
               Best for: Improving reading speed, training visual processing, flow reading practice
+            </p>
+          </div>
+          <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
+            <div className="w-12 h-12 rounded-xl bg-[#FF6F61]/20 flex items-center justify-center mb-4">
+              <span className="text-2xl">💪</span>
+            </div>
+            <h3 className="text-white font-semibold mb-2">FlowRep</h3>
+            <p className="text-gray-500 text-sm mb-3">Daily rep tracker</p>
+            <p className="text-gray-400 text-sm">
+              Best for: Tracking daily exercise reps, building streaks, making physical practice consistent
             </p>
           </div>
         </div>

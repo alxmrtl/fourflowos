@@ -20,7 +20,7 @@ export interface App {
   relatedPillars: DimensionType[];
   version?: string;
   releaseDate?: string;
-  comingSoon: boolean;
+  inDevelopment: boolean;
 }
 
 export const APPS: Record<string, App> = {
@@ -71,7 +71,7 @@ Integrated breathwork exercises help you transition from scattered thinking to f
     accentColor: '#FF6F61',
     relatedPillars: ['self', 'space'],
     version: '1.0',
-    comingSoon: false,
+    inDevelopment: true,
   },
   flowhabits: {
     id: 'flowhabits',
@@ -119,7 +119,7 @@ Simple, focused, and designed to help you build the foundational habits that ena
     accentColor: '#6BA292',
     relatedPillars: ['self', 'story'],
     version: '1.0',
-    comingSoon: false,
+    inDevelopment: true,
   },
   flowread: {
     id: 'flowread',
@@ -166,7 +166,7 @@ Regular practice with FlowRead helps you enter a reading flow state where words 
     gradient: 'from-[#5B84B1] to-[#7A4DA4]',
     accentColor: '#5B84B1',
     relatedPillars: ['self', 'story'],
-    comingSoon: false,
+    inDevelopment: true,
   },
   flowrep: {
     id: 'flowrep',
@@ -214,7 +214,7 @@ Built for people who want to build consistent exercise habits without the comple
     accentColor: '#FF6F61',
     relatedPillars: ['self'],
     version: '1.0',
-    comingSoon: false,
+    inDevelopment: true,
   },
 };
 

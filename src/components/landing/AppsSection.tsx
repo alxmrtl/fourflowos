@@ -4,85 +4,10 @@ import { motion, useInView, Variants } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
-
-const apps = [
-  {
-    id: 'flowzone',
-    name: 'FlowZone',
-    tagline: 'Train Your Focus',
-    description: 'Focus timer with breathwork, distraction tracking, and support through the hard first 25%. Build your focus muscle session by session.',
-    features: [
-      'Focus Reps tracking',
-      'Struggle Phase support',
-      'Breathwork integration',
-      'Goal linking & daily containers',
-      'Statistics & insights',
-    ],
-    icon: '/assets/apps/flowzone-icon.png',
-    gradient: 'from-[#FF6F61] to-[#7A4DA4]',
-    accentColor: '#FF6F61',
-    appStoreUrl: '#',
-    inDevelopment: true,
-  },
-  {
-    id: 'flowhabits',
-    name: 'FlowHabits',
-    tagline: 'Balanced Daily Habits',
-    description: 'Habit tracker organized by the four dimensions. Build routines that support flow across Self, Space, Story, and Spirit.',
-    features: [
-      'Four Pillars organization',
-      'Streak tracking',
-      'Balance indicators',
-      'Gentle accountability',
-      'Local privacy',
-    ],
-    icon: '/assets/apps/flowhabits-icon.png',
-    gradient: 'from-[#6BA292] to-[#5B84B1]',
-    accentColor: '#6BA292',
-    appStoreUrl: '#',
-    inDevelopment: true,
-  },
-  {
-    id: 'flowread',
-    name: 'FlowRead',
-    tagline: 'Read Faster, Focus Deeper',
-    description: 'Speed reading trainer using RSVP and chunking. Expand your reading capacity and find flow in text.',
-    features: [
-      'RSVP training',
-      'Word chunking',
-      'Progressive speed',
-      'Custom content',
-      'Progress tracking',
-    ],
-    icon: '/assets/apps/flowread-icon.png',
-    gradient: 'from-[#5B84B1] to-[#7A4DA4]',
-    accentColor: '#5B84B1',
-    appStoreUrl: '#',
-    webUrl: '#',
-    isWebApp: true,
-    inDevelopment: true,
-  },
-  {
-    id: 'flowrep',
-    name: 'FlowRep',
-    tagline: 'Simple Movement Tracking',
-    description: 'Minimalist rep counter for daily exercise. Set targets, track streaks, build consistency.',
-    features: [
-      'Daily rep tracking',
-      'Daily targets',
-      'Streak tracking',
-      'Custom exercises',
-      'Minimalist design',
-    ],
-    icon: '/assets/apps/flowrep-icon.png',
-    gradient: 'from-[#FF6F61] to-[#5B84B1]',
-    accentColor: '#FF6F61',
-    appStoreUrl: '#',
-    inDevelopment: true,
-  },
-];
+import { getAllApps } from '@/data/apps';
 
 export default function AppsSection() {
+  const apps = getAllApps();
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.2 }); // Removed once: true
 
@@ -228,7 +153,7 @@ export default function AppsSection() {
 
                   {/* Features list */}
                   <ul className="space-y-3 mb-8">
-                    {app.features.map((feature, featureIndex) => (
+                    {app.features.slice(0, 5).map((feature, featureIndex) => (
                       <li
                         key={featureIndex}
                         className="flex items-center gap-3 text-sm text-gray-300"
@@ -237,7 +162,7 @@ export default function AppsSection() {
                           className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                           style={{ background: app.accentColor }}
                         />
-                        {feature}
+                        {feature.title}
                       </li>
                     ))}
                   </ul>
