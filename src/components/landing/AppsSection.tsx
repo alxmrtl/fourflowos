@@ -22,7 +22,7 @@ const apps = [
     gradient: 'from-[#FF6F61] to-[#7A4DA4]',
     accentColor: '#FF6F61',
     appStoreUrl: '#',
-    comingSoon: false,
+    inDevelopment: true,
   },
   {
     id: 'flowhabits',
@@ -40,7 +40,7 @@ const apps = [
     gradient: 'from-[#6BA292] to-[#5B84B1]',
     accentColor: '#6BA292',
     appStoreUrl: '#',
-    comingSoon: false,
+    inDevelopment: true,
   },
   {
     id: 'flowread',
@@ -60,7 +60,7 @@ const apps = [
     appStoreUrl: '#',
     webUrl: '#',
     isWebApp: true,
-    comingSoon: false,
+    inDevelopment: true,
   },
   {
     id: 'flowrep',
@@ -78,7 +78,7 @@ const apps = [
     gradient: 'from-[#FF6F61] to-[#5B84B1]',
     accentColor: '#FF6F61',
     appStoreUrl: '#',
-    comingSoon: false,
+    inDevelopment: true,
   },
 ];
 
@@ -244,10 +244,16 @@ export default function AppsSection() {
 
                   {/* CTA */}
                   <div className="flex items-center gap-4">
-                    {app.comingSoon ? (
-                      <span className="px-6 py-3 bg-white/5 text-gray-500 font-medium rounded-full">
-                        Coming Soon
-                      </span>
+                    {app.inDevelopment ? (
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-gray-400 font-medium rounded-full">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          In Development
+                        </span>
+                      </div>
                     ) : (
                       <a
                         href={app.appStoreUrl}
