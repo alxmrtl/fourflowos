@@ -40,7 +40,7 @@ Integrated breathwork exercises help you transition from scattered thinking to f
     screenshots: [],
     platforms: ['ios', 'web'],
     appStoreUrl: '#',
-    webUrl: '#',
+    webUrl: '/tools/flowzone',
     features: [
       {
         title: 'Focus Reps',
