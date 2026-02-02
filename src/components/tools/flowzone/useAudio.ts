@@ -63,26 +63,6 @@ export function useAudio(): UseAudioReturn {
     return source;
   }, [getAudioCtx]);
 
-  const createRain = useCallback(() => {
-    const { ctx, gain } = getAudioCtx();
-    const bufferSize = ctx.sampleRate * 2;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    const bandpass = ctx.createBiquadFilter();
-    bandpass.type = 'bandpass';
-    bandpass.frequency.value = 1500;
-    bandpass.Q.value = 0.5;
-    source.connect(bandpass).connect(gain);
-    source.start();
-    return source;
-  }, [getAudioCtx]);
-
   const createBinaural = useCallback(() => {
     const { ctx, gain } = getAudioCtx();
     const merger = ctx.createChannelMerger(2);
@@ -120,14 +100,13 @@ export function useAudio(): UseAudioReturn {
         // Start
         let node: any;
         if (id === 'white-noise') node = createWhiteNoise();
-        else if (id === 'rain') node = createRain();
         else if (id === 'binaural') node = createBinaural();
         if (node) nodesRef.current.set(id, node);
         next.add(id);
       }
       return next;
     });
-  }, [createWhiteNoise, createRain, createBinaural]);
+  }, [createWhiteNoise, createBinaural]);
 
   const setVolume = useCallback((v: number) => {
     setVolumeState(v);

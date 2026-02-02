@@ -24,6 +24,7 @@ export type Phase = 'dashboard' | 'flow';
 export interface BreathworkPattern {
   id: string;
   name: string;
+  benefit: string;
   description: string;
   phases: BreathworkPhase[];
   cycleDurationMs: number;
@@ -40,13 +41,21 @@ export interface AmbientSound {
   icon: string;
 }
 
+export interface AudioOption {
+  id: string;
+  title: string;
+  subtitle: string;
+  source: 'generated' | 'youtube';
+  youtubeId?: string;
+}
+
 export interface CuratedPlaylistItem {
   id: string;
   title: string;
   youtubeId: string;
 }
 
-export type AudioSource = 'none' | 'white-noise' | 'rain' | 'binaural' | string;
+export type AudioSource = 'none' | 'white-noise' | 'binaural' | string;
 // curated youtube ids are stored as 'yt:videoId', custom as 'yt-custom'
 
 export interface FlowSettings {

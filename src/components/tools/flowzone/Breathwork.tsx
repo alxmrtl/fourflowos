@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SAGE, BREATHWORK_PATTERNS } from './constants';
+import { SAGE, AMETHYST, BREATHWORK_PATTERNS } from './constants';
 import { BreathworkPattern } from './types';
 import { useBreathwork } from './useBreathwork';
+
+const PATTERN_ACCENTS = ['#6BA292', '#5B84B1', '#7A4DA4', '#FF6F61'];
 
 interface BreathworkProps {
   onDone: () => void;
@@ -79,16 +81,27 @@ export default function Breathwork({ onDone, onSkip, label, patternId }: Breathw
               Choose a breathing pattern
             </h3>
             <div className="space-y-2 max-w-sm mx-auto mb-8">
-              {BREATHWORK_PATTERNS.map(pattern => (
+              {BREATHWORK_PATTERNS.map((pattern, i) => (
                 <button
                   key={pattern.id}
                   onClick={() => handleSelectAndStart(pattern)}
-                  className="w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#6BA292]/40 text-left transition-all group"
+                  className="w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#7A4DA4]/40 text-left transition-all group flex items-stretch gap-3 overflow-hidden"
                 >
-                  <p className="text-white font-medium text-sm group-hover:translate-x-1 transition-transform">
-                    {pattern.name}
-                  </p>
-                  <p className="text-gray-500 text-xs mt-1">{pattern.description}</p>
+                  {/* Colored accent bar */}
+                  <div
+                    className="w-1 rounded-full flex-shrink-0"
+                    style={{ background: PATTERN_ACCENTS[i % PATTERN_ACCENTS.length] }}
+                  />
+                  <div className="flex-1">
+                    <p className="text-white font-medium text-sm group-hover:translate-x-1 transition-transform">
+                      {pattern.name}
+                    </p>
+                    <p className="text-gray-500 text-xs mt-1">{pattern.description}</p>
+                  </div>
+                  {/* Wind motif icon */}
+                  <svg className="w-5 h-5 text-gray-600 group-hover:text-gray-400 transition-colors flex-shrink-0 self-center" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8h12a4 4 0 100-8M3 16h10a4 4 0 110 8M3 12h16a4 4 0 100-8" />
+                  </svg>
                 </button>
               ))}
             </div>
@@ -107,12 +120,31 @@ export default function Breathwork({ onDone, onSkip, label, patternId }: Breathw
             exit={{ opacity: 0 }}
             className="flex flex-col items-center"
           >
-            {/* Breathing circle */}
+            {/* Breathing circle with concentric rings */}
             <div className="relative w-48 h-48 mb-8">
+              {/* Outer ring — amethyst, slightly offset timing */}
+              <motion.div
+                className="absolute inset-[-12px] rounded-full"
+                style={{
+                  border: `1px solid ${AMETHYST}25`,
+                }}
+                animate={{ scale: circleScale * 0.95 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              />
+              {/* Middle ring */}
+              <motion.div
+                className="absolute inset-[-4px] rounded-full"
+                style={{
+                  border: `1px solid ${SAGE}20`,
+                }}
+                animate={{ scale: circleScale * 0.98 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              />
+              {/* Main breathing circle */}
               <motion.div
                 className="absolute inset-0 rounded-full"
                 style={{
-                  background: `radial-gradient(circle, ${SAGE}40, ${SAGE}10)`,
+                  background: `radial-gradient(circle, ${SAGE}40, ${AMETHYST}15)`,
                   border: `2px solid ${SAGE}60`,
                 }}
                 animate={{ scale: circleScale }}
@@ -134,7 +166,7 @@ export default function Breathwork({ onDone, onSkip, label, patternId }: Breathw
               onClick={handleDone}
               className="mt-6 px-6 py-2.5 rounded-full text-white text-sm font-semibold transition-all hover:scale-105"
               style={{
-                background: `linear-gradient(135deg, ${SAGE}, ${SAGE}cc)`,
+                background: `linear-gradient(135deg, ${SAGE}, ${AMETHYST}cc)`,
                 boxShadow: `0 2px 12px ${SAGE}30`,
               }}
             >

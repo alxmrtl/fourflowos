@@ -1,6 +1,13 @@
-import { BreathworkPattern, AmbientSound, CuratedPlaylistItem } from './types';
+import { BreathworkPattern, AudioOption } from './types';
 
+// Brand pillar colors
+export const CORAL = '#FF6F61';
 export const SAGE = '#6BA292';
+export const STEEL = '#5B84B1';
+export const AMETHYST = '#7A4DA4';
+
+// Four-pillar gradient
+export const FOUR_PILLAR_GRADIENT = `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})`;
 
 export const TIMER_OPTIONS = [
   { label: '25 min', minutes: 25 },
@@ -12,8 +19,9 @@ export const TIMER_OPTIONS = [
 export const BREATHWORK_PATTERNS: BreathworkPattern[] = [
   {
     id: 'box',
-    name: 'Box Breathing',
-    description: '4-4-4-4 — Equal inhale, hold, exhale, hold',
+    name: 'Box 4-4-4-4',
+    benefit: 'Calm & Center',
+    description: 'Equal inhale, hold, exhale, hold',
     phases: [
       { label: 'Inhale', durationMs: 4000 },
       { label: 'Hold', durationMs: 4000 },
@@ -24,8 +32,9 @@ export const BREATHWORK_PATTERNS: BreathworkPattern[] = [
   },
   {
     id: '478',
-    name: '4-7-8 Relaxing',
-    description: '4-7-8 — Deep calming breath',
+    name: '4-7-8 Pattern',
+    benefit: 'Deep Relaxation',
+    description: 'Extended exhale calms the nervous system',
     phases: [
       { label: 'Inhale', durationMs: 4000 },
       { label: 'Hold', durationMs: 7000 },
@@ -35,8 +44,9 @@ export const BREATHWORK_PATTERNS: BreathworkPattern[] = [
   },
   {
     id: 'coherent',
-    name: 'Coherent Breathing',
-    description: '5.5-5.5 — Heart-brain coherence',
+    name: '5.5-5.5 Rhythm',
+    benefit: 'Heart Coherence',
+    description: 'Syncs heart rate variability',
     phases: [
       { label: 'Inhale', durationMs: 5500 },
       { label: 'Exhale', durationMs: 5500 },
@@ -45,8 +55,9 @@ export const BREATHWORK_PATTERNS: BreathworkPattern[] = [
   },
   {
     id: 'energize',
-    name: 'Energizing Breath',
-    description: '2-2 — Quick energizing cycles',
+    name: '2-2 Rapid Cycles',
+    benefit: 'Quick Energy',
+    description: 'Fast breathing to boost alertness',
     phases: [
       { label: 'Inhale', durationMs: 2000 },
       { label: 'Exhale', durationMs: 2000 },
@@ -55,17 +66,13 @@ export const BREATHWORK_PATTERNS: BreathworkPattern[] = [
   },
 ];
 
-export const AMBIENT_SOUNDS: AmbientSound[] = [
-  { id: 'white-noise', name: 'White Noise', icon: '〰️' },
-  { id: 'rain', name: 'Rain', icon: '🌧' },
-  { id: 'binaural', name: 'Binaural Beats', icon: '🎧' },
-];
-
-export const CURATED_PLAYLISTS: CuratedPlaylistItem[] = [
-  { id: 'lofi-1', title: 'Lofi Focus Beats', youtubeId: 'jfKfPfyJRdk' },
-  { id: 'ambient-1', title: 'Deep Focus Ambient', youtubeId: 'aLqc-rFTCD0' },
-  { id: 'nature-1', title: 'Forest Sounds', youtubeId: 'xNN7iTA57jM' },
-  { id: 'classical-1', title: 'Classical Focus', youtubeId: 'WPni755-Krg' },
+export const AUDIO_OPTIONS: AudioOption[] = [
+  { id: 'white-noise', title: 'White Noise', subtitle: 'Broadband masking', source: 'generated' },
+  { id: 'binaural', title: 'Binaural Beats', subtitle: 'Theta brainwave entrainment', source: 'generated' },
+  { id: 'rain', title: 'Rain & Thunder', subtitle: 'Natural rain ambience', source: 'youtube', youtubeId: 'mPZkdNFkNps' },
+  { id: 'lofi', title: 'Lofi Beats', subtitle: 'Chill instrumental hip-hop', source: 'youtube', youtubeId: 'jfKfPfyJRdk' },
+  { id: 'nature', title: 'Forest Ambience', subtitle: 'Birds and flowing water', source: 'youtube', youtubeId: 'xNN7iTA57jM' },
+  { id: 'classical', title: 'Classical Focus', subtitle: 'Bach, Debussy, Satie', source: 'youtube', youtubeId: 'WPni755-Krg' },
 ];
 
 export const STRUGGLE_PHASE_RATIO = 0.25;
