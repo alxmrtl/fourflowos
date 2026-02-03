@@ -34,7 +34,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Connect Section */}
+      {/* The Project Section */}
       <section className="relative py-16 md:py-24 bg-[#050505]">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
@@ -45,7 +45,25 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="pt-8">
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-6">The Project</h2>
+              <div className="space-y-5 text-gray-300 leading-relaxed">
+                <p>
+                  FourFlowOS started as a side project that wouldn&apos;t leave me alone. For years I&apos;d been pulling threads from different places—psychology research, self-improvement books, contemplative traditions, flow science—and I kept noticing the same patterns showing up everywhere. Different words, same underlying structure.
+                </p>
+                <p>
+                  I went deep on flow states specifically, including training with the Flow Research Collective, because flow seemed like the clearest signal that something was working. When you&apos;re in flow, you&apos;re not forcing it. You&apos;re aligned with something.
+                </p>
+                <p>
+                  The meta-framework comes from Jamie Combs&apos; FourGames—a way of looking at life through four interconnected &quot;games&quot; that we&apos;re all playing: what&apos;s happening in your body and mind (Self), what environment surrounds you (Space), what larger story you&apos;re part of (Story), and what actually matters to you (Spirit). Each one has its own rules and dynamics. When I discovered it, flow fit perfectly into that lens. Get the four games working together and flow becomes less rare.
+                </p>
+                <p className="text-gray-400">
+                  This is still a work in progress. I build it because I use it.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-8 border-t border-white/10">
               <h3 className="text-xl font-semibold text-white mb-4">Let&apos;s Connect</h3>
               <p className="text-gray-400 mb-6">
                 I&apos;m building this in public and sharing what I learn along the way.
