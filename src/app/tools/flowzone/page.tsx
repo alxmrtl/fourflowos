@@ -6,9 +6,5 @@ export const metadata = {
 };
 
 export default function FlowZonePage() {
-  return (
-    <div className="fixed inset-0 bg-[#0a0a0a] overflow-auto">
-      <FlowZone />
-    </div>
-  );
+  return <FlowZone />;
 }

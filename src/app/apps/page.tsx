@@ -1,118 +1,256 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getAllApps, App } from '@/data/apps';
+import { DIMENSIONS } from '@/data/framework';
 import LandingNav from '@/components/landing/LandingNav';
 
-function AppCard({ app, index }: { app: App; index: number }) {
+function PlatformBadge({ platform }: { platform: string }) {
+  return (
+    <span className="px-2 py-0.5 bg-white/10 rounded text-[10px] text-gray-400 uppercase font-semibold tracking-wider">
+      {platform}
+    </span>
+  );
+}
+
+function DimensionPills({ pillars }: { pillars: App['relatedPillars'] }) {
+  return (
+    <div className="flex gap-1.5">
+      {pillars.map((p) => {
+        const dim = DIMENSIONS[p];
+        if (!dim) return null;
+        return (
+          <div
+            key={p}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full"
+            style={{ background: `${dim.color}15` }}
+          >
+            <Image
+              src={dim.icon}
+              alt={dim.name}
+              width={14}
+              height={14}
+              className="opacity-80"
+            />
+            <span className="text-[10px] font-medium" style={{ color: dim.color }}>
+              {dim.name}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function AppCard({ app, index, onClick, muted }: { app: App; index: number; onClick: () => void; muted?: boolean }) {
+  const isActive = !app.inDevelopment;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
+      className={`group block w-full text-left rounded-2xl overflow-hidden transition-all duration-300 ${
+        muted
+          ? 'bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/10'
+          : 'bg-white/[0.06] border border-white/15 hover:bg-white/10 hover:border-white/25'
+      }`}
     >
-      <Link
-        href={`/apps/${app.id}`}
-        className="group block bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300"
-      >
-        {/* Gradient Header */}
-        <div
-          className={`h-32 bg-gradient-to-r ${app.gradient} relative overflow-hidden`}
-        >
-          <motion.div
-            className="absolute inset-0 opacity-30"
-            animate={{
-              backgroundPosition: ['0% 0%', '100% 100%'],
-            }}
-            transition={{ duration: 10, repeat: Infinity, repeatType: 'reverse' }}
-            style={{
-              backgroundImage: 'radial-gradient(circle at center, white 0%, transparent 70%)',
-              backgroundSize: '200% 200%',
-            }}
-          />
-          <div className="absolute bottom-4 left-4">
-            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg overflow-hidden">
-              <Image
-                src={app.icon}
-                alt={app.name}
-                width={64}
-                height={64}
-                className="object-cover"
-              />
-            </div>
+      {/* Gradient Header Strip */}
+      <div className={`h-20 bg-gradient-to-r ${app.gradient} relative overflow-hidden`}>
+        <div className={`absolute inset-0 ${muted ? 'bg-black/50' : 'bg-black/20'}`} />
+        <div className="absolute bottom-3 left-4">
+          <div className={`w-12 h-12 rounded-xl backdrop-blur-sm shadow-lg overflow-hidden flex-shrink-0 ${muted ? 'opacity-60' : ''}`} style={{ background: app.id === 'curiosity-explorer' ? '#333333' : 'rgba(255,255,255,0.2)' }}>
+            <Image src={app.icon} alt={app.name} width={48} height={48} className="object-cover" />
           </div>
-          {app.inDevelopment && (
-            <div className="absolute top-4 right-4 px-3 py-1 bg-black/30 backdrop-blur-sm rounded-full text-white text-xs font-medium flex items-center gap-1.5">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              In Development
-            </div>
-          )}
         </div>
+      </div>
 
-        {/* Content */}
-        <div className="p-6">
-          <div className="flex items-start justify-between gap-4 mb-3">
-            <h3 className="text-xl font-bold text-white group-hover:text-gray-200 transition-colors">
-              {app.name}
-            </h3>
-            <div className="flex gap-1">
-              {app.platforms.map((platform) => (
-                <span
-                  key={platform}
-                  className="px-2 py-1 bg-white/10 rounded text-xs text-gray-400 uppercase"
-                >
-                  {platform}
-                </span>
-              ))}
-            </div>
+      {/* Content */}
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <h3 className={`text-lg font-bold transition-colors ${muted ? 'text-gray-400' : 'text-white'}`}>
+            {app.name}
+          </h3>
+          <div className="flex gap-1 flex-shrink-0">
+            {app.platforms.map((p) => (
+              <PlatformBadge key={p} platform={p} />
+            ))}
           </div>
-          <p className="text-gray-500 text-sm mb-4">{app.tagline}</p>
-          <p className="text-gray-400 text-sm line-clamp-2">{app.description}</p>
+        </div>
+        <p className={`text-[13px] font-medium mb-3 ${muted ? 'text-gray-600' : ''}`} style={!muted ? { color: app.accentColor } : undefined}>{app.tagline}</p>
 
-          {/* Features Preview */}
-          <div className="mt-4 pt-4 border-t border-white/10">
-            <div className="flex flex-wrap gap-2">
-              {app.features.slice(0, 3).map((feature, i) => (
-                <span
-                  key={i}
-                  className="px-2 py-1 bg-white/5 rounded text-xs text-gray-500"
-                >
-                  {feature.title}
-                </span>
-              ))}
-              {app.features.length > 3 && (
-                <span className="px-2 py-1 text-xs text-gray-600">
-                  +{app.features.length - 3} more
-                </span>
-              )}
-            </div>
-          </div>
+        <p className={`text-sm leading-relaxed mb-4 ${muted ? 'text-gray-600' : 'text-gray-400'}`}>{app.description}</p>
 
-          {/* Arrow */}
-          <div className="mt-4 flex items-center text-sm text-gray-500 group-hover:text-white transition-colors">
-            <span>Learn more</span>
-            <svg
-              className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+        {/* Dimension pills */}
+        <DimensionPills pillars={app.relatedPillars} />
+
+        {/* Actions */}
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            onClick={onClick}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              muted
+                ? 'bg-white/5 text-gray-500 hover:bg-white/10 hover:text-gray-300'
+                : 'bg-white/10 text-gray-300 hover:bg-white/15 hover:text-white'
+            }`}
+          >
+            More Info
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
+          </button>
+          {isActive ? (
+            <a
+              href={app.webUrl || app.appStoreUrl || '#'}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-black hover:bg-gray-100 transition-colors"
+            >
+              Open
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          ) : (
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 text-gray-600 cursor-not-allowed">
+              Coming Soon
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function AppModal({ app, onClose }: { app: App; onClose: () => void }) {
+  const isActive = !app.inDevelopment;
+  const pillarData = app.relatedPillars.map((p) => {
+    const dim = DIMENSIONS[p];
+    return dim ? { name: dim.name, color: dim.color, icon: dim.icon } : null;
+  }).filter(Boolean) as { name: string; color: string; icon: string }[];
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <motion.div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      />
+
+      <motion.div
+        className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto bg-[#141414] border border-white/10 rounded-3xl shadow-2xl"
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+        >
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div className={`h-28 bg-gradient-to-r ${app.gradient} relative overflow-hidden rounded-t-3xl`}>
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute bottom-4 left-6">
+            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg overflow-hidden">
+              <Image src={app.icon} alt={app.name} width={64} height={64} className="object-cover" />
+            </div>
           </div>
         </div>
-      </Link>
+
+        <div className="p-6">
+          <div className="flex items-start justify-between gap-3 mb-1">
+            <h2 className="text-2xl font-bold text-white">{app.name}</h2>
+            <div className="flex gap-1 flex-shrink-0 mt-1">
+              {app.platforms.map((p) => (
+                <PlatformBadge key={p} platform={p} />
+              ))}
+            </div>
+          </div>
+          <p className="text-sm font-medium mb-4" style={{ color: app.accentColor }}>{app.tagline}</p>
+
+          <p className="text-gray-400 text-sm leading-relaxed mb-6 whitespace-pre-line">{app.fullDescription}</p>
+
+          {/* Features */}
+          <div className="mb-6">
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Features</h4>
+            <ul className="space-y-2">
+              {app.features.map((feature, i) => (
+                <li key={i} className="flex items-start gap-3 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5" style={{ background: app.accentColor }} />
+                  <div>
+                    <span className="text-gray-200 font-medium">{feature.title}</span>
+                    <span className="text-gray-500"> — {feature.description}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Pillars */}
+          {pillarData.length > 0 && (
+            <div className="mb-6">
+              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Dimensions</h4>
+              <div className="flex gap-2">
+                {pillarData.map((p) => (
+                  <span
+                    key={p.name}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium"
+                    style={{ background: `${p.color}20`, color: p.color }}
+                  >
+                    <Image src={p.icon} alt={p.name} width={14} height={14} />
+                    {p.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* CTA */}
+          {isActive ? (
+            <a
+              href={app.webUrl || app.appStoreUrl || '#'}
+              className="inline-flex items-center justify-center w-full gap-2 px-6 py-3 bg-white text-black font-semibold rounded-full hover:bg-gray-100 transition-colors"
+            >
+              Open
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          ) : (
+            <button
+              disabled
+              className="inline-flex items-center justify-center w-full gap-2 px-6 py-3 bg-white/5 border border-white/10 text-gray-500 font-semibold rounded-full cursor-not-allowed"
+            >
+              Coming Soon
+            </button>
+          )}
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
 
 export default function AppsPage() {
   const apps = getAllApps();
+  const [selectedApp, setSelectedApp] = useState<App | null>(null);
+
+  const active = apps.filter((a) => !a.inDevelopment);
+  const inDev = apps.filter((a) => a.inDevelopment);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -140,44 +278,31 @@ export default function AppsPage() {
         </div>
       </section>
 
-      {/* Tools Section */}
+      {/* Active Section */}
       <section className="pb-12 px-6">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">Interactive Tools</h2>
-          <Link
-            href="/dimension/spirit/key/ignited-curiosity#curiosity-explorer"
-            className="group block p-6 rounded-2xl bg-gradient-to-br from-[#7A4DA4]/10 to-transparent border border-[#7A4DA4]/20 hover:border-[#7A4DA4]/40 transition-all duration-300 max-w-2xl"
-          >
-            <div className="flex items-start gap-5">
-              <div className="w-12 h-12 rounded-xl bg-[#7A4DA4]/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-6 h-6 text-[#7A4DA4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-white mb-1 group-hover:translate-x-1 transition-transform">Curiosity Explorer</h3>
-                <p className="text-sm text-[#7A4DA4] font-medium mb-2">Spirit &middot; Ignited Curiosity</p>
-                <p className="text-gray-400 text-sm">Surface your curiosities and find unique intersections where your flow lives.</p>
-              </div>
-              <svg className="w-5 h-5 text-[#7A4DA4] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </Link>
-        </div>
-      </section>
-
-      {/* Apps Grid */}
-      <section className="pb-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">Apps</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {apps.map((app, index) => (
-              <AppCard key={app.id} app={app} index={index} />
+          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-6">Active</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {active.map((app, index) => (
+              <AppCard key={app.id} app={app} index={index} onClick={() => setSelectedApp(app)} />
             ))}
           </div>
         </div>
       </section>
+
+      {/* Coming Soon Section */}
+      {inDev.length > 0 && (
+        <section className="pb-20 px-6">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-6">Coming Soon</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {inDev.map((app, index) => (
+                <AppCard key={app.id} app={app} index={index + active.length} onClick={() => setSelectedApp(app)} muted />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="pb-20 px-6">
@@ -193,26 +318,15 @@ export default function AppsPage() {
               Ready to Enter Your Flow State?
             </h2>
             <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-              Start with any app that resonates with you. Each is designed to stand alone
+              Start with any tool that resonates with you. Each is designed to stand alone
               while working together as part of the FourFlowOS ecosystem.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="#"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-[#0a0a0a] font-semibold rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                </svg>
-                App Store
-              </Link>
-              <Link
-                href="/#framework"
-                className="inline-flex items-center justify-center px-6 py-3 border border-white/20 text-white font-semibold rounded-full hover:bg-white/5 transition-colors"
-              >
-                Learn the Framework
-              </Link>
-            </div>
+            <Link
+              href="/#framework"
+              className="inline-flex items-center justify-center px-6 py-3 border border-white/20 text-white font-semibold rounded-full hover:bg-white/5 transition-colors"
+            >
+              Learn the Framework
+            </Link>
           </motion.div>
         </div>
       </section>
@@ -225,19 +339,20 @@ export default function AppsPage() {
               &copy; {new Date().getFullYear()} FourFlowOS. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-sm">
-              <Link href="/privacy" className="text-gray-500 hover:text-white transition-colors">
-                Privacy
-              </Link>
-              <Link href="/terms" className="text-gray-500 hover:text-white transition-colors">
-                Terms
-              </Link>
-              <Link href="/support" className="text-gray-500 hover:text-white transition-colors">
-                Support
-              </Link>
+              <Link href="/privacy" className="text-gray-500 hover:text-white transition-colors">Privacy</Link>
+              <Link href="/terms" className="text-gray-500 hover:text-white transition-colors">Terms</Link>
+              <Link href="/support" className="text-gray-500 hover:text-white transition-colors">Support</Link>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {selectedApp && (
+          <AppModal app={selectedApp} onClose={() => setSelectedApp(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

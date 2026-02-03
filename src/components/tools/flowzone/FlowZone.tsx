@@ -2,8 +2,6 @@
 
 import { useState, useCallback, useRef, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useFlowStore } from './useFlowStore';
 import Breathwork from './Breathwork';
 import FlowSession from './FlowSession';
@@ -213,7 +211,7 @@ export default function FlowZone() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4">
+      <header className="flex items-center justify-between px-6 py-4 pl-[68px]">
         <h1
           className="text-lg font-bold tracking-tight"
           style={{
@@ -224,19 +222,7 @@ export default function FlowZone() {
         >
           FlowZone
         </h1>
-        <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-xs text-gray-600 group-hover:text-gray-400 transition-colors hidden sm:block">
-            FourFlow<span className="text-gray-700 group-hover:text-gray-500">OS</span>
-          </span>
-          <div className="relative w-6 h-6 opacity-40 group-hover:opacity-70 transition-opacity">
-            <Image
-              src="/assets/LOGOS/FOURFLOW - MAIN LOGO.png"
-              alt="FourFlowOS"
-              fill
-              className="object-contain"
-            />
-          </div>
-        </Link>
+        <div />
       </header>
 
       {/* Four-pillar gradient line */}

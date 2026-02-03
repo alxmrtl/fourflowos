@@ -4,6 +4,7 @@ export interface App {
   id: string;
   name: string;
   tagline: string;
+  summary: string;
   description: string;
   fullDescription: string;
   icon: string;
@@ -24,22 +25,58 @@ export interface App {
 }
 
 export const APPS: Record<string, App> = {
+  'curiosity-explorer': {
+    id: 'curiosity-explorer',
+    name: 'Curiosity Explorer',
+    tagline: 'Discover Where Your Flow Lives',
+    summary: 'Map your curiosities to find where flow lives',
+    description: 'Curiosity is free focus. When something genuinely fascinates you, concentration comes naturally—and that\'s where flow starts. This tool helps you find your curiosity stacks: the intersections between your interests that reveal where your flow lives.',
+    fullDescription: `A guided braindump tool that helps you articulate what genuinely fascinates you—then visualizes the unexpected intersections between those curiosities.
+
+The result is a map of your unique intersection points—where multiple curiosities overlap. These convergence zones are where flow states naturally emerge.
+
+Use it to set your vision, choose projects, or simply understand yourself better.`,
+    icon: '/assets/LOGOS/IGNITED CURIOSITY.png',
+    screenshots: [],
+    platforms: ['web'],
+    webUrl: '/tools/curiosity-explorer',
+    features: [
+      {
+        title: 'Guided Braindump',
+        description: 'Structured prompts help you surface curiosities you didn\'t know you had.',
+      },
+      {
+        title: 'Intersection Mapping',
+        description: 'Visualize where your curiosities overlap to find your unique flow zones.',
+      },
+      {
+        title: 'Floating Pool',
+        description: 'Watch your curiosities float and connect in an interactive visualization.',
+      },
+      {
+        title: 'Connection Lines',
+        description: 'See the threads between your interests that reveal deeper patterns.',
+      },
+    ],
+    gradient: 'from-[#7A4DA4] to-[#5B84B1]',
+    accentColor: '#7A4DA4',
+    relatedPillars: ['spirit'],
+    inDevelopment: false,
+  },
   flowzone: {
     id: 'flowzone',
     name: 'FlowZone',
-    tagline: 'Enter Your Flow State',
-    description: 'A focus timer designed to help you enter and sustain flow states through breathwork, Focus Reps tracking, and ambient encouragement during the Struggle Phase.',
-    fullDescription: `FlowZone is more than a timer—it's a focus training system built on the science of flow states.
+    tagline: 'Your Flow-State Workspace',
+    summary: 'Build concentration strength through Focus Reps',
+    description: 'Everything you need to get stuff done, in one place. Set your intention, start a pomodoro timer, tune your nervous system with breathwork and binaural beats, then track Focus Reps to build the meta-skill of staying on task over time.',
+    fullDescription: `FlowZone is a focus training system built into the FourFlowOS website. It uses Focus Reps—pressing a button each time you choose focus over distraction—to make concentration visible and measurable.
 
-The app introduces Focus Reps: each time distraction pulls at your attention but you choose to return to focus, you press the button. This makes the invisible work of maintaining focus visible and measurable.
+The Struggle Phase (the first 25% of any session) gets ambient encouragement to help you push through. Integrated breathwork patterns help you transition into focused presence.
 
-FlowZone recognizes the Struggle Phase—the first 25% of any focus session where starting is hardest. During this phase, the app provides gentle ambient encouragement to help you push through.
-
-Integrated breathwork exercises help you transition from scattered thinking to focused presence. Choose from various patterns like Box Breathing, 4-7-8, or Coherent Breathing to find what works best for you.`,
+Goal linking connects sessions to your broader purpose, and statistics track your focus trends over time.`,
     icon: '/assets/apps/flowzone-icon.png',
     screenshots: [],
-    platforms: ['ios', 'web'],
-    appStoreUrl: '#',
+    platforms: ['web'],
     webUrl: '/tools/flowzone',
     features: [
       {
@@ -71,20 +108,17 @@ Integrated breathwork exercises help you transition from scattered thinking to f
     accentColor: '#FF6F61',
     relatedPillars: ['self', 'space'],
     version: '1.0',
-    inDevelopment: true,
+    inDevelopment: false,
   },
   flowhabits: {
     id: 'flowhabits',
     name: 'FlowHabits',
     tagline: 'Build Flow-Aligned Habits',
-    description: 'A habit tracker organized around the Four Pillars—SELF, SPACE, STORY, SPIRIT—helping you build balanced routines that support your flow state.',
-    fullDescription: `FlowHabits helps you build habits aligned with the four dimensions of flow: SELF (inner mastery), SPACE (environment design), STORY (direction setting), and SPIRIT (inner drive).
+    summary: 'Balance your habits across all four pillars',
+    description: 'Standard habit trackers treat every habit the same. FlowHabits organizes yours by Self, Space, Story, and Spirit—so you can see which dimensions of your life are thriving and which need attention. Gentle streaks, no guilt.',
+    fullDescription: `Build habits organized by the four pillars—SELF, SPACE, STORY, SPIRIT—with visual balance indicators showing which dimensions need attention.
 
-Each habit you create can be assigned to a pillar, helping you maintain balance across all dimensions of life. Visual indicators show you which areas are thriving and which need attention.
-
-The app tracks streaks, completion rates, and provides gentle accountability without guilt. Miss a day? The app helps you understand why and get back on track rather than making you feel bad.
-
-Simple, focused, and designed to help you build the foundational habits that enable flow states.`,
+Tracks streaks and completion rates with gentle accountability. Miss a day? It helps you get back on track without guilt. All data stays on-device.`,
     icon: '/assets/apps/flowhabits-icon.png',
     screenshots: [],
     platforms: ['ios'],
@@ -124,15 +158,12 @@ Simple, focused, and designed to help you build the foundational habits that ena
   flowread: {
     id: 'flowread',
     name: 'FlowRead',
-    tagline: 'Speed Reading Trainer',
-    description: 'Train your reading speed with flow-inducing exercises. RSVP, word chunking, and progressive speed training to expand your reading capacity.',
-    fullDescription: `FlowRead uses proven techniques to help you read faster while maintaining comprehension.
+    tagline: 'Read Faster, Absorb More',
+    summary: 'Train reading speed with flow-inducing drills',
+    description: 'Slow reading kills momentum. FlowRead uses RSVP and word chunking to train your eyes to take in more, faster—until reading itself becomes a flow state. Progressive speed adapts as you improve.',
+    fullDescription: `RSVP (Rapid Serial Visual Presentation) and word chunking exercises train you to read faster while maintaining comprehension. Progressive speed training gradually increases your pace as your capacity grows.
 
-The app employs RSVP (Rapid Serial Visual Presentation) to train your eyes and brain to process words faster by eliminating subvocalization and reducing eye movement.
-
-Word chunking exercises help you expand your visual span, taking in more words at once. Progressive speed training gradually increases your pace as your capacity grows.
-
-Regular practice with FlowRead helps you enter a reading flow state where words seem to flow effortlessly into understanding.`,
+Regular practice helps you enter a reading flow state where words process effortlessly.`,
     icon: '/assets/apps/flowread-icon.png',
     screenshots: [],
     platforms: ['web'],
@@ -171,15 +202,12 @@ Regular practice with FlowRead helps you enter a reading flow state where words 
   flowrep: {
     id: 'flowrep',
     name: 'FlowRep',
-    tagline: 'Daily Exercise Tracker',
-    description: 'A minimalist exercise rep tracker that helps you build consistent movement habits. Track push-ups, squats, pull-ups and more with daily targets and streak tracking.',
-    fullDescription: `FlowRep is a focused exercise tracker built around the philosophy of accumulating reps throughout the day rather than formal workout sessions.
+    tagline: 'Movement Reps, All Day',
+    summary: 'Accumulate exercise reps throughout your day',
+    description: 'You don\'t need a gym session to stay active. FlowRep lets you log push-ups, squats, and pull-ups throughout the day with a single tap. Set daily targets, track streaks, build the body dimension of Self.',
+    fullDescription: `Accumulate exercise reps throughout the day rather than formal workout sessions. Set daily targets, log with a single tap, and track streaks of consecutive days hitting your goals.
 
-Set daily targets for exercises like push-ups, squats, chin-ups, and pull-ups. Throughout the day, log your reps with a single tap. The app tracks your progress toward daily goals and celebrates when you hit your targets.
-
-Streak tracking keeps you motivated by showing consecutive days of hitting your targets. The minimalist interface gets out of the way so you can focus on movement.
-
-Built for people who want to build consistent exercise habits without the complexity of traditional workout apps.`,
+Minimalist by design—built for consistent movement habits without traditional workout app complexity.`,
     icon: '/assets/apps/flowrep-icon.png',
     screenshots: [],
     platforms: ['ios'],
