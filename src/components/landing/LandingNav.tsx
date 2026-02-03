@@ -100,16 +100,6 @@ export default function LandingNav() {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block">
-            <Link
-              href="/apps"
-              className="px-5 py-2.5 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white text-sm font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
-            >
-              Get the Apps
-            </Link>
-          </div>
-
           {/* Mobile Menu Button */}
           <button
             className="lg:hidden relative w-10 h-10 flex items-center justify-center"
