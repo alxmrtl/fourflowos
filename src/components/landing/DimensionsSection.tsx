@@ -229,7 +229,7 @@ export default function DimensionsSection() {
                         </p>
 
                         {/* Audience-aware description */}
-                        <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+                        <p className="text-gray-400 text-xs mb-3">
                           {audienceCopy ? audienceCopy.description : dimension.meta}
                         </p>
 

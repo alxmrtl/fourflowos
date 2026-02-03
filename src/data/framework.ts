@@ -7,42 +7,42 @@ export const DIMENSION_AUDIENCE_COPY: Record<DimensionType, {
 }> = {
   self: {
     individual: {
-      tagline: 'Your inner state',
-      description: 'Tune YOUR emotions, mind, and body as flow signals. Learn to read your internal dashboard and navigate directly to your flow channel.',
+      tagline: 'How you feel right now',
+      description: 'Tune into what your body, mind, and emotions are telling you. They\'re the compass that points toward flow.',
     },
     leader: {
-      tagline: 'Team inner states',
-      description: 'Help your TEAM tune their emotions, minds, and bodies. When you understand flow signals, you can create conditions where people naturally find their optimal state.',
+      tagline: 'How your team feels',
+      description: 'Understand the emotional and physical signals your team carries. Then design conditions where they naturally reach their best state.',
     },
   },
   space: {
     individual: {
-      tagline: 'Your environment',
-      description: 'Design YOUR environment for automatic focus. Set up spaces, systems, and tools that remove friction so flow becomes the default.',
+      tagline: 'Where and how you work',
+      description: 'Set up your world so focus happens naturally. The right space, systems, and tools make flow the path of least resistance.',
     },
     leader: {
-      tagline: 'Team environment',
-      description: 'Design TEAM environments that amplify flow. Create spaces and systems where your people do their best work without willpower battles.',
+      tagline: 'Where your team works',
+      description: 'Your team\'s environment shapes their performance. Design spaces, systems, and tools where great work happens naturally.',
     },
   },
   story: {
     individual: {
-      tagline: 'Your direction',
-      description: 'Craft YOUR narrative, mission, and role. Transform effort into meaning so challenges feel like adventures, not obstacles.',
+      tagline: 'What you\'re building',
+      description: 'Get clear on your mission, own your role, and see how it all connects across time.',
     },
     leader: {
-      tagline: 'Team direction',
-      description: 'Shape compelling TEAM narratives and clear missions. Help people find meaning in their work and understand how their role contributes to something larger.',
+      tagline: 'What your team is building',
+      description: 'Build mission clarity and role ownership. Empowered teams generate their own momentum.',
     },
   },
   spirit: {
     individual: {
-      tagline: 'Your core',
-      description: 'Connect with YOUR values, vision, and curiosity. Align with what truly drives you so energy and direction become effortless.',
+      tagline: 'Your deepest motivation',
+      description: 'Know what you value, where you\'re headed, and what makes you curious. That alignment is where effortless energy lives.',
     },
     leader: {
-      tagline: 'Team purpose',
-      description: 'Cultivate shared VALUES and collective vision. Create alignment that makes team effort feel purposeful and intrinsically motivated.',
+      tagline: 'What drives your team',
+      description: 'Root your team in shared values and real vision. Alignment replaces pressure with intrinsic drive.',
     },
   },
 };
