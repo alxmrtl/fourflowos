@@ -35,15 +35,25 @@ export default function ContactPage() {
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          access_key: '73d66ffb-9a88-4841-8f05-a48b0219288f',
+          name: formData.name,
+          email: formData.email,
+          subject: `FourFlowOS Contact: ${formData.subject}`,
+          message: formData.message,
+          from_name: 'FourFlowOS Website',
+        }),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+
+      if (result.success) {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
