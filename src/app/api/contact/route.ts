@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -17,9 +19,8 @@ export async function POST(request: NextRequest) {
     const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
 
     if (!accessKey) {
-      console.error('WEB3FORMS_ACCESS_KEY is not configured');
       return NextResponse.json(
-        { error: 'Contact form is not configured' },
+        { error: 'Contact form is not configured', debug: 'Missing API key' },
         { status: 500 }
       );
     }
@@ -46,16 +47,14 @@ export async function POST(request: NextRequest) {
     if (result.success) {
       return NextResponse.json({ success: true });
     } else {
-      console.error('Web3Forms error:', result);
       return NextResponse.json(
-        { error: 'Failed to send message' },
+        { error: 'Failed to send message', debug: result },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error('Contact form error:', error);
     return NextResponse.json(
-      { error: 'An unexpected error occurred' },
+      { error: 'An unexpected error occurred', debug: String(error) },
       { status: 500 }
     );
   }
