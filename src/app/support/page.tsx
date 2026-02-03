@@ -112,7 +112,7 @@ export default function SupportPage() {
             We typically respond within 24-48 hours on business days.
           </p>
           <a
-            href="mailto:support@fourflow.app"
+            href="mailto:fourflowos@gmail.com"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -277,7 +277,7 @@ export default function SupportPage() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <a
-            href="mailto:support@fourflow.app"
+            href="mailto:fourflowos@gmail.com"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-[#0a0a0a] font-semibold rounded-full hover:bg-gray-100 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

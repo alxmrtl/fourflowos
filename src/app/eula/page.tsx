@@ -236,10 +236,10 @@ export default function EULAPage() {
         </p>
         <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
           <a
-            href="mailto:support@fourflow.app"
+            href="mailto:fourflowos@gmail.com"
             className="text-[#7A4DA4] hover:text-[#9A6DC4] transition-colors font-medium"
           >
-            support@fourflow.app
+            fourflowos@gmail.com
           </a>
         </div>
       </LegalSection>

@@ -107,7 +107,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:support@fourflow.app"
+                  href="mailto:fourflowos@gmail.com"
                   className="text-gray-500 hover:text-white transition-colors"
                 >
                   Contact Support
