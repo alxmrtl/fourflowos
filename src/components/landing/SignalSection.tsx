@@ -124,221 +124,246 @@ function EmblemAnimation() {
   );
 }
 
-// CIRCULAR FREQUENCY ANIMATION - Four arcs with center text
-type TuningPhase = 'scramble' | 'spirit' | 'story' | 'space' | 'self' | 'aligned';
+// CIRCULAR FREQUENCY ANIMATION - Frequency ring with outer arrows
+type AnimationPhase = 'scramble' | 'spirit' | 'story' | 'space' | 'self' | 'aligned';
+
+const DIMENSIONS = [
+  { id: 'spirit', name: 'SPIRIT', color: '#7A4DA4' },
+  { id: 'story', name: 'STORY', color: '#5B84B1' },
+  { id: 'space', name: 'SPACE', color: '#6BA292' },
+  { id: 'self', name: 'SELF', color: '#FF6F61' },
+];
+
+// Clockwise relationships: Spirit → Story → Space → Self → Spirit
+const RELATIONSHIPS = [
+  { from: 'spirit', to: 'story', word: 'INSPIRES' },
+  { from: 'story', to: 'space', word: 'GUIDES' },
+  { from: 'space', to: 'self', word: 'SUPPORTS' },
+  { from: 'self', to: 'spirit', word: 'HONORS' },
+];
 
 function CircularFrequencyAnimation({ inView }: { inView: boolean }) {
-  const [phase, setPhase] = useState<TuningPhase>('scramble');
+  const [phase, setPhase] = useState<AnimationPhase>('scramble');
+  const [tick, setTick] = useState(0);
 
+  // Animation cycle
   useEffect(() => {
     if (!inView) return;
 
     const cycle = () => {
       setPhase('scramble');
-      setTimeout(() => setPhase('spirit'), 1500);
-      setTimeout(() => setPhase('story'), 3000);
-      setTimeout(() => setPhase('space'), 4500);
-      setTimeout(() => setPhase('self'), 6000);
-      setTimeout(() => setPhase('aligned'), 7500);
+      setTimeout(() => setPhase('spirit'), 1200);
+      setTimeout(() => setPhase('story'), 2400);
+      setTimeout(() => setPhase('space'), 3600);
+      setTimeout(() => setPhase('self'), 4800);
+      setTimeout(() => setPhase('aligned'), 6000);
     };
 
     cycle();
-    const interval = setInterval(cycle, 10000);
+    const interval = setInterval(cycle, 9000);
     return () => clearInterval(interval);
   }, [inView]);
 
-  const phaseOrder: TuningPhase[] = ['scramble', 'spirit', 'story', 'space', 'self', 'aligned'];
+  // Tick for frequency animation
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 150);
+    return () => clearInterval(interval);
+  }, []);
 
-  const isFrequencyTuned = (tuneAt: TuningPhase) => {
-    const currentIndex = phaseOrder.indexOf(phase);
-    const tuneIndex = phaseOrder.indexOf(tuneAt);
-    return currentIndex >= tuneIndex;
+  const ORDER = ['spirit', 'story', 'space', 'self'];
+
+  const isDimensionTuned = (dimId: string) => {
+    if (phase === 'scramble') return false;
+    if (phase === 'aligned') return true;
+    const currentIdx = ORDER.indexOf(phase);
+    const dimIdx = ORDER.indexOf(dimId);
+    return dimIdx <= currentIdx;
   };
 
-  // Dimensions with their positions (clockwise from top: Spirit, Story, Space, Self)
-  const dimensions = [
-    { name: 'SPIRIT', tuneAt: 'spirit' as TuningPhase, color: '#7A4DA4', position: 'top', angle: -90 },
-    { name: 'STORY', tuneAt: 'story' as TuningPhase, color: '#5B84B1', position: 'right', angle: 0 },
-    { name: 'SPACE', tuneAt: 'space' as TuningPhase, color: '#6BA292', position: 'bottom', angle: 90 },
-    { name: 'SELF', tuneAt: 'self' as TuningPhase, color: '#FF6F61', position: 'left', angle: 180 },
-  ];
+  const isArrowActive = (rel: { from: string; to: string }) => {
+    if (phase === 'scramble') return false;
+    if (phase === 'aligned') return true;
+    const currentIdx = ORDER.indexOf(phase);
+    const fromIdx = ORDER.indexOf(rel.from);
+    const toIdx = ORDER.indexOf(rel.to);
+    return fromIdx < currentIdx && toIdx <= currentIdx;
+  };
 
-  // Relationships (clockwise flow)
-  const relationships = [
-    { from: 'SPIRIT', to: 'STORY', verb: 'inspires', showAt: 'story' as TuningPhase },
-    { from: 'STORY', to: 'SPACE', verb: 'guides', showAt: 'space' as TuningPhase },
-    { from: 'SPACE', to: 'SELF', verb: 'supports', showAt: 'self' as TuningPhase },
-    { from: 'SELF', to: 'SPIRIT', verb: 'honors', showAt: 'aligned' as TuningPhase },
-  ];
+  const tunedCount = DIMENSIONS.filter(d => isDimensionTuned(d.id)).length;
+  const centerBrightness = tunedCount / 4;
 
-  // Get current relationship text
-  const getCurrentRelationship = () => {
-    if (phase === 'scramble') return null;
-    if (phase === 'spirit') return { text: 'SPIRIT', subtext: null };
+  // Layout constants
+  const size = 400;
+  const center = size / 2;
+  const radius = 110;
+  const barCount = 72;
 
-    const rel = relationships.find(r => r.showAt === phase);
-    if (rel) {
-      return {
-        text: `${rel.from} ${rel.verb} ${rel.to}`,
-        subtext: phase === 'aligned' ? 'The cycle continues' : null,
-      };
+  // Frequency bar height
+  const getBarHeight = (index: number, dimId: string) => {
+    const isTuned = isDimensionTuned(dimId);
+    if (isTuned) {
+      const wave = Math.sin((index * 0.4) - (tick * 0.15));
+      return 8 + wave * 4;
+    } else {
+      const chaos = Math.sin(index * 2.7 + tick * 0.8) * Math.cos(index * 1.3 - tick * 0.5);
+      return 5 + Math.abs(chaos) * 8;
     }
-    return null;
   };
 
-  const currentRel = getCurrentRelationship();
-
-  // Generate frequency bars for an arc
-  const generateBars = (isTuned: boolean, scrambleOffset: number) => {
-    const barCount = 12;
-    return [...Array(barCount)].map((_, i) => {
-      const scrambleHeight = ((i * 7 + scrambleOffset) % 9) + 1;
-      const alignedHeight = 5 + Math.sin(i * 0.5) * 4;
-      return isTuned ? alignedHeight : scrambleHeight;
-    });
+  // Get dimension color by angle
+  const getBarColor = (angle: number) => {
+    const a = ((angle % 360) + 360) % 360;
+    if (a >= 315 || a < 45) return { color: '#7A4DA4', id: 'spirit' };
+    if (a >= 45 && a < 135) return { color: '#5B84B1', id: 'story' };
+    if (a >= 135 && a < 225) return { color: '#6BA292', id: 'space' };
+    return { color: '#FF6F61', id: 'self' };
   };
 
-  const circleSize = 320;
-  const arcRadius = circleSize / 2 - 30;
+  // Arrow path with outward curve
+  const getArrowPath = (fromId: string, toId: string) => {
+    const arrowRadius = radius + 20;
+    const positions: Record<string, { x: number; y: number }> = {
+      spirit: { x: center, y: center - arrowRadius },
+      story: { x: center + arrowRadius, y: center },
+      space: { x: center, y: center + arrowRadius },
+      self: { x: center - arrowRadius, y: center },
+    };
+    const from = positions[fromId];
+    const to = positions[toId];
+    const midX = (from.x + to.x) / 2;
+    const midY = (from.y + to.y) / 2;
+    const outX = midX - center;
+    const outY = midY - center;
+    const outLen = Math.sqrt(outX * outX + outY * outY);
+    const ctrlX = midX + (outX / outLen) * 35;
+    const ctrlY = midY + (outY / outLen) * 35;
+    return `M ${from.x} ${from.y} Q ${ctrlX} ${ctrlY} ${to.x} ${to.y}`;
+  };
+
+  // Word position along arrow curve
+  const getWordPosition = (fromId: string, toId: string) => {
+    const arrowRadius = radius + 20;
+    const positions: Record<string, { x: number; y: number }> = {
+      spirit: { x: center, y: center - arrowRadius },
+      story: { x: center + arrowRadius, y: center },
+      space: { x: center, y: center + arrowRadius },
+      self: { x: center - arrowRadius, y: center },
+    };
+    const from = positions[fromId];
+    const to = positions[toId];
+    const midX = (from.x + to.x) / 2;
+    const midY = (from.y + to.y) / 2;
+    const outX = midX - center;
+    const outY = midY - center;
+    const outLen = Math.sqrt(outX * outX + outY * outY);
+    return { x: midX + (outX / outLen) * 55, y: midY + (outY / outLen) * 55 };
+  };
 
   return (
     <div className="relative w-full flex items-center justify-center">
-      <div
-        className="relative"
-        style={{ width: circleSize, height: circleSize }}
-      >
-        {/* Outer circle guide */}
-        <div
-          className="absolute inset-0 rounded-full border border-white/5"
-        />
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg className="absolute inset-0 w-full h-full" viewBox={`0 0 ${size} ${size}`}>
+          <defs>
+            <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={`rgba(255,255,255,${0.1 + centerBrightness * 0.6})`} />
+              <stop offset="30%" stopColor={`rgba(200,180,220,${0.05 + centerBrightness * 0.3})`} />
+              <stop offset="60%" stopColor={`rgba(122,77,164,${0.02 + centerBrightness * 0.15})`} />
+              <stop offset="100%" stopColor="transparent" />
+            </radialGradient>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="rgba(255,255,255,0.8)" />
+            </marker>
+          </defs>
 
-        {/* Four frequency arcs */}
-        {dimensions.map((dim, idx) => {
-          const isTuned = isFrequencyTuned(dim.tuneAt);
-          const bars = generateBars(isTuned, idx * 3);
+          {/* Center glow */}
+          <circle cx={center} cy={center} r={radius - 20} fill="url(#centerGlow)" className="transition-all duration-700" />
 
-          // Position calculations for each arc
-          const positions: Record<string, { x: number; y: number; rotation: number }> = {
-            top: { x: circleSize / 2, y: 25, rotation: 0 },
-            right: { x: circleSize - 25, y: circleSize / 2, rotation: 90 },
-            bottom: { x: circleSize / 2, y: circleSize - 25, rotation: 180 },
-            left: { x: 25, y: circleSize / 2, rotation: 270 },
-          };
-
-          const pos = positions[dim.position];
-
-          return (
-            <div
-              key={dim.name}
-              className="absolute"
-              style={{
-                left: pos.x,
-                top: pos.y,
-                transform: `translate(-50%, -50%) rotate(${pos.rotation}deg)`,
-              }}
-            >
-              {/* Dimension label */}
-              <span
-                className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-wider transition-all duration-500 whitespace-nowrap"
-                style={{
-                  color: isTuned ? dim.color : `${dim.color}40`,
-                  transform: `translateX(-50%) rotate(-${pos.rotation}deg)`,
-                  textShadow: isTuned ? `0 0 15px ${dim.color}60` : 'none',
-                }}
-              >
-                {dim.name}
-              </span>
-
-              {/* Frequency bars */}
-              <div className="flex items-end justify-center gap-[3px] h-10">
-                {bars.map((height, j) => (
-                  <div
-                    key={j}
-                    className="w-1 rounded-full transition-all"
-                    style={{
-                      backgroundColor: isTuned ? dim.color : `${dim.color}30`,
-                      height: `${height * 3 + 4}px`,
-                      transitionDuration: isTuned ? '500ms' : '100ms',
-                      transitionDelay: isTuned ? `${j * 30}ms` : '0ms',
-                      boxShadow: isTuned ? `0 0 6px ${dim.color}` : 'none',
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Connection arrows between dimensions */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          viewBox={`0 0 ${circleSize} ${circleSize}`}
-        >
-          {/* Clockwise arrows */}
-          {[
-            { from: 'spirit', to: 'story', path: `M ${circleSize/2 + 40} 40 Q ${circleSize - 60} 60 ${circleSize - 40} ${circleSize/2 - 40}` },
-            { from: 'story', to: 'space', path: `M ${circleSize - 40} ${circleSize/2 + 40} Q ${circleSize - 60} ${circleSize - 60} ${circleSize/2 + 40} ${circleSize - 40}` },
-            { from: 'space', to: 'self', path: `M ${circleSize/2 - 40} ${circleSize - 40} Q 60 ${circleSize - 60} 40 ${circleSize/2 + 40}` },
-            { from: 'self', to: 'spirit', path: `M 40 ${circleSize/2 - 40} Q 60 60 ${circleSize/2 - 40} 40` },
-          ].map((arrow, i) => {
-            const fromTuned = isFrequencyTuned(arrow.from as TuningPhase);
-            const toTuned = isFrequencyTuned(arrow.to as TuningPhase);
-            const isActive = fromTuned && toTuned;
+          {/* Frequency bars */}
+          {[...Array(barCount)].map((_, i) => {
+            const angle = (i / barCount) * 360;
+            const angleRad = (angle - 90) * (Math.PI / 180);
+            const { color, id: dimId } = getBarColor(angle);
+            const isTuned = isDimensionTuned(dimId);
+            const barHeight = getBarHeight(i, dimId);
+            const x1 = center + Math.cos(angleRad) * (radius - barHeight);
+            const y1 = center + Math.sin(angleRad) * (radius - barHeight);
+            const x2 = center + Math.cos(angleRad) * (radius + barHeight);
+            const y2 = center + Math.sin(angleRad) * (radius + barHeight);
 
             return (
-              <path
+              <line
                 key={i}
-                d={arrow.path}
-                fill="none"
-                stroke={isActive ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.05)'}
-                strokeWidth="1.5"
-                strokeDasharray="4 4"
+                x1={x1} y1={y1} x2={x2} y2={y2}
+                stroke={isTuned ? color : `${color}40`}
+                strokeWidth={2}
+                strokeLinecap="round"
                 className="transition-all duration-500"
+                style={{ filter: isTuned ? `drop-shadow(0 0 4px ${color})` : 'none' }}
               />
+            );
+          })}
+
+          {/* Arrows */}
+          {RELATIONSHIPS.map((rel) => {
+            const isActive = isArrowActive(rel);
+            const path = getArrowPath(rel.from, rel.to);
+            const wordPos = getWordPosition(rel.from, rel.to);
+
+            return (
+              <g key={`${rel.from}-${rel.to}`} className="transition-all duration-500">
+                <path
+                  d={path}
+                  fill="none"
+                  stroke={isActive ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.1)'}
+                  strokeWidth={isActive ? 2.5 : 1}
+                  markerEnd={isActive ? 'url(#arrowhead)' : undefined}
+                  className="transition-all duration-500"
+                />
+                {isActive && (
+                  <text
+                    x={wordPos.x}
+                    y={wordPos.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="text-[10px] font-bold uppercase tracking-wider fill-white/80"
+                  >
+                    {rel.word}
+                  </text>
+                )}
+              </g>
             );
           })}
         </svg>
 
-        {/* Center text */}
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center text-center px-8"
-        >
-          {currentRel ? (
-            <>
-              <p
-                className="text-lg md:text-xl font-medium transition-all duration-500"
-                style={{
-                  color: phase === 'spirit' ? '#7A4DA4' : 'white',
-                  textShadow: '0 0 30px rgba(0,0,0,0.5)',
-                }}
-              >
-                {currentRel.text}
-              </p>
-              {currentRel.subtext && (
-                <p className="text-xs text-white/50 mt-2 uppercase tracking-widest">
-                  {currentRel.subtext}
-                </p>
-              )}
-            </>
-          ) : (
-            <p className="text-sm text-white/30 uppercase tracking-widest">
-              Tuning...
-            </p>
-          )}
-        </div>
+        {/* Dimension labels */}
+        {DIMENSIONS.map((dim) => {
+          const isTuned = isDimensionTuned(dim.id);
+          const labelRadius = radius + 75;
+          const positions: Record<string, { x: number; y: number }> = {
+            spirit: { x: center, y: center - labelRadius },
+            story: { x: center + labelRadius, y: center },
+            space: { x: center, y: center + labelRadius },
+            self: { x: center - labelRadius, y: center },
+          };
+          const pos = positions[dim.id];
 
-        {/* Center glow on aligned */}
-        <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-700"
-          style={{ opacity: phase === 'aligned' ? 1 : 0 }}
-        >
-          <div
-            className="w-32 h-32 rounded-full"
-            style={{
-              background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)',
-            }}
-          />
-        </div>
+          return (
+            <div
+              key={dim.id}
+              className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-500"
+              style={{
+                left: pos.x,
+                top: pos.y,
+                color: isTuned ? dim.color : `${dim.color}50`,
+                textShadow: isTuned ? `0 0 20px ${dim.color}80` : 'none',
+              }}
+            >
+              <span className="text-sm md:text-base font-bold uppercase tracking-widest">
+                {dim.name}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -380,13 +405,13 @@ export default function SignalSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <p className="text-sm uppercase tracking-[0.3em] text-gray-500 mb-4">
-            The Signal
+            When Alignment Happens
           </p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
-            Your{' '}
             <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent">
-              Biological Compass
-            </span>
+              Flow
+            </span>{' '}
+            Is the Signal
           </h2>
         </motion.div>
 
@@ -399,12 +424,8 @@ export default function SignalSection() {
         >
           <BreathingPulse />
           <p className="text-2xl md:text-3xl text-white font-light text-center mt-8 max-w-2xl mx-auto">
-            That feeling when everything clicks? That&apos;s flow — your body signaling you&apos;ve found the{' '}
-            <span className="italic">sweet spot</span> between{' '}
-            <span className="text-[#FF6F61]">SELF</span>,{' '}
-            <span className="text-[#6BA292]">SPACE</span>,{' '}
-            <span className="text-[#5B84B1]">STORY</span>, and{' '}
-            <span className="text-[#7A4DA4]">SPIRIT</span>.
+            Most people chase flow as a goal. But flow is a{' '}
+            <span className="italic">compass needle</span> — it points toward alignment. The state itself is proof that what you&apos;re doing, where you&apos;re doing it, why, and how you&apos;re showing up have all converged.
           </p>
         </motion.div>
 
@@ -416,7 +437,7 @@ export default function SignalSection() {
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           <p className="text-lg text-gray-500 text-center mb-12">
-            Like tuning into a frequency — each dimension locks in, one by one.
+            Each dimension feeds the next — a continuous cycle of alignment.
           </p>
           <CircularFrequencyAnimation inView={hasEntered} />
         </motion.div>
