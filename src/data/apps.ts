@@ -211,7 +211,7 @@ Minimalist by design—built for consistent movement habits without traditional 
     icon: '/assets/apps/flowrep-icon.png',
     screenshots: [],
     platforms: ['ios'],
-    appStoreUrl: '#',
+    appStoreUrl: 'https://apps.apple.com/us/app/flowreps/id6758522892',
     features: [
       {
         title: 'Daily Rep Tracking',
@@ -242,7 +242,7 @@ Minimalist by design—built for consistent movement habits without traditional 
     accentColor: '#FF6F61',
     relatedPillars: ['self'],
     version: '1.0',
-    inDevelopment: true,
+    inDevelopment: false,
   },
 };
 
