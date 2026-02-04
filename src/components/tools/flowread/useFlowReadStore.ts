@@ -5,6 +5,7 @@ import {
   SavedText,
   TrainingSettings,
   FontType,
+  TextInput,
 } from './types';
 import { STORAGE_KEYS, DEFAULT_WPM, DEFAULT_FONT_SIZE, SAMPLE_TEXTS } from './constants';
 
@@ -34,8 +35,13 @@ function saveToStorage<T>(key: string, value: T) {
 const DEFAULT_SETTINGS: TrainingSettings = {
   wpm: DEFAULT_WPM,
   fontSize: DEFAULT_FONT_SIZE,
-  fontType: 'serif',
-  selectedTextId: 'sample-0',
+  fontType: 'sans',
+  selectedTextId: null,
+};
+
+const DEFAULT_TEXT_INPUT: TextInput = {
+  title: '',
+  content: '',
 };
 
 export function useFlowReadStore() {
@@ -54,10 +60,14 @@ export function useFlowReadStore() {
   // Modal state
   const [textModalOpen, setTextModalOpen] = useState(false);
 
+  // Direct text input state
+  const [textInput, setTextInput] = useState<TextInput>(DEFAULT_TEXT_INPUT);
+
   // Load from storage on mount
   useEffect(() => {
     setSavedTexts(loadFromStorage(STORAGE_KEYS.savedTexts, []));
     setSettings(loadFromStorage(STORAGE_KEYS.settings, DEFAULT_SETTINGS));
+    setTextInput(loadFromStorage(STORAGE_KEYS.textInput, DEFAULT_TEXT_INPUT));
     setMounted(true);
   }, []);
 
@@ -70,6 +80,11 @@ export function useFlowReadStore() {
   useEffect(() => {
     if (mounted) saveToStorage(STORAGE_KEYS.settings, settings);
   }, [settings, mounted]);
+
+  // Persist text input
+  useEffect(() => {
+    if (mounted) saveToStorage(STORAGE_KEYS.textInput, textInput);
+  }, [textInput, mounted]);
 
   // Settings updates
   const updateSettings = useCallback((partial: Partial<TrainingSettings>) => {
@@ -126,9 +141,31 @@ export function useFlowReadStore() {
     setSavedTexts((prev) => prev.filter((t) => t.id !== id));
     // If deleting the selected text, clear selection
     if (settings.selectedTextId === id) {
-      updateSettings({ selectedTextId: 'sample-0' });
+      updateSettings({ selectedTextId: null });
     }
   }, [settings.selectedTextId, updateSettings]);
+
+  // Text input functions
+  const updateTextInput = useCallback((partial: Partial<TextInput>) => {
+    setTextInput((prev) => ({ ...prev, ...partial }));
+  }, []);
+
+  const setInputTitle = useCallback((title: string) => {
+    updateTextInput({ title });
+  }, [updateTextInput]);
+
+  const setInputContent = useCallback((content: string) => {
+    updateTextInput({ content });
+  }, [updateTextInput]);
+
+  const clearTextInput = useCallback(() => {
+    setTextInput(DEFAULT_TEXT_INPUT);
+  }, []);
+
+  // Calculate word count from current input
+  const inputWordCount = textInput.content.trim()
+    ? textInput.content.trim().split(/\s+/).filter((w) => w.length > 0).length
+    : 0;
 
   // Training control
   const startTraining = useCallback(() => {
@@ -183,6 +220,13 @@ export function useFlowReadStore() {
     pauseTraining,
     resumeTraining,
     stopTraining,
+
+    // Direct text input
+    textInput,
+    setInputTitle,
+    setInputContent,
+    clearTextInput,
+    inputWordCount,
 
     // Modal
     textModalOpen,

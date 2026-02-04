@@ -1,58 +1,46 @@
 'use client';
 
-import { useCallback } from 'react';
-import { TrainingMode, FontType, SavedText } from './types';
-import { SAGE, MIN_WPM, MAX_WPM, WPM_STEP, MIN_FONT_SIZE, MAX_FONT_SIZE, SAMPLE_TEXTS } from './constants';
+import { useCallback, useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TrainingMode, FontType, TextInput } from './types';
+import { SAGE, MIN_WPM, MAX_WPM, WPM_STEP, MIN_FONT_SIZE, MAX_FONT_SIZE } from './constants';
 import TrainingDisplay from './TrainingDisplay';
-import TextManagerModal from './TextManagerModal';
 
 interface TrainScreenProps {
   trainingMode: TrainingMode;
-  setTrainingMode: (mode: TrainingMode) => void;
   wpm: number;
   setWpm: (wpm: number) => void;
   fontSize: number;
   setFontSize: (size: number) => void;
   fontType: FontType;
   setFontType: (type: FontType) => void;
-  selectedTextId: string | null;
-  selectText: (textId: string | null) => void;
-  savedTexts: SavedText[];
-  addSavedText: (title: string, content: string) => SavedText;
-  deleteSavedText: (id: string) => void;
+  textInput: TextInput;
+  setInputTitle: (title: string) => void;
+  setInputContent: (content: string) => void;
+  clearTextInput: () => void;
+  inputWordCount: number;
   isTraining: boolean;
   isPaused: boolean;
-  trainingProgress: number;
   setTrainingProgress: (progress: number) => void;
-  currentIndex: number;
   setCurrentIndex: (index: number) => void;
   startTraining: () => void;
   pauseTraining: () => void;
   resumeTraining: () => void;
   stopTraining: () => void;
-  textModalOpen: boolean;
-  setTextModalOpen: (open: boolean) => void;
 }
-
-const modeConfig = [
-  { mode: 'word' as TrainingMode, label: 'Word', icon: '◈' },
-  { mode: 'phrases' as TrainingMode, label: 'Phrases', icon: '◆' },
-];
 
 export default function TrainScreen({
   trainingMode,
-  setTrainingMode,
   wpm,
   setWpm,
   fontSize,
   setFontSize,
   fontType,
-  setFontType,
-  selectedTextId,
-  selectText,
-  savedTexts,
-  addSavedText,
-  deleteSavedText,
+  textInput,
+  setInputTitle,
+  setInputContent,
+  clearTextInput,
+  inputWordCount,
   isTraining,
   isPaused,
   startTraining,
@@ -61,23 +49,10 @@ export default function TrainScreen({
   stopTraining,
   setTrainingProgress,
   setCurrentIndex,
-  textModalOpen,
-  setTextModalOpen,
 }: TrainScreenProps) {
-  // Get selected text content
-  const getTextContent = useCallback(() => {
-    if (!selectedTextId) return null;
-
-    const sampleText = SAMPLE_TEXTS.find((t) => t.id === selectedTextId);
-    if (sampleText) return sampleText;
-
-    const savedText = savedTexts.find((t) => t.id === selectedTextId);
-    if (savedText) return { title: savedText.title, content: savedText.content, wordCount: savedText.wordCount };
-
-    return null;
-  }, [selectedTextId, savedTexts]);
-
-  const selectedText = getTextContent();
+  // Countdown state for smooth transition
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleProgressUpdate = useCallback(
     (progress: number, index: number) => {
@@ -91,245 +66,243 @@ export default function TrainScreen({
     stopTraining();
   }, [stopTraining]);
 
-  return (
-    <div className="space-y-4">
-      {/* Training Controls - only show when not training */}
-      {!isTraining && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Mode Selection */}
-          <div
-            className="relative rounded-2xl p-4"
-            style={{
-              background: '#0a0a0a',
-              border: '1px solid rgba(255,255,255,0.06)',
-            }}
+  // Handle the Begin button with countdown transition
+  const handleBegin = useCallback(() => {
+    setIsTransitioning(true);
+    setCountdown(3);
+  }, []);
+
+  // Countdown effect
+  useEffect(() => {
+    if (countdown === null) return;
+
+    if (countdown === 0) {
+      setCountdown(null);
+      setIsTransitioning(false);
+      startTraining();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown(countdown - 1);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [countdown, startTraining]);
+
+  const canStart = inputWordCount > 0;
+  const estimatedMinutes = Math.ceil(inputWordCount / wpm);
+
+  // Countdown transition screen
+  if (isTransitioning && countdown !== null) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={countdown}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.2 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
           >
-            <div
-              className="absolute top-0 left-4 right-4 h-px"
-              style={{ background: `linear-gradient(90deg, transparent, ${SAGE}40, transparent)` }}
-            />
-
-            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Mode</h3>
-
-            <div className="flex gap-2">
-              {modeConfig.map(({ mode, label, icon }) => (
-                <button
-                  key={mode}
-                  onClick={() => setTrainingMode(mode)}
-                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                    trainingMode === mode
-                      ? 'text-white'
-                      : 'text-gray-500 hover:text-white bg-white/[0.03] border border-white/[0.06]'
-                  }`}
-                  style={
-                    trainingMode === mode
-                      ? { background: `${SAGE}20`, border: `1px solid ${SAGE}40` }
-                      : {}
-                  }
-                >
-                  <span className="mr-1">{icon}</span>
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Text Selection */}
-          <div
-            className="relative rounded-2xl p-4"
-            style={{
-              background: '#0a0a0a',
-              border: '1px solid rgba(255,255,255,0.06)',
-            }}
-          >
-            <div
-              className="absolute top-0 left-4 right-4 h-px"
-              style={{ background: `linear-gradient(90deg, transparent, ${SAGE}40, transparent)` }}
-            />
-
-            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Text</h3>
-
-            <button
-              onClick={() => setTextModalOpen(true)}
-              className="w-full py-2 px-3 rounded-lg text-sm font-medium text-white bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition-all text-left"
-            >
-              {selectedText ? (
-                <div>
-                  <p className="truncate">{selectedText.title}</p>
-                  <p className="text-xs text-gray-500">{selectedText.wordCount} words</p>
-                </div>
-              ) : (
-                <span className="text-gray-500">Choose Text</span>
-              )}
-            </button>
-          </div>
-
-          {/* Style Controls */}
-          <div
-            className="relative rounded-2xl p-4"
-            style={{
-              background: '#0a0a0a',
-              border: '1px solid rgba(255,255,255,0.06)',
-            }}
-          >
-            <div
-              className="absolute top-0 left-4 right-4 h-px"
-              style={{ background: `linear-gradient(90deg, transparent, ${SAGE}40, transparent)` }}
-            />
-
-            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Style</h3>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 w-8">{fontSize}px</span>
-                <input
-                  type="range"
-                  min={MIN_FONT_SIZE}
-                  max={MAX_FONT_SIZE}
-                  value={fontSize}
-                  onChange={(e) => setFontSize(parseInt(e.target.value))}
-                  className="flex-1"
-                  style={{ accentColor: SAGE }}
-                />
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setFontType('serif')}
-                  className={`flex-1 py-1.5 px-2 rounded text-xs font-medium transition-all ${
-                    fontType === 'serif'
-                      ? 'text-white'
-                      : 'text-gray-500 hover:text-white bg-white/[0.03]'
-                  }`}
-                  style={
-                    fontType === 'serif'
-                      ? { background: `${SAGE}20`, border: `1px solid ${SAGE}40` }
-                      : { border: '1px solid rgba(255,255,255,0.06)' }
-                  }
-                >
-                  Serif
-                </button>
-                <button
-                  onClick={() => setFontType('sans')}
-                  className={`flex-1 py-1.5 px-2 rounded text-xs font-medium transition-all ${
-                    fontType === 'sans'
-                      ? 'text-white'
-                      : 'text-gray-500 hover:text-white bg-white/[0.03]'
-                  }`}
-                  style={
-                    fontType === 'sans'
-                      ? { background: `${SAGE}20`, border: `1px solid ${SAGE}40` }
-                      : { border: '1px solid rgba(255,255,255,0.06)' }
-                  }
-                >
-                  Sans
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Speed Control Bar */}
-      <div
-        className="relative rounded-2xl p-4"
-        style={{
-          background: '#0a0a0a',
-          border: '1px solid rgba(255,255,255,0.06)',
-        }}
-      >
-        <div
-          className="absolute top-0 left-4 right-4 h-px"
-          style={{ background: `linear-gradient(90deg, transparent, ${SAGE}40, transparent)` }}
-        />
-
-        <div className="flex items-center gap-4">
-          {/* Control buttons */}
-          <div className="flex gap-2">
-            {!isTraining ? (
-              <button
-                onClick={startTraining}
-                disabled={!selectedText}
-                className="px-6 py-2 rounded-lg text-white font-medium transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ background: SAGE }}
+            {countdown > 0 ? (
+              <span
+                className="text-6xl font-light"
+                style={{ color: SAGE }}
               >
-                ▶ Start
-              </button>
+                {countdown}
+              </span>
             ) : (
-              <>
+              <span className="text-2xl font-light text-white/60">
+                Focus
+              </span>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  // Training mode - show the display
+  if (isTraining) {
+    return (
+      <div className="flex-1 flex flex-col">
+        {/* Training Display - takes most of the space */}
+        <div className="flex-1 flex items-center justify-center">
+          <TrainingDisplay
+            mode={trainingMode}
+            text={textInput.content}
+            wpm={wpm}
+            fontSize={fontSize}
+            fontType={fontType}
+            isTraining={isTraining}
+            isPaused={isPaused}
+            onProgressUpdate={handleProgressUpdate}
+            onComplete={handleComplete}
+          />
+        </div>
+
+        {/* Floating Control Bar */}
+        <div className="mt-auto pt-6">
+          <div
+            className="rounded-2xl p-4"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            <div className="flex items-center gap-4">
+              {/* Playback controls */}
+              <div className="flex items-center gap-2">
                 <button
                   onClick={isPaused ? resumeTraining : pauseTraining}
-                  className="px-4 py-2 rounded-lg text-white font-medium transition-all hover:scale-[1.02]"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-medium transition-all hover:scale-105"
                   style={{ background: SAGE }}
                 >
                   {isPaused ? '▶' : '⏸'}
                 </button>
                 <button
                   onClick={stopTraining}
-                  className="px-4 py-2 rounded-lg text-white font-medium bg-white/10 hover:bg-white/20 transition-all"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 font-medium transition-all hover:text-white hover:bg-white/10"
                 >
                   ⏹
                 </button>
-              </>
-            )}
-          </div>
+              </div>
 
-          {/* Speed slider */}
-          <div className="flex-1 flex items-center gap-3">
-            <div className="text-sm font-bold text-white min-w-[60px]">
-              {wpm} <span className="text-xs font-normal text-gray-500">WPM</span>
+              {/* Speed slider */}
+              <div className="flex-1 flex items-center gap-3">
+                <input
+                  type="range"
+                  min={MIN_WPM}
+                  max={MAX_WPM}
+                  step={WPM_STEP}
+                  value={wpm}
+                  onChange={(e) => setWpm(parseInt(e.target.value))}
+                  className="flex-1 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                  style={{ accentColor: SAGE }}
+                />
+                <span className="text-sm text-white font-medium min-w-[70px] text-right">
+                  {wpm} <span className="text-gray-500 font-normal">wpm</span>
+                </span>
+              </div>
             </div>
-            <input
-              type="range"
-              min={MIN_WPM}
-              max={MAX_WPM}
-              step={WPM_STEP}
-              value={wpm}
-              onChange={(e) => setWpm(parseInt(e.target.value))}
-              className="flex-1"
-              style={{ accentColor: SAGE }}
-            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Input mode - show the text input canvas
+  return (
+    <div className="flex-1 flex flex-col">
+      {/* Text Input Canvas */}
+      <div className="flex-1 flex flex-col">
+        <div
+          className="flex-1 flex flex-col rounded-2xl p-6 min-h-[400px]"
+          style={{
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          {/* Title input - minimal */}
+          <input
+            type="text"
+            value={textInput.title}
+            onChange={(e) => setInputTitle(e.target.value)}
+            placeholder="Title (optional)"
+            className="w-full bg-transparent text-white/60 text-sm placeholder-gray-600 focus:outline-none focus:text-white/80 transition-colors mb-4 pb-3 border-b border-white/5"
+          />
+
+          {/* Content textarea - the hero */}
+          <textarea
+            value={textInput.content}
+            onChange={(e) => setInputContent(e.target.value)}
+            placeholder="Paste your text here to begin..."
+            className="flex-1 w-full bg-transparent text-white placeholder-gray-600 focus:outline-none resize-none text-base leading-relaxed scrollbar-dark"
+            style={{ minHeight: '280px' }}
+          />
+
+          {/* Word count and clear - subtle footer */}
+          <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs text-gray-500">
+            <span>
+              {inputWordCount > 0 ? (
+                <>
+                  {inputWordCount} words
+                  {estimatedMinutes > 0 && (
+                    <span className="text-gray-600"> · ~{estimatedMinutes} min</span>
+                  )}
+                </>
+              ) : (
+                'No text yet'
+              )}
+            </span>
+            {inputWordCount > 0 && (
+              <button
+                onClick={clearTextInput}
+                className="text-gray-600 hover:text-gray-400 transition-colors"
+              >
+                Clear
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Training Display */}
-      {selectedText && (
-        <TrainingDisplay
-          mode={trainingMode}
-          text={selectedText.content}
-          wpm={wpm}
-          fontSize={fontSize}
-          fontType={fontType}
-          isTraining={isTraining}
-          isPaused={isPaused}
-          onProgressUpdate={handleProgressUpdate}
-          onComplete={handleComplete}
-        />
-      )}
-
-      {!selectedText && (
+      {/* Floating Control Bar */}
+      <div className="mt-6">
         <div
-          className="relative rounded-2xl p-8 min-h-[300px] flex items-center justify-center"
+          className="rounded-2xl p-4"
           style={{
-            background: '#0a0a0a',
+            background: 'rgba(255,255,255,0.03)',
             border: '1px solid rgba(255,255,255,0.06)',
           }}
         >
-          <p className="text-gray-600">Select a text to begin training</p>
-        </div>
-      )}
+          <div className="flex items-center gap-4">
+            {/* Start button */}
+            <button
+              onClick={handleBegin}
+              disabled={!canStart}
+              className="px-6 py-2.5 rounded-xl text-white font-medium transition-all hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+              style={{ background: canStart ? SAGE : 'rgba(255,255,255,0.1)' }}
+            >
+              Begin
+            </button>
 
-      {/* Text Manager Modal */}
-      <TextManagerModal
-        isOpen={textModalOpen}
-        onClose={() => setTextModalOpen(false)}
-        savedTexts={savedTexts}
-        selectedTextId={selectedTextId}
-        onSelectText={selectText}
-        onAddText={addSavedText}
-        onDeleteText={deleteSavedText}
-      />
+            {/* Speed slider */}
+            <div className="flex-1 flex items-center gap-3">
+              <input
+                type="range"
+                min={MIN_WPM}
+                max={MAX_WPM}
+                step={WPM_STEP}
+                value={wpm}
+                onChange={(e) => setWpm(parseInt(e.target.value))}
+                className="flex-1 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                style={{ accentColor: SAGE }}
+              />
+              <span className="text-sm text-white font-medium min-w-[70px] text-right">
+                {wpm} <span className="text-gray-500 font-normal">wpm</span>
+              </span>
+            </div>
+
+            {/* Font size control - compact */}
+            <div className="flex items-center gap-2 pl-3 border-l border-white/10">
+              <span className="text-xs text-gray-500">Aa</span>
+              <input
+                type="range"
+                min={MIN_FONT_SIZE}
+                max={MAX_FONT_SIZE}
+                value={fontSize}
+                onChange={(e) => setFontSize(parseInt(e.target.value))}
+                className="w-16 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/60"
+              />
+              <span className="text-xs text-gray-500 min-w-[28px]">{fontSize}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

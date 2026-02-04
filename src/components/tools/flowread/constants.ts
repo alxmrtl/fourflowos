@@ -66,4 +66,5 @@ Mental speed limits exist only in your head. Professional speed readers routinel
 export const STORAGE_KEYS = {
   savedTexts: 'flowread-saved-texts',
   settings: 'flowread-settings',
+  textInput: 'flowread-text-input',
 };

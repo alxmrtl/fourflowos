@@ -17,6 +17,12 @@ export interface TrainingSettings {
   selectedTextId: string | null;
 }
 
+// Direct text input (not modal-based)
+export interface TextInput {
+  title: string;
+  content: string;
+}
+
 export interface FlowReadState {
   // Navigation
   activeTab: Tab;

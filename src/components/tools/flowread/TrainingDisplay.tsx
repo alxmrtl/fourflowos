@@ -20,7 +20,6 @@ interface TrainingDisplayProps {
 /**
  * Calculate the Optimal Recognition Point (ORP) index for a word.
  * The ORP is where the eye naturally fixates - typically ~30% from the start.
- * Based on Spritz reading research.
  */
 function getORPIndex(word: string): number {
   const len = word.length;
@@ -33,7 +32,6 @@ function getORPIndex(word: string): number {
 
 /**
  * Renders a word with ORP highlighting - the focal letter in coral color.
- * For centered mode: uses absolute positioning so the ORP is ALWAYS at the exact center.
  */
 function ORPWord({
   word,
@@ -52,10 +50,6 @@ function ORPWord({
   const after = word.slice(orpIndex + 1);
 
   if (centered) {
-    // Absolute positioning approach:
-    // - ORP letter is fixed at exact center (left: 50%, translateX: -50%)
-    // - "before" text ends at the ORP (right: 50%, with padding for half ORP width)
-    // - "after" text starts after the ORP (left: 50%, with padding for half ORP width)
     return (
       <div
         className="relative w-full flex items-center justify-center"
@@ -65,18 +59,16 @@ function ORPWord({
           height: '1.4em',
         }}
       >
-        {/* Before: absolutely positioned, right edge at center minus half ORP width */}
         <span
-          className="absolute text-white/90 whitespace-pre"
+          className="absolute text-white/80 whitespace-pre"
           style={{
             right: '50%',
-            marginRight: '0.27em', // half-width of ORP letter
+            marginRight: '0.27em',
           }}
         >
           {before}
         </span>
 
-        {/* ORP letter: absolutely positioned at exact center */}
         <span
           className="absolute left-1/2"
           style={{
@@ -88,12 +80,11 @@ function ORPWord({
           {orp}
         </span>
 
-        {/* After: absolutely positioned, left edge at center plus half ORP width */}
         <span
-          className="absolute text-white/90 whitespace-pre"
+          className="absolute text-white/80 whitespace-pre"
           style={{
             left: '50%',
-            marginLeft: '0.27em', // half-width of ORP letter
+            marginLeft: '0.27em',
           }}
         >
           {after}
@@ -102,12 +93,11 @@ function ORPWord({
     );
   }
 
-  // For phrases mode: inline rendering
   return (
     <span style={{ fontFamily }}>
-      <span className="text-white/80">{before}</span>
-      <span className="font-semibold" style={{ color: CORAL }}>{orp}</span>
-      <span className="text-white/80">{after}</span>
+      <span className="text-white/70">{before}</span>
+      <span className="font-medium" style={{ color: CORAL }}>{orp}</span>
+      <span className="text-white/70">{after}</span>
     </span>
   );
 }
@@ -156,14 +146,11 @@ export default function TrainingDisplay({
   const [totalUnits, setTotalUnits] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const indexRef = useRef(0);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Use refs for values that change but shouldn't restart the animation
   const wpmRef = useRef(wpm);
   const onCompleteRef = useRef(onComplete);
   const onProgressUpdateRef = useRef(onProgressUpdate);
 
-  // Keep refs updated
   useEffect(() => {
     wpmRef.current = wpm;
   }, [wpm]);
@@ -176,10 +163,8 @@ export default function TrainingDisplay({
     onProgressUpdateRef.current = onProgressUpdate;
   }, [onProgressUpdate]);
 
-  // Memoize parsed text to prevent recreating on every render
   const words = useMemo(() => text.split(/\s+/).filter((w) => w.length > 0), [text]);
 
-  // Create phrases (6 words each)
   const phrases = useMemo(() => {
     const result: string[] = [];
     for (let i = 0; i < words.length; i += 6) {
@@ -193,7 +178,6 @@ export default function TrainingDisplay({
     else setTotalUnits(phrases.length);
   }, [mode, words.length, phrases.length]);
 
-  // Animate training
   useEffect(() => {
     if (!isTraining || isPaused) {
       if (timerRef.current) {
@@ -203,14 +187,26 @@ export default function TrainingDisplay({
       return;
     }
 
-    const getDelay = () => {
-      const currentWpm = wpmRef.current;
+    // Speed ramp-up: start at 40% speed and reach full speed by word 10
+    const RAMP_UP_UNITS = 10;
+    const RAMP_START_RATIO = 0.4;
+
+    const getDelay = (currentIdx: number) => {
+      const targetWpm = wpmRef.current;
+
+      // Calculate ramp-up multiplier (1.0 = full speed, higher = slower)
+      let speedMultiplier = 1.0;
+      if (currentIdx < RAMP_UP_UNITS) {
+        // Ease from RAMP_START_RATIO to 1.0 using smooth easing
+        const progress = currentIdx / RAMP_UP_UNITS;
+        const eased = 1 - Math.pow(1 - progress, 2); // ease-out quad
+        speedMultiplier = 1 / (RAMP_START_RATIO + (1 - RAMP_START_RATIO) * eased);
+      }
+
       if (mode === 'word') {
-        // ms per word
-        return 60000 / currentWpm;
+        return (60000 / targetWpm) * speedMultiplier;
       } else {
-        // 6 words per phrase
-        return (60000 * 6) / currentWpm;
+        return ((60000 * 6) / targetWpm) * speedMultiplier;
       }
     };
 
@@ -224,14 +220,12 @@ export default function TrainingDisplay({
         return;
       }
 
-      // Update display
       if (mode === 'word') {
         setCurrentWord(words[idx]);
       } else {
         setCurrentPhrase(phrases[idx]);
       }
 
-      // Update progress
       const newProgress = (idx + 1) / total;
       setProgress(newProgress);
       setCurrentIndex(idx + 1);
@@ -239,12 +233,10 @@ export default function TrainingDisplay({
 
       indexRef.current = idx + 1;
 
-      // Schedule next with current delay
-      const delay = getDelay();
+      const delay = getDelay(idx);
       timerRef.current = setTimeout(animate, delay);
     };
 
-    // Start animation
     animate();
 
     return () => {
@@ -255,7 +247,6 @@ export default function TrainingDisplay({
     };
   }, [isTraining, isPaused, mode, words, phrases]);
 
-  // Reset on training stop
   useEffect(() => {
     if (!isTraining) {
       indexRef.current = 0;
@@ -266,108 +257,84 @@ export default function TrainingDisplay({
     }
   }, [isTraining]);
 
-  const fontFamily = fontType === 'serif' ? 'Georgia, serif' : 'system-ui, sans-serif';
+  const fontFamily = fontType === 'serif' ? 'Georgia, serif' : 'system-ui, -apple-system, sans-serif';
 
-  // Word-by-word display with ORP
+  if (!isTraining) {
+    return null;
+  }
+
+  // Word-by-word display
   if (mode === 'word') {
     return (
-      <div
-        ref={containerRef}
-        className="relative rounded-2xl p-8 min-h-[300px] flex flex-col items-center justify-center overflow-hidden"
-        style={{
-          background: '#0a0a0a',
-          border: '1px solid rgba(255,255,255,0.06)',
-        }}
-      >
-        <div
-          className="absolute top-0 left-4 right-4 h-px"
-          style={{ background: `linear-gradient(90deg, transparent, ${SAGE}40, transparent)` }}
-        />
+      <div className="w-full max-w-2xl flex flex-col items-center">
+        {/* Word display */}
+        <motion.div
+          key={currentWord}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.03 }}
+          className="w-full"
+        >
+          <ORPWord
+            word={currentWord}
+            fontSize={fontSize * 3}
+            fontFamily={fontFamily}
+            centered
+          />
+        </motion.div>
 
-        {!isTraining ? (
-          <p className="text-gray-600 text-center">Press Start to begin training</p>
-        ) : (
-          <>
-            {/* Word display - ORP letter is always at exact center */}
-            <motion.div
-              key={currentWord}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.03 }}
-              className="w-full max-w-2xl"
-            >
-              <ORPWord
-                word={currentWord}
-                fontSize={fontSize * 2.5}
-                fontFamily={fontFamily}
-                centered
-              />
-            </motion.div>
-
-            <div className="mt-12 w-full max-w-xs">
-              <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-100"
-                  style={{ width: `${progress * 100}%`, background: SAGE }}
-                />
-              </div>
-              <p className="text-center text-xs text-gray-500 mt-2">
-                {currentIndex} / {totalUnits}
-              </p>
-            </div>
-          </>
-        )}
+        {/* Progress */}
+        <div className="mt-16 w-full max-w-xs">
+          <div className="h-[2px] bg-white/5 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-75"
+              style={{
+                width: `${progress * 100}%`,
+                background: `linear-gradient(90deg, ${SAGE}60, ${SAGE})`,
+              }}
+            />
+          </div>
+          <p className="text-center text-xs text-gray-600 mt-3">
+            {currentIndex} / {totalUnits}
+          </p>
+        </div>
       </div>
     );
   }
 
-  // Phrases display with ORP highlighting
+  // Phrases display
   return (
-    <div
-      ref={containerRef}
-      className="relative rounded-2xl p-8 min-h-[300px] flex flex-col items-center justify-center"
-      style={{
-        background: '#0a0a0a',
-        border: '1px solid rgba(255,255,255,0.06)',
-      }}
-    >
-      <div
-        className="absolute top-0 left-4 right-4 h-px"
-        style={{ background: `linear-gradient(90deg, transparent, ${SAGE}40, transparent)` }}
-      />
+    <div className="w-full max-w-xl flex flex-col items-center">
+      <motion.div
+        key={currentPhrase}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.08 }}
+        className="text-center"
+        style={{ lineHeight: 1.6 }}
+      >
+        <ORPPhrase
+          phrase={currentPhrase}
+          fontSize={fontSize * 1.8}
+          fontFamily={fontFamily}
+        />
+      </motion.div>
 
-      {!isTraining ? (
-        <p className="text-gray-600 text-center">Press Start to begin training</p>
-      ) : (
-        <>
-          <motion.div
-            key={currentPhrase}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.08 }}
-            className="text-center max-w-lg"
-            style={{ lineHeight: 1.5 }}
-          >
-            <ORPPhrase
-              phrase={currentPhrase}
-              fontSize={fontSize * 1.5}
-              fontFamily={fontFamily}
-            />
-          </motion.div>
-
-          <div className="mt-8 w-full max-w-xs">
-            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-100"
-                style={{ width: `${progress * 100}%`, background: SAGE }}
-              />
-            </div>
-            <p className="text-center text-xs text-gray-500 mt-2">
-              {currentIndex} / {totalUnits}
-            </p>
-          </div>
-        </>
-      )}
+      {/* Progress */}
+      <div className="mt-12 w-full max-w-xs">
+        <div className="h-[2px] bg-white/5 rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-100"
+            style={{
+              width: `${progress * 100}%`,
+              background: `linear-gradient(90deg, ${SAGE}60, ${SAGE})`,
+            }}
+          />
+        </div>
+        <p className="text-center text-xs text-gray-600 mt-3">
+          {currentIndex} / {totalUnits}
+        </p>
+      </div>
     </div>
   );
 }
