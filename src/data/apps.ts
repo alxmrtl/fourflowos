@@ -167,7 +167,7 @@ Regular practice helps you enter a reading flow state where words process effort
     icon: '/assets/apps/flowread-icon.png',
     screenshots: [],
     platforms: ['web'],
-    webUrl: '#',
+    webUrl: '/tools/flowread',
     features: [
       {
         title: 'RSVP Training',
@@ -194,10 +194,10 @@ Regular practice helps you enter a reading flow state where words process effort
         description: 'Monitor your WPM improvements over time.',
       },
     ],
-    gradient: 'from-[#5B84B1] to-[#7A4DA4]',
-    accentColor: '#5B84B1',
-    relatedPillars: ['self', 'story'],
-    inDevelopment: true,
+    gradient: 'from-[#6BA292] to-[#5B84B1]',
+    accentColor: '#6BA292',
+    relatedPillars: ['self', 'space'],
+    inDevelopment: false,
   },
   flowrep: {
     id: 'flowrep',

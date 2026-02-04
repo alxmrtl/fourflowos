@@ -23,6 +23,14 @@ const TOOLS = [
     color: '#7A4DA4',
     logo: '/assets/LOGOS/IGNITED CURIOSITY.png',
   },
+  {
+    id: 'flowread',
+    name: 'FlowRead',
+    description: 'Speed reading trainer',
+    path: '/tools/flowread',
+    color: '#6BA292',
+    logo: '/assets/apps/flowread-icon.png',
+  },
 ];
 
 const FOUR_PILLAR_GRADIENT = 'linear-gradient(135deg, #FF6F61, #6BA292, #5B84B1, #7A4DA4)';
