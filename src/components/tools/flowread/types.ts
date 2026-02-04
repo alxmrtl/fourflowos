@@ -1,4 +1,4 @@
-export type TrainingMode = 'word' | 'phrases' | 'line';
+export type TrainingMode = 'word' | 'phrases';
 export type Tab = 'train' | 'about';
 export type FontType = 'serif' | 'sans';
 

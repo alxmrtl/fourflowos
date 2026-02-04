@@ -37,7 +37,6 @@ interface TrainScreenProps {
 const modeConfig = [
   { mode: 'word' as TrainingMode, label: 'Word', icon: '◈' },
   { mode: 'phrases' as TrainingMode, label: 'Phrases', icon: '◆' },
-  { mode: 'line' as TrainingMode, label: 'Line', icon: '▣' },
 ];
 
 export default function TrainScreen({
