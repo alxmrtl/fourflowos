@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default function PrivacyPage() {
-  const lastUpdated = 'December 31, 2024';
+  const lastUpdated = 'February 6, 2025';
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -350,10 +350,10 @@ export default function PrivacyPage() {
               </p>
               <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
                 <a
-                  href="mailto:support@fourflowos.com"
+                  href="mailto:fourflowos@gmail.com"
                   className="text-[#7A4DA4] hover:text-[#9A6DC4] transition-colors font-medium"
                 >
-                  support@fourflowos.com
+                  fourflowos@gmail.com
                 </a>
               </div>
             </section>
