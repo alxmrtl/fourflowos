@@ -114,15 +114,48 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
         },
         body: JSON.stringify({}),
       });
-      const data = await res.json();
-      if (data.success) {
-        await fetchAssessment();
-      } else {
-        alert(`Generation failed: ${data.error}`);
+
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        alert(`Generation failed: ${(data as { error?: string }).error || res.statusText}`);
+        return;
       }
+
+      // Drain the SSE stream — token events flow continuously during Claude generation,
+      // keeping the connection alive. We watch for 'done' or 'error' events.
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let errorMessage: string | null = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        // Process complete SSE events (delimited by double newline)
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
+
+        for (const part of parts) {
+          const dataLine = part.split('\n').find(l => l.startsWith('data: '));
+          if (!dataLine) continue;
+          try {
+            const event = JSON.parse(dataLine.slice(6)) as { type: string; message?: string };
+            if (event.type === 'error') errorMessage = event.message ?? 'Generation failed';
+          } catch { /* ignore malformed events */ }
+        }
+      }
+
+      if (errorMessage) {
+        alert(`Generation failed: ${errorMessage}`);
+        return;
+      }
+
+      await fetchAssessment();
     } catch (err) {
       console.error('Generate failed:', err);
-      alert('Generation timed out or encountered a network error. Try again.');
+      alert('Generation failed. Check your connection and try again.');
     } finally {
       setGenerating(false);
     }
@@ -201,7 +234,14 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
         <Section title="Intake" color="#ffffff">
           <InfoRow label="Date of birth" value={`${assessment.birth_date}${assessment.birth_time_known && assessment.birth_time ? ` at ${assessment.birth_time}` : ''}`} />
           <InfoRow label="Born in" value={assessment.birth_location} />
-          <InfoRow label="Chart" value={assessment.natal_chart_data ? 'Calculated' : 'Pending generation'} />
+          <InfoRow
+            label="Chart"
+            value={
+              assessment.natal_chart_data
+                ? ((assessment.natal_chart_data as Record<string, string>).context || 'Calculated')
+                : 'Pending generation'
+            }
+          />
           <div className="pt-2 border-t border-white/5 mt-2">
             <TextBlock label="What's working" text={assessment.context_working} />
             <TextBlock label="What's stuck" text={assessment.context_stuck} />
@@ -231,7 +271,7 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
             <p className="text-sm font-medium text-gray-400 mb-1">Next step</p>
             <p className="text-white font-semibold mb-4">Generate Flow Profile</p>
             <p className="text-sm text-gray-500 mb-5">
-              Combines their intake responses with natal chart data to generate a personalized Flow Profile. Takes ~30 seconds.
+              Combines their intake responses with natal chart data to generate a personalized Flow Profile. Takes 30–60 seconds.
             </p>
             <ActionButton
               label="Generate Flow Profile"
