@@ -9,10 +9,10 @@ import { ASSESSMENT_STATUSES } from '@/lib/supabase';
 const STATUS_LABELS: Record<AssessmentStatus, string> = {
   intake_submitted: 'Intake Submitted',
   lite_generated: 'Lite Profile Ready',
-  processing: 'Processing',
+  processing: 'Briefing Ready',
   session_1_scheduled: 'Session 1 Scheduled',
   session_1_complete: 'Session 1 Complete',
-  synthesis: 'Synthesis',
+  synthesis: 'Profile Ready',
   session_2_scheduled: 'Session 2 Scheduled',
   delivered: 'Delivered',
 };
@@ -176,6 +176,7 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
       }
     } catch (err) {
       console.error('Process failed:', err);
+      alert(`${label} failed — the request timed out or encountered a network error. Try again.`);
     } finally {
       setActiveAction(null);
     }
@@ -369,22 +370,13 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
           <h3 className="text-sm font-medium text-gray-400 mb-4">Actions</h3>
           <div className="flex flex-wrap gap-3">
             {assessment.status === 'intake_submitted' && (
-              <>
-                <ActionButton
-                  label="Generate Lite Profile"
-                  loading={activeAction === 'Generate Lite Profile'}
-                  disabled={activeAction !== null}
-                  onClick={() => runProcess('lite', 'Generate Lite Profile')}
-                  color="from-[#8B5CF6] to-[#6BA292]"
-                />
-                <ActionButton
-                  label="Generate Facilitator Briefing"
-                  loading={activeAction === 'Generate Facilitator Briefing'}
-                  disabled={activeAction !== null}
-                  onClick={() => runProcess('briefing', 'Generate Facilitator Briefing')}
-                  color="from-[#EAB308] to-[#F97316]"
-                />
-              </>
+              <ActionButton
+                label="Generate Facilitator Briefing"
+                loading={activeAction === 'Generate Facilitator Briefing'}
+                disabled={activeAction !== null}
+                onClick={() => runProcess('briefing', 'Generate Facilitator Briefing')}
+                color="from-[#EAB308] to-[#F97316]"
+              />
             )}
 
             {assessment.status === 'lite_generated' && (

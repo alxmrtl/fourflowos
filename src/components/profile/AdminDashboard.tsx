@@ -8,7 +8,7 @@ import type { Assessment, AssessmentStatus } from '@/lib/supabase';
 const STATUS_CONFIG: Record<AssessmentStatus, { label: string; color: string; bg: string }> = {
   intake_submitted: { label: 'Intake', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
   lite_generated: { label: 'Lite Ready', color: 'text-violet-400', bg: 'bg-violet-500/10 border-violet-500/20' },
-  processing: { label: 'Processing', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20' },
+  processing: { label: 'Briefing Ready', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20' },
   session_1_scheduled: { label: 'Session 1', color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/20' },
   session_1_complete: { label: 'Session Done', color: 'text-[#6BA292]', bg: 'bg-[#6BA292]/10 border-[#6BA292]/20' },
   synthesis: { label: 'Synthesis', color: 'text-[#5B84B1]', bg: 'bg-[#5B84B1]/10 border-[#5B84B1]/20' },
@@ -19,11 +19,10 @@ const STATUS_CONFIG: Record<AssessmentStatus, { label: string; color: string; bg
 const FILTER_OPTIONS: { value: string; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'intake_submitted', label: 'Intake' },
-  { value: 'lite_generated', label: 'Lite Ready' },
-  { value: 'processing', label: 'Processing' },
+  { value: 'processing', label: 'Briefing Ready' },
   { value: 'session_1_scheduled', label: 'Session 1' },
   { value: 'session_1_complete', label: 'Session Done' },
-  { value: 'synthesis', label: 'Synthesis' },
+  { value: 'synthesis', label: 'Profile Ready' },
   { value: 'delivered', label: 'Delivered' },
 ];
 
