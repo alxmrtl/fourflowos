@@ -121,12 +121,13 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
         return;
       }
 
-      // Drain the SSE stream — token events flow continuously during Claude generation,
-      // keeping the connection alive. We watch for 'done' or 'error' events.
+      // Drain the SSE stream — heartbeat events flow every 5s during generation,
+      // keeping the connection alive. We watch for 'done' or 'error' as the final signal.
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
       let errorMessage: string | null = null;
+      let gotDone = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -143,12 +144,18 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
           try {
             const event = JSON.parse(dataLine.slice(6)) as { type: string; message?: string };
             if (event.type === 'error') errorMessage = event.message ?? 'Generation failed';
+            if (event.type === 'done') gotDone = true;
           } catch { /* ignore malformed events */ }
         }
       }
 
       if (errorMessage) {
         alert(`Generation failed: ${errorMessage}`);
+        return;
+      }
+
+      if (!gotDone) {
+        alert('Generation was interrupted before completing. Please try again.');
         return;
       }
 

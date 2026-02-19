@@ -103,20 +103,16 @@ async function fetchChartData(assessment: Record<string, unknown>): Promise<stri
     });
 
     if (!res.ok) {
-      console.error('Chart service error:', res.status);
+      console.error('[process] Chart service error:', res.status);
       return 'Chart service unavailable.';
     }
 
     const data = await res.json();
     return JSON.stringify(data, null, 2);
   } catch (err) {
-    console.error('Chart service fetch error:', err);
+    console.error('[process] Chart service fetch error:', err);
     return 'Chart service unavailable.';
   }
-}
-
-function sseEvent(data: object): Uint8Array {
-  return new TextEncoder().encode(`data: ${JSON.stringify(data)}\n\n`);
 }
 
 export async function POST(
@@ -129,94 +125,117 @@ export async function POST(
 
   const { id } = await params;
 
-  // Return a streaming response immediately.
-  // Token events flow continuously during Claude generation, preventing the
-  // Vercel gateway from firing a 504 (which triggers when no bytes arrive in ~30s).
-  const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        const { data: assessment, error: fetchError } = await supabase
-          .from('assessments')
-          .select('*')
-          .eq('id', id)
-          .single();
+  const encoder = new TextEncoder();
+  const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
+  const writer = writable.getWriter();
 
-        if (fetchError || !assessment) {
-          controller.enqueue(sseEvent({ type: 'error', message: 'Assessment not found' }));
-          controller.close();
-          return;
-        }
+  const write = (data: object): Promise<void> =>
+    writer.write(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
 
-        // Use cached chart data if available, otherwise fetch and cache
-        let chartData = 'No chart data available.';
-        if (assessment.natal_chart_data) {
-          chartData = JSON.stringify(assessment.natal_chart_data, null, 2);
-        } else {
-          controller.enqueue(sseEvent({ type: 'status', message: 'Fetching natal chart...' }));
-          chartData = await fetchChartData(assessment);
-          if (!chartData.includes('unavailable') && !chartData.includes('No chart')) {
-            await supabase
-              .from('assessments')
-              .update({ natal_chart_data: JSON.parse(chartData) })
-              .eq('id', id);
-          }
-        }
+  // Run generation as a background async task.
+  // The open writer keeps the Vercel function alive until writer.close() is called.
+  void (async () => {
+    let heartbeat: ReturnType<typeof setInterval> | null = null;
 
-        controller.enqueue(sseEvent({ type: 'status', message: 'Generating profile...' }));
+    try {
+      const { data: assessment, error: fetchError } = await supabase
+        .from('assessments')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-        const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-        const intakeData = formatIntakeData(assessment);
-
-        const prompt = FLOW_PROFILE_PROMPT
-          .replace('{INTAKE_DATA}', intakeData)
-          .replace('{CHART_DATA}', chartData);
-
-        let profileText = '';
-
-        const streamResponse = anthropic.messages.stream({
-          model: 'claude-sonnet-4-5-20250929',
-          max_tokens: 3000,
-          messages: [{ role: 'user', content: prompt }],
-        });
-
-        for await (const chunk of streamResponse) {
-          if (
-            chunk.type === 'content_block_delta' &&
-            chunk.delta.type === 'text_delta'
-          ) {
-            profileText += chunk.delta.text;
-            // Forward each token — keeps bytes flowing, prevents gateway timeout
-            controller.enqueue(sseEvent({ type: 'token', t: chunk.delta.text }));
-          }
-        }
-
-        // Save completed profile to Supabase
-        const { error: updateError } = await supabase
-          .from('assessments')
-          .update({
-            flow_profile_draft: profileText,
-            status: 'synthesis',
-          })
-          .eq('id', id);
-
-        if (updateError) {
-          controller.enqueue(sseEvent({ type: 'error', message: updateError.message }));
-        } else {
-          controller.enqueue(sseEvent({ type: 'done' }));
-        }
-      } catch (error) {
-        console.error('Process error:', error);
-        controller.enqueue(sseEvent({
-          type: 'error',
-          message: error instanceof Error ? error.message : 'Unknown error',
-        }));
-      } finally {
-        controller.close();
+      if (fetchError || !assessment) {
+        await write({ type: 'error', message: 'Assessment not found' });
+        return;
       }
-    },
+
+      // Use cached chart data if available, otherwise fetch and cache
+      let chartData = 'No chart data available.';
+      if (assessment.natal_chart_data) {
+        chartData = JSON.stringify(assessment.natal_chart_data, null, 2);
+      } else {
+        await write({ type: 'status', message: 'Fetching natal chart...' });
+        chartData = await fetchChartData(assessment);
+        if (!chartData.includes('unavailable') && !chartData.includes('No chart')) {
+          await supabase
+            .from('assessments')
+            .update({ natal_chart_data: JSON.parse(chartData) })
+            .eq('id', id);
+        }
+      }
+
+      await write({ type: 'status', message: 'Generating profile...' });
+
+      // Heartbeat every 5s — prevents Vercel gateway from firing a 504
+      // (gateway cuts connection if no bytes arrive for ~30s)
+      heartbeat = setInterval(() => {
+        write({ type: 'heartbeat' }).catch(() => {
+          if (heartbeat) clearInterval(heartbeat);
+        });
+      }, 5000);
+
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      const intakeData = formatIntakeData(assessment);
+      const prompt = FLOW_PROFILE_PROMPT
+        .replace('{INTAKE_DATA}', intakeData)
+        .replace('{CHART_DATA}', chartData);
+
+      let profileText = '';
+
+      const stream = anthropic.messages.stream({
+        model: 'claude-sonnet-4-5-20250929',
+        max_tokens: 3000,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      stream.on('text', (text) => {
+        profileText += text;
+      });
+
+      await stream.finalMessage();
+
+      if (heartbeat) {
+        clearInterval(heartbeat);
+        heartbeat = null;
+      }
+
+      console.log(`[process] Generated ${profileText.length} chars for ${id}`);
+
+      if (!profileText) {
+        await write({ type: 'error', message: 'Generation returned empty profile' });
+        return;
+      }
+
+      const { error: updateError } = await supabase
+        .from('assessments')
+        .update({
+          flow_profile_draft: profileText,
+          status: 'synthesis',
+        })
+        .eq('id', id);
+
+      if (updateError) {
+        console.error('[process] Supabase update error:', updateError);
+        await write({ type: 'error', message: updateError.message });
+      } else {
+        console.log(`[process] Updated ${id} to synthesis`);
+        await write({ type: 'done' });
+      }
+    } catch (error) {
+      console.error('[process] Error:', error);
+      if (heartbeat) clearInterval(heartbeat);
+      await write({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      });
+    } finally {
+      await writer.close();
+    }
+  })().catch((err) => {
+    console.error('[process] Unhandled background error:', err);
   });
 
-  return new Response(stream, {
+  return new Response(readable, {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
