@@ -66,13 +66,21 @@ export async function sendDeliveryEmail({
   to,
   name,
   viewUrl,
+  customNotes,
 }: {
   to: string;
   name: string;
   viewUrl: string;
+  customNotes?: string;
 }) {
   const firstName = name.split(' ')[0];
   const resend = getResend();
+
+  const customNotesHtml = customNotes?.trim()
+    ? `<div style="margin: 24px 0; padding: 20px; background: #f5f5f5; border-left: 3px solid #6BA292; border-radius: 4px;">
+        <p style="font-size: 15px; line-height: 1.7; color: #444; margin: 0; white-space: pre-wrap;">${customNotes.trim()}</p>
+       </div>`
+    : '';
 
   await resend.emails.send({
     from: FROM_EMAIL,
@@ -91,6 +99,8 @@ export async function sendDeliveryEmail({
         <p style="font-size: 16px; line-height: 1.6; color: #333;">
           Your personalized Flow Profile is ready. This is your map — a snapshot of where you are right now across the four dimensions that shape flow.
         </p>
+
+        ${customNotesHtml}
 
         <div style="text-align: center; margin: 32px 0;">
           <a href="${viewUrl}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6BA292, #7A4DA4); color: white; text-decoration: none; border-radius: 12px; font-size: 16px; font-weight: 600;">

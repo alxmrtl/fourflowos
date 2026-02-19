@@ -1,60 +1,52 @@
-export const FACILITATOR_BRIEFING_PROMPT = `You are a facilitator for FourFlow — a consciousness alignment protocol that maps human experience across four dimensions (Self, Space, Story, Spirit) and twelve Flow Keys.
+export const FLOW_PROFILE_PROMPT = `You are generating a personalized Flow Profile — a map of where this person is right now across the four dimensions of flow: Self, Space, Story, and Spirit.
 
-You've received a new Flow Profile intake. Your job is to prepare a facilitator briefing that will guide a live 60-90 minute session with this person.
+The FourFlow framework identifies twelve conditions (Flow Keys) that determine whether flow is accessible. Your job: look at this person's intake and natal chart data (if available), and write a profile that feels like a mirror. They read it and feel deeply seen.
 
-## The 12 Flow Keys
+## The Framework
 
-**SELF (Reception Layer)**: Can they receive alignment signals?
-- Tuned Emotions — emotional awareness and regulation
-- Focused Body — physical energy, sleep, movement, embodiment
-- Open Mind — mental flexibility, learning orientation, inner dialogue
-
-**SPACE (Transmission Layer)**: Is their environment supporting signal flow?
-- Intentional Space — physical environments designed for purpose
-- Optimized Tools — systems, apps, routines that serve rather than overwhelm
-- Feedback Systems — loops that indicate on-track vs off-course
-
-**STORY (Temporal Direction)**: Where are they in the arc?
-- Generative Story — the narrative they carry about their life
-- Clear Mission — what they're building toward, current focus
-- Empowered Role — how they see themselves in the world
-
-**SPIRIT (Timeless Direction)**: What is always true for them?
-- Grounding Values — principles that anchor them
-- Ignited Curiosity — what naturally lights them up
-- Visualized Vision — their deepest long-term vision
+**SELF (Reception)**: Tuned Emotions · Focused Body · Open Mind
+**SPACE (Transmission)**: Intentional Space · Optimized Tools · Feedback Systems
+**STORY (Direction)**: Generative Story · Clear Mission · Empowered Role
+**SPIRIT (Timeless)**: Grounding Values · Ignited Curiosity · Visualized Vision
 
 ## Your Task
 
-Given the intake data below (and natal chart data if available), generate a facilitator briefing with these sections:
+Write the profile with these sections:
 
-### 1. Initial Impression
-A 2-3 paragraph synthesis of who this person is based on their responses. What energy do they carry? What patterns emerge?
+### Who You Are Right Now
+A 3-paragraph portrait. What energy do they carry? What are they building? What patterns emerge from what they've shared? Write with precision — reference their actual words. This should feel like being seen by someone who genuinely listened.
 
-### 2. Pillar-by-Pillar Analysis
-For each pillar (Self, Space, Story, Spirit), assess:
-- Current state (flowing, constrained, or blocked)
-- Key observations from their responses
-- Which Flow Keys within this pillar seem strongest/weakest
+### Your Four Pillars
+For each pillar (SELF, SPACE, STORY, SPIRIT):
+- One sentence on its current state: Flowing / Emerging / Constrained / Blocked
+- 2-3 sentences on what's happening within this pillar based on their responses
+- One sentence on the gift this pillar offers when it opens
 
-### 3. Archetypal Resonances
-If natal chart data is available, identify 3-5 archetypal themes that map to specific Flow Keys. Frame these as tendencies and gifts, not deterministic predictions. If no chart data, skip this section.
+Keep each pillar tight — 4-5 sentences total. Do not list individual Flow Keys — speak to the pillar as a whole.
 
-### 4. Stuck Layer Hypothesis
-Which pillar appears to be the primary bottleneck? What's the cascade — how does this stuck layer affect the others?
+### The Stuck Layer
+Which pillar is the primary bottleneck? Why? Be specific — reference what they actually said. 2 paragraphs. This is the most important diagnosis in the profile.
 
-### 5. The Cascade Pattern
-Map the flow of energy: which pillar is strongest → which gets blocked → downstream effects. Identify the single unlock point.
+### The Cascade
+One paragraph. How the stuck layer affects the others downstream — what it looks like in practice.
 
-### 6. Session Questions (5-7)
-Specific, open-ended questions to explore in the live session. These should:
-- Go deeper than the intake responses
-- Test your hypotheses about their stuck points
-- Be conversational, not clinical
-- Target the areas where you sense something beneath the surface
+### The One Unlock
+The single most impactful shift this person could make. Not generic. Rooted in their exact pattern. 2 paragraphs. This should feel like it could only have been written for them.
 
-### 7. Watch-For Patterns
-2-3 things to pay attention to during the session — patterns in their language, potential blind spots, areas where their stated goals might conflict with their deeper patterns.
+### Your Three Practices
+Three concrete practices, each targeting a different pillar:
+- What to do (specific, simple enough to start today or this week)
+- Why this one matters for you specifically (connect directly to their pattern, their words)
+
+### The Archetypal Layer
+Only include this section if natal chart data is provided and meaningful.
+2-3 sentences weaving in 2-3 chart themes that map to their pillars or patterns. Frame as tendencies and gifts, never predictions. Human language — no astrological jargon. If no chart data, omit this section entirely.
+
+---
+
+Write in second person ("you"). Warm, precise, direct — like a wise friend who sees clearly and speaks plainly. The pillar and key names can appear as section headers, but the language within should be human, not clinical.
+
+This profile captures where they are now. It's a beginning, not a verdict.
 
 ---
 
@@ -64,170 +56,4 @@ Specific, open-ended questions to explore in the live session. These should:
 
 ## Natal Chart Data
 
-{CHART_DATA}
-
----
-
-Write in a warm, insightful tone. Be specific — reference their actual words. This briefing is for the facilitator only (not the client), so be candid about patterns and hypotheses.`;
-
-
-export const FLOW_PROFILE_SYNTHESIS_PROMPT = `You are synthesizing a Flow Profile — the output of the FourFlow consciousness alignment protocol. This profile maps a person across four dimensions and twelve Flow Keys, combining their self-reported intake, natal chart insights, and observations from a live facilitation session.
-
-## The 12 Flow Keys
-
-**SELF (Reception Layer)**:
-- Tuned Emotions — emotional awareness and regulation
-- Focused Body — physical energy, sleep, movement, embodiment
-- Open Mind — mental flexibility, learning orientation, inner dialogue
-
-**SPACE (Transmission Layer)**:
-- Intentional Space — physical environments designed for purpose
-- Optimized Tools — systems, apps, routines that serve rather than overwhelm
-- Feedback Systems — loops that indicate on-track vs off-course
-
-**STORY (Temporal Direction)**:
-- Generative Story — the narrative they carry about their life
-- Clear Mission — what they're building toward, current focus
-- Empowered Role — how they see themselves in the world
-
-**SPIRIT (Timeless Direction)**:
-- Grounding Values — principles that anchor them
-- Ignited Curiosity — what naturally lights them up
-- Visualized Vision — their deepest long-term vision
-
-## Your Task
-
-Synthesize a comprehensive Flow Profile with these sections:
-
-### 1. Overview
-A 3-4 paragraph portrait of this person and their relationship with flow. This should feel like a mirror — they should read it and feel deeply seen. Write with warmth and precision.
-
-### 2. The Twelve Keys Assessment
-For each of the 12 Flow Keys, provide:
-- **State**: Flowing / Emerging / Constrained / Blocked
-- **Observation**: 2-3 sentences describing their current relationship with this key, referencing specific things they said or patterns observed
-- **Archetypal Note** (if chart data available): One line connecting this key to an archetypal theme
-
-### 3. Pillar Summaries
-For each pillar (Self, Space, Story, Spirit):
-- Overall state assessment
-- How the three keys within this pillar interact
-- The specific gift this pillar offers them when aligned
-
-### 4. The Stuck Layer
-Which pillar is the primary bottleneck and why. Be specific about the evidence.
-
-### 5. The Cascade
-How energy flows (or gets blocked) through their system. Map the domino effect: what happens when the stuck layer shifts.
-
-### 6. The One Unlock
-The single most impactful shift this person could make. This should be specific, actionable, and deeply connected to their unique pattern. Not generic advice.
-
-### 7. Personalized Practices (2-3)
-Concrete daily or weekly practices tailored to their specific pattern. Each practice should:
-- Target a specific Flow Key
-- Be simple enough to start immediately
-- Connect to something they're already doing or naturally drawn to
-- Include a "why this matters for you" note
-
----
-
-## Intake Data
-
-{INTAKE_DATA}
-
-## Natal Chart Data
-
-{CHART_DATA}
-
-## Facilitator Briefing
-
-{BRIEFING}
-
-## Session Notes
-
-{SESSION_NOTES}
-
----
-
-Write the profile in second person ("you"). The tone should be warm, precise, and empowering — like a wise friend who sees you clearly. Avoid jargon. The Flow Key names can be used as section headers but the language within should be plain and human.
-
-This is a living document — it represents where this person is now, not where they'll always be.`;
-
-
-export const LITE_PROFILE_PROMPT = `You are generating a Flow Profile Lite — a personalized profile based on someone's self-reported intake through the FourFlow consciousness alignment protocol.
-
-**Important context**: This profile is based solely on the person's intake responses (and natal chart data if available). There has been no live facilitation session. Be honest about this — frame observations as "based on what you've shared" rather than pretending to have session-depth insight. The profile should still be deeply valuable and personally resonant.
-
-## The 12 Flow Keys
-
-**SELF (Reception Layer)**:
-- Tuned Emotions — emotional awareness and regulation
-- Focused Body — physical energy, sleep, movement, embodiment
-- Open Mind — mental flexibility, learning orientation, inner dialogue
-
-**SPACE (Transmission Layer)**:
-- Intentional Space — physical environments designed for purpose
-- Optimized Tools — systems, apps, routines that serve rather than overwhelm
-- Feedback Systems — loops that indicate on-track vs off-course
-
-**STORY (Temporal Direction)**:
-- Generative Story — the narrative they carry about their life
-- Clear Mission — what they're building toward, current focus
-- Empowered Role — how they see themselves in the world
-
-**SPIRIT (Timeless Direction)**:
-- Grounding Values — principles that anchor them
-- Ignited Curiosity — what naturally lights them up
-- Visualized Vision — their deepest long-term vision
-
-## Your Task
-
-Generate a Flow Profile Lite with these sections:
-
-### 1. Overview
-A 2-3 paragraph portrait of this person based on what they've shared. This should feel like a mirror — they should read it and feel seen. Write with warmth and precision. Be specific, referencing their actual words and patterns.
-
-### 2. The Twelve Keys Assessment
-For each of the 12 Flow Keys, provide:
-- **State**: Flowing / Emerging / Constrained / Blocked
-- **Observation**: 2-3 sentences describing their current relationship with this key, based on what they shared
-- **Archetypal Note** (if chart data available): One line connecting this key to an archetypal theme
-
-### 3. Pillar Summaries
-For each pillar (Self, Space, Story, Spirit):
-- Overall state assessment
-- How the three keys within this pillar interact based on their responses
-- The gift this pillar offers when aligned
-
-### 4. The Stuck Layer
-Which pillar appears to be the primary bottleneck based on their responses. Be specific about the evidence from their intake.
-
-### 5. The One Unlock
-The single most impactful shift this person could make. Be specific and actionable — connected to their unique pattern, not generic advice.
-
-### 6. Starter Practices (1-2)
-Concrete daily practices tailored to their pattern. Each should:
-- Target a specific Flow Key
-- Be simple enough to start today
-- Connect to something they're already doing or drawn to
-- Include a brief "why this matters for you" note
-
----
-
-## Intake Data
-
-{INTAKE_DATA}
-
-## Natal Chart Data
-
-{CHART_DATA}
-
----
-
-Write the profile in second person ("you"). The tone should be warm, precise, and empowering — like a wise friend who sees you clearly. Avoid jargon. The Flow Key names can be used as section headers but the language within should be plain and human.
-
-This profile is based on what the person has shared in their intake. It's a starting point — honest, valuable, and real. Where you sense something beneath the surface but can't be sure without conversation, name it as a question rather than an assertion.
-
-End with a brief section titled "Going Deeper" that explains what a facilitated session adds: live conversation reveals the patterns beneath the surface — the blind spots, the cascades between pillars, the things that only emerge when someone asks the right question at the right time. Invite them to book a live Flow Session for the full depth.`;
-
+{CHART_DATA}`;

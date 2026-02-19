@@ -19,7 +19,7 @@ export async function POST(
 
   const { id } = await params;
   const body = await request.json();
-  const { flow_profile_final } = body as { flow_profile_final?: string };
+  const { flow_profile_final, custom_notes } = body as { flow_profile_final?: string; custom_notes?: string };
 
   try {
     // Fetch the assessment
@@ -67,6 +67,7 @@ export async function POST(
         to: assessment.email,
         name: assessment.name,
         viewUrl,
+        customNotes: custom_notes,
       });
     } catch (emailError) {
       console.error('Delivery email failed:', emailError);

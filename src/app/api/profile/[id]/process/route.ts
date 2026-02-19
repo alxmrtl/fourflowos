@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
-import { FACILITATOR_BRIEFING_PROMPT, FLOW_PROFILE_SYNTHESIS_PROMPT, LITE_PROFILE_PROMPT } from '@/data/profile-prompts';
+import { FLOW_PROFILE_PROMPT } from '@/data/profile-prompts';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60; // Allow up to 60s for AI generation
+export const maxDuration = 60;
 
 function isAuthorized(request: NextRequest): boolean {
   const key = request.headers.get('x-admin-key');
@@ -124,15 +124,8 @@ export async function POST(
   }
 
   const { id } = await params;
-  const body = await request.json();
-  const { type } = body as { type: 'briefing' | 'synthesis' | 'lite' };
-
-  if (!type || !['briefing', 'synthesis', 'lite'].includes(type)) {
-    return NextResponse.json({ success: false, error: 'Invalid type. Must be "briefing", "synthesis", or "lite".' }, { status: 400 });
-  }
 
   try {
-    // Fetch the assessment
     const { data: assessment, error: fetchError } = await supabase
       .from('assessments')
       .select('*')
@@ -143,141 +136,51 @@ export async function POST(
       return NextResponse.json({ success: false, error: 'Assessment not found' }, { status: 404 });
     }
 
+    // Use cached chart data if available, otherwise fetch and cache
+    let chartData = 'No chart data available.';
+    if (assessment.natal_chart_data) {
+      chartData = JSON.stringify(assessment.natal_chart_data, null, 2);
+    } else {
+      chartData = await fetchChartData(assessment);
+      if (!chartData.includes('unavailable') && !chartData.includes('No chart')) {
+        await supabase
+          .from('assessments')
+          .update({ natal_chart_data: JSON.parse(chartData) })
+          .eq('id', id);
+      }
+    }
+
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const intakeData = formatIntakeData(assessment);
 
-    if (type === 'lite') {
-      // Lite profile — intake-only, no session required
-      let chartData = 'No chart data available.';
-      if (assessment.natal_chart_data) {
-        chartData = JSON.stringify(assessment.natal_chart_data, null, 2);
-      } else {
-        chartData = await fetchChartData(assessment);
-        if (!chartData.includes('unavailable') && !chartData.includes('No chart')) {
-          await supabase
-            .from('assessments')
-            .update({ natal_chart_data: JSON.parse(chartData) })
-            .eq('id', id);
-        }
-      }
+    const prompt = FLOW_PROFILE_PROMPT
+      .replace('{INTAKE_DATA}', intakeData)
+      .replace('{CHART_DATA}', chartData);
 
-      const prompt = LITE_PROFILE_PROMPT
-        .replace('{INTAKE_DATA}', intakeData)
-        .replace('{CHART_DATA}', chartData);
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: prompt }],
+    });
 
-      const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 6144,
-        messages: [{ role: 'user', content: prompt }],
-      });
+    const profileText = message.content
+      .filter(block => block.type === 'text')
+      .map(block => block.type === 'text' ? block.text : '')
+      .join('\n');
 
-      const profileText = message.content
-        .filter(block => block.type === 'text')
-        .map(block => block.type === 'text' ? block.text : '')
-        .join('\n');
+    const { error: updateError } = await supabase
+      .from('assessments')
+      .update({
+        flow_profile_draft: profileText,
+        status: 'synthesis',
+      })
+      .eq('id', id);
 
-      const { error: updateError } = await supabase
-        .from('assessments')
-        .update({
-          flow_profile_draft: profileText,
-          status: 'lite_generated',
-        })
-        .eq('id', id);
-
-      if (updateError) {
-        return NextResponse.json({ success: false, error: updateError.message }, { status: 500 });
-      }
-
-      return NextResponse.json({ success: true, type: 'lite' });
-
-    } else if (type === 'briefing') {
-      // Fetch chart data
-      let chartData = 'No chart data available.';
-      if (assessment.natal_chart_data) {
-        chartData = JSON.stringify(assessment.natal_chart_data, null, 2);
-      } else {
-        chartData = await fetchChartData(assessment);
-        // Store chart data if we got it
-        if (!chartData.includes('unavailable') && !chartData.includes('No chart')) {
-          await supabase
-            .from('assessments')
-            .update({ natal_chart_data: JSON.parse(chartData) })
-            .eq('id', id);
-        }
-      }
-
-      const prompt = FACILITATOR_BRIEFING_PROMPT
-        .replace('{INTAKE_DATA}', intakeData)
-        .replace('{CHART_DATA}', chartData);
-
-      const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 4096,
-        messages: [{ role: 'user', content: prompt }],
-      });
-
-      const briefingText = message.content
-        .filter(block => block.type === 'text')
-        .map(block => block.type === 'text' ? block.text : '')
-        .join('\n');
-
-      // Update assessment
-      const { error: updateError } = await supabase
-        .from('assessments')
-        .update({
-          facilitator_briefing: briefingText,
-          status: 'processing',
-        })
-        .eq('id', id);
-
-      if (updateError) {
-        return NextResponse.json({ success: false, error: updateError.message }, { status: 500 });
-      }
-
-      return NextResponse.json({ success: true, type: 'briefing' });
-
-    } else {
-      // Synthesis — requires session notes
-      if (!assessment.session_1_notes) {
-        return NextResponse.json({ success: false, error: 'Session 1 notes are required for synthesis' }, { status: 400 });
-      }
-
-      const chartData = assessment.natal_chart_data
-        ? JSON.stringify(assessment.natal_chart_data, null, 2)
-        : 'No chart data available.';
-
-      const prompt = FLOW_PROFILE_SYNTHESIS_PROMPT
-        .replace('{INTAKE_DATA}', intakeData)
-        .replace('{CHART_DATA}', chartData)
-        .replace('{BRIEFING}', assessment.facilitator_briefing || 'No briefing available.')
-        .replace('{SESSION_NOTES}', assessment.session_1_notes);
-
-      const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 8192,
-        messages: [{ role: 'user', content: prompt }],
-      });
-
-      const profileText = message.content
-        .filter(block => block.type === 'text')
-        .map(block => block.type === 'text' ? block.text : '')
-        .join('\n');
-
-      // Update assessment
-      const { error: updateError } = await supabase
-        .from('assessments')
-        .update({
-          flow_profile_draft: profileText,
-          status: 'synthesis',
-        })
-        .eq('id', id);
-
-      if (updateError) {
-        return NextResponse.json({ success: false, error: updateError.message }, { status: 500 });
-      }
-
-      return NextResponse.json({ success: true, type: 'synthesis' });
+    if (updateError) {
+      return NextResponse.json({ success: false, error: updateError.message }, { status: 500 });
     }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Process error:', error);
     return NextResponse.json(
