@@ -12,9 +12,10 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
 
   // Pages that use the landing/standalone layout (no bottom nav padding)
   const landingPages = ['/', '/privacy'];
+  const isProfilePage = pathname.startsWith('/profile');
   const isLandingPage = landingPages.includes(pathname);
 
-  if (isLandingPage) {
+  if (isLandingPage || isProfilePage) {
     // Landing page layout - no extra wrapper styles
     return <>{children}</>;
   }
