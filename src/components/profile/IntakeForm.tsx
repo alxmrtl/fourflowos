@@ -21,6 +21,8 @@ const INITIAL_DATA = {
   birth_time: '',
   birth_time_known: false,
   birth_location: '',
+  birth_lat: '',
+  birth_lng: '',
   context_working: '',
   context_stuck: '',
   context_building: '',
@@ -140,17 +142,17 @@ export default function IntakeForm() {
         </h2>
 
         <p className="text-lg text-gray-400 mb-6 max-w-md mx-auto">
-          Your Flow Profile intake has been submitted. We&apos;ll review your responses and be in touch to schedule your live session.
+          Your Flow Profile intake has been received. Check your email for a confirmation &mdash; we&apos;ll send you your profile once it&apos;s ready.
         </p>
 
         <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 max-w-md mx-auto">
           <h3 className="text-sm font-medium text-gray-400 mb-3">What happens next</h3>
           <ol className="space-y-3 text-left">
             {[
-              'We prepare your facilitator briefing using your responses and natal chart',
-              'We schedule a 60-90 minute live session with you',
-              'After the session, we synthesize your full Flow Profile',
-              'You receive your personalized profile with practices and insights',
+              'You\'ll receive a confirmation email shortly',
+              'We review your responses and generate your personalized Flow Profile',
+              'You\'ll get an email with a link to view your profile',
+              'Want to go deeper? Book a live facilitated session for the full experience',
             ].map((item, i) => (
               <li key={i} className="flex items-start gap-3 text-sm text-gray-300">
                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs text-gray-500">

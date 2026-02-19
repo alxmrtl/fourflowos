@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { randomUUID } from 'crypto';
 import { supabase } from '@/lib/supabase';
+import { sendConfirmationEmail } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +36,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Generate a secure view token for profile delivery
+    const viewToken = randomUUID();
+
     // Insert into Supabase
     const { data, error } = await supabase
       .from('assessments')
@@ -44,6 +49,8 @@ export async function POST(request: NextRequest) {
         birth_time: body.birth_time_known && body.birth_time ? body.birth_time : null,
         birth_time_known: Boolean(body.birth_time_known),
         birth_location: body.birth_location.trim(),
+        birth_lat: body.birth_lat ? parseFloat(body.birth_lat) : null,
+        birth_lng: body.birth_lng ? parseFloat(body.birth_lng) : null,
         context_working: body.context_working.trim(),
         context_stuck: body.context_stuck.trim(),
         context_building: body.context_building.trim(),
@@ -60,6 +67,7 @@ export async function POST(request: NextRequest) {
         spirit_curiosity: body.spirit_curiosity.trim(),
         spirit_vision: body.spirit_vision.trim(),
         status: 'intake_submitted',
+        view_token: viewToken,
       })
       .select('id')
       .single();
@@ -90,6 +98,16 @@ export async function POST(request: NextRequest) {
     } catch (emailError) {
       // Don't fail the submission if email notification fails
       console.error('Email notification failed:', emailError);
+    }
+
+    // Send confirmation email to the user
+    try {
+      await sendConfirmationEmail({
+        to: body.email.trim().toLowerCase(),
+        name: body.name.trim(),
+      });
+    } catch (confirmError) {
+      console.error('Confirmation email failed:', confirmError);
     }
 
     return NextResponse.json({ success: true, id: data.id });

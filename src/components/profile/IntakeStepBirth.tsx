@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import LocationAutocomplete from './LocationAutocomplete';
 
 interface IntakeStepBirthProps {
   data: {
@@ -8,6 +9,8 @@ interface IntakeStepBirthProps {
     birth_time: string;
     birth_time_known: boolean;
     birth_location: string;
+    birth_lat: string;
+    birth_lng: string;
   };
   onChange: (field: string, value: string | boolean) => void;
   focusedField: string | null;
@@ -109,20 +112,20 @@ export default function IntakeStepBirth({ data, onChange, focusedField, setFocus
         </div>
 
         <div>
-          <label htmlFor="birth_location" className="block text-sm font-medium text-gray-400 mb-2">
+          <label className="block text-sm font-medium text-gray-400 mb-2">
             Place of Birth
           </label>
-          <input
-            type="text"
-            id="birth_location"
-            required
+          <LocationAutocomplete
             value={data.birth_location}
-            onChange={(e) => onChange('birth_location', e.target.value)}
-            onFocus={() => setFocusedField('birth_location')}
-            onBlur={() => setFocusedField(null)}
-            className={inputClasses('birth_location')}
-            placeholder="City, Country (e.g., London, UK)"
+            onChange={(field, value) => onChange(field, value)}
+            focusedField={focusedField}
+            setFocusedField={setFocusedField}
           />
+          {data.birth_location && !data.birth_lat && (
+            <p className="mt-2 text-xs text-amber-500/70">
+              Select a result from the dropdown to confirm the location.
+            </p>
+          )}
         </div>
       </div>
     </motion.div>

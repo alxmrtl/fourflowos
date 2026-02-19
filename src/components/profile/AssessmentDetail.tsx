@@ -8,6 +8,7 @@ import { ASSESSMENT_STATUSES } from '@/lib/supabase';
 
 const STATUS_LABELS: Record<AssessmentStatus, string> = {
   intake_submitted: 'Intake Submitted',
+  lite_generated: 'Lite Profile Ready',
   processing: 'Processing',
   session_1_scheduled: 'Session 1 Scheduled',
   session_1_complete: 'Session 1 Complete',
@@ -18,6 +19,7 @@ const STATUS_LABELS: Record<AssessmentStatus, string> = {
 
 const STATUS_COLORS: Record<AssessmentStatus, string> = {
   intake_submitted: '#3B82F6',
+  lite_generated: '#8B5CF6',
   processing: '#EAB308',
   session_1_scheduled: '#F97316',
   session_1_complete: '#6BA292',
@@ -90,6 +92,7 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
         setAssessment(data.assessment);
         setSessionNotes(data.assessment.session_1_notes || '');
         setFinalProfile(data.assessment.flow_profile_final || data.assessment.flow_profile_draft || '');
+        setDraftProfile(data.assessment.flow_profile_draft || '');
       }
     } catch (err) {
       console.error('Failed to fetch assessment:', err);
@@ -125,7 +128,36 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
     }
   };
 
-  const runProcess = async (type: 'briefing' | 'synthesis') => {
+  const [draftProfile, setDraftProfile] = useState('');
+  const [deliverLoading, setDeliverLoading] = useState(false);
+
+  const deliverProfile = async () => {
+    setDeliverLoading(true);
+    try {
+      const res = await fetch(`/api/profile/${id}/deliver`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': adminKey,
+        },
+        body: JSON.stringify({
+          flow_profile_final: draftProfile || assessment?.flow_profile_draft,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchAssessment();
+      } else {
+        alert(`Delivery failed: ${data.error}`);
+      }
+    } catch (err) {
+      console.error('Deliver failed:', err);
+    } finally {
+      setDeliverLoading(false);
+    }
+  };
+
+  const runProcess = async (type: 'briefing' | 'synthesis' | 'lite') => {
     setActionLoading(true);
     try {
       const res = await fetch(`/api/profile/${id}/process`, {
@@ -286,19 +318,19 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
           </Section>
         )}
 
-        {/* Flow Profile Draft / Final */}
-        {(assessment.flow_profile_draft || assessment.flow_profile_final) && (
-          <Section title="Flow Profile" color="#22C55E">
+        {/* Flow Profile Draft (editable before delivery) */}
+        {assessment.flow_profile_draft && !assessment.flow_profile_final && (
+          <Section title="Flow Profile Draft" color={assessment.status === 'lite_generated' ? '#8B5CF6' : '#5B84B1'}>
             {editingFinal ? (
               <textarea
-                value={finalProfile}
-                onChange={(e) => setFinalProfile(e.target.value)}
-                rows={20}
-                className="w-full px-4 py-3 bg-white/[0.05] border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-white/30 resize-none"
+                value={draftProfile}
+                onChange={(e) => setDraftProfile(e.target.value)}
+                rows={24}
+                className="w-full px-4 py-3 bg-white/[0.05] border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-white/30 resize-y"
               />
             ) : (
               <pre className="text-sm text-gray-300 whitespace-pre-wrap font-sans">
-                {assessment.flow_profile_final || assessment.flow_profile_draft}
+                {draftProfile || assessment.flow_profile_draft}
               </pre>
             )}
             <button
@@ -306,8 +338,25 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
               onClick={() => setEditingFinal(!editingFinal)}
               className="mt-3 text-xs text-gray-500 hover:text-gray-300 transition-colors"
             >
-              {editingFinal ? 'Preview' : 'Edit Final Version'}
+              {editingFinal ? 'Preview' : 'Edit Draft'}
             </button>
+          </Section>
+        )}
+
+        {/* Flow Profile Final (delivered) */}
+        {assessment.flow_profile_final && (
+          <Section title="Flow Profile (Delivered)" color="#22C55E">
+            <pre className="text-sm text-gray-300 whitespace-pre-wrap font-sans">
+              {assessment.flow_profile_final}
+            </pre>
+            {assessment.view_token && (
+              <div className="mt-4 pt-4 border-t border-white/10">
+                <p className="text-xs text-gray-500 mb-1">Client view link:</p>
+                <code className="text-xs text-[#6BA292] break-all">
+                  {typeof window !== 'undefined' ? `${window.location.origin}/profile/view/${assessment.view_token}` : `/profile/view/${assessment.view_token}`}
+                </code>
+              </div>
+            )}
           </Section>
         )}
 
@@ -320,11 +369,28 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
           <h3 className="text-sm font-medium text-gray-400 mb-4">Actions</h3>
           <div className="flex flex-wrap gap-3">
             {assessment.status === 'intake_submitted' && (
+              <>
+                <ActionButton
+                  label="Generate Lite Profile"
+                  loading={actionLoading}
+                  onClick={() => runProcess('lite')}
+                  color="from-[#8B5CF6] to-[#6BA292]"
+                />
+                <ActionButton
+                  label="Generate Facilitator Briefing"
+                  loading={actionLoading}
+                  onClick={() => runProcess('briefing')}
+                  color="from-[#EAB308] to-[#F97316]"
+                />
+              </>
+            )}
+
+            {assessment.status === 'lite_generated' && (
               <ActionButton
-                label="Generate Facilitator Briefing"
-                loading={actionLoading}
-                onClick={() => runProcess('briefing')}
-                color="from-[#EAB308] to-[#F97316]"
+                label="Deliver Profile"
+                loading={deliverLoading}
+                onClick={deliverProfile}
+                color="from-[#22C55E] to-[#6BA292]"
               />
             )}
 
@@ -366,12 +432,9 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
                   onClick={() => updateAssessment({ status: 'session_2_scheduled' })}
                 />
                 <ActionButton
-                  label="Approve & Deliver"
-                  loading={actionLoading}
-                  onClick={() => updateAssessment({
-                    status: 'delivered',
-                    flow_profile_final: finalProfile || assessment.flow_profile_draft,
-                  })}
+                  label="Deliver Profile"
+                  loading={deliverLoading}
+                  onClick={deliverProfile}
                   color="from-[#22C55E] to-[#6BA292]"
                 />
               </>

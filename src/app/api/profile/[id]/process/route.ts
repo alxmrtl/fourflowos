@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
-import { FACILITATOR_BRIEFING_PROMPT, FLOW_PROFILE_SYNTHESIS_PROMPT } from '@/data/profile-prompts';
+import { FACILITATOR_BRIEFING_PROMPT, FLOW_PROFILE_SYNTHESIS_PROMPT, LITE_PROFILE_PROMPT } from '@/data/profile-prompts';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow up to 60s for AI generation
@@ -125,10 +125,10 @@ export async function POST(
 
   const { id } = await params;
   const body = await request.json();
-  const { type } = body as { type: 'briefing' | 'synthesis' };
+  const { type } = body as { type: 'briefing' | 'synthesis' | 'lite' };
 
-  if (!type || !['briefing', 'synthesis'].includes(type)) {
-    return NextResponse.json({ success: false, error: 'Invalid type. Must be "briefing" or "synthesis".' }, { status: 400 });
+  if (!type || !['briefing', 'synthesis', 'lite'].includes(type)) {
+    return NextResponse.json({ success: false, error: 'Invalid type. Must be "briefing", "synthesis", or "lite".' }, { status: 400 });
   }
 
   try {
@@ -146,7 +146,51 @@ export async function POST(
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const intakeData = formatIntakeData(assessment);
 
-    if (type === 'briefing') {
+    if (type === 'lite') {
+      // Lite profile — intake-only, no session required
+      let chartData = 'No chart data available.';
+      if (assessment.natal_chart_data) {
+        chartData = JSON.stringify(assessment.natal_chart_data, null, 2);
+      } else {
+        chartData = await fetchChartData(assessment);
+        if (!chartData.includes('unavailable') && !chartData.includes('No chart')) {
+          await supabase
+            .from('assessments')
+            .update({ natal_chart_data: JSON.parse(chartData) })
+            .eq('id', id);
+        }
+      }
+
+      const prompt = LITE_PROFILE_PROMPT
+        .replace('{INTAKE_DATA}', intakeData)
+        .replace('{CHART_DATA}', chartData);
+
+      const message = await anthropic.messages.create({
+        model: 'claude-sonnet-4-5-20250929',
+        max_tokens: 6144,
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      const profileText = message.content
+        .filter(block => block.type === 'text')
+        .map(block => block.type === 'text' ? block.text : '')
+        .join('\n');
+
+      const { error: updateError } = await supabase
+        .from('assessments')
+        .update({
+          flow_profile_draft: profileText,
+          status: 'lite_generated',
+        })
+        .eq('id', id);
+
+      if (updateError) {
+        return NextResponse.json({ success: false, error: updateError.message }, { status: 500 });
+      }
+
+      return NextResponse.json({ success: true, type: 'lite' });
+
+    } else if (type === 'briefing') {
       // Fetch chart data
       let chartData = 'No chart data available.';
       if (assessment.natal_chart_data) {

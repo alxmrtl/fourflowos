@@ -10,6 +10,8 @@ interface FormData {
   birth_time: string;
   birth_time_known: boolean;
   birth_location: string;
+  birth_lat: string;
+  birth_lng: string;
   context_working: string;
   context_stuck: string;
   context_building: string;

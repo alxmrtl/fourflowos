@@ -30,6 +30,7 @@ export const supabase = new Proxy({} as SupabaseClient, {
 // Assessment status progression
 export const ASSESSMENT_STATUSES = [
   'intake_submitted',
+  'lite_generated',
   'processing',
   'session_1_scheduled',
   'session_1_complete',
@@ -94,4 +95,7 @@ export interface Assessment {
   session_1_date: string | null;
   session_2_notes: string | null;
   session_2_date: string | null;
+
+  // Delivery
+  view_token: string | null;
 }
