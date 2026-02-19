@@ -85,6 +85,21 @@ ${assessment.spirit_vision}
 `.trim();
 }
 
+// Extract only what Claude needs from the cached natal chart JSON.
+// Full chart JSON can be 1000+ tokens (planets array, aspects, etc.) — most of it
+// irrelevant to the profile. Trimming to ~50 tokens cuts generation time significantly.
+function formatChartSummary(chartData: Record<string, unknown> | null): string {
+  if (!chartData) return 'No chart data available.';
+  const sun = (chartData.sun_sign as string) || '';
+  const moon = (chartData.moon_sign as string) || '';
+  const rising = (chartData.rising_sign as string) || '';
+  const context = (chartData.context as string) || '';
+  const signs = [sun && `Sun: ${sun}`, moon && `Moon: ${moon}`, rising && `Rising: ${rising}`]
+    .filter(Boolean)
+    .join(' | ');
+  return [signs, context].filter(Boolean).join('\n') || 'Chart data unavailable.';
+}
+
 async function fetchChartData(assessment: Record<string, unknown>): Promise<string> {
   const chartServiceUrl = process.env.CHART_SERVICE_URL;
   if (!chartServiceUrl) return 'No chart service configured.';
@@ -149,18 +164,24 @@ export async function POST(
         return;
       }
 
-      // Use cached chart data if available, otherwise fetch and cache
-      let chartData = 'No chart data available.';
+      // Use cached chart data if available, otherwise fetch and cache.
+      // We store full JSON in Supabase but only send a trimmed summary to Claude —
+      // the planets array alone can be 1000+ tokens, most irrelevant to the profile.
+      let chartData: string;
       if (assessment.natal_chart_data) {
-        chartData = JSON.stringify(assessment.natal_chart_data, null, 2);
+        chartData = formatChartSummary(assessment.natal_chart_data);
       } else {
         await write({ type: 'status', message: 'Fetching natal chart...' });
-        chartData = await fetchChartData(assessment);
-        if (!chartData.includes('unavailable') && !chartData.includes('No chart')) {
+        const rawChartJson = await fetchChartData(assessment);
+        if (!rawChartJson.includes('unavailable') && !rawChartJson.includes('No chart')) {
+          const parsed = JSON.parse(rawChartJson) as Record<string, unknown>;
           await supabase
             .from('assessments')
-            .update({ natal_chart_data: JSON.parse(chartData) })
+            .update({ natal_chart_data: parsed })
             .eq('id', id);
+          chartData = formatChartSummary(parsed);
+        } else {
+          chartData = 'No chart data available.';
         }
       }
 
@@ -184,7 +205,7 @@ export async function POST(
 
       const stream = anthropic.messages.stream({
         model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 3000,
+        max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }],
       });
 

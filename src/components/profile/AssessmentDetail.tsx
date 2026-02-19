@@ -6,13 +6,13 @@ import Link from 'next/link';
 import type { Assessment, AssessmentStatus } from '@/lib/supabase';
 
 const STATUS_LABELS: Record<AssessmentStatus, string> = {
-  intake_submitted: 'Intake Submitted',
-  lite_generated: 'Lite Profile Ready',
-  processing: 'Briefing Ready',
-  session_1_scheduled: 'Session 1 Scheduled',
-  session_1_complete: 'Session 1 Complete',
+  intake_submitted: 'Intake',
+  lite_generated: 'Intake',
+  processing: 'Intake',
+  session_1_scheduled: 'Intake',
+  session_1_complete: 'Intake',
   synthesis: 'Profile Ready',
-  session_2_scheduled: 'Session 2 Scheduled',
+  session_2_scheduled: 'Profile Ready',
   delivered: 'Delivered',
 };
 
