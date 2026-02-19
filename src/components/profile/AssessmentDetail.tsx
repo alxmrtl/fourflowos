@@ -74,7 +74,7 @@ interface AssessmentDetailProps {
 export default function AssessmentDetail({ id }: AssessmentDetailProps) {
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
+  const [activeAction, setActiveAction] = useState<string | null>(null);
   const [sessionNotes, setSessionNotes] = useState('');
   const [sessionDate, setSessionDate] = useState('');
   const [editingFinal, setEditingFinal] = useState(false);
@@ -106,8 +106,8 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const updateAssessment = async (updates: Record<string, unknown>) => {
-    setActionLoading(true);
+  const updateAssessment = async (updates: Record<string, unknown>, label: string) => {
+    setActiveAction(label);
     try {
       const res = await fetch(`/api/profile/${id}`, {
         method: 'PATCH',
@@ -124,7 +124,7 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
     } catch (err) {
       console.error('Update failed:', err);
     } finally {
-      setActionLoading(false);
+      setActiveAction(null);
     }
   };
 
@@ -157,8 +157,8 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
     }
   };
 
-  const runProcess = async (type: 'briefing' | 'synthesis' | 'lite') => {
-    setActionLoading(true);
+  const runProcess = async (type: 'briefing' | 'synthesis' | 'lite', label: string) => {
+    setActiveAction(label);
     try {
       const res = await fetch(`/api/profile/${id}/process`, {
         method: 'POST',
@@ -177,7 +177,7 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
     } catch (err) {
       console.error('Process failed:', err);
     } finally {
-      setActionLoading(false);
+      setActiveAction(null);
     }
   };
 
@@ -372,14 +372,16 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
               <>
                 <ActionButton
                   label="Generate Lite Profile"
-                  loading={actionLoading}
-                  onClick={() => runProcess('lite')}
+                  loading={activeAction === 'Generate Lite Profile'}
+                  disabled={activeAction !== null}
+                  onClick={() => runProcess('lite', 'Generate Lite Profile')}
                   color="from-[#8B5CF6] to-[#6BA292]"
                 />
                 <ActionButton
                   label="Generate Facilitator Briefing"
-                  loading={actionLoading}
-                  onClick={() => runProcess('briefing')}
+                  loading={activeAction === 'Generate Facilitator Briefing'}
+                  disabled={activeAction !== null}
+                  onClick={() => runProcess('briefing', 'Generate Facilitator Briefing')}
                   color="from-[#EAB308] to-[#F97316]"
                 />
               </>
@@ -389,6 +391,7 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
               <ActionButton
                 label="Deliver Profile"
                 loading={deliverLoading}
+                disabled={deliverLoading}
                 onClick={deliverProfile}
                 color="from-[#22C55E] to-[#6BA292]"
               />
@@ -397,20 +400,22 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
             {assessment.status === 'processing' && (
               <ActionButton
                 label="Mark Session 1 Scheduled"
-                loading={actionLoading}
-                onClick={() => updateAssessment({ status: 'session_1_scheduled' })}
+                loading={activeAction === 'Mark Session 1 Scheduled'}
+                disabled={activeAction !== null}
+                onClick={() => updateAssessment({ status: 'session_1_scheduled' }, 'Mark Session 1 Scheduled')}
               />
             )}
 
             {assessment.status === 'session_1_scheduled' && (
               <ActionButton
                 label="Complete Session 1"
-                loading={actionLoading}
+                loading={activeAction === 'Complete Session 1'}
+                disabled={activeAction !== null}
                 onClick={() => updateAssessment({
                   status: 'session_1_complete',
                   session_1_notes: sessionNotes,
                   session_1_date: sessionDate || new Date().toISOString().split('T')[0],
-                })}
+                }, 'Complete Session 1')}
                 color="from-[#6BA292] to-[#5B84B1]"
               />
             )}
@@ -418,8 +423,9 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
             {assessment.status === 'session_1_complete' && (
               <ActionButton
                 label="Generate Flow Profile"
-                loading={actionLoading}
-                onClick={() => runProcess('synthesis')}
+                loading={activeAction === 'Generate Flow Profile'}
+                disabled={activeAction !== null}
+                onClick={() => runProcess('synthesis', 'Generate Flow Profile')}
                 color="from-[#5B84B1] to-[#7A4DA4]"
               />
             )}
@@ -428,12 +434,14 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
               <>
                 <ActionButton
                   label="Schedule Session 2"
-                  loading={actionLoading}
-                  onClick={() => updateAssessment({ status: 'session_2_scheduled' })}
+                  loading={activeAction === 'Schedule Session 2'}
+                  disabled={activeAction !== null}
+                  onClick={() => updateAssessment({ status: 'session_2_scheduled' }, 'Schedule Session 2')}
                 />
                 <ActionButton
                   label="Deliver Profile"
                   loading={deliverLoading}
+                  disabled={deliverLoading || activeAction !== null}
                   onClick={deliverProfile}
                   color="from-[#22C55E] to-[#6BA292]"
                 />
@@ -443,13 +451,14 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
             {assessment.status === 'session_2_scheduled' && (
               <ActionButton
                 label="Deliver Final Profile"
-                loading={actionLoading}
+                loading={activeAction === 'Deliver Final Profile'}
+                disabled={activeAction !== null}
                 onClick={() => updateAssessment({
                   status: 'delivered',
                   flow_profile_final: finalProfile || assessment.flow_profile_draft,
                   session_2_notes: sessionNotes,
                   session_2_date: sessionDate || new Date().toISOString().split('T')[0],
-                })}
+                }, 'Deliver Final Profile')}
                 color="from-[#22C55E] to-[#6BA292]"
               />
             )}
@@ -495,11 +504,13 @@ function TextBlock({ label, text }: { label: string; text: string }) {
 function ActionButton({
   label,
   loading,
+  disabled,
   onClick,
   color = 'from-[#6BA292] to-[#7A4DA4]',
 }: {
   label: string;
   loading: boolean;
+  disabled?: boolean;
   onClick: () => void;
   color?: string;
 }) {
@@ -507,7 +518,7 @@ function ActionButton({
     <button
       type="button"
       onClick={onClick}
-      disabled={loading}
+      disabled={disabled ?? loading}
       className={`px-5 py-2.5 bg-gradient-to-r ${color} text-white rounded-xl text-sm font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       {loading ? (
