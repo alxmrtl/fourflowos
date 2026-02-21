@@ -156,9 +156,8 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
   const [isCustomPromptActive, setIsCustomPromptActive] = useState(false);
 
   // Layout state
-  const [inputsOpen, setInputsOpen] = useState(false);
-  const [intakeOpen, setIntakeOpen] = useState(true);
-  const [astroOpen, setAstroOpen] = useState(true);
+  const [intakeOpen, setIntakeOpen] = useState(false);
+  const [astroOpen, setAstroOpen] = useState(false);
   const [expandedGenIds, setExpandedGenIds] = useState<Set<string>>(new Set());
 
   const adminKey = typeof window !== 'undefined' ? sessionStorage.getItem('profile_admin_key') || '' : '';
@@ -434,6 +433,26 @@ ${a.spirit_vision}`.trim();
   const cliCommand = `npm run profile:generate ${assessment.id}${selectedPrompt?.name ? ` "${selectedPrompt.name}"` : ''}`;
   const chartData = assessment.natal_chart_data as Record<string, string> | null;
 
+  // If flow_profile_final exists but has no matching generation record (e.g. generated
+  // before the profile_generations table existed), synthesize a virtual entry so it
+  // still shows in the Outputs section.
+  const deliveredOrphan =
+    assessment.flow_profile_final &&
+    !generations.some(g => g.content === assessment.flow_profile_final)
+      ? ({
+          id: '__delivered_orphan__',
+          assessment_id: id,
+          prompt_template_id: null,
+          prompt_name: 'Delivered Profile',
+          model: '',
+          content: assessment.flow_profile_final,
+          label: null,
+          delivered: true,
+          generated_at: assessment.updated_at || assessment.created_at,
+        } as ProfileGeneration)
+      : null;
+  const allOutputs = deliveredOrphan ? [...generations, deliveredOrphan] : generations;
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] p-6 md:p-10">
       {/* Scoped markdown styles */}
@@ -660,91 +679,94 @@ ${a.spirit_vision}`.trim();
           </div>
         </motion.div>
 
-        {/* ── Inputs (collapsible, default closed) ── */}
-        <CollapsibleSection
-          title="Inputs"
-          color="#888888"
-          open={inputsOpen}
-          onToggle={() => setInputsOpen(v => !v)}
-        >
-          {/* Intake sub-section */}
-          <SubSection
-            title="Intake"
-            color="#ffffff"
-            open={intakeOpen}
-            onToggle={() => setIntakeOpen(v => !v)}
-          >
-            <InfoRow label="Date of birth" value={`${assessment.birth_date}${assessment.birth_time_known && assessment.birth_time ? ` at ${assessment.birth_time}` : ''}`} />
-            <InfoRow label="Born in" value={assessment.birth_location} />
-            <div className="pt-2 border-t border-white/5 mt-2 space-y-3">
-              <TextBlock label="What's working" text={assessment.context_working} />
-              <TextBlock label="What's stuck" text={assessment.context_stuck} />
-              <TextBlock label="Building toward" text={assessment.context_building} />
-            </div>
-            {PILLAR_SECTIONS.map(pillar => (
-              <div key={pillar.title} className="pt-3 border-t border-white/5 space-y-3">
-                <p className="text-xs font-medium" style={{ color: pillar.color }}>{pillar.title}</p>
-                {pillar.fields.map(field => (
-                  <TextBlock
-                    key={field.key}
-                    label={field.label}
-                    text={(assessment as unknown as Record<string, string>)[field.key]}
-                  />
-                ))}
-              </div>
-            ))}
-          </SubSection>
+        {/* ── Inputs ── */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
+            <h2 className="text-lg font-semibold text-white">Inputs</h2>
+          </div>
+          <div className="space-y-2">
 
-          {/* Astro Reading sub-section */}
-          <SubSection
-            title="Astro Reading"
-            color="#7A4DA4"
-            open={astroOpen}
-            onToggle={() => setAstroOpen(v => !v)}
-          >
-            {chartData ? (
-              <>
-                <InfoRow
-                  label="Status"
-                  value={chartData.context ? 'Chart calculated' : 'Data present — no summary'}
-                />
-                {chartData.context && (
-                  <div className="pt-2 border-t border-white/5 mt-2">
-                    <p className="text-xs text-gray-500 mb-1.5">Chart summary (used in generation)</p>
-                    <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">{chartData.context}</p>
-                  </div>
-                )}
-                {Object.keys(chartData).filter(k => k !== 'context').length > 0 && (
-                  <div className="pt-2 border-t border-white/5 mt-2">
-                    <p className="text-xs text-gray-500 mb-1.5">Raw chart data</p>
-                    <pre className="text-xs text-gray-600 font-mono whitespace-pre-wrap leading-relaxed overflow-x-auto">
-                      {JSON.stringify(
-                        Object.fromEntries(Object.entries(chartData).filter(([k]) => k !== 'context')),
-                        null,
-                        2
-                      )}
-                    </pre>
-                  </div>
-                )}
-              </>
-            ) : (
-              <p className="text-sm text-gray-600 italic">
-                Pending — natal chart data has not been generated yet.
-              </p>
-            )}
-          </SubSection>
-        </CollapsibleSection>
+            {/* Intake */}
+            <CollapsibleSection
+              title="Intake"
+              color="#ffffff"
+              open={intakeOpen}
+              onToggle={() => setIntakeOpen(v => !v)}
+            >
+              <InfoRow label="Date of birth" value={`${assessment.birth_date}${assessment.birth_time_known && assessment.birth_time ? ` at ${assessment.birth_time}` : ''}`} />
+              <InfoRow label="Born in" value={assessment.birth_location} />
+              <div className="pt-2 border-t border-white/5 mt-2 space-y-3">
+                <TextBlock label="What's working" text={assessment.context_working} />
+                <TextBlock label="What's stuck" text={assessment.context_stuck} />
+                <TextBlock label="Building toward" text={assessment.context_building} />
+              </div>
+              {PILLAR_SECTIONS.map(pillar => (
+                <div key={pillar.title} className="pt-3 border-t border-white/5 space-y-3">
+                  <p className="text-xs font-medium" style={{ color: pillar.color }}>{pillar.title}</p>
+                  {pillar.fields.map(field => (
+                    <TextBlock
+                      key={field.key}
+                      label={field.label}
+                      text={(assessment as unknown as Record<string, string>)[field.key]}
+                    />
+                  ))}
+                </div>
+              ))}
+            </CollapsibleSection>
+
+            {/* Astro Reading */}
+            <CollapsibleSection
+              title="Astro Reading"
+              color="#7A4DA4"
+              open={astroOpen}
+              onToggle={() => setAstroOpen(v => !v)}
+            >
+              {chartData ? (
+                <>
+                  <InfoRow
+                    label="Status"
+                    value={chartData.context ? 'Chart calculated' : 'Data present — no summary'}
+                  />
+                  {chartData.context && (
+                    <div className="pt-2 border-t border-white/5 mt-2">
+                      <p className="text-xs text-gray-500 mb-1.5">Chart summary (used in generation)</p>
+                      <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">{chartData.context}</p>
+                    </div>
+                  )}
+                  {Object.keys(chartData).filter(k => k !== 'context').length > 0 && (
+                    <div className="pt-2 border-t border-white/5 mt-2">
+                      <p className="text-xs text-gray-500 mb-1.5">Raw chart data</p>
+                      <pre className="text-xs text-gray-600 font-mono whitespace-pre-wrap leading-relaxed overflow-x-auto">
+                        {JSON.stringify(
+                          Object.fromEntries(Object.entries(chartData).filter(([k]) => k !== 'context')),
+                          null,
+                          2
+                        )}
+                      </pre>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-gray-600 italic">
+                  Pending — natal chart data has not been generated yet.
+                </p>
+              )}
+            </CollapsibleSection>
+
+          </div>
+        </div>
 
         {/* ── Outputs ── */}
-        {generations.length > 0 && (
+        {allOutputs.length > 0 && (
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
               <h2 className="text-lg font-semibold text-white">Outputs</h2>
-              <span className="text-xs text-gray-600 bg-white/[0.04] px-1.5 py-0.5 rounded ml-0.5">{generations.length}</span>
+              <span className="text-xs text-gray-600 bg-white/[0.04] px-1.5 py-0.5 rounded ml-0.5">{allOutputs.length}</span>
             </div>
             <div className="space-y-2">
-              {generations.map(gen => {
+              {allOutputs.map(gen => {
                 const isDelivered = assessment.flow_profile_final
                   ? gen.content === assessment.flow_profile_final
                   : gen.delivered;
@@ -932,49 +954,6 @@ function CollapsibleSection({
       </button>
       {open && (
         <div className="px-5 pb-5 space-y-3">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SubSection({
-  title,
-  color,
-  children,
-  open,
-  onToggle,
-}: {
-  title: string;
-  color: string;
-  children: React.ReactNode;
-  open: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div className="rounded-lg bg-white/[0.02] border border-white/[0.07] overflow-hidden">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/[0.03] transition-colors text-left"
-      >
-        <div className="flex items-center gap-2">
-          <div
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: color === '#ffffff' ? 'rgba(255,255,255,0.35)' : color }}
-          />
-          <span className="text-sm font-medium text-white">{title}</span>
-        </div>
-        <svg
-          className={`w-3.5 h-3.5 text-gray-600 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-          fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-      {open && (
-        <div className="px-4 pb-4 space-y-3">
           {children}
         </div>
       )}
