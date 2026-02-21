@@ -172,7 +172,7 @@ export async function POST(
   }
 
   const { id } = await params;
-  const body = await request.json().catch(() => ({})) as { prompt_template_id?: string };
+  const body = await request.json().catch(() => ({})) as { prompt_template_id?: string; custom_prompt_text?: string };
 
   const encoder = new TextEncoder();
   const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
@@ -256,9 +256,10 @@ export async function POST(
         });
       }, 5000);
 
-      // Phase 2: Generate full profile using selected prompt template
+      // Phase 2: Build final prompt — use custom text if provided, else template
       const intakeData = formatIntakeData(assessment);
-      const prompt = promptTemplate.prompt_text
+      const basePromptText = body.custom_prompt_text || promptTemplate.prompt_text;
+      const prompt = basePromptText
         .replace('{INTAKE_DATA}', intakeData)
         .replace('{CHART_DATA}', chartContext);
 

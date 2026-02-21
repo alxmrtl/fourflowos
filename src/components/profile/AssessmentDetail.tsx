@@ -84,8 +84,87 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
   const [copied, setCopied] = useState(false);
   const [copiedCmd, setCopiedCmd] = useState(false);
   const [usingGenId, setUsingGenId] = useState<string | null>(null);
+  const [showCustomPrompt, setShowCustomPrompt] = useState(false);
+  const [customPromptText, setCustomPromptText] = useState('');
+  const [isCustomPromptActive, setIsCustomPromptActive] = useState(false);
 
   const adminKey = typeof window !== 'undefined' ? sessionStorage.getItem('profile_admin_key') || '' : '';
+
+  const buildPreviewPrompt = (templateText: string, a: Assessment): string => {
+    const intakeData = `**Name**: ${a.name}
+**Email**: ${a.email}
+
+**Birth**: ${a.birth_date}${a.birth_time_known && a.birth_time ? `, ${a.birth_time}` : ' (time unknown)'}, ${a.birth_location}
+
+---
+
+### Life Context
+
+**What's working:**
+${a.context_working}
+
+**What's stuck:**
+${a.context_stuck}
+
+**Building toward:**
+${a.context_building}
+
+---
+
+### SELF (Reception)
+
+**Physical Energy (Focused Body):**
+${a.self_energy}
+
+**Emotions (Tuned Emotions):**
+${a.self_emotions}
+
+**Mental Clarity (Open Mind):**
+${a.self_focus}
+
+---
+
+### SPACE (Transmission)
+
+**Environment (Intentional Space):**
+${a.space_environment}
+
+**Tools & Systems (Optimized Tools):**
+${a.space_tools}
+
+**Feedback Loops (Feedback Systems):**
+${a.space_feedback}
+
+---
+
+### STORY (Direction)
+
+**Life Narrative (Generative Story):**
+${a.story_narrative}
+
+**Mission (Clear Mission):**
+${a.story_mission}
+
+**Role (Empowered Role):**
+${a.story_role}
+
+---
+
+### SPIRIT (Timeless)
+
+**Values (Grounding Values):**
+${a.spirit_values}
+
+**Curiosity (Ignited Curiosity):**
+${a.spirit_curiosity}
+
+**Vision (Visualized Vision):**
+${a.spirit_vision}`.trim();
+
+    return templateText
+      .replace('{INTAKE_DATA}', intakeData)
+      .replace('{CHART_DATA}', '[Archetypal chart summary — generated from natal chart data at runtime]');
+  };
 
   const fetchAssessment = async () => {
     try {
@@ -143,6 +222,13 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // Reset custom prompt state when template selection changes
+  useEffect(() => {
+    setIsCustomPromptActive(false);
+    setShowCustomPrompt(false);
+    setCustomPromptText('');
+  }, [selectedPromptId]);
+
   const copyId = async () => {
     try {
       await navigator.clipboard.writeText(id);
@@ -156,13 +242,19 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
   const generateProfile = async () => {
     setGenerating(true);
     try {
+      const body: Record<string, string> = {};
+      if (isCustomPromptActive && customPromptText.trim()) {
+        body.custom_prompt_text = customPromptText.trim();
+      } else if (selectedPromptId) {
+        body.prompt_template_id = selectedPromptId;
+      }
       const res = await fetch(`/api/profile/${id}/process`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-admin-key': adminKey,
         },
-        body: JSON.stringify({ prompt_template_id: selectedPromptId || undefined }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok || !res.body) {
@@ -290,10 +382,7 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
     assessment.flow_profile_draft &&
     assessment.flow_profile_draft !== assessment.flow_profile_final;
 
-  const showGenerateSection =
-    assessment.status === 'intake_submitted' ||
-    assessment.status === 'synthesis' ||
-    assessment.status === 'delivered';
+  const showGenerateSection = true;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] p-6 md:p-10">
@@ -406,38 +495,116 @@ export default function AssessmentDetail({ id }: AssessmentDetailProps) {
                     {promptTemplates.find(t => t.id === selectedPromptId)?.description}
                   </p>
                 )}
+                {/* Customize prompt toggle */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!showCustomPrompt && assessment) {
+                      const tpl = promptTemplates.find(t => t.id === selectedPromptId);
+                      if (tpl) setCustomPromptText(buildPreviewPrompt(tpl.prompt_text, assessment));
+                    }
+                    setShowCustomPrompt(v => !v);
+                  }}
+                  className="mt-2 text-xs text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1"
+                >
+                  {showCustomPrompt ? '▲ Hide prompt' : '▼ Customize prompt'}
+                </button>
+              </div>
+            )}
+
+            {/* Custom prompt editor */}
+            {showCustomPrompt && (
+              <div className="mb-4 p-4 rounded-lg bg-white/[0.03] border border-white/[0.08]">
+                <div className="flex items-start justify-between mb-2 gap-3">
+                  <div>
+                    <p className="text-xs font-medium text-gray-400">Full prompt</p>
+                    <p className="text-xs text-gray-600 mt-0.5">
+                      Intake data is pre-filled. <span className="text-[#6BA292]/70">{'{CHART_DATA}'}</span> is replaced at runtime with a Haiku-generated archetypal summary.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {isCustomPromptActive && (
+                      <span className="text-xs text-[#F97316] bg-[#F97316]/10 px-2 py-0.5 rounded border border-[#F97316]/20">
+                        Custom active
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (assessment) {
+                          const tpl = promptTemplates.find(t => t.id === selectedPromptId);
+                          if (tpl) setCustomPromptText(buildPreviewPrompt(tpl.prompt_text, assessment));
+                          setIsCustomPromptActive(false);
+                        }
+                      }}
+                      className="text-xs text-gray-600 hover:text-gray-300 transition-colors"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+                <textarea
+                  value={customPromptText}
+                  onChange={(e) => {
+                    setCustomPromptText(e.target.value);
+                    setIsCustomPromptActive(true);
+                  }}
+                  rows={20}
+                  className="w-full px-3 py-2.5 bg-white/[0.04] border border-white/10 rounded-lg text-gray-300 font-mono text-xs focus:outline-none focus:border-white/25 resize-y leading-relaxed"
+                  spellCheck={false}
+                />
+                {!isCustomPromptActive && (
+                  <p className="text-xs text-gray-700 mt-1.5">Edit the prompt above to activate custom mode. Template settings (model, token limit) still apply.</p>
+                )}
               </div>
             )}
 
             <ActionButton
-              label={assessment.status === 'intake_submitted' ? 'Generate Flow Profile' : 'Run Generation'}
+              label={
+                isCustomPromptActive
+                  ? 'Run with Custom Prompt'
+                  : assessment.status === 'intake_submitted'
+                    ? 'Generate Flow Profile'
+                    : 'Run Generation'
+              }
               loading={generating}
               disabled={generating}
               onClick={generateProfile}
-              color={assessment.status === 'intake_submitted' ? 'from-[#6BA292] to-[#7A4DA4]' : 'from-[#5B84B1] to-[#7A4DA4]'}
+              color={isCustomPromptActive ? 'from-[#F97316] to-[#7A4DA4]' : assessment.status === 'intake_submitted' ? 'from-[#6BA292] to-[#7A4DA4]' : 'from-[#5B84B1] to-[#7A4DA4]'}
             />
 
             {/* CLI equivalent — auto-updates with prompt selection */}
             <div className="mt-4 pt-4 border-t border-white/[0.06]">
-              <p className="text-xs text-gray-600 mb-2">or run in terminal (from <code className="text-gray-500">website/fourflowos-web</code>):</p>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 text-xs text-[#6BA292] font-mono bg-white/[0.04] px-3 py-2 rounded-lg border border-white/[0.07] select-all">
-                  {`npm run profile:generate ${assessment.id}${promptTemplates.find(t => t.id === selectedPromptId)?.name ? ` "${promptTemplates.find(t => t.id === selectedPromptId)!.name}"` : ''}`}
-                </code>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const promptName = promptTemplates.find(t => t.id === selectedPromptId)?.name;
-                    const cmd = `npm run profile:generate ${assessment.id}${promptName ? ` "${promptName}"` : ''}`;
-                    await navigator.clipboard.writeText(cmd).catch(() => {});
-                    setCopiedCmd(true);
-                    setTimeout(() => setCopiedCmd(false), 2000);
-                  }}
-                  className="text-xs text-gray-600 hover:text-gray-300 transition-colors px-2 py-2 rounded-lg hover:bg-white/[0.06] whitespace-nowrap flex-shrink-0"
-                >
-                  {copiedCmd ? '✓ Copied' : 'Copy'}
-                </button>
-              </div>
+              {isCustomPromptActive ? (
+                <p className="text-xs text-gray-600">
+                  Custom prompts run via UI only. To use this prompt in the CLI, save it as a template at{' '}
+                  <a href="/profile/admin/prompts" className="text-gray-500 hover:text-gray-300 underline">
+                    /profile/admin/prompts
+                  </a>.
+                </p>
+              ) : (
+                <>
+                  <p className="text-xs text-gray-600 mb-2">or run in terminal (from <code className="text-gray-500">website/fourflowos-web</code>):</p>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 text-xs text-[#6BA292] font-mono bg-white/[0.04] px-3 py-2 rounded-lg border border-white/[0.07] select-all">
+                      {`npm run profile:generate ${assessment.id}${promptTemplates.find(t => t.id === selectedPromptId)?.name ? ` "${promptTemplates.find(t => t.id === selectedPromptId)!.name}"` : ''}`}
+                    </code>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const promptName = promptTemplates.find(t => t.id === selectedPromptId)?.name;
+                        const cmd = `npm run profile:generate ${assessment.id}${promptName ? ` "${promptName}"` : ''}`;
+                        await navigator.clipboard.writeText(cmd).catch(() => {});
+                        setCopiedCmd(true);
+                        setTimeout(() => setCopiedCmd(false), 2000);
+                      }}
+                      className="text-xs text-gray-600 hover:text-gray-300 transition-colors px-2 py-2 rounded-lg hover:bg-white/[0.06] whitespace-nowrap flex-shrink-0"
+                    >
+                      {copiedCmd ? '✓ Copied' : 'Copy'}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </motion.div>
         )}
