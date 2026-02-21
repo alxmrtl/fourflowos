@@ -98,4 +98,19 @@ export interface Assessment {
 
   // Delivery
   view_token: string | null;
+
+  // Prompt tracking
+  prompt_template_id: string | null;
+}
+
+export interface PromptTemplate {
+  id: string;
+  name: string;
+  description: string | null;
+  prompt_text: string;
+  model: string;
+  max_tokens: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
