@@ -6,10 +6,19 @@ import Link from 'next/link';
 import type { PromptTemplate } from '@/lib/supabase';
 
 const MODEL_OPTIONS = [
-  { value: 'claude-sonnet-4-5-20250929', label: 'Sonnet 4.5', description: 'Best quality, balanced cost/speed' },
+  { value: 'claude-sonnet-4-6', label: 'Sonnet 4.6', description: 'Best quality, balanced cost/speed' },
   { value: 'claude-haiku-4-5-20251001', label: 'Haiku 4.5', description: 'Fast and cheap, good for simpler profiles' },
   { value: 'claude-opus-4-6', label: 'Opus 4.6', description: 'Highest quality, premium profiles' },
 ];
+
+function tokenLabel(tokens: number): string {
+  if (tokens <= 800) return 'Brief — quick summary';
+  if (tokens <= 1200) return 'Short — focused overview';
+  if (tokens <= 1800) return 'Standard — balanced depth';
+  if (tokens <= 2500) return 'Detailed — full analysis';
+  if (tokens <= 3200) return 'Thorough — comprehensive';
+  return 'Maximum — full deep dive';
+}
 
 export default function PromptManager() {
   const [prompts, setPrompts] = useState<PromptTemplate[]>([]);
@@ -20,7 +29,7 @@ export default function PromptManager() {
     name: '',
     description: '',
     prompt_text: '',
-    model: 'claude-sonnet-4-5-20250929',
+    model: 'claude-sonnet-4-6',
     max_tokens: 2000,
     is_active: true,
   });
@@ -73,7 +82,7 @@ export default function PromptManager() {
           name: '',
           description: '',
           prompt_text: '',
-          model: 'claude-sonnet-4-5-20250929',
+          model: 'claude-sonnet-4-6',
           max_tokens: 2000,
           is_active: true,
         });
@@ -154,7 +163,7 @@ export default function PromptManager() {
       name: '',
       description: '',
       prompt_text: '',
-      model: 'claude-sonnet-4-5-20250929',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       is_active: true,
     });
@@ -242,16 +251,20 @@ export default function PromptManager() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-400 mb-1">Max Tokens</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-sm text-gray-400">Max Tokens</label>
+                      <span className="text-sm font-mono text-white">{formData.max_tokens}</span>
+                    </div>
                     <input
-                      type="number"
+                      type="range"
                       value={formData.max_tokens}
                       onChange={(e) => setFormData({ ...formData, max_tokens: parseInt(e.target.value) })}
                       min={500}
                       max={4000}
                       step={100}
-                      className="w-full px-4 py-2 bg-white/[0.05] border border-white/10 rounded-lg text-white focus:outline-none focus:border-white/30"
+                      className="w-full h-1.5 rounded-full appearance-none bg-white/10 accent-[#6BA292] cursor-pointer"
                     />
+                    <p className="text-xs text-gray-500 mt-1">{tokenLabel(formData.max_tokens)}</p>
                   </div>
                 </div>
 

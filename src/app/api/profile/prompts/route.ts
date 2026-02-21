@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (model && !['claude-sonnet-4-5-20250929', 'claude-haiku-4-5-20251001', 'claude-opus-4-6'].includes(model)) {
+    if (model && !['claude-sonnet-4-6', 'claude-haiku-4-5-20251001', 'claude-opus-4-6'].includes(model)) {
       return NextResponse.json(
         { success: false, error: 'Invalid model. Must be sonnet, haiku, or opus.' },
         { status: 400 }
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       name,
       description: description || null,
       prompt_text,
-      model: model || 'claude-sonnet-4-5-20250929',
+      model: model || 'claude-sonnet-4-6',
       max_tokens: max_tokens || 2000,
       is_active: is_active !== undefined ? is_active : true,
     };

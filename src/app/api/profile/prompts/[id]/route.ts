@@ -30,7 +30,7 @@ export async function PATCH(
     if (description !== undefined) updates.description = description;
     if (prompt_text !== undefined) updates.prompt_text = prompt_text;
     if (model !== undefined) {
-      if (!['claude-sonnet-4-5-20250929', 'claude-haiku-4-5-20251001', 'claude-opus-4-6'].includes(model)) {
+      if (!['claude-sonnet-4-6', 'claude-haiku-4-5-20251001', 'claude-opus-4-6'].includes(model)) {
         return NextResponse.json(
           { success: false, error: 'Invalid model. Must be sonnet, haiku, or opus.' },
           { status: 400 }

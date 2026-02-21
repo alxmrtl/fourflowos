@@ -658,6 +658,22 @@ ${a.spirit_vision}`.trim();
             ) : (
               <>
                 <p className="text-xs text-gray-600 mb-2">Copy to terminal (from <code className="text-gray-500">website/fourflowos-web</code>):</p>
+                {promptTemplates.length > 0 && (
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs text-gray-600 flex-shrink-0">Prompt:</span>
+                    <select
+                      value={selectedPromptId}
+                      onChange={(e) => setSelectedPromptId(e.target.value)}
+                      className="flex-1 max-w-xs px-2 py-1 bg-white/[0.05] border border-white/10 rounded-md text-white text-xs focus:outline-none focus:border-white/30 appearance-none"
+                    >
+                      {promptTemplates.map(t => (
+                        <option key={t.id} value={t.id} className="bg-[#1a1a1a]">
+                          {t.name} — {t.model.includes('haiku') ? 'Haiku' : t.model.includes('opus') ? 'Opus' : 'Sonnet'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
                   <code className="flex-1 text-xs text-[#6BA292] font-mono bg-white/[0.04] px-3 py-2 rounded-lg border border-white/[0.07] select-all">
                     {cliCommand}
