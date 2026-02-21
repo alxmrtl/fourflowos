@@ -114,3 +114,15 @@ export interface PromptTemplate {
   created_at: string;
   updated_at: string;
 }
+
+export interface ProfileGeneration {
+  id: string;
+  assessment_id: string;
+  prompt_template_id: string | null;
+  prompt_name: string;
+  model: string;
+  content: string;
+  label: string | null;
+  delivered: boolean;
+  generated_at: string;
+}

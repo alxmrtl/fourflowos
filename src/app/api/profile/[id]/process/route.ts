@@ -1,10 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
-import { FLOW_PROFILE_PROMPT } from '@/data/profile-prompts';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
+
+// Matches the CLI script's chart summary prompt for equivalent quality
+const CHART_ARCHETYPAL_PROMPT = `You are analyzing a natal chart to extract archetypal patterns for a Flow Profile — a consciousness alignment diagnostic.
+
+Your task: Generate a 250-word archetypal summary that captures:
+
+1. **Dominant Themes**: Element balance (Fire/Earth/Air/Water), modality emphasis (Cardinal/Fixed/Mutable), house emphasis
+2. **Core Aspects**: 3-5 most significant aspects (conjunctions, squares, trines) that define this person's archetypal pattern
+3. **Flow Implications**: How these patterns specifically relate to the four FourFlow pillars:
+   - SELF (body, emotions, mind) — How does this chart suggest energy moves through their vessel?
+   - SPACE (environment, tools, feedback) — What external conditions support or hinder them?
+   - STORY (narrative, mission, role) — What's their relationship to temporal direction and purpose?
+   - SPIRIT (values, curiosity, vision) — What connects them to timeless meaning?
+
+Write in clear, human language. No astrological jargon. Focus on HOW this person is wired to work, not generic descriptions.
+
+---
+
+NATAL CHART DATA:
+
+{CHART_DATA}`;
 
 function isAuthorized(request: NextRequest): boolean {
   const key = request.headers.get('x-admin-key');
@@ -85,24 +105,12 @@ ${assessment.spirit_vision}
 `.trim();
 }
 
-// Extract only what Claude needs from the cached natal chart JSON.
-// Full chart JSON can be 1000+ tokens (planets array, aspects, etc.) — most of it
-// irrelevant to the profile. Trimming to ~50 tokens cuts generation time significantly.
-function formatChartSummary(chartData: Record<string, unknown> | null): string {
-  if (!chartData) return 'No chart data available.';
-  const sun = (chartData.sun_sign as string) || '';
-  const moon = (chartData.moon_sign as string) || '';
-  const rising = (chartData.rising_sign as string) || '';
-  const context = (chartData.context as string) || '';
-  const signs = [sun && `Sun: ${sun}`, moon && `Moon: ${moon}`, rising && `Rising: ${rising}`]
-    .filter(Boolean)
-    .join(' | ');
-  return [signs, context].filter(Boolean).join('\n') || 'Chart data unavailable.';
-}
-
-async function fetchChartData(assessment: Record<string, unknown>): Promise<string> {
+async function fetchAndCacheChartData(
+  assessment: Record<string, unknown>,
+  id: string
+): Promise<Record<string, unknown> | null> {
   const chartServiceUrl = process.env.CHART_SERVICE_URL;
-  if (!chartServiceUrl) return 'No chart service configured.';
+  if (!chartServiceUrl) return null;
 
   try {
     const res = await fetch(`${chartServiceUrl}/chart`, {
@@ -117,16 +125,41 @@ async function fetchChartData(assessment: Record<string, unknown>): Promise<stri
       }),
     });
 
-    if (!res.ok) {
-      console.error('[process] Chart service error:', res.status);
-      return 'Chart service unavailable.';
-    }
+    if (!res.ok) return null;
 
-    const data = await res.json();
-    return JSON.stringify(data, null, 2);
-  } catch (err) {
-    console.error('[process] Chart service fetch error:', err);
-    return 'Chart service unavailable.';
+    const data = await res.json() as Record<string, unknown>;
+    await supabase.from('assessments').update({ natal_chart_data: data }).eq('id', id);
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+// Phase 1: Use Haiku to generate a rich archetypal summary from full chart JSON.
+// Falls back to basic sun/moon/rising string if Haiku call fails.
+async function generateChartSummary(
+  chartData: Record<string, unknown>,
+  anthropic: Anthropic
+): Promise<string> {
+  try {
+    const prompt = CHART_ARCHETYPAL_PROMPT.replace(
+      '{CHART_DATA}',
+      JSON.stringify(chartData, null, 2)
+    );
+    const message = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    return message.content[0].type === 'text' ? message.content[0].text : '';
+  } catch {
+    // Fallback to basic summary
+    const sun = (chartData.sun_sign as string) || '';
+    const moon = (chartData.moon_sign as string) || '';
+    const rising = (chartData.rising_sign as string) || '';
+    return [sun && `Sun: ${sun}`, moon && `Moon: ${moon}`, rising && `Rising: ${rising}`]
+      .filter(Boolean)
+      .join(' | ') || 'Chart data unavailable.';
   }
 }
 
@@ -139,6 +172,7 @@ export async function POST(
   }
 
   const { id } = await params;
+  const body = await request.json().catch(() => ({})) as { prompt_template_id?: string };
 
   const encoder = new TextEncoder();
   const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
@@ -153,6 +187,7 @@ export async function POST(
     let heartbeat: ReturnType<typeof setInterval> | null = null;
 
     try {
+      // Fetch assessment
       const { data: assessment, error: fetchError } = await supabase
         .from('assessments')
         .select('*')
@@ -164,48 +199,74 @@ export async function POST(
         return;
       }
 
-      // Use cached chart data if available, otherwise fetch and cache.
-      // We store full JSON in Supabase but only send a trimmed summary to Claude —
-      // the planets array alone can be 1000+ tokens, most irrelevant to the profile.
-      let chartData: string;
-      if (assessment.natal_chart_data) {
-        chartData = formatChartSummary(assessment.natal_chart_data);
-      } else {
+      // Fetch prompt template — use requested ID, or fall back to first active template
+      let promptTemplate = null;
+
+      if (body.prompt_template_id) {
+        const { data } = await supabase
+          .from('prompt_templates')
+          .select('*')
+          .eq('id', body.prompt_template_id)
+          .single();
+        promptTemplate = data;
+      }
+
+      if (!promptTemplate) {
+        const { data } = await supabase
+          .from('prompt_templates')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: true })
+          .limit(1)
+          .single();
+        promptTemplate = data;
+      }
+
+      if (!promptTemplate) {
+        await write({ type: 'error', message: 'No prompt template available. Create one at /profile/admin/prompts.' });
+        return;
+      }
+
+      await write({ type: 'status', message: `Using: ${promptTemplate.name}` });
+
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+      // Resolve chart data (use cached, or fetch and cache)
+      let chartData: Record<string, unknown> | null = assessment.natal_chart_data as Record<string, unknown> | null;
+      if (!chartData) {
         await write({ type: 'status', message: 'Fetching natal chart...' });
-        const rawChartJson = await fetchChartData(assessment);
-        if (!rawChartJson.includes('unavailable') && !rawChartJson.includes('No chart')) {
-          const parsed = JSON.parse(rawChartJson) as Record<string, unknown>;
-          await supabase
-            .from('assessments')
-            .update({ natal_chart_data: parsed })
-            .eq('id', id);
-          chartData = formatChartSummary(parsed);
-        } else {
-          chartData = 'No chart data available.';
-        }
+        chartData = await fetchAndCacheChartData(assessment, id);
+      }
+
+      // Phase 1: Haiku generates archetypal chart summary
+      let chartContext: string;
+      if (chartData) {
+        await write({ type: 'status', message: 'Generating chart summary...' });
+        chartContext = await generateChartSummary(chartData, anthropic);
+      } else {
+        chartContext = 'No natal chart data available.';
       }
 
       await write({ type: 'status', message: 'Generating profile...' });
 
-      // Heartbeat every 5s — prevents Vercel gateway from firing a 504
-      // (gateway cuts connection if no bytes arrive for ~30s)
+      // Heartbeat every 5s — prevents Vercel gateway 504
       heartbeat = setInterval(() => {
         write({ type: 'heartbeat' }).catch(() => {
           if (heartbeat) clearInterval(heartbeat);
         });
       }, 5000);
 
-      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      // Phase 2: Generate full profile using selected prompt template
       const intakeData = formatIntakeData(assessment);
-      const prompt = FLOW_PROFILE_PROMPT
+      const prompt = promptTemplate.prompt_text
         .replace('{INTAKE_DATA}', intakeData)
-        .replace('{CHART_DATA}', chartData);
+        .replace('{CHART_DATA}', chartContext);
 
       let profileText = '';
 
       const stream = anthropic.messages.stream({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 2000,
+        model: promptTemplate.model,
+        max_tokens: promptTemplate.max_tokens,
         messages: [{ role: 'user', content: prompt }],
       });
 
@@ -220,18 +281,39 @@ export async function POST(
         heartbeat = null;
       }
 
-      console.log(`[process] Generated ${profileText.length} chars for ${id}`);
-
       if (!profileText) {
         await write({ type: 'error', message: 'Generation returned empty profile' });
         return;
       }
 
+      console.log(`[process] Generated ${profileText.length} chars for ${id} using "${promptTemplate.name}"`);
+
+      // Save to profile_generations table
+      const { data: generation, error: genError } = await supabase
+        .from('profile_generations')
+        .insert({
+          assessment_id: id,
+          prompt_template_id: promptTemplate.id,
+          prompt_name: promptTemplate.name,
+          model: promptTemplate.model,
+          content: profileText,
+        })
+        .select('id')
+        .single();
+
+      if (genError) {
+        console.error('[process] Failed to save to profile_generations:', genError);
+      }
+
+      // Update assessment — don't regress status if already delivered
+      const statusUpdate = assessment.status === 'delivered' ? {} : { status: 'synthesis' };
+
       const { error: updateError } = await supabase
         .from('assessments')
         .update({
           flow_profile_draft: profileText,
-          status: 'synthesis',
+          prompt_template_id: promptTemplate.id,
+          ...statusUpdate,
         })
         .eq('id', id);
 
@@ -239,8 +321,8 @@ export async function POST(
         console.error('[process] Supabase update error:', updateError);
         await write({ type: 'error', message: updateError.message });
       } else {
-        console.log(`[process] Updated ${id} to synthesis`);
-        await write({ type: 'done' });
+        console.log(`[process] Updated ${id} — status: ${assessment.status === 'delivered' ? 'kept delivered' : 'synthesis'}`);
+        await write({ type: 'done', generation_id: generation?.id ?? null });
       }
     } catch (error) {
       console.error('[process] Error:', error);

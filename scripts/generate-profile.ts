@@ -344,14 +344,36 @@ Examples:
       promptTemplate.max_tokens
     );
 
-    // Step 7: Save to Supabase with prompt tracking
-    console.log('💾 Saving profile to Supabase...');
+    // Step 7: Save to profile_generations table
+    console.log('💾 Saving to profile_generations...');
+    const { data: generation, error: genError } = await supabase
+      .from('profile_generations')
+      .insert({
+        assessment_id: assessmentId,
+        prompt_template_id: promptTemplate.id,
+        prompt_name: promptTemplate.name,
+        model: promptTemplate.model,
+        content: profile,
+      })
+      .select('id')
+      .single();
+
+    if (genError) {
+      console.error('⚠️  Failed to save to profile_generations:', genError.message);
+      console.log('   (Continuing — will still update assessment draft)');
+    } else {
+      console.log(`✅ Generation saved: ${generation.id}`);
+    }
+
+    // Step 8: Update assessment (preserve status if already delivered)
+    console.log('💾 Updating assessment...');
+    const statusUpdate = assessment.status === 'delivered' ? {} : { status: 'synthesis' };
     const { error: updateError } = await supabase
       .from('assessments')
       .update({
         flow_profile_draft: profile,
-        status: 'synthesis',
         prompt_template_id: promptTemplate.id,
+        ...statusUpdate,
       })
       .eq('id', assessmentId);
 
@@ -360,9 +382,16 @@ Examples:
       process.exit(1);
     }
 
+    const statusMsg = assessment.status === 'delivered'
+      ? 'kept delivered (no regression)'
+      : 'updated to synthesis';
+
     console.log(`\n✅ Profile generated successfully!`);
     console.log(`📝 Profile length: ${profile.length} characters`);
-    console.log(`📊 Status updated to: synthesis`);
+    console.log(`📊 Status: ${statusMsg}`);
+    if (generation?.id) {
+      console.log(`🔑 Generation ID: ${generation.id}`);
+    }
     console.log(`\n🔗 Review at: /profile/admin/${assessmentId}\n`);
 
   } catch (error) {

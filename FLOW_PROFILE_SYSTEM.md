@@ -1,19 +1,87 @@
 # Flow Profile Generation System
 
-Complete system for managing and generating Flow Profiles with flexible prompts, full chart context, and no timeout constraints.
+Complete system for managing and generating Flow Profiles with flexible prompts, full chart context, and generation history.
 
 ## Overview
 
-**What Changed**:
-- ✅ Manual generation script (no 60s timeout, full chart context)
-- ✅ Prompt template database (multiple flavors, editable in admin UI)
-- ✅ 5 prompt variations for different use cases
-- ✅ Admin UI for prompt management
-- ✅ Astro archetype summary generation (Haiku preprocessing)
+**Active capabilities:**
+- ✅ Manual CLI generation (no timeout, full chart context, prompt selection by name)
+- ✅ Admin UI generation (prompt picker, same quality pipeline as CLI)
+- ✅ Prompt template database (5 flavors, editable in admin UI)
+- ✅ Generation history per assessment (every run saved, selectable as active draft)
+- ✅ Assessment ID display in admin for CLI workflows
 
-**What's Deferred** (Phase 2 & 3):
-- ⏸ Background async processing (queue-based generation from web UI)
+**Deferred (Phase 2 & 3):**
+- ⏸ Background async queue processing (Inngest or Vercel background functions)
 - ⏸ Self-serve lite tier (automated fast profiles)
+
+---
+
+## Two Generation Paths
+
+Both paths write to the same `profile_generations` table and update `flow_profile_draft`. They produce equivalent quality output.
+
+### Path 1 — CLI (Terminal)
+
+```bash
+cd website/fourflowos-web
+npm run profile:generate <assessment-id>
+npm run profile:generate <assessment-id> "Flow Archetype"
+```
+
+- No timeout constraints (takes 2-3 minutes, no problem)
+- Prompt selected by name as CLI arg
+- Full chart JSON → Haiku archetypal summary → Sonnet profile
+
+**When to use**: Batch runs, testing, large profiles, anything you want logged in the terminal.
+
+### Path 2 — Admin UI Button
+
+Navigate to: `/profile/admin/[id]` → prompt picker → Generate
+
+- Subject to Vercel 60s limit (heartbeat workaround keeps connection alive)
+- Prompt selected via dropdown in the UI
+- Same 2-phase pipeline: full chart → Haiku summary → Sonnet profile
+- Generation appears in history immediately
+
+**When to use**: Quick one-off generation when you're already in the admin panel.
+
+### Getting the Assessment ID
+
+The assessment UUID is displayed prominently at the top of every detail page (`/profile/admin/[id]`) with a copy button. Copy it to run the CLI command:
+
+```bash
+npm run profile:generate <paste-id-here>
+npm run profile:generate <paste-id-here> "Flow Archetype"
+```
+
+---
+
+## Generation History
+
+Every generation run — from the CLI or the UI button — is saved to `profile_generations`. In the admin detail page:
+
+- **Generation History** section shows all past generations for that assessment
+- Each entry shows: prompt name, model, timestamp, first 150 chars of content
+- **"Use as draft"** promotes any generation to the active draft (ready to deliver)
+- **"Delivered"** badge appears on whichever generation matches the delivered final
+
+This means you can:
+- Run 3 different prompt flavors on the same submission and pick the best
+- Regenerate after delivery without losing the original delivered profile
+- Keep an audit trail of every generation
+
+---
+
+## Regeneration After Delivery
+
+If a profile is already `delivered` and you generate a new one:
+- `flow_profile_final` (the delivered content) — **preserved**
+- `flow_profile_draft` — **updated** with new generation
+- `status` — **stays `delivered`** (no regression)
+- New generation appears in Generation History
+- A "New Draft" panel appears below the delivered profile showing the new version
+- You can optionally re-deliver the new draft
 
 ---
 
@@ -21,305 +89,134 @@ Complete system for managing and generating Flow Profiles with flexible prompts,
 
 ### 1. Run Database Migrations
 
-In your Supabase SQL editor:
+In your Supabase SQL editor, run in order:
 
 ```sql
--- Step 1: Create prompt templates table and seed with Classic Flow Mirror
--- (Run this once)
+-- Step 1: Prompt templates table + Classic Flow Mirror seed
+scripts/setup-prompt-templates.sql
+
+-- Step 2: 4 additional prompt variations
+scripts/seed-prompt-variations.sql
+
+-- Step 3: Generation history table
+scripts/setup-profile-generations.sql
 ```
 
-Copy and run: `scripts/setup-prompt-templates.sql`
-
-```sql
--- Step 2: Add the 4 additional prompt variations
--- (Run after step 1)
-```
-
-Copy and run: `scripts/seed-prompt-variations.sql`
-
-### 2. Verify Environment Variables
-
-Make sure these are set in your `.env.local` or Vercel:
+### 2. Environment Variables
 
 ```bash
-ANTHROPIC_API_KEY=sk-ant-...           # Your Anthropic API key
+ANTHROPIC_API_KEY=sk-ant-...           # Anthropic API key
 SUPABASE_URL=https://...               # Supabase project URL
 SUPABASE_SERVICE_KEY=...               # Supabase service role key
-CHART_SERVICE_URL=http://...           # Your natal chart service (optional)
+CHART_SERVICE_URL=http://...           # Natal chart service (optional)
 PROFILE_ADMIN_KEY=...                  # Admin authentication key
-```
-
-### 3. Test the System
-
-```bash
-cd website/fourflowos-web
-
-# List available prompts
-npm run profile:generate
-
-# Generate a profile using Classic Flow Mirror (default)
-npm run profile:generate <assessment-id>
-
-# Generate using a specific prompt
-npm run profile:generate <assessment-id> "Flow Archetype"
-npm run profile:generate <assessment-id> "Flow Unlock"
-npm run profile:generate <assessment-id> "Flow Foundations"
+RESEND_API_KEY=re_...                  # Email delivery
+RESEND_FROM_EMAIL=FourFlow <flow@keys.fourflowos.com>
 ```
 
 ---
 
 ## The 5 Prompt Flavors
 
-### 1. **Classic Flow Mirror** (Default)
+### 1. Classic Flow Mirror (Default)
 - **Purpose**: Balanced profile, "you read it and feel deeply seen"
-- **Length**: 800-900 words
-- **Model**: Sonnet 4.5
-- **Market**: General use, existing practitioners
-- **Price**: $100-150
-- **When to use**: Balanced assessment for self-aware seekers
+- **Length**: 800-900 words | **Model**: Sonnet 4.5 | **Price**: $100-150
 
-### 2. **Flow Archetype**
-- **Purpose**: "How you're wired to work" — archetypal lens
-- **Length**: 900-1000 words
-- **Model**: Sonnet 4.5
-- **Market**: High performers, entrepreneurs, creatives
-- **Price**: $150-200
-- **When to use**: Heavy astro integration, natural strengths + shadow patterns
+### 2. Flow Archetype
+- **Purpose**: "How you're wired to work" — archetypal lens, heavy astro integration
+- **Length**: 900-1000 words | **Model**: Sonnet 4.5 | **Price**: $150-200
 
-### 3. **Flow Unlock**
-- **Purpose**: "The one thing blocking your next level" — diagnostic
-- **Length**: 700-800 words
-- **Model**: Sonnet 4.5
-- **Market**: People who are stuck, seeking breakthrough
-- **Price**: $100-150
-- **When to use**: Problem-focused, cascade analysis, actionable unlock
+### 3. Flow Unlock
+- **Purpose**: "The one thing blocking your next level" — diagnostic, cascade analysis
+- **Length**: 700-800 words | **Model**: Sonnet 4.5 | **Price**: $100-150
 
-### 4. **Flow Foundations**
-- **Purpose**: Lite version for fast/cheap generation
-- **Length**: 400-500 words
-- **Model**: Haiku 4.5 (fast + cheap)
-- **Market**: Free tier, top-of-funnel, high volume
-- **Price**: $50 or free
-- **When to use**: Entry point, volume play, low-touch delivery
+### 4. Flow Foundations
+- **Purpose**: Lite version, fast and cheap
+- **Length**: 400-500 words | **Model**: Haiku 4.5 | **Price**: $50 or free
 
-### 5. **Flow Navigator**
+### 5. Flow Navigator
 - **Purpose**: Comprehensive deep-dive, all 12 keys detailed
-- **Length**: 1200-1500 words
-- **Model**: Sonnet 4.5 or Opus 4.6
-- **Market**: Premium clients, practitioners needing full diagnostic
-- **Price**: $300-500
-- **When to use**: Premium offering, facilitated with session
+- **Length**: 1200-1500 words | **Model**: Sonnet 4.5 or Opus 4.6 | **Price**: $300-500
 
 ---
 
-## How the System Works
+## How the Pipeline Works
 
-### Manual Generation Workflow (Current)
+Both the CLI and UI button follow the same 2-phase process:
 
 ```
-1. User fills out intake → stored in Supabase
-2. You run: npm run profile:generate <id> "Flow Archetype"
-3. Script fetches assessment + natal chart
-4. Haiku generates archetypal chart summary (~250 tokens, rich context)
-5. Sonnet generates profile using selected prompt template
-6. Result saved to Supabase → status set to "synthesis"
-7. You review in admin UI → edit if needed → deliver to client
+1. Fetch assessment from Supabase
+2. Fetch natal chart data (or use cached)
+3. Haiku generates 250-word archetypal summary from full chart JSON
+4. Format intake data as structured text
+5. Selected prompt template → replace {INTAKE_DATA} + {CHART_DATA}
+6. Sonnet (or template model) generates full profile
+7. Save to profile_generations table
+8. Update flow_profile_draft + prompt_template_id on assessment
+9. Status → synthesis (or unchanged if already delivered)
 ```
 
-**Why manual?**
-- No timeout constraints (takes 2-3 minutes, doesn't matter)
-- Full chart context (not trimmed for speed)
-- Multiple model calls (Haiku summary → Sonnet profile)
-- Human curation before delivery (quality control)
-- You learn the patterns before automating
-
-### Chart Integration
-
-**Current (trimmed)**: 50 tokens
-```
-Sun: Aries | Moon: Scorpio | Rising: Leo
-```
-
-**New (archetypal summary)**: 250 tokens
-```
-CHART SUMMARY:
-Sun: Aries (10th house) — Public identity, career-driven fire
-Moon: Scorpio (2nd house) — Emotional depth around security
-
-DOMINANT THEMES:
-- Fire-dominant → high energy, needs movement
-- Fixed emphasis → determined, can be stubborn
-
-KEY ASPECTS:
-- Sun square Saturn — fire in structure tension
-- Moon trine Neptune — intuitive emotional processing
-
-FLOW IMPLICATIONS:
-- SELF: Body MUST move or energy bottles
-- STORY: Mission clarity grounds, ambiguity destabilizes
-```
-
-This is generated by **Haiku** from the full chart JSON, then passed to **Sonnet** for final profile. Cost: ~$0.002 (Haiku) + ~$0.03 (Sonnet) = **$0.032 per profile**.
+**Cost per profile**: ~$0.002 (Haiku summary) + ~$0.03 (Sonnet profile) = **~$0.032**
+**Generation time**: 60-120 seconds
 
 ---
 
 ## Admin UI
 
-### Prompt Management
+### Assessment Detail (`/profile/admin/[id]`)
 
-Navigate to: `/profile/admin/prompts`
+- **ID display**: Assessment UUID at top with copy button — for `npm run profile:generate <id>`
+- **Prompt picker**: Select which prompt flavor to use before generating
+- **Generate button**: Runs same pipeline as CLI, streams status updates
+- **Generation History**: All past generations, "Use as draft" to promote any one
+- **Draft review**: Edit before delivering
+- **Deliver panel**: Optional custom note, sends email to client
 
-**Features**:
-- List all prompt templates
-- Create new prompts
-- Edit existing prompts (name, description, prompt text, model, max_tokens)
-- Delete prompts (with protection if assessments are using them)
-- Set active/inactive status
-- Preview prompt text
+### Prompt Manager (`/profile/admin/prompts`)
 
-**Creating a New Prompt**:
-1. Click "New Template"
-2. Fill in name, description, model, max_tokens
-3. Write prompt text (use `{INTAKE_DATA}` and `{CHART_DATA}` placeholders)
-4. Click "Create"
-5. Test it: `npm run profile:generate <id> "Your New Prompt Name"`
-
-### Assessment Dashboard
-
-Navigate to: `/profile/admin`
-
-- View all assessments
-- Filter by status
-- Click into individual assessment
-- **New**: "Manage Prompts" button in header
+- Full CRUD for prompt templates
+- Create new prompts with `{INTAKE_DATA}` and `{CHART_DATA}` placeholders
+- Set model (Haiku/Sonnet/Opus) and max_tokens per template
+- Can't delete a prompt if assessments are using it — set inactive instead
 
 ---
 
 ## Costs & Performance
 
-### Per-Profile Cost
-
-| Prompt | Model | Input | Output | Total Cost |
-|--------|-------|-------|--------|------------|
-| Flow Foundations | Haiku | ~1500 | ~500 | ~$0.005 |
-| Flow Unlock | Sonnet | ~1750 | ~800 | ~$0.02 |
-| Classic Flow Mirror | Sonnet | ~1750 | ~900 | ~$0.03 |
-| Flow Archetype | Sonnet | ~1750 | ~1000 | ~$0.03 |
-| Flow Navigator | Sonnet | ~1750 | ~1500 | ~$0.04 |
+| Prompt | Model | Approx Cost | Time |
+|--------|-------|-------------|------|
+| Flow Foundations | Haiku | ~$0.007 | 30-60s |
+| Flow Unlock | Sonnet | ~$0.022 | 60-90s |
+| Classic Flow Mirror | Sonnet | ~$0.032 | 60-90s |
+| Flow Archetype | Sonnet | ~$0.032 | 60-90s |
+| Flow Navigator | Sonnet/Opus | ~$0.04-0.15 | 90-120s |
 
 All include Haiku chart summary (~$0.002).
-
-### Generation Time
-
-- Haiku chart summary: 5-10 seconds
-- Sonnet profile: 30-90 seconds (depending on length)
-- **Total**: 60-120 seconds per profile
-
-No timeout constraints. Run as many as you want.
 
 ---
 
 ## Strategic Recommendations
 
-### Start Here (Manual Delivery Model)
-
-1. **Run 5 test profiles** — one with each prompt flavor
-2. **Compare outputs** — which ones feel right? Which need refinement?
-3. **Pick your top 3** — Classic + Archetype + Unlock is a good starting trio
-4. **Set pricing**:
-   - Foundations: $50 or free (entry point)
-   - Classic/Unlock: $150 (standard)
-   - Archetype: $200 (premium, astro-focused)
-   - Navigator: $300-500 (comprehensive, with session)
-
-5. **Deliver manually** for first 20-50 profiles:
-   - You learn what matters
-   - Quality compounds
-   - Case studies emerge
-   - Agent training data builds
-
-### Productize Later (Phase 2)
-
-Once you've done 50+ manual profiles:
-- Add background queue processing (Vercel background functions or Inngest)
-- "Generate" button in admin UI triggers async job
-- You still review before delivery, but initiation is UI-based
-- Self-serve tier becomes viable once you trust the outputs
+1. **Run multiple flavors on your first few submissions** — compare outputs, feel the difference
+2. **Pick your top 3** for early sales (Classic + Archetype + Unlock is a good trio)
+3. **Deliver manually for first 20-50 profiles** — you learn the patterns, build case studies
+4. **Use generation history as A/B testing** — same person, different prompt angles
+5. **Automate later** (Phase 2) once you trust the outputs
 
 ---
 
-## Editing Prompts
-
-### Best Practices
-
-1. **Use the placeholders**: `{INTAKE_DATA}` and `{CHART_DATA}` are required
-2. **Be specific about structure**: Section headers, paragraph counts, word limits
-3. **Define the voice**: "Write in second person, warm and direct..."
-4. **Test iteratively**: Generate → review → refine → repeat
-5. **Track what works**: Notes in description field
-
-### Common Adjustments
-
-**Too generic?** → Add "Quote what they actually said" instructions
-**Too long?** → Reduce max_tokens, tighten section requirements
-**Missing the mark?** → Look at the examples in existing prompts for structure
-**Want more astro?** → Emphasize chart analysis in instructions
-
----
-
-## Troubleshooting
-
-### Script Errors
-
-**"Assessment not found"**
-- Check the assessment ID is correct
-- Verify Supabase connection
-
-**"Prompt template not found"**
-- Run: `npm run profile:generate <id>` without prompt name to see available prompts
-- Check spelling — names are case-sensitive
-
-**"ANTHROPIC_API_KEY not set"**
-- Add to `.env.local` in the website directory
-
-**"Chart service unavailable"**
-- Chart data is optional — generation will proceed without it
-- Check CHART_SERVICE_URL if you want chart integration
-
-### Admin UI Issues
-
-**"Unauthorized"**
-- Make sure you're logged in to admin panel
-- Check PROFILE_ADMIN_KEY in environment variables
-
-**Can't delete prompt**
-- Prompts in use by assessments can't be deleted
-- Set `is_active = false` instead to hide from selection
-
----
-
-## Next Steps
-
-1. ✅ **Run database migrations** (setup-prompt-templates.sql + seed-prompt-variations.sql)
-2. ✅ **Test the script** (`npm run profile:generate <id>`)
-3. ✅ **Generate 5 test profiles** (one with each prompt flavor)
-4. ✅ **Review in admin UI** (/profile/admin)
-5. ✅ **Refine prompts** based on output quality
-6. 🎯 **Start delivering manually** — learn the patterns
-7. 🎯 **Build case studies** from successful profiles
-8. 🎯 **Iterate on prompts** as you learn what resonates
-
----
-
-## Files Created
+## Files
 
 ```
 scripts/
-  generate-profile.ts              # Manual generation script
-  setup-prompt-templates.sql       # Database schema + Classic prompt
+  generate-profile.ts              # CLI generation script
+  setup-prompt-templates.sql       # prompt_templates table + Classic seed
   seed-prompt-variations.sql       # 4 additional prompt flavors
+  setup-profile-generations.sql    # profile_generations table
 
 src/app/api/profile/
+  [id]/process/route.ts            # POST — generate (SSE stream, 2-phase pipeline)
+  [id]/generations/route.ts        # GET — list generations for assessment
   prompts/route.ts                 # GET (list), POST (create)
   prompts/[id]/route.ts            # PATCH (update), DELETE (delete)
 
@@ -327,14 +224,25 @@ src/app/profile/admin/
   prompts/page.tsx                 # Prompt management page
 
 src/components/profile/
+  AssessmentDetail.tsx             # Full detail, prompt picker, generation history
   PromptManager.tsx                # Prompt CRUD UI
 
 src/lib/
-  supabase.ts                      # Updated with PromptTemplate type
+  supabase.ts                      # Assessment, PromptTemplate, ProfileGeneration types
 
 FLOW_PROFILE_SYSTEM.md             # This file
 ```
 
 ---
 
-**Questions?** Check the code comments or ask. The system is designed to be flexible — adjust prompts, add new flavors, experiment freely.
+## Troubleshooting
+
+**CLI: "Assessment not found"** → Check ID is correct, verify Supabase connection
+
+**CLI: "Prompt template not found"** → Run `npm run profile:generate <id>` (no prompt arg) to list available names. Names are case-sensitive.
+
+**UI: Generation hangs past 60s** → Use CLI instead — no timeout constraints
+
+**Can't delete prompt** → Set `is_active = false` to hide from picker without deleting
+
+**Regeneration changed delivered status** → Fixed (Feb 2026) — status no longer regresses from `delivered`
