@@ -270,8 +270,8 @@ ${a.spirit_vision}`.trim();
         headers: { 'x-admin-key': adminKey },
       });
       const data = await res.json();
-      if (data.success && data.templates?.length) {
-        const active = (data.templates as PromptTemplate[]).filter(t => t.is_active);
+      if (data.success && data.prompts?.length) {
+        const active = (data.prompts as PromptTemplate[]).filter(t => t.is_active);
         setPromptTemplates(active);
         if (!selectedPromptId && active.length > 0) {
           setSelectedPromptId(active[0].id);
