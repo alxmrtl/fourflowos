@@ -30,6 +30,7 @@ config({ path: resolve(__dirname, '../.env.local') });
 import Anthropic from '@anthropic-ai/sdk';
 import { getSupabase } from '../src/lib/supabase';
 import { FLOW_PROFILE_PROMPT } from '../src/data/profile-prompts';
+import { humanizeProfile } from '../src/lib/humanizer';
 
 const supabase = getSupabase();
 
@@ -337,12 +338,17 @@ Examples:
       .replace('{INTAKE_DATA}', intakeData)
       .replace('{CHART_DATA}', chartSummary);
 
-    const profile = await generateProfile(
+    const rawProfile = await generateProfile(
       promptText,
       anthropic,
       promptTemplate.model,
       promptTemplate.max_tokens
     );
+
+    // Step 6b: Humanizer pass — strip AI patterns, preserve structure
+    console.log('✨ Humanizing profile...');
+    const profile = await humanizeProfile(rawProfile, anthropic);
+    console.log(`✅ Profile humanized (${profile.length} chars)`);
 
     // Step 7: Save to profile_generations table
     console.log('💾 Saving to profile_generations...');

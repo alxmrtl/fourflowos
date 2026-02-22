@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
+import { humanizeProfile } from '@/lib/humanizer';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -288,6 +289,11 @@ export async function POST(
       }
 
       console.log(`[process] Generated ${profileText.length} chars for ${id} using "${promptTemplate.name}"`);
+
+      // Phase 3: Humanizer pass — strip AI patterns, preserve structure
+      await write({ type: 'status', message: 'Polishing profile...' });
+      profileText = await humanizeProfile(profileText, anthropic);
+      console.log(`[process] Humanized to ${profileText.length} chars`);
 
       // Save to profile_generations table
       const { data: generation, error: genError } = await supabase
