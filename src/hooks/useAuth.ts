@@ -53,7 +53,9 @@ export function useAuth(): UseAuthReturn {
     const { error } = await getSupabaseBrowser().auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: typeof window !== 'undefined' ? window.location.href : undefined,
+        emailRedirectTo: typeof window !== 'undefined'
+          ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`
+          : undefined,
       },
     });
     return { error: error?.message ?? null };
