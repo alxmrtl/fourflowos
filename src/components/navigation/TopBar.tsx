@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import MenuButton from './MenuButton';
+import TopBarUserButton from './TopBarUserButton';
 
 export default function TopBar() {
   return (
@@ -19,7 +20,10 @@ export default function TopBar() {
             />
           </div>
         </Link>
-        <MenuButton />
+        <div className="flex items-center gap-1">
+          <TopBarUserButton />
+          <MenuButton />
+        </div>
       </div>
     </header>
   );

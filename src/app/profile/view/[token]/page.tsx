@@ -3,6 +3,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
+import { getSupabaseBrowser } from '@/lib/supabase-browser';
+import AuthModal from '@/components/auth/AuthModal';
 
 const PILLAR_COLORS = {
   SELF: '#FF6F61',
@@ -15,6 +19,268 @@ interface ProfileData {
   name: string;
   content: string;
   created_at: string;
+}
+
+interface SessionRow {
+  id: string;
+  focus_reps: number | null;
+  ended_at: string | null;
+  started_at: string | null;
+}
+
+interface CuriosityData {
+  items: unknown[];
+  intersections: unknown[];
+  updated_at: string | null;
+}
+
+interface SignalData {
+  sessions: SessionRow[];
+  curiosity: CuriosityData | null;
+}
+
+function relativeTime(dateStr: string | null | undefined): string {
+  if (!dateStr) return 'never';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
+}
+
+function CopyButton({ profile, signals }: { profile: ProfileData; signals: SignalData | null }) {
+  const [copied, setCopied] = useState(false);
+
+  function buildLlmContext() {
+    const lines: string[] = [
+      `# My FourFlow Profile`,
+      ``,
+      `**Name:** ${profile.name}`,
+      `**Generated:** ${new Date(profile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+      ``,
+      `---`,
+      ``,
+      profile.content,
+    ];
+
+    if (signals) {
+      const totalSessions = signals.sessions.length;
+      const totalReps = signals.sessions.reduce((sum, s) => sum + (s.focus_reps ?? 0), 0);
+      const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const sessionsThisWeek = signals.sessions.filter(
+        (s) => s.started_at && new Date(s.started_at).getTime() > weekAgo
+      ).length;
+      const itemCount = signals.curiosity?.items?.length ?? 0;
+      const intersectionCount = signals.curiosity?.intersections?.length ?? 0;
+
+      lines.push('');
+      lines.push('---');
+      lines.push('');
+      lines.push('## Live Signals');
+      lines.push('');
+      lines.push(`- **FlowZone:** ${totalSessions} sessions total, ${sessionsThisWeek} this week, ${totalReps} focus reps`);
+      lines.push(`- **Curiosity Map:** ${itemCount} curiosities mapped, ${intersectionCount} intersections`);
+    }
+
+    return lines.join('\n');
+  }
+
+  function handleCopy() {
+    navigator.clipboard.writeText(buildLlmContext());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-white/15 text-gray-400 hover:text-white hover:border-white/30 transition-all"
+    >
+      {copied ? (
+        <>
+          <svg className="w-3.5 h-3.5" fill="none" stroke="#6BA292" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <span style={{ color: '#6BA292' }}>Copied</span>
+        </>
+      ) : (
+        <>
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          Copy for LLM
+        </>
+      )}
+    </button>
+  );
+}
+
+function SignalDashboard({ profile }: { profile: ProfileData }) {
+  const { user, loading: authLoading } = useAuth();
+  const [signals, setSignals] = useState<SignalData | null>(null);
+  const [fetching, setFetching] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    setFetching(true);
+    const supabase = getSupabaseBrowser();
+
+    Promise.all([
+      supabase
+        .from('focus_sessions')
+        .select('id, focus_reps, ended_at, started_at')
+        .eq('user_id', user.id)
+        .order('started_at', { ascending: false }),
+      supabase
+        .from('curiosity_snapshots')
+        .select('items, intersections, updated_at')
+        .eq('user_id', user.id)
+        .single(),
+    ])
+      .then(([sessionsResult, curiosityResult]) => {
+        setSignals({
+          sessions: (sessionsResult.data ?? []) as SessionRow[],
+          curiosity: curiosityResult.data as CuriosityData | null,
+        });
+      })
+      .finally(() => setFetching(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  if (authLoading) return null;
+
+  return (
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6, delay: 0.35 }}
+      className="max-w-3xl mx-auto px-6 pb-10"
+    >
+      <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-10" />
+
+      <div className="flex items-end justify-between mb-5">
+        <div>
+          <h2 className="text-base font-semibold text-white">Live Signals</h2>
+          <p className="text-xs text-gray-600 mt-0.5">Your tools, feeding the profile</p>
+        </div>
+        {user && signals && (
+          <CopyButton profile={profile} signals={signals} />
+        )}
+      </div>
+
+      {!user ? (
+        <div className="p-6 rounded-2xl border border-white/10 text-center" style={{ background: 'rgba(20,20,20,0.8)' }}>
+          <p className="text-sm text-gray-400 mb-1">This is your profile.</p>
+          <p className="text-xs text-gray-600 mb-4">Sign in to see your live signals alongside it — FlowZone sessions, curiosity map, and more.</p>
+          <button
+            onClick={() => setShowAuth(true)}
+            className="px-4 py-2 text-sm rounded-lg text-white transition-colors hover:opacity-80"
+            style={{ background: 'linear-gradient(135deg, #5B84B1, #7A4DA4)' }}
+          >
+            Activate dashboard
+          </button>
+          {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+        </div>
+      ) : fetching ? (
+        <div className="py-6 flex justify-center">
+          <div className="w-4 h-4 rounded-full border border-white/20 border-t-white/60 animate-spin" />
+        </div>
+      ) : signals ? (
+        <div className="grid md:grid-cols-2 gap-4">
+          <CompactFlowZoneCard sessions={signals.sessions} />
+          <CompactCuriosityCard curiosity={signals.curiosity} />
+        </div>
+      ) : null}
+
+      {user && (
+        <div className="mt-4 text-center">
+          <Link href="/me" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+            Open full dashboard →
+          </Link>
+        </div>
+      )}
+    </motion.section>
+  );
+}
+
+function CompactFlowZoneCard({ sessions }: { sessions: SessionRow[] }) {
+  const totalSessions = sessions.length;
+  const totalReps = sessions.reduce((sum, s) => sum + (s.focus_reps ?? 0), 0);
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const sessionsThisWeek = sessions.filter(
+    (s) => s.started_at && new Date(s.started_at).getTime() > weekAgo
+  ).length;
+  const lastSession = sessions[0]?.ended_at ?? null;
+  const connected = totalSessions > 0;
+
+  return (
+    <div className="rounded-xl border border-white/10 overflow-hidden" style={{ background: 'rgba(20,20,20,0.95)' }}>
+      <div style={{ height: 2, background: `linear-gradient(90deg, #FF6F61, #6BA292)` }} />
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-white">FlowZone</h3>
+          <span className="text-[10px]" style={{ color: connected ? '#4ade80' : '#555' }}>● {connected ? 'Connected' : 'No data'}</span>
+        </div>
+        {connected ? (
+          <>
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <div>
+                <div className="text-lg font-bold" style={{ color: '#FF6F61' }}>{totalSessions}</div>
+                <div className="text-[10px] text-gray-600">sessions</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold" style={{ color: '#6BA292' }}>{totalReps}</div>
+                <div className="text-[10px] text-gray-600">reps</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-white">{sessionsThisWeek}</div>
+                <div className="text-[10px] text-gray-600">this week</div>
+              </div>
+            </div>
+            {lastSession && <p className="text-[10px] text-gray-700">Last session {relativeTime(lastSession)}</p>}
+          </>
+        ) : (
+          <p className="text-xs text-gray-600">No sessions yet.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CompactCuriosityCard({ curiosity }: { curiosity: CuriosityData | null }) {
+  const connected = !!curiosity;
+  const itemCount = curiosity?.items?.length ?? 0;
+  const intersectionCount = curiosity?.intersections?.length ?? 0;
+
+  return (
+    <div className="rounded-xl border border-white/10 overflow-hidden" style={{ background: 'rgba(20,20,20,0.95)' }}>
+      <div style={{ height: 2, background: '#7A4DA4' }} />
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-white">Curiosity Map</h3>
+          <span className="text-[10px]" style={{ color: connected ? '#4ade80' : '#555' }}>● {connected ? 'Connected' : 'No data'}</span>
+        </div>
+        {connected ? (
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <div className="text-lg font-bold" style={{ color: '#7A4DA4' }}>{itemCount}</div>
+              <div className="text-[10px] text-gray-600">curiosities</div>
+            </div>
+            <div>
+              <div className="text-lg font-bold" style={{ color: '#7A4DA4' }}>{intersectionCount}</div>
+              <div className="text-[10px] text-gray-600">intersections</div>
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-gray-600">No curiosities mapped yet.</p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function ProfileViewPage() {
@@ -91,22 +357,29 @@ export default function ProfileViewPage() {
         transition={{ duration: 0.6 }}
         className="pt-12 pb-8 px-6"
       >
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-sm tracking-[0.2em] text-gray-500 uppercase mb-4">FourFlow</p>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            Flow Profile
-          </h1>
-          <p className="text-lg text-gray-400">{profile.name}</p>
-          <p className="text-xs text-gray-600 mt-2">{profileDate}</p>
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-6">
+            <p className="text-sm tracking-[0.2em] text-gray-500 uppercase mb-4">FourFlow</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+              Flow Profile
+            </h1>
+            <p className="text-lg text-gray-400">{profile.name}</p>
+            <p className="text-xs text-gray-600 mt-2">{profileDate}</p>
 
-          {/* Four pillar dots */}
-          <div className="flex items-center justify-center gap-3 mt-6">
-            {Object.entries(PILLAR_COLORS).map(([name, color]) => (
-              <div key={name} className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                <span className="text-[10px] tracking-wider text-gray-600 uppercase">{name}</span>
-              </div>
-            ))}
+            {/* Four pillar dots */}
+            <div className="flex items-center justify-center gap-3 mt-6">
+              {Object.entries(PILLAR_COLORS).map(([name, color]) => (
+                <div key={name} className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                  <span className="text-[10px] tracking-wider text-gray-600 uppercase">{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Copy for LLM — below the header */}
+          <div className="flex justify-center">
+            <CopyButton profile={profile} signals={null} />
           </div>
         </div>
       </motion.header>
@@ -127,6 +400,9 @@ export default function ProfileViewPage() {
           <ProfileMarkdown content={profile.content} />
         </div>
       </motion.main>
+
+      {/* Signal Dashboard */}
+      <SignalDashboard profile={profile} />
 
       {/* CTA Section */}
       <motion.section

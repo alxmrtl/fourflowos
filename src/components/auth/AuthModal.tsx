@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 type ModalState = 'idle' | 'submitting' | 'sent';
 
-export default function AuthModal() {
+export default function AuthModal({ onClose }: { onClose?: () => void }) {
   const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [state, setState] = useState<ModalState>('idle');
@@ -31,14 +31,28 @@ export default function AuthModal() {
   return (
     /* Full-screen overlay */
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      {/* Backdrop — clickable to dismiss when onClose is provided */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
       {/* Modal card */}
       <div
         className="relative w-full max-w-sm rounded-2xl p-8 shadow-2xl"
         style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.08)' }}
       >
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-1 text-gray-600 hover:text-white transition-colors"
+            aria-label="Close"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
         {state === 'sent' ? (
           <SentState email={email} />
         ) : (

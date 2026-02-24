@@ -36,7 +36,7 @@ function PillarBadge({ name, color }: { name: string; color: string }) {
 }
 
 interface CardProps {
-  topEdge: string; // CSS gradient or color string for the 1px top border
+  topEdge: string;
   children: React.ReactNode;
   muted?: boolean;
 }
@@ -47,7 +47,6 @@ function SignalCard({ topEdge, children, muted }: CardProps) {
       className={`rounded-2xl overflow-hidden border ${muted ? 'border-white/5' : 'border-white/10'}`}
       style={{ background: muted ? 'rgba(20,20,20,0.6)' : 'rgba(20,20,20,0.95)' }}
     >
-      {/* 3px top edge */}
       <div style={{ height: 3, background: topEdge }} />
       <div className="p-5">{children}</div>
     </div>
@@ -71,12 +70,151 @@ interface AssessmentData {
   status: string;
   created_at: string;
   view_token: string | null;
+  flow_profile_final?: string | null;
 }
 
 interface SignalData {
   sessions: SessionRow[];
   curiosity: CuriosityData | null;
   assessment: AssessmentData | null;
+}
+
+function buildLlmContext(assessment: AssessmentData, signals: SignalData): string {
+  const lines: string[] = [
+    '# My FourFlow Profile',
+    '',
+    `**Generated:** ${new Date(assessment.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+    '',
+    '---',
+    '',
+    assessment.flow_profile_final ?? '',
+  ];
+
+  const totalSessions = signals.sessions.length;
+  const totalReps = signals.sessions.reduce((sum, s) => sum + (s.focus_reps ?? 0), 0);
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const sessionsThisWeek = signals.sessions.filter(
+    (s) => s.started_at && new Date(s.started_at).getTime() > weekAgo
+  ).length;
+  const itemCount = signals.curiosity?.items?.length ?? 0;
+  const intersectionCount = signals.curiosity?.intersections?.length ?? 0;
+
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push('## Live Signals');
+  lines.push('');
+  lines.push(`- **FlowZone:** ${totalSessions} sessions total, ${sessionsThisWeek} this week, ${totalReps} focus reps`);
+  lines.push(`- **Curiosity Map:** ${itemCount} curiosities mapped, ${intersectionCount} intersections`);
+
+  return lines.join('\n');
+}
+
+function ProfileTextSection({
+  assessment,
+  signals,
+}: {
+  assessment: AssessmentData | null;
+  signals: SignalData;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const delivered = assessment?.status === 'delivered' && assessment?.flow_profile_final;
+
+  function handleCopy() {
+    if (!assessment) return;
+    navigator.clipboard.writeText(buildLlmContext(assessment, signals));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  if (!delivered) {
+    return (
+      <div className="mb-8 rounded-2xl border border-white/10 overflow-hidden" style={{ background: 'rgba(20,20,20,0.95)' }}>
+        <div style={{ height: 3, background: `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})` }} />
+        <div className="p-6">
+          <h2 className="text-base font-semibold text-white mb-2">Flow Profile</h2>
+          <p className="text-sm text-gray-500 mb-3">
+            {assessment
+              ? 'Your profile is being prepared. Check back soon.'
+              : 'Your baseline diagnostic across all 4 pillars. Take the assessment to get started.'}
+          </p>
+          {!assessment && (
+            <Link
+              href="/profile/intake"
+              className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors"
+            >
+              Start assessment →
+            </Link>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const content = assessment.flow_profile_final!;
+  const PREVIEW_LENGTH = 350;
+  const isLong = content.length > PREVIEW_LENGTH;
+
+  return (
+    <div className="mb-8 rounded-2xl border border-white/10 overflow-hidden" style={{ background: 'rgba(20,20,20,0.95)' }}>
+      <div style={{ height: 3, background: `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})` }} />
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h2 className="text-base font-semibold text-white">Flow Profile</h2>
+            <p className="text-xs text-gray-600 mt-0.5">Delivered {relativeTime(assessment.created_at)}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {assessment.view_token && (
+              <Link
+                href={`/profile/view/${assessment.view_token}`}
+                className="text-xs text-gray-500 hover:text-white transition-colors"
+              >
+                Full view →
+              </Link>
+            )}
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-white/15 text-gray-400 hover:text-white hover:border-white/30 transition-all"
+            >
+              {copied ? (
+                <>
+                  <svg className="w-3 h-3" fill="none" stroke={SAGE} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span style={{ color: SAGE }}>Copied</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy for LLM
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        <div className="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap font-mono text-[12px]"
+          style={{ maxHeight: expanded ? 'none' : '7rem', overflow: 'hidden' }}
+        >
+          {expanded ? content : content.slice(0, PREVIEW_LENGTH) + (isLong ? '…' : '')}
+        </div>
+
+        {isLong && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="mt-3 text-xs text-gray-600 hover:text-gray-400 transition-colors"
+          >
+            {expanded ? 'Collapse ↑' : 'Read full profile ↓'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function FlowZoneCard({ sessions }: { sessions: SessionRow[] }) {
@@ -199,64 +337,6 @@ function CuriosityCard({ curiosity }: { curiosity: CuriosityData | null }) {
   );
 }
 
-function FlowProfileCard({ assessment }: { assessment: AssessmentData | null }) {
-  const topEdge = `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})`;
-  const delivered = assessment?.status === 'delivered';
-  const pending = assessment && !delivered;
-
-  return (
-    <SignalCard topEdge={topEdge}>
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <h3 className="text-white font-semibold text-base">Flow Profile</h3>
-          <p className="text-xs text-gray-500 mt-0.5">Your diagnostic across all 4 pillars</p>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs" style={{ color: delivered ? '#4ade80' : '#666' }}>●</span>
-          <span className="text-xs text-gray-500">
-            {delivered ? 'Delivered' : pending ? 'In progress' : 'Not started'}
-          </span>
-        </div>
-      </div>
-
-      <div className="flex gap-1.5 mb-4">
-        <PillarBadge name="SELF" color={CORAL} />
-        <PillarBadge name="SPACE" color={SAGE} />
-        <PillarBadge name="STORY" color={STEEL} />
-        <PillarBadge name="SPIRIT" color={AMETHYST} />
-      </div>
-
-      {delivered && assessment?.view_token ? (
-        <div>
-          <p className="text-sm text-gray-400 mb-3">
-            Profile delivered {relativeTime(assessment.created_at)}
-          </p>
-          <Link
-            href={`/profile/view/${assessment.view_token}`}
-            className="inline-flex items-center gap-1 text-sm font-medium text-white hover:text-gray-300 transition-colors"
-          >
-            View your profile <span>→</span>
-          </Link>
-        </div>
-      ) : pending ? (
-        <p className="text-sm text-gray-500">Assessment in progress — your profile is being prepared.</p>
-      ) : (
-        <div>
-          <p className="text-sm text-gray-500 mb-3">
-            Take the Flow Profile assessment to unlock your full signal picture.
-          </p>
-          <Link
-            href="/profile/intake"
-            className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors"
-          >
-            Start assessment <span>→</span>
-          </Link>
-        </div>
-      )}
-    </SignalCard>
-  );
-}
-
 function FlowHabitsCard() {
   return (
     <SignalCard topEdge={CORAL} muted>
@@ -309,12 +389,9 @@ export default function MePage() {
   useEffect(() => {
     if (!user) return;
     setFetching(true);
-    console.log('[/me] fetching data for user:', user.id);
 
     const supabase = getSupabaseBrowser();
 
-    // Race queries against an 8-second timeout so a hung Supabase connection
-    // doesn't block the page indefinitely.
     const queries = Promise.all([
       supabase
         .from('focus_sessions')
@@ -328,7 +405,7 @@ export default function MePage() {
         .single(),
       supabase
         .from('assessments')
-        .select('status, created_at, view_token')
+        .select('status, created_at, view_token, flow_profile_final')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
@@ -341,7 +418,6 @@ export default function MePage() {
 
     Promise.race([queries, timeout])
       .then(([sessionsResult, curiosityResult, assessmentResult]) => {
-        console.log('[/me] queries ok');
         setData({
           sessions: (sessionsResult.data ?? []) as SessionRow[],
           curiosity: curiosityResult.data as CuriosityData | null,
@@ -357,23 +433,18 @@ export default function MePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // 1. Auth check in progress
   if (loading) return <Spinner label="checking auth…" />;
-
-  // 2. Not authenticated — show sign-in modal
   if (!user) return <AuthModal />;
-
-  // 3. Authenticated, data loading
   if (fetching) return <Spinner label="loading signals…" />;
 
-  // 4. Ready
   return (
     <div className="min-h-screen bg-[#0a0a0a] px-4 py-12 md:py-16">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-10 flex items-start justify-between">
+        {/* Header */}
+        <div className="mb-8 flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-1">Your Signals</h1>
-            <p className="text-gray-500 text-sm">What&apos;s feeding your FourFlow profile</p>
+            <h1 className="text-3xl font-bold text-white mb-1">Your Flow Profile</h1>
+            <p className="text-gray-500 text-sm">Your diagnostic + live signal data</p>
             {user.email && (
               <p className="text-gray-600 text-xs mt-1">{user.email}</p>
             )}
@@ -386,13 +457,19 @@ export default function MePage() {
           </button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          <FlowZoneCard sessions={data.sessions} />
-          <CuriosityCard curiosity={data.curiosity} />
-          <div className="md:col-span-2">
-            <FlowProfileCard assessment={data.assessment} />
+        {/* Profile text — primary surface */}
+        <ProfileTextSection assessment={data.assessment} signals={data} />
+
+        {/* Live signals */}
+        <div className="mb-4">
+          <h2 className="text-xs font-medium tracking-widest text-gray-600 uppercase mb-4">Live Signals</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <FlowZoneCard sessions={data.sessions} />
+            <CuriosityCard curiosity={data.curiosity} />
+            <div className="md:col-span-2">
+              <FlowHabitsCard />
+            </div>
           </div>
-          <FlowHabitsCard />
         </div>
       </div>
     </div>
