@@ -39,6 +39,13 @@ export function getSupabaseBrowser(): SupabaseClient {
     );
   }
 
-  _client = createBrowserClient(url, key);
+  // Disable Navigator Locks — the default lock can hang indefinitely if a
+  // previous tab/session held the lock and didn't release it. For a client-side
+  // SPA this is safe: we don't need cross-tab serialization.
+  _client = createBrowserClient(url, key, {
+    auth: {
+      lock: (_name, _acquireTimeout, fn) => fn(),
+    },
+  });
   return _client;
 }
