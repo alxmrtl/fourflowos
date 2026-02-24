@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/auth/AuthModal';
@@ -383,8 +384,14 @@ function Spinner({ label }: { label: string }) {
 
 export default function MePage() {
   const { user, loading, signOut } = useAuth();
+  const router = useRouter();
   const [data, setData] = useState<SignalData>({ sessions: [], curiosity: null, assessment: null });
   const [fetching, setFetching] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -408,8 +415,7 @@ export default function MePage() {
         .select('status, created_at, view_token, flow_profile_final')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(1)
-        .single(),
+        .limit(1),
     ]);
 
     const timeout = new Promise<never>((_, reject) =>
@@ -421,7 +427,7 @@ export default function MePage() {
         setData({
           sessions: (sessionsResult.data ?? []) as SessionRow[],
           curiosity: curiosityResult.data as CuriosityData | null,
-          assessment: assessmentResult.data as AssessmentData | null,
+          assessment: ((assessmentResult.data as AssessmentData[] | null)?.[0] ?? null),
         });
       })
       .catch((err) => {
@@ -450,7 +456,7 @@ export default function MePage() {
             )}
           </div>
           <button
-            onClick={signOut}
+            onClick={handleSignOut}
             className="text-sm text-gray-600 hover:text-white transition-colors mt-1"
           >
             Sign out
