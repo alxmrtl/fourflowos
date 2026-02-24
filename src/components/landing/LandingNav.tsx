@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { BRAND_COLORS } from '@/styles/brand-colors';
+import TopBarUserButton from '@/components/navigation/TopBarUserButton';
 
 // Pillar colors for hover effects
 const pillarColors = ['#FF6F61', '#6BA292', '#5B84B1', '#7A4DA4'];
@@ -98,6 +99,11 @@ export default function LandingNav() {
                 />
               </Link>
             ))}
+          </div>
+
+          {/* Desktop: user icon */}
+          <div className="hidden lg:flex items-center">
+            <TopBarUserButton />
           </div>
 
           {/* Mobile Menu Button */}
@@ -207,8 +213,22 @@ export default function LandingNav() {
               ))}
             </div>
 
-            {/* CTA Button */}
+            {/* Profile / Sign in */}
             <div className="mt-4 pt-4 border-t border-white/10">
+              <Link
+                href="/me"
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-base py-2 px-2 rounded-lg hover:bg-white/5"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                My Flow Profile
+              </Link>
+            </div>
+
+            {/* CTA Button */}
+            <div className="mt-2">
               <Link
                 href="/apps"
                 className="block w-full text-center px-5 py-3 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
