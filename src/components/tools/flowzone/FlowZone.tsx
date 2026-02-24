@@ -8,6 +8,8 @@ import FlowSession from './FlowSession';
 import SessionComplete from './SessionComplete';
 import DayStats from './DayStats';
 import { SAGE, CORAL, AMETHYST, FOUR_PILLAR_GRADIENT, TIMER_OPTIONS, BREATHWORK_PATTERNS, AUDIO_OPTIONS } from './constants';
+import { useAuth } from '@/hooks/useAuth';
+import { getSupabaseBrowser } from '@/lib/supabase-browser';
 
 /* ─── SVG Icons (20x20 consistent size) ──────────────────────── */
 
@@ -107,6 +109,7 @@ function YTBadge() {
 
 export default function FlowZone() {
   const store = useFlowStore();
+  const { user } = useAuth();
   const [newPriority, setNewPriority] = useState('');
   const [lastSession, setLastSession] = useState<{ focusReps: number; durationMinutes: number } | null>(null);
   const [showComplete, setShowComplete] = useState(false);
@@ -132,16 +135,36 @@ export default function FlowZone() {
   }, [store]);
 
   const handleFlowComplete = useCallback((focusReps: number, actualMinutes: number) => {
+    const startedAt = Date.now() - actualMinutes * 60 * 1000;
+    const completedAt = Date.now();
+
     store.addSession({
       priorityId: store.selectedPriorityId || '',
       priorityText: store.selectedPriority?.text || '',
       durationMinutes: actualMinutes,
       focusReps,
-      startedAt: Date.now() - actualMinutes * 60 * 1000,
-      completedAt: Date.now(),
+      startedAt,
+      completedAt,
     });
     setLastSession({ focusReps, durationMinutes: actualMinutes });
     store.setPhase('dashboard');
+
+    // Sync to Supabase — fire and forget, doesn't block UI
+    if (user) {
+      getSupabaseBrowser()
+        .from('focus_sessions')
+        .insert({
+          user_id: user.id,
+          duration_minutes: actualMinutes,
+          focus_reps: focusReps,
+          completed: true,
+          started_at: new Date(startedAt).toISOString(),
+          ended_at: new Date(completedAt).toISOString(),
+        })
+        .then(({ error }) => {
+          if (error) console.warn('[FlowZone] session sync failed:', error.message);
+        });
+    }
 
     if (store.settings.breathworkPost) {
       setBreathworkLabel('Cooldown');
@@ -149,7 +172,7 @@ export default function FlowZone() {
     } else {
       setShowComplete(true);
     }
-  }, [store]);
+  }, [store, user]);
 
   const handleCooldownFromComplete = useCallback(() => {
     setShowComplete(false);

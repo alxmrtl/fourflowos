@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CuriosityPool from './CuriosityPool';
+import { useAuth } from '@/hooks/useAuth';
+import { getSupabaseBrowser } from '@/lib/supabase-browser';
 
 // --- Types ---
 
@@ -81,6 +83,7 @@ function saveData(data: CuriosityData) {
 // --- Component ---
 
 export default function CuriosityExplorer() {
+  const { user } = useAuth();
   const [data, setData] = useState<CuriosityData>({ items: [], intersections: [] });
   const [phase, setPhase] = useState<'intro' | 'prompts' | 'pool'>('intro');
   const [promptIndex, setPromptIndex] = useState(0);
@@ -106,6 +109,28 @@ export default function CuriosityExplorer() {
   useEffect(() => {
     if (mounted) saveData(data);
   }, [data, mounted]);
+
+  // Debounced sync to Supabase — 2s after last change
+  useEffect(() => {
+    if (!mounted || !user) return;
+    const timer = setTimeout(() => {
+      getSupabaseBrowser()
+        .from('curiosity_snapshots')
+        .upsert(
+          {
+            user_id: user.id,
+            items: data.items,
+            intersections: data.intersections,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' }
+        )
+        .then(({ error }) => {
+          if (error) console.warn('[CuriosityExplorer] sync failed:', error.message);
+        });
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [data, mounted, user]);
 
   const addItem = useCallback((text: string, source: string) => {
     const trimmed = text.trim();

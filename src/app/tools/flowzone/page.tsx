@@ -1,4 +1,5 @@
 import FlowZone from '@/components/tools/flowzone/FlowZone';
+import AuthGate from '@/components/auth/AuthGate';
 
 export const metadata = {
   title: 'FlowZone — Deep Work Companion | FourFlowOS',
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function FlowZonePage() {
-  return <FlowZone />;
+  return (
+    <AuthGate>
+      <FlowZone />
+    </AuthGate>
+  );
 }

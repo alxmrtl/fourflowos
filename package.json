@@ -24,6 +24,7 @@
     "@sanity/client": "^7.8.2",
     "@sanity/image-url": "^1.1.0",
     "@sanity/vision": "^4.5.0",
+    "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
     "@use-gesture/react": "^10.3.1",
     "framer-motion": "^12.23.12",
