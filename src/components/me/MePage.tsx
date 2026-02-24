@@ -414,6 +414,8 @@ export default function MePage() {
         .from('assessments')
         .select('status, created_at, view_token, flow_profile_final')
         .eq('user_id', user.id)
+        .eq('status', 'delivered')
+        .not('flow_profile_final', 'is', null)
         .order('created_at', { ascending: false })
         .limit(1),
     ]);
