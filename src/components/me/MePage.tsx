@@ -399,45 +399,53 @@ export default function MePage() {
 
     const supabase = getSupabaseBrowser();
 
-    const queries = Promise.all([
-      supabase
-        .from('focus_sessions')
-        .select('id, focus_reps, ended_at, started_at')
-        .eq('user_id', user.id)
-        .order('started_at', { ascending: false }),
-      supabase
-        .from('curiosity_snapshots')
-        .select('items, intersections, updated_at')
-        .eq('user_id', user.id)
-        .single(),
-      supabase
-        .from('assessments')
-        .select('status, created_at, view_token, flow_profile_final')
-        .eq('user_id', user.id)
-        .eq('status', 'delivered')
-        .not('flow_profile_final', 'is', null)
-        .order('created_at', { ascending: false })
-        .limit(1),
-    ]);
+    function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+      return Promise.race([
+        promise,
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
+      ]);
+    }
 
-    const timeout = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('timeout')), 8000)
-    );
+    // Assessment fetches independently — signal queries can't block it
+    const assessmentQuery = supabase
+      .from('assessments')
+      .select('status, created_at, view_token, flow_profile_final')
+      .eq('user_id', user.id)
+      .eq('status', 'delivered')
+      .not('flow_profile_final', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .then((r) => (r.data as AssessmentData[] | null)?.[0] ?? null);
 
-    Promise.race([queries, timeout])
-      .then(([sessionsResult, curiosityResult, assessmentResult]) => {
-        setData({
-          sessions: (sessionsResult.data ?? []) as SessionRow[],
-          curiosity: curiosityResult.data as CuriosityData | null,
-          assessment: ((assessmentResult.data as AssessmentData[] | null)?.[0] ?? null),
-        });
-      })
-      .catch((err) => {
-        console.warn('[/me] queries failed or timed out:', err?.message);
-      })
-      .finally(() => {
-        setFetching(false);
+    const sessionsQuery = supabase
+      .from('focus_sessions')
+      .select('id, focus_reps, ended_at, started_at')
+      .eq('user_id', user.id)
+      .order('started_at', { ascending: false })
+      .then((r) => (r.data ?? []) as SessionRow[]);
+
+    const curiosityQuery = supabase
+      .from('curiosity_snapshots')
+      .select('items, intersections, updated_at')
+      .eq('user_id', user.id)
+      .single()
+      .then((r) => r.data as CuriosityData | null);
+
+    Promise.all([
+      withTimeout(assessmentQuery, 8000),
+      withTimeout(sessionsQuery, 8000),
+      withTimeout(curiosityQuery, 8000),
+    ]).then(([assessment, sessions, curiosity]) => {
+      setData({
+        assessment: assessment ?? null,
+        sessions: sessions ?? [],
+        curiosity: curiosity ?? null,
       });
+    }).catch((err) => {
+      console.warn('[/me] data fetch error:', err?.message);
+    }).finally(() => {
+      setFetching(false);
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
