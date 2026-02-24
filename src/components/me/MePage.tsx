@@ -399,9 +399,9 @@ export default function MePage() {
 
     const supabase = getSupabaseBrowser();
 
-    function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+    function withTimeout<T>(promise: PromiseLike<T>, ms: number): Promise<T | null> {
       return Promise.race([
-        promise,
+        Promise.resolve(promise),
         new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
       ]);
     }
