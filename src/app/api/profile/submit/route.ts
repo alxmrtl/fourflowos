@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
         spirit_vision: body.spirit_vision.trim(),
         status: 'intake_submitted',
         view_token: viewToken,
+        ...(body.user_id ? { user_id: body.user_id } : {}),
       })
       .select('id')
       .single();

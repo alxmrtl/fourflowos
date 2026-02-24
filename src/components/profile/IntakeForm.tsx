@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getSupabaseBrowser } from '@/lib/supabase-browser';
 import IntakeProgress from './IntakeProgress';
 import IntakeStepPersonal from './IntakeStepPersonal';
 import IntakeStepBirth from './IntakeStepBirth';
@@ -100,10 +101,16 @@ export default function IntakeForm() {
     setErrorMessage('');
 
     try {
+      // Attach user_id if the user is currently authenticated
+      const { data: { session } } = await getSupabaseBrowser().auth.getSession();
+      const payload = session?.user
+        ? { ...formData, user_id: session.user.id }
+        : formData;
+
       const response = await fetch('/api/profile/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
