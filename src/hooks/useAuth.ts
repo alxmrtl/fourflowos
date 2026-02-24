@@ -18,15 +18,20 @@ export function useAuth(): UseAuthReturn {
   useEffect(() => {
     const supabase = getSupabaseBrowser();
 
-    // Get initial session — .catch() ensures loading resolves even if getSession rejects
-    // (can happen due to Navigator Lock timeout in React Strict Mode dev or network errors)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    }).catch(() => {
-      setUser(null);
-      setLoading(false);
-    });
+    // Get initial session with a 5-second timeout. Without a timeout, a slow
+    // token refresh network request can hang loading indefinitely even after the
+    // Navigator Lock fix (the lock fix prevents deadlocks, not slow HTTP).
+    const sessionTimeout = new Promise<{ data: { session: null } }>((resolve) =>
+      setTimeout(() => resolve({ data: { session: null } }), 5000)
+    );
+    Promise.race([supabase.auth.getSession(), sessionTimeout])
+      .then(({ data: { session } }) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }).catch(() => {
+        setUser(null);
+        setLoading(false);
+      });
 
     // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

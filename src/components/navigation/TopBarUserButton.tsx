@@ -4,10 +4,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function TopBarUserButton() {
-  const { user, loading } = useAuth();
-
-  // Reserve space during load to prevent layout shift
-  if (loading) return <div className="w-9 h-9" />;
+  const { user } = useAuth();
 
   return (
     <Link
