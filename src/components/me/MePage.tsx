@@ -6,6 +6,10 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/auth/AuthModal';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
+import ArchetypeHero from './ArchetypeHero';
+import SignalStrip from './SignalStrip';
+import DimensionSectionReveal from './DimensionSectionReveal';
+import RawProfileDrawer from './RawProfileDrawer';
 
 const CORAL = '#FF6F61';
 const SAGE = '#6BA292';
@@ -72,6 +76,7 @@ interface AssessmentData {
   created_at: string;
   view_token: string | null;
   flow_profile_final?: string | null;
+  flow_profile_json?: import('@/types/profile-json').FlowProfileJSON | null;
 }
 
 interface SignalData {
@@ -411,7 +416,7 @@ export default function MePage() {
     function fetchAssessment() {
       return supabase
         .from('assessments')
-        .select('status, created_at, view_token, flow_profile_final')
+        .select('status, created_at, view_token, flow_profile_final, flow_profile_json')
         .eq('user_id', user!.id)
         .eq('status', 'delivered')
         .not('flow_profile_final', 'is', null)
@@ -473,6 +478,55 @@ export default function MePage() {
   if (!user) return <AuthModal authError={authError} />;
   if (fetching) return <Spinner label="loading signals…" />;
 
+  const hasStructuredProfile = !!data.assessment?.flow_profile_json;
+
+  // ── Immersive dashboard (structured JSON profile) ──────────────────────────
+  if (hasStructuredProfile) {
+    const profile = data.assessment!.flow_profile_json!;
+    const dimOrder = ['self', 'space', 'story', 'spirit'] as const;
+
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] px-4 py-12 md:py-16">
+        <div className="max-w-3xl mx-auto">
+          {/* Page header */}
+          <div className="mb-10 flex items-start justify-between">
+            <div />
+            <button
+              onClick={handleSignOut}
+              className="text-sm text-gray-600 hover:text-white transition-colors"
+            >
+              Sign out
+            </button>
+          </div>
+
+          {/* Archetype hero */}
+          <ArchetypeHero profile={profile} />
+
+          {/* Signal strip */}
+          <SignalStrip sessions={data.sessions} curiosity={data.curiosity} />
+
+          {/* Dimension sections */}
+          {dimOrder.map((dim) => (
+            <DimensionSectionReveal
+              key={dim}
+              dim={dim}
+              data={profile.dimensions[dim]}
+              curiosity={dim === 'spirit' ? data.curiosity : undefined}
+            />
+          ))}
+
+          {/* Raw profile drawer */}
+          <RawProfileDrawer
+            assessment={data.assessment!}
+            sessions={data.sessions}
+            curiosity={data.curiosity}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // ── Legacy text-based layout ────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#0a0a0a] px-4 py-12 md:py-16">
       <div className="max-w-3xl mx-auto">

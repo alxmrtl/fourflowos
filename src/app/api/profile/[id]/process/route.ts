@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
-import { humanizeProfile } from '@/lib/humanizer';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -290,10 +289,25 @@ export async function POST(
 
       console.log(`[process] Generated ${profileText.length} chars for ${id} using "${promptTemplate.name}"`);
 
-      // Phase 3: Humanizer pass — strip AI patterns, preserve structure
-      await write({ type: 'status', message: 'Polishing profile...' });
-      profileText = await humanizeProfile(profileText, anthropic);
-      console.log(`[process] Humanized to ${profileText.length} chars`);
+      // Detect JSON output — new structured archetype prompt returns raw JSON
+      let parsedJson: Record<string, unknown> | null = null;
+      const trimmed = profileText.trim();
+      if (trimmed.startsWith('{')) {
+        try {
+          parsedJson = JSON.parse(trimmed) as Record<string, unknown>;
+          console.log(`[process] Detected JSON output — schema_version: ${(parsedJson as Record<string, unknown>).schema_version ?? 'unknown'}`);
+        } catch {
+          // Not valid JSON — fall through to humanizer path
+        }
+      }
+
+      const finalProfileText = profileText;
+
+      if (!parsedJson) {
+        await write({ type: 'status', message: 'Profile ready.' });
+      } else {
+        await write({ type: 'status', message: 'Structured profile ready.' });
+      }
 
       // Save to profile_generations table
       const { data: generation, error: genError } = await supabase
@@ -303,7 +317,7 @@ export async function POST(
           prompt_template_id: promptTemplate.id,
           prompt_name: promptTemplate.name,
           model: promptTemplate.model,
-          content: profileText,
+          content: finalProfileText,
         })
         .select('id')
         .single();
@@ -315,21 +329,28 @@ export async function POST(
       // Update assessment — don't regress status if already delivered
       const statusUpdate = assessment.status === 'delivered' ? {} : { status: 'synthesis' };
 
+      const assessmentUpdate: Record<string, unknown> = {
+        flow_profile_draft: finalProfileText,
+        prompt_template_id: promptTemplate.id,
+        ...statusUpdate,
+      };
+
+      // If structured JSON, store it directly
+      if (parsedJson) {
+        assessmentUpdate.flow_profile_json = parsedJson;
+      }
+
       const { error: updateError } = await supabase
         .from('assessments')
-        .update({
-          flow_profile_draft: profileText,
-          prompt_template_id: promptTemplate.id,
-          ...statusUpdate,
-        })
+        .update(assessmentUpdate)
         .eq('id', id);
 
       if (updateError) {
         console.error('[process] Supabase update error:', updateError);
         await write({ type: 'error', message: updateError.message });
       } else {
-        console.log(`[process] Updated ${id} — status: ${assessment.status === 'delivered' ? 'kept delivered' : 'synthesis'}`);
-        await write({ type: 'done', generation_id: generation?.id ?? null });
+        console.log(`[process] Updated ${id} — status: ${assessment.status === 'delivered' ? 'kept delivered' : 'synthesis'}, json: ${!!parsedJson}`);
+        await write({ type: 'done', generation_id: generation?.id ?? null, is_json: !!parsedJson });
       }
     } catch (error) {
       console.error('[process] Error:', error);

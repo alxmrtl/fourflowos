@@ -55,7 +55,7 @@ export async function PATCH(
     'session_1_notes', 'session_1_date',
     'session_2_notes', 'session_2_date',
     'facilitator_briefing',
-    'flow_profile_draft', 'flow_profile_final',
+    'flow_profile_draft', 'flow_profile_final', 'flow_profile_json',
     'natal_chart_data',
   ];
 

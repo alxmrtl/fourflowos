@@ -19,7 +19,11 @@ export async function POST(
 
   const { id } = await params;
   const body = await request.json();
-  const { flow_profile_final, custom_notes } = body as { flow_profile_final?: string; custom_notes?: string };
+  const { flow_profile_final, flow_profile_json, custom_notes } = body as {
+    flow_profile_final?: string;
+    flow_profile_json?: Record<string, unknown>;
+    custom_notes?: string;
+  };
 
   try {
     // Fetch the assessment
@@ -43,13 +47,19 @@ export async function POST(
 
     const finalContent = flow_profile_final || assessment.flow_profile_draft;
 
+    // Build update payload — include JSON field if provided
+    const updatePayload: Record<string, unknown> = {
+      flow_profile_final: finalContent,
+      status: 'delivered',
+    };
+    if (flow_profile_json !== undefined) {
+      updatePayload.flow_profile_json = flow_profile_json;
+    }
+
     // Update assessment to delivered
     const { error: updateError } = await supabase
       .from('assessments')
-      .update({
-        flow_profile_final: finalContent,
-        status: 'delivered',
-      })
+      .update(updatePayload)
       .eq('id', id);
 
     if (updateError) {

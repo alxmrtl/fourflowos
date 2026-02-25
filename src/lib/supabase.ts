@@ -89,6 +89,7 @@ export interface Assessment {
   facilitator_briefing: string | null;
   flow_profile_draft: string | null;
   flow_profile_final: string | null;
+  flow_profile_json: import('@/types/profile-json').FlowProfileJSON | null;
 
   // Session tracking
   session_1_notes: string | null;

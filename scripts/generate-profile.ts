@@ -1,40 +1,35 @@
 #!/usr/bin/env ts-node
 
 /**
- * Manual Flow Profile Generation Script
+ * Flow Archetype Profile — CLI Generator + Auto-Deliver
  *
- * Generates Flow Profiles outside the web timeout constraint with full chart context.
+ * Generates a structured Flow Archetype profile and delivers it in one command.
+ * No timeout constraints. Writes directly to Supabase. Sends delivery email.
  *
  * Usage:
- *   npm run profile:generate <assessment-id> [prompt-name]
+ *   npm run profile:generate <assessment-id>
  *
- * Examples:
- *   npm run profile:generate abc-123
- *   npm run profile:generate abc-123 "Flow Archetype"
- *
- * Process:
- * 1. Fetches assessment from Supabase
- * 2. Fetches full natal chart data
- * 3. Uses Haiku to generate archetypal chart summary (~250 tokens, rich context)
- * 4. Uses Sonnet (or specified model) to generate full profile
- * 5. Writes result to Supabase (flow_profile_draft, status -> synthesis)
- *
- * No timeout constraints. Full context. Takes 2-3 minutes per profile.
+ * What it does:
+ *   1. Fetches assessment from Supabase
+ *   2. Fetches natal chart data (or uses cached)
+ *   3. Generates archetypal chart summary with Haiku
+ *   4. Generates Flow Archetype JSON with Opus using "Flow Archetype v1" template
+ *   5. Validates JSON structure
+ *   6. Saves flow_profile_json + marks delivered
+ *   7. Sends delivery email to the user
  */
 
-// Load environment variables from .env.local
 import { config } from 'dotenv';
 import { resolve } from 'path';
 config({ path: resolve(__dirname, '../.env.local') });
 
 import Anthropic from '@anthropic-ai/sdk';
 import { getSupabase } from '../src/lib/supabase';
-import { FLOW_PROFILE_PROMPT } from '../src/data/profile-prompts';
-import { humanizeProfile } from '../src/lib/humanizer';
+import { sendDeliveryEmail } from '../src/lib/email';
+import type { FlowProfileJSON } from '../src/types/profile-json';
 
 const supabase = getSupabase();
 
-// Chart archetypal summary prompt for Haiku
 const CHART_SUMMARY_PROMPT = `You are analyzing a natal chart to extract archetypal patterns for a Flow Profile — a consciousness alignment diagnostic.
 
 Your task: Generate a 250-word archetypal summary that captures:
@@ -49,43 +44,11 @@ Your task: Generate a 250-word archetypal summary that captures:
 
 Write in clear, human language. No astrological jargon. Focus on HOW this person is wired to work, not generic descriptions.
 
-The summary will be combined with their intake responses to generate a personalized Flow Profile.
-
 ---
 
 NATAL CHART DATA:
 
 {CHART_DATA}`;
-
-interface ChartData {
-  sun_sign?: string;
-  moon_sign?: string;
-  rising_sign?: string;
-  context?: string;
-  planets?: Array<{
-    name: string;
-    sign: string;
-    house: number;
-    degree: number;
-  }>;
-  aspects?: Array<{
-    planet1: string;
-    planet2: string;
-    aspect: string;
-    orb: number;
-  }>;
-  elements?: {
-    fire: number;
-    earth: number;
-    air: number;
-    water: number;
-  };
-  modalities?: {
-    cardinal: number;
-    fixed: number;
-    mutable: number;
-  };
-}
 
 function formatIntakeData(assessment: Record<string, unknown>): string {
   return `
@@ -161,15 +124,15 @@ ${assessment.spirit_vision}
 `.trim();
 }
 
-async function fetchChartData(assessment: Record<string, unknown>): Promise<ChartData | null> {
+async function fetchChartData(assessment: Record<string, unknown>): Promise<Record<string, unknown> | null> {
   const chartServiceUrl = process.env.CHART_SERVICE_URL;
   if (!chartServiceUrl) {
-    console.warn('⚠️  CHART_SERVICE_URL not configured. Proceeding without chart data.');
+    console.warn('  CHART_SERVICE_URL not set — skipping chart fetch');
     return null;
   }
 
   try {
-    console.log('📊 Fetching natal chart data...');
+    console.log('  Fetching natal chart...');
     const res = await fetch(`${chartServiceUrl}/chart`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -181,229 +144,247 @@ async function fetchChartData(assessment: Record<string, unknown>): Promise<Char
         lng: assessment.birth_lng,
       }),
     });
-
     if (!res.ok) {
-      console.error(`❌ Chart service error: ${res.status}`);
+      console.warn(`  Chart service returned ${res.status}`);
       return null;
     }
-
-    const data = await res.json() as ChartData;
-    console.log('✅ Chart data fetched successfully');
-    return data;
+    return await res.json() as Record<string, unknown>;
   } catch (err) {
-    console.error('❌ Chart service fetch error:', err);
+    console.warn('  Chart fetch failed:', err);
     return null;
   }
 }
 
-async function generateChartSummary(chartData: ChartData, anthropic: Anthropic): Promise<string> {
-  console.log('🔮 Generating archetypal chart summary with Haiku...');
-
-  const prompt = CHART_SUMMARY_PROMPT.replace(
-    '{CHART_DATA}',
-    JSON.stringify(chartData, null, 2)
-  );
-
-  const message = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 1000,
-    messages: [{ role: 'user', content: prompt }],
-  });
-
-  const summary = message.content[0].type === 'text' ? message.content[0].text : '';
-  console.log(`✅ Chart summary generated (${summary.length} chars)`);
-  return summary;
-}
-
-async function generateProfile(
-  promptText: string,
-  anthropic: Anthropic,
-  model: string = 'claude-sonnet-4-5-20250929',
-  maxTokens: number = 2000
+async function generateChartSummary(
+  chartData: Record<string, unknown>,
+  anthropic: Anthropic
 ): Promise<string> {
-  console.log(`🧠 Generating Flow Profile with ${model}...`);
-
-  const message = await anthropic.messages.create({
-    model,
-    max_tokens: maxTokens,
-    messages: [{ role: 'user', content: promptText }],
-  });
-
-  const profile = message.content[0].type === 'text' ? message.content[0].text : '';
-  console.log(`✅ Profile generated (${profile.length} chars)`);
-  return profile;
+  console.log('  Generating chart summary (Haiku)...');
+  try {
+    const message = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: CHART_SUMMARY_PROMPT.replace('{CHART_DATA}', JSON.stringify(chartData, null, 2)) }],
+    });
+    return message.content[0].type === 'text' ? message.content[0].text : '';
+  } catch {
+    const sun = (chartData.sun_sign as string) || '';
+    const moon = (chartData.moon_sign as string) || '';
+    const rising = (chartData.rising_sign as string) || '';
+    return [sun && `Sun: ${sun}`, moon && `Moon: ${moon}`, rising && `Rising: ${rising}`]
+      .filter(Boolean).join(' | ') || 'Chart data unavailable.';
+  }
 }
 
 async function main() {
-  const args = process.argv.slice(2);
+  const assessmentId = process.argv[2];
 
-  if (args.length === 0) {
+  if (!assessmentId) {
     console.error(`
-❌ Error: Assessment ID required
-
 Usage:
-  npm run profile:generate <assessment-id> [prompt-name]
+  npm run profile:generate <assessment-id>
 
-Examples:
-  npm run profile:generate abc-123
-  npm run profile:generate abc-123 "Flow Archetype"
-  npm run profile:generate abc-123 "Classic Flow Mirror"
+Example:
+  npm run profile:generate abc-123-def-456
 `);
     process.exit(1);
   }
 
-  const assessmentId = args[0];
-  const promptName = args[1] || 'Classic Flow Mirror'; // Default to Classic
-
-  console.log(`\n🚀 Generating Flow Profile for assessment: ${assessmentId}\n`);
-
-  // Initialize Anthropic
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    console.error('❌ ANTHROPIC_API_KEY environment variable not set');
+    console.error('ANTHROPIC_API_KEY not set in .env.local');
     process.exit(1);
   }
+
   const anthropic = new Anthropic({ apiKey });
 
-  try {
-    // Step 1: Fetch assessment
-    console.log('📥 Fetching assessment from Supabase...');
-    const { data: assessment, error: fetchError } = await supabase
-      .from('assessments')
-      .select('*')
-      .eq('id', assessmentId)
-      .single();
+  console.log(`\nFlow Archetype — generating for ${assessmentId}\n`);
 
-    if (fetchError || !assessment) {
-      console.error('❌ Assessment not found:', fetchError?.message || 'Unknown error');
-      process.exit(1);
-    }
-    console.log(`✅ Assessment fetched: ${assessment.name} (${assessment.email})`);
+  // 1. Fetch assessment
+  console.log('[1/6] Fetching assessment...');
+  const { data: assessment, error: fetchError } = await supabase
+    .from('assessments')
+    .select('*')
+    .eq('id', assessmentId)
+    .single();
 
-    // Step 2: Fetch prompt template
-    console.log(`📝 Fetching prompt template: "${promptName}"...`);
-    const { data: promptTemplate, error: promptError } = await supabase
-      .from('prompt_templates')
-      .select('*')
-      .eq('name', promptName)
-      .single();
-
-    if (promptError || !promptTemplate) {
-      console.error(`❌ Prompt template "${promptName}" not found`);
-      console.log('\n💡 Available prompts:');
-      const { data: allPrompts } = await supabase
-        .from('prompt_templates')
-        .select('name, description')
-        .eq('is_active', true);
-      if (allPrompts) {
-        allPrompts.forEach(p => {
-          console.log(`   - "${p.name}" ${p.description ? `— ${p.description}` : ''}`);
-        });
-      }
-      process.exit(1);
-    }
-    console.log(`✅ Using prompt: ${promptTemplate.name} (${promptTemplate.model})`);
-
-    // Step 3: Fetch or use cached chart data
-    let chartData: ChartData | null = null;
-    if (assessment.natal_chart_data) {
-      console.log('📊 Using cached natal chart data');
-      chartData = assessment.natal_chart_data as ChartData;
-    } else {
-      chartData = await fetchChartData(assessment);
-      if (chartData) {
-        // Cache it for future use
-        await supabase
-          .from('assessments')
-          .update({ natal_chart_data: chartData })
-          .eq('id', assessmentId);
-        console.log('✅ Chart data cached in Supabase');
-      }
-    }
-
-    // Step 4: Generate chart summary with Haiku (or use basic summary if no chart)
-    let chartSummary: string;
-    if (chartData) {
-      chartSummary = await generateChartSummary(chartData, anthropic);
-    } else {
-      chartSummary = 'No natal chart data available.';
-      console.log('⚠️  Proceeding without chart data');
-    }
-
-    // Step 5: Format intake data
-    const intakeData = formatIntakeData(assessment);
-
-    // Step 6: Generate profile using the selected prompt template
-    const promptText = promptTemplate.prompt_text
-      .replace('{INTAKE_DATA}', intakeData)
-      .replace('{CHART_DATA}', chartSummary);
-
-    const rawProfile = await generateProfile(
-      promptText,
-      anthropic,
-      promptTemplate.model,
-      promptTemplate.max_tokens
-    );
-
-    // Step 6b: Humanizer pass — strip AI patterns, preserve structure
-    console.log('✨ Humanizing profile...');
-    const profile = await humanizeProfile(rawProfile, anthropic);
-    console.log(`✅ Profile humanized (${profile.length} chars)`);
-
-    // Step 7: Save to profile_generations table
-    console.log('💾 Saving to profile_generations...');
-    const { data: generation, error: genError } = await supabase
-      .from('profile_generations')
-      .insert({
-        assessment_id: assessmentId,
-        prompt_template_id: promptTemplate.id,
-        prompt_name: promptTemplate.name,
-        model: promptTemplate.model,
-        content: profile,
-      })
-      .select('id')
-      .single();
-
-    if (genError) {
-      console.error('⚠️  Failed to save to profile_generations:', genError.message);
-      console.log('   (Continuing — will still update assessment draft)');
-    } else {
-      console.log(`✅ Generation saved: ${generation.id}`);
-    }
-
-    // Step 8: Update assessment (preserve status if already delivered)
-    console.log('💾 Updating assessment...');
-    const statusUpdate = assessment.status === 'delivered' ? {} : { status: 'synthesis' };
-    const { error: updateError } = await supabase
-      .from('assessments')
-      .update({
-        flow_profile_draft: profile,
-        prompt_template_id: promptTemplate.id,
-        ...statusUpdate,
-      })
-      .eq('id', assessmentId);
-
-    if (updateError) {
-      console.error('❌ Failed to save profile:', updateError.message);
-      process.exit(1);
-    }
-
-    const statusMsg = assessment.status === 'delivered'
-      ? 'kept delivered (no regression)'
-      : 'updated to synthesis';
-
-    console.log(`\n✅ Profile generated successfully!`);
-    console.log(`📝 Profile length: ${profile.length} characters`);
-    console.log(`📊 Status: ${statusMsg}`);
-    if (generation?.id) {
-      console.log(`🔑 Generation ID: ${generation.id}`);
-    }
-    console.log(`\n🔗 Review at: /profile/admin/${assessmentId}\n`);
-
-  } catch (error) {
-    console.error('\n❌ Generation failed:', error);
+  if (fetchError || !assessment) {
+    console.error('Assessment not found:', fetchError?.message);
     process.exit(1);
   }
+  console.log(`      ${assessment.name} <${assessment.email}>`);
+
+  if (!assessment.view_token) {
+    console.error('Assessment has no view_token — cannot generate delivery link. Was this submitted via the intake form?');
+    process.exit(1);
+  }
+
+  // 2. Fetch prompt template
+  console.log('[2/6] Fetching "Flow Archetype v1" template...');
+  const { data: promptTemplate } = await supabase
+    .from('prompt_templates')
+    .select('*')
+    .eq('name', 'Flow Archetype v1')
+    .single();
+
+  if (!promptTemplate) {
+    // Fall back to first active template
+    const { data: fallback } = await supabase
+      .from('prompt_templates')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!fallback) {
+      console.error('No prompt templates found. Create "Flow Archetype v1" at /profile/admin/prompts first.');
+      process.exit(1);
+    }
+    console.warn(`      "Flow Archetype v1" not found — using "${fallback.name}" instead`);
+    Object.assign(promptTemplate ?? {}, fallback);
+  }
+
+  const template = promptTemplate!;
+  console.log(`      Using: "${template.name}" (${template.model}, max ${Math.max(template.max_tokens, 8000)} tokens)`);
+
+  // 3. Chart data
+  console.log('[3/6] Resolving natal chart...');
+  let chartData: Record<string, unknown> | null = assessment.natal_chart_data as Record<string, unknown> | null;
+  if (chartData) {
+    console.log('      Using cached chart data');
+  } else {
+    chartData = await fetchChartData(assessment);
+    if (chartData) {
+      await supabase.from('assessments').update({ natal_chart_data: chartData }).eq('id', assessmentId);
+      console.log('      Fetched + cached');
+    } else {
+      console.log('      No chart data — proceeding without it');
+    }
+  }
+
+  // 4. Chart summary
+  console.log('[4/6] Generating archetypal summary...');
+  const chartContext = chartData
+    ? await generateChartSummary(chartData, anthropic)
+    : 'No natal chart data available.';
+  console.log(`      ${chartContext.length} chars`);
+
+  // 5. Generate profile
+  console.log('[5/6] Generating Flow Archetype profile (Opus)...');
+  const intakeData = formatIntakeData(assessment);
+  const prompt = template.prompt_text
+    .replace('{INTAKE_DATA}', intakeData)
+    .replace('{CHART_DATA}', chartContext);
+
+  let rawOutput = '';
+  // Flow Archetype profiles need ~6000-8000 tokens for 12 full key insights.
+  // The template's max_tokens (3500) is a UI default — override with a safe floor here.
+  const maxTokens = Math.max(template.max_tokens, 8000);
+
+  const stream = anthropic.messages.stream({
+    model: template.model,
+    max_tokens: maxTokens,
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  process.stdout.write('      ');
+  let charCount = 0;
+  stream.on('text', (text) => {
+    rawOutput += text;
+    charCount += text.length;
+    if (charCount % 200 < text.length) process.stdout.write('.');
+  });
+
+  await stream.finalMessage();
+  process.stdout.write('\n');
+
+  if (!rawOutput.trim()) {
+    console.error('Generation returned empty output');
+    process.exit(1);
+  }
+  console.log(`      ${rawOutput.length} chars generated`);
+
+  // Parse and validate JSON
+  let profileJson: FlowProfileJSON;
+  try {
+    profileJson = JSON.parse(rawOutput.trim()) as FlowProfileJSON;
+    if (!profileJson.schema_version || !profileJson.archetype || !profileJson.dimensions) {
+      throw new Error('Missing required fields: schema_version, archetype, or dimensions');
+    }
+    console.log(`      Archetype: "${profileJson.archetype.name}"`);
+  } catch (err) {
+    console.error('\nJSON parse failed — model did not return valid JSON.');
+    console.error('Error:', err instanceof Error ? err.message : err);
+    console.error('\nRaw output (first 500 chars):');
+    console.error(rawOutput.slice(0, 500));
+    console.error('\nSave raw output? (check scripts/last-output.txt)');
+    const fs = await import('fs');
+    fs.writeFileSync(resolve(__dirname, 'last-output.txt'), rawOutput);
+    process.exit(1);
+  }
+
+  // 6. Save + deliver
+  console.log('[6/6] Saving to Supabase + delivering...');
+
+  // Save to profile_generations
+  const { data: generation } = await supabase
+    .from('profile_generations')
+    .insert({
+      assessment_id: assessmentId,
+      prompt_template_id: template.id,
+      prompt_name: template.name,
+      model: template.model,
+      content: rawOutput,
+    })
+    .select('id')
+    .single();
+
+  // Update assessment — deliver in same write
+  const { error: updateError } = await supabase
+    .from('assessments')
+    .update({
+      flow_profile_json: profileJson,
+      flow_profile_final: rawOutput,   // keeps /me query (.not flow_profile_final is null) working
+      flow_profile_draft: rawOutput,
+      prompt_template_id: template.id,
+      status: 'delivered',
+    })
+    .eq('id', assessmentId);
+
+  if (updateError) {
+    console.error('Supabase update failed:', updateError.message);
+    process.exit(1);
+  }
+  console.log(`      Saved (generation: ${generation?.id ?? 'n/a'})`);
+
+  // Send delivery email
+  const host = process.env.NEXT_PUBLIC_SITE_URL || 'fourflowos.com';
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const cleanHost = host.replace(/^https?:\/\//, '');
+  const viewUrl = `${protocol}://${cleanHost}/profile/view/${assessment.view_token}`;
+
+  try {
+    await sendDeliveryEmail({
+      to: assessment.email,
+      name: assessment.name,
+      viewUrl,
+    });
+    console.log(`      Email sent to ${assessment.email}`);
+  } catch (emailErr) {
+    console.warn(`      Email failed (profile still delivered): ${emailErr instanceof Error ? emailErr.message : emailErr}`);
+  }
+
+  console.log(`
+Done.
+  Archetype : ${profileJson.archetype.name}
+  Status    : delivered
+  View URL  : ${viewUrl}
+  /me page  : available immediately after sign-in
+`);
 }
 
-main();
+main().catch((err) => {
+  console.error('Unhandled error:', err);
+  process.exit(1);
+});
