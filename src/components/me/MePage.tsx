@@ -6,10 +6,11 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/auth/AuthModal';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
+import TopBar from '@/components/navigation/TopBar';
 import ArchetypeHero from './ArchetypeHero';
-import SignalStrip from './SignalStrip';
+import ProfileReadingGuide from './ProfileReadingGuide';
 import DimensionSectionReveal from './DimensionSectionReveal';
-import RawProfileDrawer from './RawProfileDrawer';
+import NextStepsCTA from './NextStepsCTA';
 
 const CORAL = '#FF6F61';
 const SAGE = '#6BA292';
@@ -484,26 +485,20 @@ export default function MePage() {
   if (hasStructuredProfile) {
     const profile = data.assessment!.flow_profile_json!;
     const dimOrder = ['self', 'space', 'story', 'spirit'] as const;
+    const hasV2Profile = Object.values(profile.dimensions).some((dim) =>
+      Object.values(dim.keys).some((key) => key.bullets && key.bullets.length > 0)
+    );
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] px-4 py-12 md:py-16">
-        <div className="max-w-3xl mx-auto">
-          {/* Page header */}
-          <div className="mb-10 flex items-start justify-between">
-            <div />
-            <button
-              onClick={handleSignOut}
-              className="text-sm text-gray-600 hover:text-white transition-colors"
-            >
-              Sign out
-            </button>
-          </div>
+      <div className="min-h-screen bg-[#0a0a0a]">
+        <TopBar />
 
+        <div className="max-w-3xl mx-auto px-4 pt-8 pb-16">
           {/* Archetype hero */}
           <ArchetypeHero profile={profile} />
 
-          {/* Signal strip */}
-          <SignalStrip sessions={data.sessions} curiosity={data.curiosity} />
+          {/* Reading guide — v2 only */}
+          {hasV2Profile && <ProfileReadingGuide />}
 
           {/* Dimension sections */}
           {dimOrder.map((dim) => (
@@ -515,8 +510,8 @@ export default function MePage() {
             />
           ))}
 
-          {/* Raw profile drawer */}
-          <RawProfileDrawer
+          {/* Next steps */}
+          <NextStepsCTA
             assessment={data.assessment!}
             sessions={data.sessions}
             curiosity={data.curiosity}

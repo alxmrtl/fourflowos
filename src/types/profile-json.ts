@@ -1,8 +1,9 @@
 import type { KeyType, DimensionType } from './framework';
 
 export interface KeyData {
-  insight: string;
-  invitation: string;
+  bullets?: string[];   // v2: 4-item array (Essence / Pattern / Tension / Direction)
+  insight?: string;     // v1: legacy prose
+  invitation?: string;  // v1: legacy prose
 }
 
 export interface DimensionData {
@@ -11,7 +12,7 @@ export interface DimensionData {
 }
 
 export interface FlowProfileJSON {
-  schema_version: '1.0';
+  schema_version: '1.0' | '2.0';
   archetype: {
     name: string;
     tagline: string;

@@ -55,8 +55,8 @@ function buildLlmContext(assessment: AssessmentData, sessions: SessionRow[], cur
       lines.push('');
       for (const [key, keyData] of Object.entries(data.keys)) {
         lines.push(`**${key}**`);
-        lines.push(keyData.insight);
-        lines.push(`_${keyData.invitation}_`);
+        lines.push(keyData.insight ?? '');
+        lines.push(`_${keyData.invitation ?? ''}_`);
         lines.push('');
       }
     }
