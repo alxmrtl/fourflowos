@@ -5,11 +5,25 @@ import { useAuth } from '@/hooks/useAuth';
 
 type ModalState = 'idle' | 'submitting' | 'sent';
 
-export default function AuthModal({ onClose }: { onClose?: () => void }) {
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  expired: 'Your sign-in link expired. Request a new one below.',
+  used: 'That sign-in link has already been used. Request a new one below.',
+  failed: 'Sign-in failed. Please try again.',
+};
+
+export default function AuthModal({
+  onClose,
+  authError,
+}: {
+  onClose?: () => void;
+  authError?: 'expired' | 'used' | 'failed' | null;
+}) {
   const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [state, setState] = useState<ModalState>('idle');
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(
+    authError ? (AUTH_ERROR_MESSAGES[authError] ?? AUTH_ERROR_MESSAGES.failed) : null
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,7 +68,7 @@ export default function AuthModal({ onClose }: { onClose?: () => void }) {
           </button>
         )}
         {state === 'sent' ? (
-          <SentState email={email} />
+          <SentState email={email} onResend={() => setState('idle')} />
         ) : (
           <IdleState
             email={email}
@@ -133,7 +147,7 @@ function IdleState({
   );
 }
 
-function SentState({ email }: { email: string }) {
+function SentState({ email, onResend }: { email: string; onResend: () => void }) {
   return (
     <div className="text-center">
       <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'rgba(107,162,146,0.15)' }}>
@@ -147,6 +161,15 @@ function SentState({ email }: { email: string }) {
         <span className="text-white">{email}</span>.
         <br />
         Click it to continue — no password needed.
+      </p>
+      <p className="mt-4 text-xs" style={{ color: '#555' }}>
+        Link expires in 15 minutes.{' '}
+        <button
+          onClick={onResend}
+          className="underline hover:text-white transition-colors"
+        >
+          Send another
+        </button>
       </p>
     </div>
   );

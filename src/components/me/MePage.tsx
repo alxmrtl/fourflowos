@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/auth/AuthModal';
@@ -385,6 +385,8 @@ function Spinner({ label }: { label: string }) {
 export default function MePage() {
   const { user, loading, signOut } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const authError = searchParams.get('auth_error') as 'expired' | 'used' | 'failed' | null;
   const [data, setData] = useState<SignalData>({ sessions: [], curiosity: null, assessment: null });
   const [fetching, setFetching] = useState(false);
 
@@ -406,22 +408,28 @@ export default function MePage() {
       ]);
     }
 
-    // Assessment fetches independently — signal queries can't block it
-    const assessmentQuery = supabase
-      .from('assessments')
-      .select('status, created_at, view_token, flow_profile_final')
-      .eq('user_id', user.id)
-      .eq('status', 'delivered')
-      .not('flow_profile_final', 'is', null)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .then((r) => (r.data as AssessmentData[] | null)?.[0] ?? null);
+    function fetchAssessment() {
+      return supabase
+        .from('assessments')
+        .select('status, created_at, view_token, flow_profile_final')
+        .eq('user_id', user!.id)
+        .eq('status', 'delivered')
+        .not('flow_profile_final', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .then((r) => (r.data as AssessmentData[] | null)?.[0] ?? null);
+    }
+
+    // Assessment fetches independently — signal queries can't block it.
+    // Limit sessions to 50 rows — enough for all stats, avoids fetching thousands.
+    const assessmentQuery = fetchAssessment();
 
     const sessionsQuery = supabase
       .from('focus_sessions')
       .select('id, focus_reps, ended_at, started_at')
       .eq('user_id', user.id)
       .order('started_at', { ascending: false })
+      .limit(50)
       .then((r) => (r.data ?? []) as SessionRow[]);
 
     const curiosityQuery = supabase
@@ -441,6 +449,18 @@ export default function MePage() {
         sessions: sessions ?? [],
         curiosity: curiosity ?? null,
       });
+
+      // If assessment came back null, this might be an auto-link race: the user
+      // submitted their intake unauthenticated, signed in, and the background
+      // UPDATE (linking assessment.user_id) hadn't finished before this query ran.
+      // Retry once after 2 seconds — cheap operation, big UX win.
+      if (!assessment) {
+        setTimeout(() => {
+          withTimeout(fetchAssessment(), 5000).then((retried) => {
+            if (retried) setData((prev) => ({ ...prev, assessment: retried }));
+          });
+        }, 2000);
+      }
     }).catch((err) => {
       console.warn('[/me] data fetch error:', err?.message);
     }).finally(() => {
@@ -450,7 +470,7 @@ export default function MePage() {
   }, [user?.id]);
 
   if (loading) return <Spinner label="checking auth…" />;
-  if (!user) return <AuthModal />;
+  if (!user) return <AuthModal authError={authError} />;
   if (fetching) return <Spinner label="loading signals…" />;
 
   return (

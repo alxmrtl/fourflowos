@@ -6,6 +6,7 @@ import PageTransition from "@/components/PageTransition";
 import SwipeContainer from "@/components/SwipeContainer";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { AudienceProvider } from "@/context/AudienceContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,16 +45,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AudienceProvider>
-          <LayoutWrapper>
-            <SwipeContainer>
-              <PageTransition>
-                {children}
-              </PageTransition>
-            </SwipeContainer>
-          </LayoutWrapper>
-          <NavigationWrapper />
-        </AudienceProvider>
+        <AuthProvider>
+          <AudienceProvider>
+            <LayoutWrapper>
+              <SwipeContainer>
+                <PageTransition>
+                  {children}
+                </PageTransition>
+              </SwipeContainer>
+            </LayoutWrapper>
+            <NavigationWrapper />
+          </AudienceProvider>
+        </AuthProvider>
       </body>
     </html>
   );
