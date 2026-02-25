@@ -306,9 +306,12 @@ Example:
   console.log(`      ${rawOutput.length} chars generated`);
 
   // Parse and validate JSON
+  // Strip markdown code fences if the model wrapped the JSON despite instructions
+  const cleanedOutput = rawOutput.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+
   let profileJson: FlowProfileJSON;
   try {
-    profileJson = JSON.parse(rawOutput.trim()) as FlowProfileJSON;
+    profileJson = JSON.parse(cleanedOutput) as FlowProfileJSON;
     if (!profileJson.schema_version || !profileJson.archetype || !profileJson.dimensions) {
       throw new Error('Missing required fields: schema_version, archetype, or dimensions');
     }
@@ -320,7 +323,7 @@ Example:
     console.error(rawOutput.slice(0, 500));
     console.error('\nSave raw output? (check scripts/last-output.txt)');
     const fs = await import('fs');
-    fs.writeFileSync(resolve(__dirname, 'last-output.txt'), rawOutput);
+    fs.writeFileSync(resolve(__dirname, 'last-output.txt'), cleanedOutput);
     process.exit(1);
   }
 
