@@ -1,145 +1,57 @@
 'use client';
 
-import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { useRef } from 'react';
 import LandingNav from './LandingNav';
-import HeroSection from './HeroSection';
-import ProblemSection from './ProblemSection';
-import SolutionSection from './SolutionSection';
-import NameBreakdownSection from './NameBreakdownSection';
+import HeroSectionV2 from './HeroSectionV2';
+import HowItWorksSection from './HowItWorksSection';
 import DimensionsSection from './DimensionsSection';
-import SignalSection from './SignalSection';
-import SectionTransition from './SectionTransition';
+import AgentTeaserSection from './AgentTeaserSection';
 import AppsSection from './AppsSection';
 import Footer from './Footer';
-import AudienceIndicator from './AudienceIndicator';
-import { useAudience } from '@/context/AudienceContext';
 
 export default function LandingPage() {
-  const ctaRef = useRef(null);
-  const ctaInView = useInView(ctaRef, { amount: 0.3 });
-  const { hasSelected, isLeader } = useAudience();
-
   return (
     <div className="bg-[#0a0a0a] min-h-screen">
       <LandingNav />
-      <AudienceIndicator />
 
-      {/* 1. Hero with audience selection */}
-      <HeroSection />
+      {/* 1. Hero */}
+      <HeroSectionV2 />
 
-      {/* Content revealed after selection */}
-      <AnimatePresence>
-        {hasSelected && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+      {/* 2. How It Works */}
+      <HowItWorksSection />
+
+      {/* 3. The 12 dimensions we map */}
+      <DimensionsSection />
+
+      {/* 4. Agent teaser */}
+      <AgentTeaserSection />
+
+      {/* 5. Apps — secondary */}
+      <AppsSection />
+
+      {/* 6. Work Together inline CTA */}
+      <section className="relative py-16 bg-[#050505]">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="max-w-2xl mx-auto px-6 text-center">
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-gray-600 mb-3">
+            Work Together
+          </p>
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            Walk through your profile with Alex
+          </h2>
+          <p className="text-sm text-gray-400 mb-8 max-w-md mx-auto">
+            One session. Clear direction. Book a signal session to go from profile to action.
+          </p>
+          <Link
+            href="/together"
+            className="inline-flex px-8 py-4 bg-gradient-to-r from-[#5B84B1] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
           >
-            {/* 2. Problem - What's not working */}
-            <ProblemSection />
+            Book a Signal Session
+          </Link>
+        </div>
+      </section>
 
-            {/* 3. Solution - The insight */}
-            <SolutionSection />
-
-            {/* Transition into FourFlowOS */}
-            <SectionTransition
-              fromColor={isLeader ? '#6BA292' : '#FF6F61'}
-              toColor="#7A4DA4"
-            />
-
-            {/* 4. What is FourFlowOS? - Name breakdown */}
-            <NameBreakdownSection />
-
-            {/* 5. The Four Dimensions */}
-            <DimensionsSection />
-
-            {/* 6. The Signal - Philosophy/Theory */}
-            <SignalSection />
-
-            {/* Transition */}
-            <SectionTransition fromColor="#7A4DA4" toColor="#FF6F61" />
-
-            {/* 7. Apps Section */}
-            <AppsSection />
-
-            {/* CTA Section */}
-            <section ref={ctaRef} className="relative py-16 md:py-24 bg-[#050505]">
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-              <motion.div
-                className="max-w-4xl mx-auto px-6 text-center"
-                initial="hidden"
-                animate={ctaInView ? 'visible' : 'hidden'}
-                variants={{
-                  hidden: { opacity: 0, transition: { duration: 0.4, ease: 'easeOut' } },
-                  visible: {
-                    opacity: 1,
-                    transition: { duration: 0.5, staggerChildren: 0.12, delayChildren: 0.1 },
-                  },
-                }}
-              >
-                <motion.h2
-                  className="text-3xl md:text-4xl font-bold text-white mb-6"
-                  variants={{
-                    hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                      filter: 'blur(0px)',
-                      transition: { duration: 0.7, ease: 'easeOut' },
-                    },
-                  }}
-                >
-                  Start Here
-                </motion.h2>
-                <motion.p
-                  className="text-gray-400 mb-8 max-w-xl mx-auto"
-                  variants={{
-                    hidden: { opacity: 0, y: 25, filter: 'blur(8px)' },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                      filter: 'blur(0px)',
-                      transition: { duration: 0.7, ease: 'easeOut' },
-                    },
-                  }}
-                >
-                  Explore the framework. Try the apps. See what alignment feels like.
-                </motion.p>
-                <motion.div
-                  className="flex flex-col sm:flex-row gap-4 justify-center"
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                      transition: { duration: 0.6, ease: 'easeOut' },
-                    },
-                  }}
-                >
-                  <Link
-                    href="/framework"
-                    className="px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
-                  >
-                    Explore the Framework
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="px-8 py-4 border border-gray-600 text-gray-300 font-semibold rounded-full hover:bg-white/5 hover:border-gray-400 transition-all duration-300"
-                  >
-                    Get in Touch
-                  </Link>
-                </motion.div>
-              </motion.div>
-            </section>
-
-            <Footer />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+      <Footer />
     </div>
   );
 }

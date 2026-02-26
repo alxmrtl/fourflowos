@@ -246,7 +246,7 @@ Example:
   }
 
   const template = promptTemplate!;
-  console.log(`      Using: "${template.name}" (${template.model}, max ${Math.max(template.max_tokens, 8000)} tokens)`);
+  console.log(`      Using: "${template.name}" (${template.model}, max ${Math.max(template.max_tokens, 4500)} tokens)`);
 
   // 3. Chart data
   console.log('[3/6] Resolving natal chart...');
@@ -278,9 +278,9 @@ Example:
     .replace('{CHART_DATA}', chartContext);
 
   let rawOutput = '';
-  // Flow Archetype profiles need ~6000-8000 tokens for 12 full key insights.
-  // The template's max_tokens (3500) is a UI default — override with a safe floor here.
-  const maxTokens = Math.max(template.max_tokens, 8000);
+  // Concise prompts with max-20-word bullets fit within 4500 tokens.
+  // Override the UI default (3500) with this floor.
+  const maxTokens = Math.max(template.max_tokens, 4500);
 
   const stream = anthropic.messages.stream({
     model: template.model,

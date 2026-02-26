@@ -1,7 +1,7 @@
 import IntakePageContent from '@/components/profile/IntakePageContent';
 
 export const metadata = {
-  title: 'Flow Profile Intake | FourFlowOS',
+  title: 'Map Your Signal — FourFlow',
   description: 'Begin your Flow Profile — a consciousness diagnostic across 12 Flow Keys and four pillars.',
 };
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { BRAND_COLORS } from '@/styles/brand-colors';
 import TopBarUserButton from '@/components/navigation/TopBarUserButton';
+import { useAuth } from '@/hooks/useAuth';
 
 // Pillar colors for hover effects
 const pillarColors = ['#FF6F61', '#6BA292', '#5B84B1', '#7A4DA4'];
@@ -14,6 +15,7 @@ export default function LandingNav() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { user } = useAuth();
 
   const { scrollY } = useScroll();
   const backgroundOpacity = useTransform(scrollY, [0, 100], [0, 1]);
@@ -29,11 +31,10 @@ export default function LandingNav() {
 
   // Main navigation links
   const mainNavLinks = [
-    { href: '/framework', label: 'Framework' },
+    { href: '/framework', label: 'How It Works' },
+    { href: '/map', label: 'Map Your Signal' },
     { href: '/apps', label: 'Tools' },
-    { href: '/blog', label: 'Blog' },
-    { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' },
+    { href: '/together', label: 'Work Together' },
   ];
 
   // Legal links for mobile menu
@@ -101,8 +102,16 @@ export default function LandingNav() {
             ))}
           </div>
 
-          {/* Desktop: user icon */}
-          <div className="hidden lg:flex items-center">
+          {/* Desktop: My Signal + user icon */}
+          <div className="hidden lg:flex items-center gap-3">
+            {user && (
+              <Link
+                href="/me"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                My Signal
+              </Link>
+            )}
             <TopBarUserButton />
           </div>
 
@@ -223,18 +232,18 @@ export default function LandingNav() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                My Flow Profile
+                My Signal
               </Link>
             </div>
 
             {/* CTA Button */}
             <div className="mt-2">
               <Link
-                href="/apps"
+                href="/map"
                 className="block w-full text-center px-5 py-3 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Get the Apps
+                Map Your Signal
               </Link>
             </div>
           </div>

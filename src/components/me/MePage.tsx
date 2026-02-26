@@ -7,10 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/auth/AuthModal';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
 import LandingNav from '@/components/landing/LandingNav';
-import ArchetypeHero from './ArchetypeHero';
-import ProfileReadingGuide from './ProfileReadingGuide';
-import DimensionSectionReveal from './DimensionSectionReveal';
-import NextStepsCTA from './NextStepsCTA';
+import BentoGrid from './BentoGrid';
+import RawProfileDrawer from './RawProfileDrawer';
 
 const CORAL = '#FF6F61';
 const SAGE = '#6BA292';
@@ -481,37 +479,21 @@ export default function MePage() {
 
   const hasStructuredProfile = !!data.assessment?.flow_profile_json;
 
-  // ── Immersive dashboard (structured JSON profile) ──────────────────────────
+  // ── Bento dashboard (structured JSON profile) ──────────────────────────────
   if (hasStructuredProfile) {
     const profile = data.assessment!.flow_profile_json!;
-    const dimOrder = ['self', 'space', 'story', 'spirit'] as const;
-    const hasV2Profile = Object.values(profile.dimensions).some((dim) =>
-      Object.values(dim.keys).some((key) => key.bullets && key.bullets.length > 0)
-    );
 
     return (
       <div className="min-h-screen bg-[#0a0a0a]">
         <LandingNav />
-
-        <div className="max-w-3xl mx-auto px-4 pt-24 pb-16">
-          {/* Archetype hero */}
-          <ArchetypeHero profile={profile} />
-
-          {/* Reading guide — v2 only */}
-          {hasV2Profile && <ProfileReadingGuide />}
-
-          {/* Dimension sections */}
-          {dimOrder.map((dim) => (
-            <DimensionSectionReveal
-              key={dim}
-              dim={dim}
-              data={profile.dimensions[dim]}
-              curiosity={dim === 'spirit' ? data.curiosity : undefined}
-            />
-          ))}
-
-          {/* Next steps */}
-          <NextStepsCTA
+        <div className="max-w-4xl mx-auto px-4 pt-24 pb-16">
+          <BentoGrid
+            profile={profile}
+            sessions={data.sessions}
+            curiosity={data.curiosity}
+            assessment={data.assessment!}
+          />
+          <RawProfileDrawer
             assessment={data.assessment!}
             sessions={data.sessions}
             curiosity={data.curiosity}
