@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
     // Classify the error so the UI can show a helpful message instead of
     // silently dropping the user at the home page with no explanation.
-    const msg = error.message?.toLowerCase() ?? '';
+    const msg = error?.message?.toLowerCase() ?? '';
     const errorCode = msg.includes('expired') ? 'expired'
       : msg.includes('already') || msg.includes('used') ? 'used'
       : 'failed';
