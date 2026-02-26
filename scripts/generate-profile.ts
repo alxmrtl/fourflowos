@@ -365,7 +365,7 @@ Example:
   const host = process.env.NEXT_PUBLIC_SITE_URL || 'fourflowos.com';
   const protocol = host.includes('localhost') ? 'http' : 'https';
   const cleanHost = host.replace(/^https?:\/\//, '');
-  const viewUrl = `${protocol}://${cleanHost}/profile/view/${assessment.view_token}`;
+  const viewUrl = `${protocol}://${cleanHost}/me`;
 
   try {
     await sendDeliveryEmail({

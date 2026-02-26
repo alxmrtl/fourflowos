@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/auth/AuthModal';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
-import TopBar from '@/components/navigation/TopBar';
+import LandingNav from '@/components/landing/LandingNav';
 import ArchetypeHero from './ArchetypeHero';
 import ProfileReadingGuide from './ProfileReadingGuide';
 import DimensionSectionReveal from './DimensionSectionReveal';
@@ -491,9 +491,9 @@ export default function MePage() {
 
     return (
       <div className="min-h-screen bg-[#0a0a0a]">
-        <TopBar />
+        <LandingNav />
 
-        <div className="max-w-3xl mx-auto px-4 pt-8 pb-16">
+        <div className="max-w-3xl mx-auto px-4 pt-24 pb-16">
           {/* Archetype hero */}
           <ArchetypeHero profile={profile} />
 
