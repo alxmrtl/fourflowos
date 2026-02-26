@@ -13,18 +13,22 @@ const dimensionDetails = {
   self: {
     descriptor: 'Your inner state',
     question: 'How am I right now?',
+    tagline: 'Body, mind, and emotion in tune — the signal chain starts here.',
   },
   space: {
     descriptor: 'Your environment',
     question: 'What supports my flow?',
+    tagline: 'The setup that makes focus the path of least resistance.',
   },
   story: {
     descriptor: 'Your direction',
     question: 'What am I building?',
+    tagline: 'Mission, role, and arc — where past meets future.',
   },
   spirit: {
     descriptor: 'Your core',
     question: 'What drives me?',
+    tagline: 'Values and vision as fuel, not constraint.',
   },
 };
 
@@ -126,7 +130,7 @@ export default function FrameworkPage() {
                   transition={{ delay: 0.1 + index * 0.1, duration: 0.6 }}
                 >
                   <div
-                    className="relative rounded-2xl overflow-hidden border min-h-[440px]"
+                    className="relative rounded-2xl overflow-hidden border"
                     style={{
                       background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
                       borderColor: isThisDimensionActive ? `${dimension.color}40` : 'rgba(255,255,255,0.1)',
@@ -138,9 +142,9 @@ export default function FrameworkPage() {
                       style={{ background: dimension.color }}
                     />
 
-                    {/* ── Front layer: dimension header + compact key buttons ── */}
+                    {/* ── Front layer: dimension header + compact key buttons (drives card height) ── */}
                     <motion.div
-                      className="absolute inset-0 p-6 md:p-8 pt-7 md:pt-9"
+                      className="relative p-6 md:p-8 pt-7 md:pt-9"
                       animate={{
                         opacity: isThisDimensionActive ? 0 : 1,
                         pointerEvents: isThisDimensionActive ? 'none' : 'auto',
@@ -230,6 +234,11 @@ export default function FrameworkPage() {
                           </button>
                         ))}
                       </div>
+
+                      {/* Dimension tagline — fills vertical rhythm, gives back layer room */}
+                      <p className="text-xs text-gray-600 mt-4 pb-2 leading-relaxed">
+                        {details.tagline}
+                      </p>
                     </motion.div>
 
                     {/* ── Radial ink sweep overlay ── */}
@@ -249,7 +258,7 @@ export default function FrameworkPage() {
 
                     {/* ── Back layer: key detail + switcher tabs ── */}
                     <motion.div
-                      className="absolute inset-0 p-6 md:p-8 pt-7 md:pt-9 flex flex-col"
+                      className="absolute inset-0 p-6 md:p-8 pt-7 md:pt-9 flex flex-col overflow-hidden"
                       initial={false}
                       animate={{
                         opacity: isThisDimensionActive ? 1 : 0,
@@ -257,96 +266,85 @@ export default function FrameworkPage() {
                       }}
                       transition={{ duration: 0.3, delay: isThisDimensionActive ? 0.3 : 0 }}
                     >
-                      {/* Back button */}
+                      {/* Close button — absolute, zero layout footprint */}
                       <button
                         onClick={() => setSelectedKey(null)}
-                        className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-300 transition-colors self-start mb-4"
+                        className="absolute top-4 right-4 w-6 h-6 rounded-full border border-white/15 flex items-center justify-center text-gray-600 hover:text-gray-300 hover:border-white/30 transition-colors z-10"
+                        aria-label="Close"
                       >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                        <span
-                          className="font-bold uppercase tracking-wider text-[10px]"
-                          style={{ color: dimension.color }}
-                        >
-                          {dimension.name}
-                        </span>
                       </button>
 
-                      {/* Key detail — scrollable */}
-                      <div className="flex-1 overflow-y-auto">
+                      {/* Key insights — flex-1, clips gracefully if content is long */}
+                      <div className="flex-1 overflow-hidden">
                         {selectedKeyData && (
-                          <>
-                            <h4
-                              className="font-bold text-base mb-3"
-                              style={{ color: dimension.color }}
-                            >
-                              {selectedKeyData.name}
-                            </h4>
-
-                            <div className="space-y-3.5">
-                              <div>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">
-                                  The Insight
-                                </p>
-                                <p className="text-sm text-gray-300 leading-relaxed">
-                                  {selectedKeyData.coreInsight}
-                                </p>
-                              </div>
-
-                              <div>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">
-                                  Flow Connection
-                                </p>
-                                <p className="text-sm text-gray-300 leading-relaxed">
-                                  {selectedKeyData.flowConnection}
-                                </p>
-                              </div>
-
-                              <div>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">
-                                  Without This
-                                </p>
-                                <p className="text-sm text-gray-400 leading-relaxed italic">
-                                  {selectedKeyData.withoutThis}
-                                </p>
-                              </div>
+                          <div className="space-y-2.5">
+                            <div>
+                              <p className="text-[9px] font-bold uppercase tracking-widest text-gray-500 mb-0.5">
+                                The Insight
+                              </p>
+                              <p className="text-xs text-gray-300 leading-relaxed">
+                                {selectedKeyData.coreInsight}
+                              </p>
                             </div>
 
-                            <Link
-                              href={`/dimension/${dimension.id}/key/${selectedKeyData.id}`}
-                              className="inline-flex items-center gap-1.5 text-xs font-semibold hover:gap-2.5 transition-all duration-200 mt-4"
-                              style={{ color: dimension.color }}
-                              onClick={e => e.stopPropagation()}
-                            >
-                              Explore this key in full
-                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                              </svg>
-                            </Link>
-                          </>
+                            <div>
+                              <p className="text-[9px] font-bold uppercase tracking-widest text-gray-500 mb-0.5">
+                                Flow Connection
+                              </p>
+                              <p className="text-xs text-gray-300 leading-relaxed">
+                                {selectedKeyData.flowConnection}
+                              </p>
+                            </div>
+
+                            <div>
+                              <p className="text-[9px] font-bold uppercase tracking-widest text-gray-500 mb-0.5">
+                                Without This
+                              </p>
+                              <p className="text-xs text-gray-400 leading-relaxed italic">
+                                {selectedKeyData.withoutThis}
+                              </p>
+                            </div>
+                          </div>
                         )}
                       </div>
 
-                      {/* Key switcher tabs */}
-                      <div className="flex gap-2 mt-4 pt-4 border-t border-white/10">
-                        {dimension.keys.map((key) => {
-                          const isActive = selectedKey?.keyId === key.id;
-                          return (
-                            <button
-                              key={key.id}
-                              onClick={() => handleSwitchKey(dimension.id, key.id)}
-                              className="flex-1 py-1.5 px-2 rounded-lg text-[10px] font-medium transition-all duration-200 leading-tight"
-                              style={{
-                                background: isActive ? `${dimension.color}20` : 'rgba(255,255,255,0.03)',
-                                color: isActive ? dimension.color : '#6b7280',
-                                border: `1px solid ${isActive ? `${dimension.color}40` : 'rgba(255,255,255,0.07)'}`,
-                              }}
-                            >
-                              {key.name}
-                            </button>
-                          );
-                        })}
+                      {/* Explore link + key switcher — pinned to bottom, never clipped */}
+                      <div className="flex-shrink-0 mt-3">
+                        {selectedKeyData && (
+                          <Link
+                            href={`/dimension/${dimension.id}/key/${selectedKeyData.id}`}
+                            className="inline-flex items-center gap-1 text-[11px] font-semibold hover:gap-2 transition-all duration-200 mb-2.5"
+                            style={{ color: dimension.color }}
+                            onClick={e => e.stopPropagation()}
+                          >
+                            Explore this key in full
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                          </Link>
+                        )}
+                        <div className="flex gap-1.5 pt-2.5 border-t border-white/10">
+                          {dimension.keys.map((key) => {
+                            const isActive = selectedKey?.keyId === key.id;
+                            return (
+                              <button
+                                key={key.id}
+                                onClick={() => handleSwitchKey(dimension.id, key.id)}
+                                className="flex-1 py-1 rounded-lg text-[10px] font-medium transition-all duration-200 leading-tight"
+                                style={{
+                                  background: isActive ? `${dimension.color}20` : 'rgba(255,255,255,0.03)',
+                                  color: isActive ? dimension.color : '#6b7280',
+                                  border: `1px solid ${isActive ? `${dimension.color}40` : 'rgba(255,255,255,0.07)'}`,
+                                }}
+                              >
+                                {key.name}
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
                     </motion.div>
 
