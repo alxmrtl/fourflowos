@@ -6,121 +6,41 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getAllApps, App } from '@/data/apps';
 import { DIMENSIONS } from '@/data/framework';
+import { DimensionType } from '@/types/framework';
 import LandingNav from '@/components/landing/LandingNav';
+import { useAuth } from '@/hooks/useAuth';
+
+// ─── Pillar meta: keys trained + practice rationale ───────────────────────────
+
+const PILLAR_PRACTICE_META: Record<DimensionType, {
+  trains: string[];
+  practiceRationale: string;
+}> = {
+  self: {
+    trains: ['Tuned Emotions', 'Focused Body', 'Open Mind'],
+    practiceRationale: 'The SELF pillar is your reception layer — how well you pick up your own signals. Training it means building the physical and mental conditions that let you enter flow on demand.',
+  },
+  space: {
+    trains: ['Intentional Space', 'Optimized Tools', 'Feedback Systems'],
+    practiceRationale: 'SPACE is the transmission layer — your environment either amplifies or dampens the signal. Training it means removing friction so the work flows instead of fights.',
+  },
+  story: {
+    trains: ['Generative Story', 'Clear Mission', 'Empowered Role'],
+    practiceRationale: 'STORY gives your effort direction across time. Training it means clarifying what you\'re building and why — so daily action connects to something larger.',
+  },
+  spirit: {
+    trains: ['Grounding Values', 'Ignited Curiosity', 'Visualized Vision'],
+    practiceRationale: 'SPIRIT is your timeless direction — what is always true for you. Training it means surfacing the curiosity and vision that make flow feel inevitable rather than forced.',
+  },
+};
+
+// ─── App detail modal ─────────────────────────────────────────────────────────
 
 function PlatformBadge({ platform }: { platform: string }) {
   return (
     <span className="px-2 py-0.5 bg-white/10 rounded text-[10px] text-gray-400 uppercase font-semibold tracking-wider">
       {platform}
     </span>
-  );
-}
-
-function DimensionPills({ pillars }: { pillars: App['relatedPillars'] }) {
-  return (
-    <div className="flex gap-1.5">
-      {pillars.map((p) => {
-        const dim = DIMENSIONS[p];
-        if (!dim) return null;
-        return (
-          <div
-            key={p}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-full"
-            style={{ background: `${dim.color}15` }}
-          >
-            <Image
-              src={dim.icon}
-              alt={dim.name}
-              width={14}
-              height={14}
-              className="opacity-80"
-            />
-            <span className="text-[10px] font-medium" style={{ color: dim.color }}>
-              {dim.name}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function AppCard({ app, index, onClick, muted }: { app: App; index: number; onClick: () => void; muted?: boolean }) {
-  const isActive = !app.inDevelopment;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
-      className={`group block w-full text-left rounded-2xl overflow-hidden transition-all duration-300 ${
-        muted
-          ? 'bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/10'
-          : 'bg-white/[0.06] border border-white/15 hover:bg-white/10 hover:border-white/25'
-      }`}
-    >
-      {/* Gradient Header Strip */}
-      <div className={`h-20 bg-gradient-to-r ${app.gradient} relative overflow-hidden`}>
-        <div className={`absolute inset-0 ${muted ? 'bg-black/50' : 'bg-black/20'}`} />
-        <div className="absolute bottom-3 left-4">
-          <div className={`w-12 h-12 rounded-xl backdrop-blur-sm shadow-lg overflow-hidden flex-shrink-0 ${muted ? 'opacity-60' : ''}`} style={{ background: app.id === 'curiosity-explorer' ? '#333333' : 'rgba(255,255,255,0.2)' }}>
-            <Image src={app.icon} alt={app.name} width={48} height={48} className="object-cover" />
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-5">
-        <div className="flex items-start justify-between gap-3 mb-1">
-          <h3 className={`text-lg font-bold transition-colors ${muted ? 'text-gray-400' : 'text-white'}`}>
-            {app.name}
-          </h3>
-          <div className="flex gap-1 flex-shrink-0">
-            {app.platforms.map((p) => (
-              <PlatformBadge key={p} platform={p} />
-            ))}
-          </div>
-        </div>
-        <p className={`text-[13px] font-medium mb-3 ${muted ? 'text-gray-600' : ''}`} style={!muted ? { color: app.accentColor } : undefined}>{app.tagline}</p>
-
-        <p className={`text-sm leading-relaxed mb-4 ${muted ? 'text-gray-600' : 'text-gray-400'}`}>{app.description}</p>
-
-        {/* Dimension pills */}
-        <DimensionPills pillars={app.relatedPillars} />
-
-        {/* Actions */}
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            onClick={onClick}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              muted
-                ? 'bg-white/5 text-gray-500 hover:bg-white/10 hover:text-gray-300'
-                : 'bg-white/10 text-gray-300 hover:bg-white/15 hover:text-white'
-            }`}
-          >
-            More Info
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-          {isActive ? (
-            <a
-              href={app.webUrl || app.appStoreUrl || '#'}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-black hover:bg-gray-100 transition-colors"
-            >
-              Open
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-          ) : (
-            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 text-gray-600 cursor-not-allowed">
-              Coming Soon
-            </span>
-          )}
-        </div>
-      </div>
-    </motion.div>
   );
 }
 
@@ -142,11 +62,7 @@ function AppModal({ app, onClose }: { app: App; onClose: () => void }) {
       <motion.div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
       />
-
       <motion.div
         className="relative w-full max-w-lg max-h-[85vh] overflow-y-auto bg-[#141414] border border-white/10 rounded-3xl shadow-2xl"
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -176,16 +92,12 @@ function AppModal({ app, onClose }: { app: App; onClose: () => void }) {
           <div className="flex items-start justify-between gap-3 mb-1">
             <h2 className="text-2xl font-bold text-white">{app.name}</h2>
             <div className="flex gap-1 flex-shrink-0 mt-1">
-              {app.platforms.map((p) => (
-                <PlatformBadge key={p} platform={p} />
-              ))}
+              {app.platforms.map((p) => <PlatformBadge key={p} platform={p} />)}
             </div>
           </div>
           <p className="text-sm font-medium mb-4" style={{ color: app.accentColor }}>{app.tagline}</p>
-
           <p className="text-gray-400 text-sm leading-relaxed mb-6 whitespace-pre-line">{app.fullDescription}</p>
 
-          {/* Features */}
           <div className="mb-6">
             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Features</h4>
             <ul className="space-y-2">
@@ -201,10 +113,9 @@ function AppModal({ app, onClose }: { app: App; onClose: () => void }) {
             </ul>
           </div>
 
-          {/* Pillars */}
           {pillarData.length > 0 && (
             <div className="mb-6">
-              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Dimensions</h4>
+              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Pillars Trained</h4>
               <div className="flex gap-2">
                 {pillarData.map((p) => (
                   <span
@@ -220,7 +131,6 @@ function AppModal({ app, onClose }: { app: App; onClose: () => void }) {
             </div>
           )}
 
-          {/* CTA */}
           {isActive ? (
             <a
               href={app.webUrl || app.appStoreUrl || '#'}
@@ -245,95 +155,323 @@ function AppModal({ app, onClose }: { app: App; onClose: () => void }) {
   );
 }
 
-export default function AppsPage() {
+// ─── Practice card (compact, pillar-aware) ────────────────────────────────────
+
+function PracticeCard({
+  app,
+  primaryPillar,
+  index,
+  onClick,
+}: {
+  app: App;
+  primaryPillar: DimensionType;
+  index: number;
+  onClick: () => void;
+}) {
+  const isActive = !app.inDevelopment;
+  const dim = DIMENSIONS[primaryPillar];
+  // Secondary pillars (not the primary one displayed in this section)
+  const secondaryPillars = app.relatedPillars.filter((p) => p !== primaryPillar);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.07 }}
+      className={`group relative rounded-2xl border overflow-hidden transition-all duration-300 ${
+        isActive
+          ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-white/20'
+          : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10'
+      }`}
+    >
+      {/* Pillar color top strip */}
+      <div className="h-0.5 w-full" style={{ background: isActive ? dim.color : `${dim.color}40` }} />
+
+      <div className="p-5">
+        {/* Header row */}
+        <div className="flex items-start gap-3 mb-3">
+          <div
+            className={`w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 ${isActive ? '' : 'opacity-40'}`}
+            style={{ background: `${dim.color}15` }}
+          >
+            <Image src={app.icon} alt={app.name} width={40} height={40} className="object-cover" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className={`font-bold text-base ${isActive ? 'text-white' : 'text-gray-500'}`}>
+                {app.name}
+              </h3>
+              {!isActive && (
+                <span className="text-[10px] font-semibold text-gray-600 bg-white/5 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Soon
+                </span>
+              )}
+            </div>
+            <p className={`text-xs font-medium mt-0.5 ${isActive ? '' : 'text-gray-600'}`} style={isActive ? { color: app.accentColor } : undefined}>
+              {app.tagline}
+            </p>
+          </div>
+          <div className="flex gap-1 flex-shrink-0">
+            {app.platforms.map((p) => <PlatformBadge key={p} platform={p} />)}
+          </div>
+        </div>
+
+        {/* Description */}
+        <p className={`text-sm leading-relaxed mb-4 ${isActive ? 'text-gray-400' : 'text-gray-600'}`}>
+          {app.description}
+        </p>
+
+        {/* Footer row */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {secondaryPillars.map((sp) => {
+              const spDim = DIMENSIONS[sp];
+              if (!spDim) return null;
+              return (
+                <span
+                  key={sp}
+                  className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                  style={{ background: `${spDim.color}15`, color: `${spDim.color}99` }}
+                >
+                  + {spDim.name}
+                </span>
+              );
+            })}
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={onClick}
+              className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
+            >
+              Details
+            </button>
+            {isActive ? (
+              <a
+                href={app.webUrl || app.appStoreUrl || '#'}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-black hover:bg-gray-100 transition-colors"
+              >
+                Open
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Pillar section ───────────────────────────────────────────────────────────
+
+function PillarSection({
+  pillar,
+  apps,
+  onSelectApp,
+  baseIndex,
+}: {
+  pillar: DimensionType;
+  apps: App[];
+  onSelectApp: (app: App) => void;
+  baseIndex: number;
+}) {
+  const dim = DIMENSIONS[pillar];
+  const meta = PILLAR_PRACTICE_META[pillar];
+
+  return (
+    <section className="mb-16">
+      {/* Pillar header */}
+      <div className="flex items-start gap-4 mb-6">
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
+          style={{ background: `${dim.color}15`, border: `1px solid ${dim.color}30` }}
+        >
+          <Image src={dim.icon} alt={dim.name} width={22} height={22} />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-1">
+            <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: dim.color }}>
+              {dim.name}
+            </h2>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {meta.trains.map((key) => (
+                <span
+                  key={key}
+                  className="text-[10px] text-gray-500 px-2 py-0.5 rounded-full bg-white/5 font-medium"
+                >
+                  {key}
+                </span>
+              ))}
+            </div>
+          </div>
+          <p className="text-sm text-gray-500 leading-relaxed max-w-xl">
+            {meta.practiceRationale}
+          </p>
+        </div>
+      </div>
+
+      {/* App cards */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {apps.map((app, i) => (
+          <PracticeCard
+            key={app.id}
+            app={app}
+            primaryPillar={pillar}
+            index={baseIndex + i}
+            onClick={() => onSelectApp(app)}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function PracticePage() {
   const apps = getAllApps();
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
+  const { user } = useAuth();
 
-  const active = apps.filter((a) => !a.inDevelopment);
-  const inDev = apps.filter((a) => a.inDevelopment);
+  // Group apps by their primary pillar (first in relatedPillars array).
+  // Each app appears only once, under its primary pillar.
+  const pillarOrder: DimensionType[] = ['self', 'space', 'story', 'spirit'];
+  const grouped: Record<DimensionType, App[]> = { self: [], space: [], story: [], spirit: [] };
+
+  apps.forEach((app) => {
+    const primary = app.relatedPillars[0];
+    if (primary && grouped[primary]) {
+      grouped[primary].push(app);
+    }
+  });
+
+  // Build pillar sections only for pillars that have apps
+  const activePillars = pillarOrder.filter((p) => grouped[p].length > 0);
+
+  // Running index for staggered animation
+  let runningIndex = 0;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       <LandingNav />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 px-6">
-        <div className="max-w-6xl mx-auto text-center">
+      {/* Hero */}
+      <section className="pt-32 pb-12 px-6">
+        <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-              Tools &amp; Apps for{' '}
+            {/* Breadcrumb label */}
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">
+              Practice System
+            </p>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-tight">
+              Train the conditions <br className="hidden sm:block" />
               <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
-                Flow
+                your profile measures.
               </span>
             </h1>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Interactive tools and apps designed to help you enter flow states, build meaningful habits,
-              and align your life with the Four Pillars framework.
+            <p className="text-lg text-gray-400 leading-relaxed max-w-2xl mb-8">
+              The Flow Profile maps which of the four pillars are restricting your flow.
+              Each practice below trains one or more of those pillars directly —
+              so you know exactly where to focus your effort.
             </p>
+
+            {/* Profile bridge CTA */}
+            {user ? (
+              <Link
+                href="/me"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/15 text-sm text-gray-300 hover:text-white hover:border-white/30 hover:bg-white/5 transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                View your signal to see which pillars to prioritize
+              </Link>
+            ) : (
+              <Link
+                href="/map"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white text-sm font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all"
+              >
+                Map your signal first
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </Link>
+            )}
           </motion.div>
         </div>
       </section>
 
-      {/* Active Section */}
-      <section className="pb-12 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-6">Active</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {active.map((app, index) => (
-              <AppCard key={app.id} app={app} index={index} onClick={() => setSelectedApp(app)} />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Divider */}
+      <div className="max-w-4xl mx-auto px-6 mb-12">
+        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      </div>
 
-      {/* Coming Soon Section */}
-      {inDev.length > 0 && (
-        <section className="pb-20 px-6">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-sm font-semibold text-white/30 uppercase tracking-wider mb-6">Coming Soon</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {inDev.map((app, index) => (
-                <AppCard key={app.id} app={app} index={index + active.length} onClick={() => setSelectedApp(app)} muted />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Pillar sections */}
+      <div className="max-w-4xl mx-auto px-6">
+        {activePillars.map((pillar) => {
+          const sectionApps = grouped[pillar];
+          const idx = runningIndex;
+          runningIndex += sectionApps.length;
+          return (
+            <PillarSection
+              key={pillar}
+              pillar={pillar}
+              apps={sectionApps}
+              onSelectApp={setSelectedApp}
+              baseIndex={idx}
+            />
+          );
+        })}
+      </div>
 
-      {/* CTA Section */}
-      <section className="pb-20 px-6">
+      {/* Bottom CTA */}
+      <section className="pb-24 px-6">
         <div className="max-w-4xl mx-auto">
           <motion.div
-            className="p-8 md:p-12 bg-gradient-to-br from-[#FF6F61]/10 via-[#6BA292]/10 to-[#7A4DA4]/10 border border-white/10 rounded-3xl text-center"
+            className="p-8 md:p-10 rounded-3xl border border-white/8 bg-white/[0.03] text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl font-bold text-white mb-4">
-              Ready to Enter Your Flow State?
+            <h2 className="text-2xl font-bold text-white mb-3">
+              Start with your profile.
             </h2>
-            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-              Start with any tool that resonates with you. Each is designed to stand alone
-              while working together as part of the FourFlowOS ecosystem.
+            <p className="text-gray-400 mb-6 max-w-md mx-auto text-sm leading-relaxed">
+              The assessment tells you which pillars are restricting your flow right now.
+              Use that to pick where to start — rather than guessing.
             </p>
-            <Link
-              href="/#framework"
-              className="inline-flex items-center justify-center px-6 py-3 border border-white/20 text-white font-semibold rounded-full hover:bg-white/5 transition-colors"
-            >
-              Learn the Framework
-            </Link>
+            {user ? (
+              <Link
+                href="/me"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/15 text-white text-sm font-semibold hover:bg-white/5 transition-colors"
+              >
+                Open your signal dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/map"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white text-sm font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all"
+              >
+                Map your signal
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </Link>
+            )}
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="border-t border-white/5 py-8">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-4xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm">
               &copy; {new Date().getFullYear()} FourFlowOS. All rights reserved.
@@ -347,7 +485,7 @@ export default function AppsPage() {
         </div>
       </footer>
 
-      {/* Modal */}
+      {/* Detail modal */}
       <AnimatePresence>
         {selectedApp && (
           <AppModal app={selectedApp} onClose={() => setSelectedApp(null)} />

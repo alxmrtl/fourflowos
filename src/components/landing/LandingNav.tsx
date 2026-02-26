@@ -4,40 +4,46 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { BRAND_COLORS } from '@/styles/brand-colors';
+import { useRouter } from 'next/navigation';
 import TopBarUserButton from '@/components/navigation/TopBarUserButton';
 import { useAuth } from '@/hooks/useAuth';
 
-// Pillar colors for hover effects
 const pillarColors = ['#FF6F61', '#6BA292', '#5B84B1', '#7A4DA4'];
 
 export default function LandingNav() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
 
   const { scrollY } = useScroll();
   const backgroundOpacity = useTransform(scrollY, [0, 100], [0, 1]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Main navigation links
+  const handleMobileSignOut = async () => {
+    setIsMobileMenuOpen(false);
+    await signOut();
+    router.push('/');
+  };
+
+  // Signal link: signed-in users go to their profile hub; others go to intake
+  const signalLink = user
+    ? { href: '/me', label: 'Your Signal' }
+    : { href: '/map', label: 'Map Your Signal' };
+
   const mainNavLinks = [
     { href: '/framework', label: 'How It Works' },
-    { href: '/map', label: 'Map Your Signal' },
-    { href: '/apps', label: 'Tools' },
+    signalLink,
+    { href: '/apps', label: 'Practice' },
     { href: '/together', label: 'Work Together' },
   ];
 
-  // Legal links for mobile menu
   const legalLinks = [
     { href: '/privacy', label: 'Privacy' },
     { href: '/terms', label: 'Terms' },
@@ -84,7 +90,6 @@ export default function LandingNav() {
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 {link.label}
-                {/* Animated underline with pillar color */}
                 <motion.span
                   className="absolute bottom-0 left-1/2 h-0.5 rounded-full"
                   style={{
@@ -102,16 +107,8 @@ export default function LandingNav() {
             ))}
           </div>
 
-          {/* Desktop: My Signal + user icon */}
+          {/* Desktop: profile icon dropdown */}
           <div className="hidden lg:flex items-center gap-3">
-            {user && (
-              <Link
-                href="/me"
-                className="text-sm text-gray-400 hover:text-white transition-colors"
-              >
-                My Signal
-              </Link>
-            )}
             <TopBarUserButton />
           </div>
 
@@ -222,30 +219,49 @@ export default function LandingNav() {
               ))}
             </div>
 
-            {/* Profile / Sign in */}
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <Link
-                href="/me"
-                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-base py-2 px-2 rounded-lg hover:bg-white/5"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                My Signal
-              </Link>
+            {/* Account section */}
+            <div className="mt-4 pt-4 border-t border-white/10 flex flex-col gap-1">
+              {user ? (
+                <>
+                  {user.email && (
+                    <p className="text-xs text-gray-500 px-2 pb-1 truncate">{user.email}</p>
+                  )}
+                  <button
+                    onClick={handleMobileSignOut}
+                    className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-base py-2 px-2 rounded-lg hover:bg-white/5 w-full text-left"
+                  >
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/me"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-base py-2 px-2 rounded-lg hover:bg-white/5"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Sign In
+                </Link>
+              )}
             </div>
 
-            {/* CTA Button */}
-            <div className="mt-2">
-              <Link
-                href="/map"
-                className="block w-full text-center px-5 py-3 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Map Your Signal
-              </Link>
-            </div>
+            {/* CTA Button — only for signed-out users */}
+            {!user && (
+              <div className="mt-2">
+                <Link
+                  href="/map"
+                  className="block w-full text-center px-5 py-3 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Map Your Signal
+                </Link>
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>
