@@ -2,124 +2,96 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { IntakeFormData } from '@/types/intake';
 
-interface FormData {
-  name: string;
-  email: string;
-  birth_date: string;
-  birth_time: string;
-  birth_time_known: boolean;
-  birth_location: string;
-  birth_lat: string;
-  birth_lng: string;
-  context_working: string;
-  context_stuck: string;
-  context_building: string;
-  self_energy: string;
-  self_emotions: string;
-  self_focus: string;
-  space_environment: string;
-  space_tools: string;
-  space_feedback: string;
-  story_narrative: string;
-  story_mission: string;
-  story_role: string;
-  spirit_values: string;
-  spirit_curiosity: string;
-  spirit_vision: string;
-}
-
-interface IntakeStepReviewProps {
-  data: FormData;
+interface Props {
+  data: IntakeFormData;
   onGoToStep: (step: number) => void;
 }
 
-const SECTIONS = [
-  {
-    title: 'Personal Info',
-    step: 1,
-    color: '#ffffff',
-    fields: [
-      { key: 'name' as const, label: 'Name' },
-      { key: 'email' as const, label: 'Email' },
-    ],
-  },
-  {
-    title: 'Birth Data',
-    step: 2,
-    color: '#ffffff',
-    fields: [
-      { key: 'birth_date' as const, label: 'Date' },
-      { key: 'birth_time' as const, label: 'Time' },
-      { key: 'birth_location' as const, label: 'Location' },
-    ],
-  },
-  {
-    title: 'Life Context',
-    step: 3,
-    color: '#ffffff',
-    fields: [
-      { key: 'context_working' as const, label: "What's working" },
-      { key: 'context_stuck' as const, label: "What's stuck" },
-      { key: 'context_building' as const, label: 'Building toward' },
-    ],
-  },
-  {
-    title: 'Self',
-    step: 4,
-    color: '#FF6F61',
-    fields: [
-      { key: 'self_energy' as const, label: 'Physical energy' },
-      { key: 'self_emotions' as const, label: 'Emotions' },
-      { key: 'self_focus' as const, label: 'Mental clarity' },
-    ],
-  },
-  {
-    title: 'Space',
-    step: 5,
-    color: '#6BA292',
-    fields: [
-      { key: 'space_environment' as const, label: 'Environment' },
-      { key: 'space_tools' as const, label: 'Tools & systems' },
-      { key: 'space_feedback' as const, label: 'Feedback loops' },
-    ],
-  },
-  {
-    title: 'Story',
-    step: 6,
-    color: '#5B84B1',
-    fields: [
-      { key: 'story_narrative' as const, label: 'Life narrative' },
-      { key: 'story_mission' as const, label: 'Mission' },
-      { key: 'story_role' as const, label: 'Role' },
-    ],
-  },
-  {
-    title: 'Spirit',
-    step: 7,
-    color: '#7A4DA4',
-    fields: [
-      { key: 'spirit_values' as const, label: 'Values' },
-      { key: 'spirit_curiosity' as const, label: 'Curiosity' },
-      { key: 'spirit_vision' as const, label: 'Vision' },
-    ],
-  },
-];
+interface Section {
+  title: string;
+  step: number;
+  color: string;
+  summary: () => string;
+}
 
-export default function IntakeStepReview({ data, onGoToStep }: IntakeStepReviewProps) {
+export default function IntakeStepReview({ data, onGoToStep }: Props) {
   const [expandedSection, setExpandedSection] = useState<number | null>(null);
 
-  const truncate = (text: string, length = 120) => {
-    if (!text) return '(empty)';
-    return text.length > length ? text.slice(0, length) + '...' : text;
-  };
-
-  const getDisplayValue = (key: string, value: string | boolean) => {
-    if (key === 'birth_time' && !data.birth_time_known) return 'Not provided';
-    if (key === 'birth_time' && !value) return 'Not provided';
-    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-    return truncate(String(value));
-  };
+  const sections: Section[] = [
+    {
+      title: 'Personal Info',
+      step: 1,
+      color: 'rgba(255,255,255,0.4)',
+      summary: () => [data.name, data.email].filter(Boolean).join(' · '),
+    },
+    {
+      title: 'Signal Origin',
+      step: 2,
+      color: 'rgba(255,255,255,0.4)',
+      summary: () => [
+        data.birth_date,
+        data.birth_time_known && data.birth_time ? data.birth_time : null,
+        data.birth_location,
+      ].filter(Boolean).join(' · '),
+    },
+    {
+      title: 'Opening Frame',
+      step: 3,
+      color: '#7A4DA4',
+      summary: () => [
+        data.opening_season ? `Season: ${data.opening_season}` : null,
+        data.opening_chapter_title ? `"${data.opening_chapter_title}"` : null,
+      ].filter(Boolean).join(' · '),
+    },
+    {
+      title: 'Self',
+      step: 4,
+      color: '#FF6F61',
+      summary: () => [
+        data.self_emotions_keywords.length ? `${data.self_emotions_keywords.length} emotion words` : null,
+        `Energy: ${data.self_body_energy}/10`,
+        `Mind: ${data.self_mind_clarity}/10`,
+      ].filter(Boolean).join(' · '),
+    },
+    {
+      title: 'Space',
+      step: 5,
+      color: '#6BA292',
+      summary: () => [
+        data.space_environment_feel || null,
+        data.space_feedback_channel ? `Feedback: ${data.space_feedback_channel}` : null,
+      ].filter(Boolean).join(' · '),
+    },
+    {
+      title: 'Story',
+      step: 6,
+      color: '#5B84B1',
+      summary: () => [
+        data.story_narrative_arc || null,
+        data.story_mission_clarity || null,
+      ].filter(Boolean).join(' · '),
+    },
+    {
+      title: 'Spirit',
+      step: 7,
+      color: '#7A4DA4',
+      summary: () => [
+        data.spirit_values_selected.length ? `${data.spirit_values_selected.length} values` : null,
+        data.spirit_curiosity_intersection ? `"${data.spirit_curiosity_intersection}"` : null,
+      ].filter(Boolean).join(' · '),
+    },
+    {
+      title: 'Soul Signature',
+      step: 8,
+      color: '#7A4DA4',
+      summary: () => [
+        data.soul_myth_character ? `${data.soul_myth_character}` : null,
+        data.soul_word ? `"${data.soul_word}"` : null,
+      ].filter(Boolean).join(' · '),
+    },
+  ];
 
   return (
     <motion.div
@@ -131,42 +103,34 @@ export default function IntakeStepReview({ data, onGoToStep }: IntakeStepReviewP
     >
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-          Review Your{' '}
-          <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
-            Responses
-          </span>
+          Almost there.
         </h2>
-        <p className="text-gray-400">
-          Take a moment to review everything before submitting. Click any section to expand, or hit Edit to make changes.
+        <p className="text-gray-400 text-sm">
+          Take a moment to look over your responses. Click any section to review, or hit Edit to change something.
+          When you&apos;re ready — send it through.
         </p>
       </div>
 
-      <div className="space-y-3">
-        {SECTIONS.map((section, idx) => (
+      <div className="space-y-2">
+        {sections.map((section, idx) => (
           <div
             key={idx}
             className="rounded-xl bg-white/[0.03] border border-white/10 overflow-hidden"
           >
-            {/* Section header */}
             <button
               type="button"
               onClick={() => setExpandedSection(expandedSection === idx ? null : idx)}
               className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors"
             >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: section.color === '#ffffff' ? 'rgba(255,255,255,0.4)' : section.color }}
-                />
-                <span className="font-medium text-white">{section.title}</span>
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: section.color }} />
+                <span className="font-medium text-white text-sm">{section.title}</span>
+                <span className="text-xs text-gray-500 truncate hidden sm:block">{section.summary()}</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-shrink-0 ml-3">
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onGoToStep(section.step);
-                  }}
+                  onClick={(e) => { e.stopPropagation(); onGoToStep(section.step); }}
                   className="text-xs px-3 py-1 rounded-full border border-white/10 text-gray-400 hover:text-white hover:border-white/30 transition-colors"
                 >
                   Edit
@@ -182,7 +146,6 @@ export default function IntakeStepReview({ data, onGoToStep }: IntakeStepReviewP
               </div>
             </button>
 
-            {/* Expanded content */}
             <AnimatePresence>
               {expandedSection === idx && (
                 <motion.div
@@ -192,15 +155,8 @@ export default function IntakeStepReview({ data, onGoToStep }: IntakeStepReviewP
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="px-5 pb-4 space-y-3 border-t border-white/5 pt-3">
-                    {section.fields.map((field) => (
-                      <div key={field.key}>
-                        <p className="text-xs text-gray-500 mb-1">{field.label}</p>
-                        <p className="text-sm text-gray-300">
-                          {getDisplayValue(field.key, data[field.key])}
-                        </p>
-                      </div>
-                    ))}
+                  <div className="px-5 pb-4 pt-3 border-t border-white/5">
+                    <p className="text-xs text-gray-400 leading-relaxed">{section.summary() || '(no summary available)'}</p>
                   </div>
                 </motion.div>
               )}

@@ -6,86 +6,137 @@ import { getSupabaseBrowser } from '@/lib/supabase-browser';
 import IntakeProgress from './IntakeProgress';
 import IntakeStepPersonal from './IntakeStepPersonal';
 import IntakeStepBirth from './IntakeStepBirth';
-import IntakeStepContext from './IntakeStepContext';
+import IntakeStepOpeningFrame from './IntakeStepOpeningFrame';
 import IntakeStepSelf from './IntakeStepSelf';
 import IntakeStepSpace from './IntakeStepSpace';
 import IntakeStepStory from './IntakeStepStory';
 import IntakeStepSpirit from './IntakeStepSpirit';
+import IntakeStepSoulSignature from './IntakeStepSoulSignature';
 import IntakeStepReview from './IntakeStepReview';
+import { INITIAL_INTAKE_DATA, toIntakeStructured } from '@/types/intake';
+import type { IntakeFormData } from '@/types/intake';
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 9;
 
-const INITIAL_DATA = {
-  name: '',
-  email: '',
-  birth_date: '',
-  birth_time: '',
-  birth_time_known: false,
-  birth_location: '',
-  birth_lat: '',
-  birth_lng: '',
-  context_working: '',
-  context_stuck: '',
-  context_building: '',
-  self_energy: '',
-  self_emotions: '',
-  self_focus: '',
-  space_environment: '',
-  space_tools: '',
-  space_feedback: '',
-  story_narrative: '',
-  story_mission: '',
-  story_role: '',
-  spirit_values: '',
-  spirit_curiosity: '',
-  spirit_vision: '',
-};
-
-export type IntakeFormData = typeof INITIAL_DATA;
-
-// Validation: which fields are required per step
-const STEP_REQUIRED_FIELDS: Record<number, (keyof IntakeFormData)[]> = {
+// Required fields per step — keep minimal; most of the form is encouraged, not blocked
+const STEP_REQUIRED: Record<number, (keyof IntakeFormData)[]> = {
   1: ['name', 'email'],
   2: ['birth_date', 'birth_location'],
-  3: ['context_working', 'context_stuck', 'context_building'],
-  4: ['self_energy', 'self_emotions', 'self_focus'],
-  5: ['space_environment', 'space_tools', 'space_feedback'],
-  6: ['story_narrative', 'story_mission', 'story_role'],
-  7: ['spirit_values', 'spirit_curiosity', 'spirit_vision'],
+  3: ['opening_season', 'opening_chapter_title'],
+  4: [],  // sliders always valid; keywords + text are encouraged
+  5: [],
+  6: [],
+  7: [],
   8: [],
+  9: [],
 };
 
+// ─── Gateway — pre-suasion screen shown before step 1 ────────────────────────
+
+function IntakeGateway({ onBegin }: { onBegin: () => void }) {
+  return (
+    <motion.div
+      key="gateway"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-xl mx-auto text-center py-8 space-y-8"
+    >
+      {/* Breathing visual */}
+      <motion.div
+        className="w-16 h-16 mx-auto rounded-full border border-white/10"
+        animate={{
+          scale: [1, 1.18, 1],
+          opacity: [0.3, 0.6, 0.3],
+        }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ background: 'radial-gradient(circle, #7A4DA420, transparent)' }}
+      />
+
+      <div className="space-y-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-white leading-snug">
+          This isn&apos;t a test.
+        </h2>
+        <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto">
+          It&apos;s a conversation — one that&apos;s been waiting to happen.
+          The only thing that matters here is honesty, not impressiveness.
+        </p>
+      </div>
+
+      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 text-left space-y-3">
+        <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Before you begin</p>
+        <ul className="space-y-2.5 text-sm text-gray-300">
+          <li className="flex items-start gap-2.5">
+            <span className="text-gray-600 mt-0.5">—</span>
+            <span>Answer quickly. Your first instinct is usually the most accurate one.</span>
+          </li>
+          <li className="flex items-start gap-2.5">
+            <span className="text-gray-600 mt-0.5">—</span>
+            <span>There are no impressive answers here. Only true ones and cautious ones.</span>
+          </li>
+          <li className="flex items-start gap-2.5">
+            <span className="text-gray-600 mt-0.5">—</span>
+            <span>Write like you&apos;re telling a trusted friend — not composing an essay.</span>
+          </li>
+          <li className="flex items-start gap-2.5">
+            <span className="text-gray-600 mt-0.5">—</span>
+            <span>On a phone? Try voice-to-text for longer answers — it&apos;s faster and usually more honest.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs text-gray-600">
+          Takes about 12–15 minutes. You can save your progress by completing it in one session.
+        </p>
+        <button
+          type="button"
+          onClick={onBegin}
+          className="px-8 py-3 bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02]"
+        >
+          I&apos;m ready
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Main Form ────────────────────────────────────────────────────────────────
+
 export default function IntakeForm() {
+  const [hasStarted, setHasStarted] = useState(false);
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<IntakeFormData>(INITIAL_DATA);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [formData, setFormData] = useState<IntakeFormData>(INITIAL_INTAKE_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = (field: string, value: string | string[] | number | boolean) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const isStepValid = (stepNum: number): boolean => {
-    const required = STEP_REQUIRED_FIELDS[stepNum] || [];
-    return required.every(field => {
+    const required = STEP_REQUIRED[stepNum] || [];
+    return required.every((field) => {
       const value = formData[field];
       if (typeof value === 'boolean') return true;
+      if (Array.isArray(value)) return true;
+      if (typeof value === 'number') return true;
       return String(value).trim().length > 0;
     });
   };
 
   const handleNext = () => {
     if (step < TOTAL_STEPS && isStepValid(step)) {
-      setStep(prev => prev + 1);
+      setStep((prev) => prev + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleBack = () => {
     if (step > 1) {
-      setStep(prev => prev - 1);
+      setStep((prev) => prev - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -101,11 +152,12 @@ export default function IntakeForm() {
     setErrorMessage('');
 
     try {
-      // Attach user_id if the user is currently authenticated
       const { data: { session } } = await getSupabaseBrowser().auth.getSession();
-      const payload = session?.user
-        ? { ...formData, user_id: session.user.id }
-        : formData;
+      const payload = {
+        ...formData,
+        intake_structured: toIntakeStructured(formData),
+        ...(session?.user ? { user_id: session.user.id } : {}),
+      };
 
       const response = await fetch('/api/profile/submit', {
         method: 'POST',
@@ -114,7 +166,6 @@ export default function IntakeForm() {
       });
 
       const result = await response.json();
-
       if (result.success) {
         setSubmitStatus('success');
       } else {
@@ -129,7 +180,7 @@ export default function IntakeForm() {
     }
   };
 
-  // Success screen
+  // ── Success ────────────────────────────────────────────────────────────────
   if (submitStatus === 'success') {
     return (
       <motion.div
@@ -145,21 +196,22 @@ export default function IntakeForm() {
         </div>
 
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-          Thank you, {formData.name.split(' ')[0]}
+          Thank you, {formData.name.split(' ')[0]}.
         </h2>
 
         <p className="text-lg text-gray-400 mb-6 max-w-md mx-auto">
-          Your Flow Profile intake has been received. Check your email for a confirmation &mdash; we&apos;ll send you your profile once it&apos;s ready.
+          Your signal has been received. Check your email for a confirmation —
+          your Flow Profile will arrive once it&apos;s ready.
         </p>
 
         <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 max-w-md mx-auto">
           <h3 className="text-sm font-medium text-gray-400 mb-3">What happens next</h3>
           <ol className="space-y-3 text-left">
             {[
-              'You\'ll receive a confirmation email shortly',
-              'We review your responses and generate your personalized Flow Profile',
-              'You\'ll get an email with a link to view your profile',
-              'Want to go deeper? Book a live facilitated session for the full experience',
+              "You'll receive a confirmation email shortly.",
+              'We review your responses and generate your personalized Flow Archetype.',
+              "You'll get an email with a link to your profile.",
+              'Want to go deeper? Book a live facilitated session for the full experience.',
             ].map((item, i) => (
               <li key={i} className="flex items-start gap-3 text-sm text-gray-300">
                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs text-gray-500">
@@ -174,11 +226,17 @@ export default function IntakeForm() {
     );
   }
 
-  const stepProps = {
-    focusedField,
-    setFocusedField,
-    onChange: handleChange,
-  };
+  // ── Gateway ────────────────────────────────────────────────────────────────
+  if (!hasStarted) {
+    return (
+      <AnimatePresence mode="wait">
+        <IntakeGateway key="gateway" onBegin={() => setHasStarted(true)} />
+      </AnimatePresence>
+    );
+  }
+
+  // ── Form ───────────────────────────────────────────────────────────────────
+  const stepProps = { onChange: handleChange };
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -186,17 +244,37 @@ export default function IntakeForm() {
 
       <div className="p-6 md:p-8 rounded-2xl bg-white/[0.03] border border-white/10">
         <AnimatePresence mode="wait">
-          {step === 1 && <IntakeStepPersonal key="personal" data={formData} {...stepProps} />}
-          {step === 2 && <IntakeStepBirth key="birth" data={formData} {...stepProps} />}
-          {step === 3 && <IntakeStepContext key="context" data={formData} {...stepProps} />}
-          {step === 4 && <IntakeStepSelf key="self" data={formData} {...stepProps} />}
-          {step === 5 && <IntakeStepSpace key="space" data={formData} {...stepProps} />}
-          {step === 6 && <IntakeStepStory key="story" data={formData} {...stepProps} />}
-          {step === 7 && <IntakeStepSpirit key="spirit" data={formData} {...stepProps} />}
-          {step === 8 && <IntakeStepReview key="review" data={formData} onGoToStep={handleGoToStep} />}
+          {step === 1 && (
+            <IntakeStepPersonal key="personal" data={formData} {...stepProps}
+              focusedField={null} setFocusedField={() => {}} />
+          )}
+          {step === 2 && (
+            <IntakeStepBirth key="birth" data={formData} {...stepProps}
+              focusedField={null} setFocusedField={() => {}} />
+          )}
+          {step === 3 && (
+            <IntakeStepOpeningFrame key="opening" data={formData} {...stepProps} />
+          )}
+          {step === 4 && (
+            <IntakeStepSelf key="self" data={formData} {...stepProps} />
+          )}
+          {step === 5 && (
+            <IntakeStepSpace key="space" data={formData} {...stepProps} />
+          )}
+          {step === 6 && (
+            <IntakeStepStory key="story" data={formData} {...stepProps} />
+          )}
+          {step === 7 && (
+            <IntakeStepSpirit key="spirit" data={formData} {...stepProps} />
+          )}
+          {step === 8 && (
+            <IntakeStepSoulSignature key="soul" data={formData} {...stepProps} />
+          )}
+          {step === 9 && (
+            <IntakeStepReview key="review" data={formData} onGoToStep={handleGoToStep} />
+          )}
         </AnimatePresence>
 
-        {/* Error message */}
         {submitStatus === 'error' && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -207,7 +285,6 @@ export default function IntakeForm() {
           </motion.div>
         )}
 
-        {/* Navigation */}
         <div className="flex justify-between items-center mt-8 pt-6 border-t border-white/5">
           <button
             type="button"
@@ -243,10 +320,10 @@ export default function IntakeForm() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Submitting...
+                  Sending...
                 </span>
               ) : (
-                'Submit Flow Profile Intake'
+                'Send my signal'
               )}
             </button>
           )}
