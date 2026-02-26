@@ -529,16 +529,26 @@ ${a.spirit_vision}`.trim();
             <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">{assessment.name}</h1>
             <p className="text-gray-500">{assessment.email}</p>
           </div>
-          <span
-            className="px-3 py-1 text-xs rounded-full border"
-            style={{
-              color: STATUS_COLORS[assessment.status],
-              borderColor: `${STATUS_COLORS[assessment.status]}40`,
-              backgroundColor: `${STATUS_COLORS[assessment.status]}15`,
-            }}
-          >
-            {STATUS_LABELS[assessment.status]}
-          </span>
+          <div className="flex items-center gap-3">
+            {assessment.flow_profile_json && (
+              <Link
+                href={`/profile/admin/preview?id=${assessment.id}`}
+                className="px-3 py-1.5 text-sm text-gray-400 hover:text-white border border-white/10 hover:border-white/30 rounded-lg transition-all"
+              >
+                Preview profile →
+              </Link>
+            )}
+            <span
+              className="px-3 py-1 text-xs rounded-full border"
+              style={{
+                color: STATUS_COLORS[assessment.status],
+                borderColor: `${STATUS_COLORS[assessment.status]}40`,
+                backgroundColor: `${STATUS_COLORS[assessment.status]}15`,
+              }}
+            >
+              {STATUS_LABELS[assessment.status]}
+            </span>
+          </div>
         </div>
 
         {/* ── Run New Report (top of page) ── */}
