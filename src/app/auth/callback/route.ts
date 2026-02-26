@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { getSupabase } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -26,8 +27,17 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error && data.user) {
+      // Link any unowned assessments to this user using the service role key,
+      // which bypasses RLS. The client-side auto-link in AuthContext can't do
+      // this reliably because RLS blocks updates to rows where user_id IS NULL.
+      await getSupabase()
+        .from('assessments')
+        .update({ user_id: data.user.id })
+        .eq('email', data.user.email!)
+        .is('user_id', null);
+
       return NextResponse.redirect(`${origin}${next}`);
     }
 
