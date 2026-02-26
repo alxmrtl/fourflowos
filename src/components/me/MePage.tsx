@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import AuthModal from '@/components/auth/AuthModal';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
@@ -487,17 +488,46 @@ export default function MePage() {
       <div className="min-h-screen bg-[#0a0a0a]">
         <LandingNav />
         <div className="max-w-4xl mx-auto px-4 pt-24 pb-16">
-          <BentoGrid
-            profile={profile}
-            sessions={data.sessions}
-            curiosity={data.curiosity}
-            assessment={data.assessment!}
-          />
-          <RawProfileDrawer
-            assessment={data.assessment!}
-            sessions={data.sessions}
-            curiosity={data.curiosity}
-          />
+          {/* Page header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Flow Archetype</p>
+            <h1 className="text-3xl font-light text-white mb-3">Your Signal</h1>
+            <div
+              className="h-px"
+              style={{ background: `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})` }}
+            />
+          </motion.div>
+
+          {/* Dashboard card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+          >
+            <BentoGrid
+              profile={profile}
+              sessions={data.sessions}
+              curiosity={data.curiosity}
+              assessment={data.assessment!}
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          >
+            <RawProfileDrawer
+              assessment={data.assessment!}
+              sessions={data.sessions}
+              curiosity={data.curiosity}
+            />
+          </motion.div>
         </div>
       </div>
     );

@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import type { FlowProfileJSON } from '@/types/profile-json';
-import type { DimensionType, KeyType } from '@/types/framework';
+import type { DimensionType } from '@/types/framework';
 import ArchetypeHeader from './ArchetypeHeader';
 import DimensionBentoCard from './DimensionBentoCard';
-import KeyDetailPanel from './KeyDetailPanel';
 
 const CORAL = '#FF6F61';
 const SAGE = '#6BA292';
@@ -82,8 +81,6 @@ function SignalMiniCard({
 }
 
 export default function BentoGrid({ profile, sessions, curiosity, assessment }: Props) {
-  const [activeKey, setActiveKey] = useState<{ slug: KeyType; dim: DimensionType } | null>(null);
-
   const totalSessions = sessions.length;
   const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const sessionsThisWeek = sessions.filter(
@@ -91,30 +88,34 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
   ).length;
   const itemCount = curiosity?.items?.length ?? 0;
 
-  const handleKeyClick = (slug: KeyType, dim: DimensionType) => {
-    setActiveKey({ slug, dim });
-  };
-
-  const handleClose = () => setActiveKey(null);
-
   return (
-    <>
+    <div className="rounded-2xl border border-white/[0.08] bg-[rgba(12,12,12,0.9)] p-6 mb-6">
       <ArchetypeHeader profile={profile} />
 
       {/* 2×2 Dimension grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        {DIM_ORDER.map((dim) => (
-          <DimensionBentoCard
+        {DIM_ORDER.map((dim, idx) => (
+          <motion.div
             key={dim}
-            dim={dim}
-            data={profile.dimensions[dim]}
-            onKeyClick={handleKeyClick}
-          />
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 + 0.1 * idx }}
+          >
+            <DimensionBentoCard
+              dim={dim}
+              data={profile.dimensions[dim]}
+            />
+          </motion.div>
         ))}
       </div>
 
       {/* Signal row */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.7 }}
+        className="flex flex-col sm:flex-row gap-4 mb-6"
+      >
         <SignalMiniCard
           topEdge={`linear-gradient(90deg, ${CORAL}, ${SAGE})`}
           title="FlowZone"
@@ -147,7 +148,7 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* View token link */}
       {assessment.view_token && (
@@ -160,13 +161,6 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
           </Link>
         </div>
       )}
-
-      {/* Key detail panel */}
-      <KeyDetailPanel
-        active={activeKey}
-        profile={profile}
-        onClose={handleClose}
-      />
-    </>
+    </div>
   );
 }
