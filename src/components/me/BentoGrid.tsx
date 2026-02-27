@@ -2,10 +2,80 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import type { FlowProfileJSON } from '@/types/profile-json';
-import type { DimensionType } from '@/types/framework';
+import type { FlowProfileJSON, DimensionData, KeyData } from '@/types/profile-json';
+import type { DimensionType, KeyType } from '@/types/framework';
 import ArchetypeHeader from './ArchetypeHeader';
 import DimensionBentoCard from './DimensionBentoCard';
+
+// ─── Profile normalisation ────────────────────────────────────────────────────
+// The LLM sometimes emits dimension keys (SELF / Space) or key slugs
+// (Tuned Emotions / tuned_emotions) that don't match the kebab-case identifiers
+// the component expects. Normalise once at the boundary so every downstream
+// component can assume the correct format.
+
+const DIM_ALIASES: Record<string, DimensionType> = {
+  self: 'self', SELF: 'self', Self: 'self',
+  space: 'space', SPACE: 'space', Space: 'space',
+  story: 'story', STORY: 'story', Story: 'story',
+  spirit: 'spirit', SPIRIT: 'spirit', Spirit: 'spirit',
+};
+
+// Map every plausible LLM variant → canonical KeyType
+const KEY_ALIASES: Record<string, KeyType> = {
+  'tuned-emotions': 'tuned-emotions', 'tuned_emotions': 'tuned-emotions', 'Tuned Emotions': 'tuned-emotions', 'tuned emotions': 'tuned-emotions',
+  'focused-body': 'focused-body', 'focused_body': 'focused-body', 'Focused Body': 'focused-body', 'focused body': 'focused-body',
+  'open-mind': 'open-mind', 'open_mind': 'open-mind', 'Open Mind': 'open-mind', 'open mind': 'open-mind',
+  'intentional-space': 'intentional-space', 'intentional_space': 'intentional-space', 'Intentional Space': 'intentional-space', 'intentional space': 'intentional-space',
+  'optimized-tools': 'optimized-tools', 'optimized_tools': 'optimized-tools', 'Optimized Tools': 'optimized-tools', 'optimized tools': 'optimized-tools',
+  'feedback-systems': 'feedback-systems', 'feedback_systems': 'feedback-systems', 'Feedback Systems': 'feedback-systems', 'feedback systems': 'feedback-systems',
+  'generative-story': 'generative-story', 'generative_story': 'generative-story', 'Generative Story': 'generative-story', 'generative story': 'generative-story',
+  'clear-mission': 'clear-mission', 'clear_mission': 'clear-mission', 'Clear Mission': 'clear-mission', 'clear mission': 'clear-mission',
+  'empowered-role': 'empowered-role', 'empowered_role': 'empowered-role', 'Empowered Role': 'empowered-role', 'empowered role': 'empowered-role',
+  'grounding-values': 'grounding-values', 'grounding_values': 'grounding-values', 'Grounding Values': 'grounding-values', 'grounding values': 'grounding-values',
+  'ignited-curiosity': 'ignited-curiosity', 'ignited_curiosity': 'ignited-curiosity', 'Ignited Curiosity': 'ignited-curiosity', 'ignited curiosity': 'ignited-curiosity',
+  'visualized-vision': 'visualized-vision', 'visualized_vision': 'visualized-vision', 'Visualized Vision': 'visualized-vision', 'visualized vision': 'visualized-vision',
+};
+
+function slugify(s: string): string {
+  return s.toLowerCase().replace(/[\s_]+/g, '-');
+}
+
+// Normalise bullet label casing: "ESSENCE: ..." or "essence: ..." → "Essence: ..."
+function normalizeBullet(bullet: string): string {
+  const colonIdx = bullet.indexOf(': ');
+  if (colonIdx > 0) {
+    const label = bullet.slice(0, colonIdx);
+    const body = bullet.slice(colonIdx + 2);
+    const normalized = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+    return `${normalized}: ${body}`;
+  }
+  return bullet;
+}
+
+function normalizeProfile(profile: FlowProfileJSON): FlowProfileJSON {
+  const normalizedDims = {} as Record<DimensionType, DimensionData>;
+
+  for (const [rawDim, dimData] of Object.entries(profile.dimensions ?? {})) {
+    const dim: DimensionType = DIM_ALIASES[rawDim] ?? (slugify(rawDim) as DimensionType);
+    if (!dimData) continue;
+
+    const normalizedKeys: Partial<Record<KeyType, KeyData>> = {};
+    for (const [rawKey, keyData] of Object.entries(dimData.keys ?? {})) {
+      const key: KeyType = KEY_ALIASES[rawKey] ?? KEY_ALIASES[slugify(rawKey)] ?? (slugify(rawKey) as KeyType);
+      if (keyData) {
+        const kd = keyData as KeyData;
+        normalizedKeys[key] = {
+          ...kd,
+          bullets: kd.bullets?.map(normalizeBullet),
+        };
+      }
+    }
+
+    normalizedDims[dim] = { summary: dimData.summary ?? '', keys: normalizedKeys };
+  }
+
+  return { ...profile, dimensions: normalizedDims };
+}
 
 const CORAL = '#FF6F61';
 const SAGE = '#6BA292';
@@ -81,6 +151,16 @@ function SignalMiniCard({
 }
 
 export default function BentoGrid({ profile, sessions, curiosity, assessment }: Props) {
+  const normalized = normalizeProfile(profile);
+
+  // Diagnose raw key structure in the browser console so mismatches are visible
+  if (process.env.NODE_ENV !== 'production') {
+    const rawDimKeys = Object.fromEntries(
+      Object.entries(profile.dimensions ?? {}).map(([d, data]) => [d, Object.keys((data as DimensionData)?.keys ?? {})])
+    );
+    console.log('[BentoGrid] raw dimension keys:', rawDimKeys);
+  }
+
   const totalSessions = sessions.length;
   const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const sessionsThisWeek = sessions.filter(
@@ -90,7 +170,7 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
 
   return (
     <div className="rounded-2xl border border-white/[0.08] bg-[rgba(12,12,12,0.9)] p-6 mb-6">
-      <ArchetypeHeader profile={profile} />
+      <ArchetypeHeader profile={normalized} />
 
       {/* 2×2 Dimension grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
@@ -103,7 +183,7 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
           >
             <DimensionBentoCard
               dim={dim}
-              data={profile.dimensions[dim]}
+              data={normalized.dimensions[dim]}
             />
           </motion.div>
         ))}

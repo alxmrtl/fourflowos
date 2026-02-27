@@ -74,9 +74,29 @@ export default function DimensionBentoCard({ dim, data }: Props) {
   const meta = DIMENSIONS[dim];
   const keySlots = DIM_KEYS[dim];
 
+  // Hooks must always be called unconditionally (Rules of Hooks).
   const [activeKeySlug, setActiveKeySlug] = useState<KeyType | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<Category>('Essence');
+
+  // Guard: if dimension data is missing (normalisation didn't find a match),
+  // render an empty shell rather than crashing the whole BentoGrid.
+  if (!data || !data.keys) {
+    return (
+      <div
+        className="rounded-2xl overflow-hidden border border-white/10"
+        style={{ background: 'rgba(20,20,20,0.95)' }}
+      >
+        <div style={{ height: 3, background: meta.color }} />
+        <div className="p-4">
+          <p className="text-[10px] font-semibold tracking-widest uppercase" style={{ color: meta.color }}>
+            {meta.name}
+          </p>
+          <p className="text-xs text-gray-600 mt-2">Profile data for this dimension is unavailable.</p>
+        </div>
+      </div>
+    );
+  }
 
   const activeKeyIndex = activeKeySlug ? keySlots.indexOf(activeKeySlug) : 0;
   const radialOrigin = KEY_ORIGINS[activeKeyIndex] ?? '50% 75%';
@@ -85,7 +105,9 @@ export default function DimensionBentoCard({ dim, data }: Props) {
 
   const activeBulletBody = (() => {
     if (!activeKeyData?.bullets) return '';
-    const bullet = activeKeyData.bullets.find((b) => parseBullet(b).label === activeCategory);
+    const bullet = activeKeyData.bullets.find(
+      (b) => parseBullet(b).label === activeCategory
+    );
     return bullet ? parseBullet(bullet).body : '';
   })();
 
