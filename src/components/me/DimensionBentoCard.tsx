@@ -163,7 +163,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
         </div>
 
         {/* Summary */}
-        <p className="text-xs text-gray-400 leading-relaxed mb-4 line-clamp-2">
+        <p className="text-[11px] text-gray-400 leading-relaxed mb-4">
           {data.summary}
         </p>
 

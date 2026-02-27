@@ -23,9 +23,14 @@ export default function ArchetypeHeader({ profile }: Props) {
           opacity: 0.7,
         }}
       />
-      <p className="text-sm text-gray-300 italic leading-relaxed">
+      <p className="text-sm text-gray-300 italic leading-relaxed mb-5">
         {profile.archetype.tagline}
       </p>
+      {profile.archetype.framing && (
+        <p className="text-sm text-gray-500 leading-relaxed">
+          {profile.archetype.framing}
+        </p>
+      )}
     </div>
   );
 }
