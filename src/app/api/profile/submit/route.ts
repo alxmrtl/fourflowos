@@ -56,7 +56,10 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Supabase insert error:', error);
-      return NextResponse.json({ success: false, error: 'Failed to save assessment' }, { status: 500 });
+      return NextResponse.json(
+        { success: false, error: `Failed to save assessment: ${error.message}` },
+        { status: 500 }
+      );
     }
 
     // Notify admin via Web3Forms
