@@ -31,6 +31,53 @@ import type { IntakeStructuredV2 } from '../src/types/intake';
 
 const supabase = getSupabase();
 
+// ─── JSON normalisation ───────────────────────────────────────────────────────
+// The LLM sometimes outputs dimension/key names in wrong case or format.
+// Normalise before saving so the stored JSON always matches the component slugs.
+
+const DIM_ALIASES: Record<string, string> = {
+  self: 'self', SELF: 'self', Self: 'self',
+  space: 'space', SPACE: 'space', Space: 'space',
+  story: 'story', STORY: 'story', Story: 'story',
+  spirit: 'spirit', SPIRIT: 'spirit', Spirit: 'spirit',
+};
+
+const KEY_ALIASES: Record<string, string> = {
+  'tuned-emotions': 'tuned-emotions', 'tuned_emotions': 'tuned-emotions', 'Tuned Emotions': 'tuned-emotions', 'tuned emotions': 'tuned-emotions',
+  'focused-body': 'focused-body', 'focused_body': 'focused-body', 'Focused Body': 'focused-body', 'focused body': 'focused-body',
+  'open-mind': 'open-mind', 'open_mind': 'open-mind', 'Open Mind': 'open-mind', 'open mind': 'open-mind',
+  'intentional-space': 'intentional-space', 'intentional_space': 'intentional-space', 'Intentional Space': 'intentional-space', 'intentional space': 'intentional-space',
+  'optimized-tools': 'optimized-tools', 'optimized_tools': 'optimized-tools', 'Optimized Tools': 'optimized-tools', 'optimized tools': 'optimized-tools',
+  'feedback-systems': 'feedback-systems', 'feedback_systems': 'feedback-systems', 'Feedback Systems': 'feedback-systems', 'feedback systems': 'feedback-systems',
+  'generative-story': 'generative-story', 'generative_story': 'generative-story', 'Generative Story': 'generative-story', 'generative story': 'generative-story',
+  'clear-mission': 'clear-mission', 'clear_mission': 'clear-mission', 'Clear Mission': 'clear-mission', 'clear mission': 'clear-mission',
+  'empowered-role': 'empowered-role', 'empowered_role': 'empowered-role', 'Empowered Role': 'empowered-role', 'empowered role': 'empowered-role',
+  'grounding-values': 'grounding-values', 'grounding_values': 'grounding-values', 'Grounding Values': 'grounding-values', 'grounding values': 'grounding-values',
+  'ignited-curiosity': 'ignited-curiosity', 'ignited_curiosity': 'ignited-curiosity', 'Ignited Curiosity': 'ignited-curiosity', 'ignited curiosity': 'ignited-curiosity',
+  'visualized-vision': 'visualized-vision', 'visualized_vision': 'visualized-vision', 'Visualized Vision': 'visualized-vision', 'visualized vision': 'visualized-vision',
+};
+
+function slugify(s: string): string {
+  return s.toLowerCase().replace(/[\s_]+/g, '-');
+}
+
+function normalizeProfileJson(profile: FlowProfileJSON): FlowProfileJSON {
+  const normalizedDims: Record<string, unknown> = {};
+  for (const [rawDim, dimData] of Object.entries(profile.dimensions ?? {})) {
+    const dim = DIM_ALIASES[rawDim] ?? slugify(rawDim);
+    if (!dimData) continue;
+    const d = dimData as unknown as Record<string, unknown>;
+    const rawKeys = (d.keys ?? {}) as Record<string, unknown>;
+    const normalizedKeys: Record<string, unknown> = {};
+    for (const [rawKey, keyData] of Object.entries(rawKeys)) {
+      const key = KEY_ALIASES[rawKey] ?? KEY_ALIASES[slugify(rawKey)] ?? slugify(rawKey);
+      if (keyData) normalizedKeys[key] = keyData;
+    }
+    normalizedDims[dim] = { ...d, keys: normalizedKeys };
+  }
+  return { ...profile, dimensions: normalizedDims as FlowProfileJSON['dimensions'] };
+}
+
 const CHART_SUMMARY_PROMPT = `You are synthesizing multiple cosmological and archetypal frameworks to produce a soul-blueprint summary for a Flow Profile.
 
 The Flow Profile maps four dimensions of consciousness:
@@ -118,12 +165,6 @@ function formatIntakeData(assessment: Record<string, unknown>): string {
     const num = calcNumerology(String(assessment.name), String(assessment.birth_date));
     const lpDesc = LIFE_PATH_ARCHETYPES[num.lifePath] ?? `Life Path ${num.lifePath}`;
 
-    const roleSignature = [
-      s.story_role_pair1 && `${s.story_role_pair1 === 'architect' ? 'Architect' : 'Builder'}`,
-      s.story_role_pair2 && `${s.story_role_pair2 === 'pioneer' ? 'Pioneer' : 'Integrator'}`,
-      s.story_role_pair3 && `${s.story_role_pair3 === 'independent' ? 'Independent' : 'Collaborative'}`,
-      s.story_role_pair4 && `${s.story_role_pair4 === 'teacher' ? 'Teacher' : 'Student'}`,
-    ].filter(Boolean).join(' / ');
 
     return `
 **Name**: ${assessment.name}
@@ -153,9 +194,9 @@ When Most Alive Emotionally: "${s.self_emotions_alive || '(not provided)'}"
 Hardest Emotion to Sit With: ${s.self_emotions_hard || '(not provided)'}
 
 **Focused Body (Key)**
-Energy Level: ${s.self_body_energy ?? 5}/10
+Energy Level: ${s.self_body_energy ?? 5}/10 (1=depleted → 10=energized)
 Body Story: ${s.self_body_story || '(not provided)'}
-Stress Pattern: ${s.self_body_stress || '(not provided)'}
+Stress Pattern: ${s.self_body_stress || '(not provided)'} (options: tightening / collapse / restlessness / numbness)
 
 **Open Mind (Key)**
 Mental Clarity: ${s.self_mind_clarity ?? 5}/10 (0=scattered → 10=focused)
@@ -167,7 +208,7 @@ Currently Drawn Toward: ${s.self_mind_drawn_toward || '(not provided)'}
 ### SPACE — Transmission Layer
 
 **Intentional Space (Key)**
-Environment Feel: ${s.space_environment_feel || '(not provided)'}
+Environment Feel: ${s.space_environment_feel || '(not provided)'} (options: sanctuary / functional / chaotic / unexamined)
 Story of Most-Self Space: ${s.space_environment_story || '(not provided)'}
 Gap Between Present and Desired Space: ${s.space_environment_gap || '(not provided)'}
 
@@ -176,7 +217,7 @@ Relationship to Systems: [${s.space_tools_keywords?.join(', ') || 'none selected
 Primary Tool/System Story: ${s.space_tools_story || '(not provided)'}
 
 **Feedback Systems (Key)**
-Primary Feedback Channel: ${s.space_feedback_channel || '(not provided)'}
+Primary Feedback Channel: ${s.space_feedback_channel || '(not provided)'} (options: internal compass / external validation / data-metrics / embodied-somatic)
 Feedback Story: ${s.space_feedback_story || '(not provided)'}
 
 ---
@@ -186,15 +227,19 @@ Feedback Story: ${s.space_feedback_story || '(not provided)'}
 **Generative Story (Key)**
 Last 5 Years: "${s.story_narrative_last5 || '(untitled)'}"
 Next 5 Years: "${s.story_narrative_next5 || '(untitled)'}"
-Narrative Arc Pattern: ${s.story_narrative_arc || '(not provided)'}
+Narrative Arc Pattern: ${s.story_narrative_arc || '(not provided)'} (options: heros-journey / return / initiation / long-becoming / fall-and-rise / revolution / devotion / witness)
 
 **Clear Mission (Key)**
 I Exist To: "${s.story_mission_completion || '(not provided)'}"
-Mission Clarity: ${s.story_mission_clarity || '(not provided)'}
+Mission Clarity: ${s.story_mission_clarity || '(not provided)'} (scale: unarticulated → fuzzy → forming → clear)
 Primary Distraction from Mission: ${s.story_mission_distraction || '(not provided)'}
 
 **Empowered Role (Key)**
-Role Signature: ${roleSignature || '(not provided)'}
+Role forced choices (selected pole of each pair):
+  Design axis (architect vs builder): ${s.story_role_pair1 || '(not provided)'}
+  Integration axis (pioneer vs integrator): ${s.story_role_pair2 || '(not provided)'}
+  Independence axis (independent vs collaborative): ${s.story_role_pair3 || '(not provided)'}
+  Direction axis (teacher vs student): ${s.story_role_pair4 || '(not provided)'}
 Empowerment Story: ${s.story_role_story || '(not provided)'}
 
 ---
@@ -509,8 +554,13 @@ Example:
   console.log(`      ${rawOutput.length} chars generated`);
 
   // Parse and validate JSON
-  // Strip markdown code fences if the model wrapped the JSON despite instructions
-  const cleanedOutput = rawOutput.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  // Extract the JSON object by finding the outermost { ... } — this handles any
+  // markdown code fences, preamble text, or trailing commentary the model may add.
+  const firstBrace = rawOutput.indexOf('{');
+  const lastBrace = rawOutput.lastIndexOf('}');
+  const cleanedOutput = firstBrace > -1 && lastBrace > firstBrace
+    ? rawOutput.slice(firstBrace, lastBrace + 1)
+    : rawOutput.trim();
 
   let profileJson: FlowProfileJSON;
   try {
@@ -518,7 +568,14 @@ Example:
     if (!profileJson.schema_version || !profileJson.archetype || !profileJson.dimensions) {
       throw new Error('Missing required fields: schema_version, archetype, or dimensions');
     }
+    // Normalise dimension and key slugs so the stored JSON always matches
+    // what the /me page components expect (lowercase-hyphenated).
+    profileJson = normalizeProfileJson(profileJson);
     console.log(`      Archetype: "${profileJson.archetype.name}"`);
+    console.log(`      Dimensions: ${Object.keys(profileJson.dimensions).join(', ')}`);
+    for (const [dim, data] of Object.entries(profileJson.dimensions)) {
+      console.log(`        ${dim}: keys = [${Object.keys(data.keys).join(', ')}]`);
+    }
   } catch (err) {
     console.error('\nJSON parse failed — model did not return valid JSON.');
     console.error('Error:', err instanceof Error ? err.message : err);
