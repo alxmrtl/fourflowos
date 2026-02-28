@@ -23,7 +23,7 @@ const DIM_KEYS: Record<DimensionType, KeyType[]> = {
   spirit: ['grounding-values', 'ignited-curiosity', 'visualized-vision'],
 };
 
-const CATEGORIES = ['Essence', 'Pattern', 'Tension', 'Direction'] as const;
+const CATEGORIES = ['Essence', 'Pattern', 'Block', 'Activation'] as const;
 type Category = (typeof CATEGORIES)[number];
 
 function parseBullet(bullet: string): { label: string; body: string } {
@@ -49,17 +49,18 @@ function CategoryIcon({ category, color, size = 12 }: { category: string; color:
           <path d="M10 1.5V4H7.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
-    case 'Tension':
-      return (
-        <svg width={size} height={size} viewBox="0 0 12 12" fill={color}>
-          <path d="M7 0L2.5 7h3.5l-1 5 5-7H6.5L7 0z" />
-        </svg>
-      );
-    case 'Direction':
-    default:
+    case 'Block':
       return (
         <svg width={size} height={size} viewBox="0 0 12 12" fill="none" stroke={color} strokeWidth="1.5">
-          <path d="M1 6h10M7.5 2.5L11 6l-3.5 3.5" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="6" cy="6" r="4.5" />
+          <path d="M2.8 9.2L9.2 2.8" strokeLinecap="round" />
+        </svg>
+      );
+    case 'Activation':
+    default:
+      return (
+        <svg width={size} height={size} viewBox="0 0 12 12" fill={color}>
+          <path d="M2 1.5l9 4.5-9 4.5V1.5z" />
         </svg>
       );
   }
@@ -163,55 +164,47 @@ export default function DimensionBentoCard({ dim, data }: Props) {
         </div>
 
         {/* Summary */}
-        <p className="text-[11px] text-gray-400 leading-relaxed mb-4">
+        <p className="text-sm text-gray-300 leading-relaxed mb-4">
           {data.summary}
         </p>
 
-        {/* Key rows */}
-        <div className="space-y-1.5">
+        {/* Key buttons */}
+        <div className="grid grid-cols-3 gap-1.5">
           {keySlots.map((slug) => {
             const keyMeta = KEYS[slug];
-            const keyData = data.keys[slug];
-            const hasData = !!keyData;
-            let essenceText: string | null = null;
-            if (keyData?.bullets?.[0]) {
-              const { label, body } = parseBullet(keyData.bullets[0]);
-              if (label === 'Essence') essenceText = body;
-            }
+            const hasData = !!data.keys[slug];
+            const nameParts = keyMeta.name.split(' ');
+            const nameLabel = nameParts[0];
+            const nameMain = nameParts.slice(1).join(' ') || nameParts[0];
             return (
               <button
                 key={slug}
                 onClick={() => hasData && handleKeyClick(slug)}
                 disabled={!hasData}
-                className={`w-full text-left px-3 py-2 rounded-lg border-l-2 transition-colors ${
-                  hasData ? 'hover:bg-white/5 cursor-pointer' : 'cursor-default'
+                className={`flex items-center gap-2 px-2.5 py-2.5 rounded-xl transition-opacity ${
+                  hasData ? 'cursor-pointer hover:opacity-80' : 'cursor-default opacity-30'
                 }`}
-                style={{ borderLeftColor: hasData ? meta.color : 'rgba(255,255,255,0.1)' }}
+                style={{ background: hasData ? `${meta.color}50` : 'rgba(255,255,255,0.05)' }}
               >
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 flex-shrink-0 opacity-60">
-                    <Image
-                      src={keyMeta.icon}
-                      alt={keyMeta.name}
-                      width={16}
-                      height={16}
-                      className="object-contain"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-xs leading-tight ${hasData ? 'text-gray-300' : 'text-gray-600'}`}>
-                      {keyMeta.name}
-                    </p>
-                    {essenceText && (
-                      <p className="text-[10px] text-gray-500 italic mt-0.5 line-clamp-1">
-                        {essenceText}
-                      </p>
-                    )}
-                  </div>
-                  {hasData && (
-                    <span className="text-gray-600 text-xs flex-shrink-0">→</span>
-                  )}
+                <div
+                  className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center"
+                  style={{ background: `${meta.color}40` }}
+                >
+                  <Image
+                    src={keyMeta.icon}
+                    alt={keyMeta.name}
+                    width={18}
+                    height={18}
+                    className="object-contain"
+                  />
                 </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="text-[9px] text-white/60 leading-none mb-0.5">{nameLabel}</p>
+                  <p className="text-xs font-bold text-white leading-tight">{nameMain}</p>
+                </div>
+                {hasData && (
+                  <span className="text-white/50 text-sm flex-shrink-0">›</span>
+                )}
               </button>
             );
           })}

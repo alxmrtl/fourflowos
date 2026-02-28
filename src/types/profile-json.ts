@@ -1,7 +1,7 @@
 import type { KeyType, DimensionType } from './framework';
 
 export interface KeyData {
-  bullets?: string[];   // v2: 4-item array (Essence / Pattern / Tension / Direction)
+  bullets?: string[];   // v2: 4-item array (Essence / Pattern / Block / Activation)
   insight?: string;     // v1: legacy prose
   invitation?: string;  // v1: legacy prose
 }

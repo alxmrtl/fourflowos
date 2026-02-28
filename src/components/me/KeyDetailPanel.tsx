@@ -197,7 +197,7 @@ function PanelContent({
         <div className="mt-8 pt-4 border-t border-white/5">
           <p className="text-[10px] text-gray-700 uppercase tracking-widest mb-2">Legend</p>
           <div className="grid grid-cols-2 gap-1">
-            {['Essence', 'Pattern', 'Tension', 'Direction'].map((label) => (
+            {['Essence', 'Pattern', 'Block', 'Activation'].map((label) => (
               <span key={label} className="text-[10px] text-gray-700">
                 <span className="font-semibold" style={{ color: dimMeta?.color ? `${dimMeta.color}99` : '#666' }}>
                   {label}

@@ -14,7 +14,8 @@
     "sanity:build": "sanity build",
     "sanity:deploy": "sanity deploy",
     "sanity:migrate": "ts-node scripts/migrate-to-sanity.ts",
-    "profile:generate": "ts-node --project tsconfig.scripts.json scripts/generate-profile.ts"
+    "profile:generate": "ts-node --project tsconfig.scripts.json scripts/generate-profile.ts",
+    "profile:resend": "ts-node --project tsconfig.scripts.json scripts/resend-profile.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.76.0",
