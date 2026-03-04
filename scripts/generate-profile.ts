@@ -81,90 +81,118 @@ function normalizeProfileJson(profile: FlowProfileJSON): FlowProfileJSON {
 // Haiku names them; Opus uses them as conceptual lenses without naming them.
 
 const MECHANICS_REFERENCE = `tuned-emotions:
-  Psychological Safety — removes fear of judgment during execution
-  Outcome Detachment — prevents future-fixation from degrading present action
-  Anxiety Suppression — reduces anticipatory threat signals that fragment focus
-  Challenge-Skill Calibration — matches task difficulty to current capability to prevent boredom or overwhelm
-  Ego Monitoring Removal — eliminates self-evaluation loops during performance
-  Emotional Neutrality — prevents affective spikes from hijacking attention
-  Error Tolerance — allows rapid correction without identity threat
-  Effort-Reward Coupling — links exertion directly to perceived progress
+  Psychological Safety — remove fear of judgment
+  Outcome Detachment — prevent future-fixation
+  Anxiety Suppression — reduce threat signals
+  Challenge-Skill Calibration — match difficulty to capability
+  Ego Monitoring Removal — eliminate self-evaluation loops
+  Emotional Neutrality — prevent affective spikes
+  Error Tolerance — correct without identity threat
+  Effort-Reward Coupling — link exertion to progress
 
 focused-body:
-  Mind-Body Coherence — aligns intention with physical execution
-  Sensory Coherence — reduces conflicting sensory inputs
-  Action-Awareness Merging — eliminates separation between doing and noticing
-  Energy Sufficiency — ensures metabolic and nervous system readiness
-  Rhythm and Pacing — establishes sustainable action cycles
-  Physiological Regulation — keeps arousal within functional ranges
+  Mind-Body Coherence — align intention with execution
+  Sensory Coherence — reduce conflicting inputs
+  Action-Awareness Merging — eliminate doing/noticing gap
+  Energy Sufficiency — ensure metabolic readiness
+  Rhythm and Pacing — establish sustainable cycles
+  Physiological Regulation — keep arousal in range
 
 open-mind:
-  Growth Orientation — frames difficulty as information rather than failure
-  Compression Over Expansion — condenses concepts to reduce mental effort
-  Clarity Over Intensity — prioritizes understanding over emotional force
-  Attention Residue Elimination — prevents task-switching drag
-  Overchoice Elimination — reduces decision overhead before and during action
-  Cognitive Load Reduction — frees working memory for task-relevant processing
-  Ambiguity Control — keeps uncertainty within tolerable bounds
+  Growth Orientation — frame difficulty as information
+  Compression Over Expansion — condense concepts
+  Clarity Over Intensity — prioritize understanding
+  Attention Residue Elimination — prevent task-switch drag
+  Overchoice Elimination — reduce decision overhead
+  Cognitive Load Reduction — free working memory
+  Ambiguity Control — keep uncertainty tolerable
 
 intentional-setting:
-  Environmental Simplicity — reduces background cognitive noise
-  Social Field Alignment — aligns surrounding people with task intent
-  Interruption Control — prevents attention capture from external sources
-  Physical Space Priming — conditions the environment to cue focus
-  Constraint Elegance — uses limits to sharpen action
+  Environmental Simplicity — reduce background noise
+  Social Field Alignment — align others with task intent
+  Interruption Control — prevent external capture
+  Physical Space Priming — cue environment for focus
+  Constraint Elegance — use limits to sharpen action
 
 optimized-tools:
-  Automation of Non-Creative Steps — preserves attention for high-leverage work
-  Subtraction Beats Addition — improves flow by removing rather than adding
-  Friction Removal — eliminates unnecessary steps and resistance
-  Tool-Task Alignment — matches tool capability to task demands
-  Error Cost Minimization — limits penalty of mistakes to maintain momentum
+  Automation of Non-Creative Steps — preserve attention
+  Subtraction Beats Addition — improve by removing
+  Friction Removal — eliminate unnecessary resistance
+  Tool-Task Alignment — match tool to demand
+  Error Cost Minimization — limit penalty of mistakes
 
 feedback-systems:
-  Immediate Feedback — shortens the loop between action and information
-  Agency Loops — reinforces cause-effect understanding
-  Progress Visibility — makes advancement perceptible in real time
-  Speed of Consequence — accelerates learning through fast outcomes
-  Feedback Density — increases signal frequency without overload
+  Immediate Feedback — shorten action-to-signal loop
+  Agency Loops — reinforce cause-effect understanding
+  Progress Visibility — make advancement perceptible
+  Speed of Consequence — accelerate learning
+  Feedback Density — increase signal without overload
 
 generative-story:
-  Identity Immersion — aligns behavior with a lived role
-  Tension-Release Dynamics — uses challenge and relief to maintain engagement
-  Positive Orientation — biases interpretation toward progress
-  Meaning Coherence — ensures actions fit a unified frame
-  Narrative Momentum — pulls action forward without force
+  Identity Immersion — align behavior with lived role
+  Tension-Release Dynamics — use challenge/relief for engagement
+  Positive Orientation — bias interpretation toward progress
+  Meaning Coherence — fit actions to unified frame
+  Narrative Momentum — pull action without force
 
 clear-mission:
-  Clear Goals — defines what success looks like now
-  Stakes Definition — specifies why the action matters
-  Priority Singularity — prevents goal competition
-  Outcome Horizon Setting — bounds attention to an appropriate timeframe
+  Clear Goals — define current success
+  Stakes Definition — specify why action matters
+  Priority Singularity — prevent goal competition
+  Outcome Horizon Setting — bound attention to timeframe
 
 empowered-role:
-  Identity Alignment — matches role to self-concept
-  Role Clarity — defines responsibility boundaries
-  Commitment Escalation — increases investment through action
-  Responsibility Without Evaluation Pressure — maintains ownership while suppressing judgment
+  Identity Alignment — match role to self-concept
+  Role Clarity — define responsibility boundaries
+  Commitment Escalation — increase investment through action
+  Responsibility Without Evaluation Pressure — own without judgment
 
 grounding-values:
-  Internal Alignment — removes value-based friction from action
-  Integrity Loops — reinforces trust in self-generated action
-  Meaning Stabilization — prevents motivational decay over time
-  Values Integration — embeds ethics into decision-making
+  Internal Alignment — remove value-based friction
+  Integrity Loops — reinforce trust in self-action
+  Meaning Stabilization — prevent motivational decay
+  Values Integration — embed ethics in decisions
 
 ignited-curiosity:
-  Intrinsic Reward Signaling — makes engagement self-reinforcing (clean fuel vs dirty fuel)
-  Playfulness — reduces threat perception during exploration
-  Strength Activation — leverages natural competencies
-  Exploration Bias — encourages discovery over optimization
-  Curiosity Loops — pulls attention forward through open questions
+  Intrinsic Reward Signaling — make engagement self-reinforcing
+  Playfulness — reduce threat during exploration
+  Strength Activation — leverage natural competencies
+  Exploration Bias — encourage discovery over optimization
+  Curiosity Loops — pull attention via open questions
 
 visualized-vision:
-  Vision Priming — preloads direction before action begins
-  Long-Horizon Coherence — aligns short actions with distant outcomes
-  Inspirational Compression — condenses aspiration into simple symbols
-  Symbolic Meaning — uses imagery to bypass analytical load`;
+  Vision Priming — preload direction before action
+  Long-Horizon Coherence — align short actions to distant outcomes
+  Inspirational Compression — condense aspiration to symbols
+  Symbolic Meaning — use imagery to bypass analysis`;
+
+// ─── Style rules + overview instruction (injected into Opus prompt) ──────────
+
+const STYLE_RULES = `VOICE AND STYLE RULES — follow these without exception:
+
+1. No em dashes (—). Use commas or periods.
+2. Forbidden words: additionally, align with, crucial, delve, emphasizing, enduring, enhance, foster, garner, highlight, interplay, intricate, landscape, pivotal, showcase, tapestry, testament, underscore, vibrant, vital.
+3. Use "is/are/has" — not "serves as", "stands as", "functions as", "represents".
+4. No -ing phrase tack-ons: never end a sentence with "...highlighting X" or "...underscoring Y".
+5. No rule-of-three lists. If you write three parallel items, collapse into two or restructure.
+6. No significance inflation. Don't say something is "pivotal" or "profound" — show it.
+7. Vary sentence length. Short sentences. Then one that earns its length by carrying real weight.
+8. Reference specific words from the intake. Not general archetypes — their words.
+9. Write to the person directly ("you"), not about them ("they/one").
+10. No generic conclusions. End paragraphs with a specific observation, not an uplift.
+11. No negative parallelism: never "it's not just X — it's Y".
+12. No sycophantic framing. Don't affirm before stating.`;
+
+const OVERVIEW_INSTRUCTION = `The JSON must include an "overview" field:
+- "headline": one sentence — the most defining truth about how this person flows (e.g. "You flow when the stakes are real.")
+- "keys": array of 3-5 short statements, each a different lever, no more than 2 from the same dimension, specific to this person's intake, phrased as direct observations starting with "You" (e.g. "You build momentum through constraint, not freedom.")
+
+Length targets:
+- overview.headline: 1 sentence
+- overview.keys: 3-5 items, each 10-20 words
+- archetype.framing: 2-3 sentences
+- Each dimension summary: 30-35 words
+- Each key insight: 50-60 words`;
 
 // ─── Haiku prompt (chart summary + mechanic selection) ────────────────────────
 
@@ -347,141 +375,52 @@ function formatIntakeData(assessment: Record<string, unknown>): string {
   const num = calcNumerology(String(assessment.name), String(assessment.birth_date));
   const firstName = String(assessment.name).trim().split(/\s+/)[0];
 
-  return `
-**Name**: ${assessment.name}
-**First Name (${firstName})**: consider the meaning and etymological origin of this name — note resonance or tension with the archetype pattern
-**Birth**: ${assessment.birth_date}${s.birth_time_known && s.birth_time ? `, ${s.birth_time}` : ' (time unknown)'}, ${assessment.birth_location}
+  const lines = [
+    `Name: ${assessment.name} | Birth: ${assessment.birth_date}${s.birth_time_known && s.birth_time ? `, ${s.birth_time}` : ''}, ${assessment.birth_location}`,
+    `(Name "${firstName}" — note etymological resonance with archetype)`,
+    '',
+    `NUMEROLOGY`,
+    `Life Path ${num.lifePath} [SPIRIT]: ${LIFE_PATH_ARCHETYPES[num.lifePath] ?? num.lifePath}`,
+    `Birthday ${num.birthdayNumber} [SELF]: ${BIRTHDAY_ARCHETYPES[num.birthdayNumber] ?? num.birthdayNumber}`,
+    `Expression ${num.expression} [STORY]: ${EXPRESSION_ARCHETYPES[num.expression] ?? num.expression}`,
+    `Soul Urge ${num.soulUrge} [SPIRIT]: vowel-heart, inner hunger`,
+    `Personality ${num.personality} [SPACE]: ${PERSONALITY_ARCHETYPES[num.personality] ?? num.personality}`,
+    '',
+    `OPENING`,
+    `Season: ${s.opening_season || '—'} | Chapter: "${s.opening_chapter_title || '—'}" | Attention: ${s.opening_orientation_word || '—'}`,
+    '',
+    `SELF`,
+    `Emotions: ${s.self_emotions_keywords?.join(', ') || '—'} | Most alive: "${s.self_emotions_alive || '—'}" | Hardest: ${s.self_emotions_hard || '—'}`,
+    `Body: energy ${s.self_body_energy ?? 5}/10, stress ${s.self_body_stress || '—'} | "${s.self_body_story || '—'}"`,
+    `Mind: clarity ${s.self_mind_clarity ?? 5}/10, drawn toward ${s.self_mind_drawn_toward || '—'} | "${s.self_mind_new_idea || '—'}"`,
+    '',
+    `SPACE`,
+    `Environment: ${s.space_environment_feel || '—'}, gap: ${s.space_environment_gap || '—'} | "${s.space_environment_story || '—'}"`,
+    `Tools: ${s.space_tools_keywords?.join(', ') || '—'} | "${s.space_tools_story || '—'}"`,
+    `Feedback: ${s.space_feedback_channel || '—'} | "${s.space_feedback_story || '—'}"`,
+    '',
+    `STORY`,
+    `Last 5yr: "${s.story_narrative_last5 || '—'}" | Next 5yr: "${s.story_narrative_next5 || '—'}" | Arc: ${s.story_narrative_arc || '—'}`,
+    `Mission: "${s.story_mission_completion || '—'}" | Clarity: ${s.story_mission_clarity || '—'} | Distraction: ${s.story_mission_distraction || '—'}`,
+    `Role: ${[s.story_role_pair1, s.story_role_pair2, s.story_role_pair3, s.story_role_pair4].filter(Boolean).join(' / ')} | "${s.story_role_story || '—'}"`,
+    '',
+    `SPIRIT`,
+    `Values: ${s.spirit_values_selected?.join(', ') || '—'} | In action: ${s.spirit_values_in_action || '—'}`,
+    `Curiosity: "${s.spirit_curiosity_flow_memory || '—'}" | Intersection: "${s.spirit_curiosity_intersection || '—'}" | Invisibility: ${s.spirit_curiosity_invisibility || '—'}`,
+    `Vision: peak "${s.spirit_vision_peak || '—'}" | Image: "${s.spirit_vision_image || '—'}" | Legacy: "${s.spirit_vision_legacy || '—'}"`,
+    '',
+    `SOUL SIGNATURE`,
+    `Myth: ${s.soul_myth_character || '—'} — "${s.soul_myth_quality || '—'}"`,
+    `Story arc: childhood ${s.soul_fairy_tale_childhood || '—'} → now ${s.soul_fairy_tale_now || '—'}`,
+    `Shadow: ${s.soul_shadow_projection || '—'}`,
+    `Nadir: ${s.soul_nadir_story || '—'}`,
+    `Turning point: ${s.soul_turning_point || '—'}`,
+    `Gift: ${s.soul_gift || '—'} | Hidden self: ${s.soul_hidden_self || '—'}`,
+    `Soul word: ${s.soul_word || '—'}`,
+    `Closing: "${s.soul_closing_stem || '—'}"`,
+  ];
 
----
-
-### NUMEROLOGY SIGNATURE
-Life Path and Soul Urge map to SPIRIT (timeless orientation, inner drive).
-Birthday Number maps to SELF (innate body-gifts).
-Expression maps to STORY (outer arc, mission).
-Personality maps to SPACE (transmission interface, how others receive this person).
-
-**Life Path ${num.lifePath}** [SPIRIT]: ${LIFE_PATH_ARCHETYPES[num.lifePath] ?? `orientation ${num.lifePath}`}
-**Birthday Number ${num.birthdayNumber}** [SELF]: ${BIRTHDAY_ARCHETYPES[num.birthdayNumber] ?? `gift ${num.birthdayNumber}`}
-**Expression ${num.expression}** [STORY]: ${EXPRESSION_ARCHETYPES[num.expression] ?? `outer destiny ${num.expression}`}
-**Soul Urge ${num.soulUrge}** [SPIRIT]: the vowel-heart; inner hunger and deepest motivation
-**Personality ${num.personality}** [SPACE]: ${PERSONALITY_ARCHETYPES[num.personality] ?? `outward face ${num.personality}`} — the exterior interface with the world
-
----
-
-### OPENING FRAME
-**Season**: ${s.opening_season || '(not provided)'}
-**Current Chapter**: "${s.opening_chapter_title || '(untitled)'}"
-**Quality of Attention**: ${s.opening_orientation_word || '(not provided)'}
-
----
-
-### SELF — Reception Layer
-
-**Tuned Emotions (Key)**
-Emotional Keywords: [${s.self_emotions_keywords?.join(', ') || 'none selected'}]
-When Most Alive Emotionally: "${s.self_emotions_alive || '(not provided)'}"
-Hardest Emotion to Sit With: ${s.self_emotions_hard || '(not provided)'}
-
-**Focused Body (Key)**
-Energy Level: ${s.self_body_energy ?? 5}/10 (1=depleted → 10=energized)
-Body Story: ${s.self_body_story || '(not provided)'}
-Stress Pattern: ${s.self_body_stress || '(not provided)'} (options: tightening / collapse / restlessness / numbness)
-
-**Open Mind (Key)**
-Mental Clarity: ${s.self_mind_clarity ?? 5}/10 (0=scattered → 10=focused)
-New Idea Story: ${s.self_mind_new_idea || '(not provided)'}
-Currently Drawn Toward: ${s.self_mind_drawn_toward || '(not provided)'}
-
----
-
-### SPACE — Transmission Layer
-
-**Intentional Space (Key)**
-Environment Feel: ${s.space_environment_feel || '(not provided)'} (options: sanctuary / functional / chaotic / unexamined)
-Story of Most-Self Space: ${s.space_environment_story || '(not provided)'}
-Gap Between Present and Desired Space: ${s.space_environment_gap || '(not provided)'}
-
-**Optimized Tools (Key)**
-Relationship to Systems: [${s.space_tools_keywords?.join(', ') || 'none selected'}]
-Primary Tool/System Story: ${s.space_tools_story || '(not provided)'}
-
-**Feedback Systems (Key)**
-Primary Feedback Channel: ${s.space_feedback_channel || '(not provided)'} (options: internal compass / external validation / data-metrics / embodied-somatic)
-Feedback Story: ${s.space_feedback_story || '(not provided)'}
-
----
-
-### STORY — Temporal Direction
-
-**Generative Story (Key)**
-Last 5 Years: "${s.story_narrative_last5 || '(untitled)'}"
-Next 5 Years: "${s.story_narrative_next5 || '(untitled)'}"
-Narrative Arc Pattern: ${s.story_narrative_arc || '(not provided)'} (options: heros-journey / return / initiation / long-becoming / fall-and-rise / revolution / devotion / witness)
-
-**Clear Mission (Key)**
-I Exist To: "${s.story_mission_completion || '(not provided)'}"
-Mission Clarity: ${s.story_mission_clarity || '(not provided)'} (scale: unarticulated → fuzzy → forming → clear)
-Primary Distraction from Mission: ${s.story_mission_distraction || '(not provided)'}
-
-**Empowered Role (Key)**
-Role forced choices (selected pole of each pair):
-  Design axis (architect vs builder): ${s.story_role_pair1 || '(not provided)'}
-  Integration axis (pioneer vs integrator): ${s.story_role_pair2 || '(not provided)'}
-  Independence axis (independent vs collaborative): ${s.story_role_pair3 || '(not provided)'}
-  Direction axis (teacher vs student): ${s.story_role_pair4 || '(not provided)'}
-Empowerment Story: ${s.story_role_story || '(not provided)'}
-
----
-
-### SPIRIT — Timeless Direction
-
-**Grounding Values (Key)**
-Core Values Selected: [${s.spirit_values_selected?.join(', ') || 'none selected'}]
-Value in Action: ${s.spirit_values_in_action || '(not provided)'}
-
-**Ignited Curiosity (Key)**
-Flow Memory (lost track of time): ${s.spirit_curiosity_flow_memory || '(not provided)'}
-Curiosity Intersection: "${s.spirit_curiosity_intersection || '(not provided)'}"
-Invisibility Test (would work on with no credit): ${s.spirit_curiosity_invisibility || '(not provided)'}
-
-**Visualized Vision (Key)**
-Peak Experience (most alive): ${s.spirit_vision_peak || '(not provided)'}
-Future Self Image: "${s.spirit_vision_image || '(not provided)'}"
-Legacy: "${s.spirit_vision_legacy || '(not provided)'}"
-
----
-
-### THE SOUL SIGNATURE — Cross-Dimensional Archetypal Layer
-
-**Myth Identity**
-Character: ${s.soul_myth_character || '(not provided)'}
-Admired Quality: "${s.soul_myth_quality || '(not provided)'}"
-
-**Story Resonance**
-Childhood Story: ${s.soul_fairy_tale_childhood || '(not provided)'}
-Current Story: ${s.soul_fairy_tale_now || '(not provided)'}
-
-**Shadow Projection** (what frustrates them most in others — likely a disowned quality):
-${s.soul_shadow_projection || '(not provided)'}
-
-**Nadir Story** (darkest moment):
-${s.soul_nadir_story || '(not provided)'}
-
-**Turning Point** (self-understanding changed):
-${s.soul_turning_point || '(not provided)'}
-
-**Core Gift** (what they give effortlessly):
-${s.soul_gift || '(not provided)'}
-
-**Hidden Self** (what people don't see):
-${s.soul_hidden_self || '(not provided)'}
-
-**Soul Word/Image**:
-${s.soul_word || '(not provided)'}
-
-**Closing Stem** ("The thing I most want someone who truly understands me to know..."):
-${s.soul_closing_stem || '(not provided)'}
-`.trim();
+  return lines.join('\n');
 }
 
 async function fetchChartData(assessment: Record<string, unknown>): Promise<Record<string, unknown> | null> {
@@ -681,7 +620,7 @@ Example:
   }
 
   const template = promptTemplate!;
-  const maxTokens = Math.max(template.max_tokens, 4500);
+  const maxTokens = Math.max(template.max_tokens, 3000);
   console.log(`      Using: "${template.name}" (${template.model}, max ${maxTokens} tokens)`);
 
   // 3. Chart data
@@ -712,9 +651,10 @@ Example:
 
   // 5. Generate profile (Opus)
   console.log('[5/6] Generating Flow Archetype profile (Opus)...');
-  const prompt = template.prompt_text
+  const basePrompt = template.prompt_text
     .replace('{INTAKE_DATA}', intakeData)
     .replace('{CHART_DATA}', chartContext);
+  const prompt = STYLE_RULES + '\n\n' + OVERVIEW_INSTRUCTION + '\n\n---\n\n' + basePrompt;
 
   let rawOutput = '';
 
@@ -756,11 +696,15 @@ Example:
     }
     profileJson = normalizeProfileJson(profileJson);
     console.log(`      Archetype: "${profileJson.archetype.name}"`);
+    if (profileJson.overview) {
+      console.log(`      Overview: "${profileJson.overview.headline}" (${profileJson.overview.keys.length} keys)`);
+    } else {
+      console.warn('      ⚠ overview field missing from generated profile');
+    }
     console.log(`      Dimensions: ${Object.keys(profileJson.dimensions).join(', ')}`);
     for (const [dim, data] of Object.entries(profileJson.dimensions)) {
       const keys = Object.keys(data.keys);
       console.log(`        ${dim}: [${keys.join(', ')}]`);
-      // Warn if any key is missing insight
       for (const k of keys) {
         const kd = data.keys[k as keyof typeof data.keys];
         if (!kd?.insight) console.warn(`        ⚠ ${dim}/${k} missing insight`);

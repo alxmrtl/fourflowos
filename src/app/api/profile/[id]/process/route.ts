@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
+import type { IntakeStructuredV2 } from '@/types/intake';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -32,77 +33,51 @@ function isAuthorized(request: NextRequest): boolean {
 }
 
 function formatIntakeData(assessment: Record<string, unknown>): string {
-  return `
-**Name**: ${assessment.name}
-**Email**: ${assessment.email}
+  const s = assessment.intake_structured as IntakeStructuredV2 | null | undefined;
 
-**Birth**: ${assessment.birth_date}${assessment.birth_time_known ? `, ${assessment.birth_time}` : ' (time unknown)'}, ${assessment.birth_location}
+  if (!s || s.schema_version !== '2.0') {
+    // Fallback for assessments without v2 structured intake
+    return `Name: ${assessment.name} | Birth: ${assessment.birth_date}, ${assessment.birth_location}\n\n(No structured intake data — intake_structured v2 required for full profile generation)`;
+  }
 
----
+  const lines = [
+    `Name: ${assessment.name} | Birth: ${assessment.birth_date}${s.birth_time_known && s.birth_time ? `, ${s.birth_time}` : ''}, ${assessment.birth_location}`,
+    '',
+    `OPENING`,
+    `Season: ${s.opening_season || '—'} | Chapter: "${s.opening_chapter_title || '—'}" | Attention: ${s.opening_orientation_word || '—'}`,
+    '',
+    `SELF`,
+    `Emotions: ${s.self_emotions_keywords?.join(', ') || '—'} | Most alive: "${s.self_emotions_alive || '—'}" | Hardest: ${s.self_emotions_hard || '—'}`,
+    `Body: energy ${s.self_body_energy ?? 5}/10, stress ${s.self_body_stress || '—'} | "${s.self_body_story || '—'}"`,
+    `Mind: clarity ${s.self_mind_clarity ?? 5}/10, drawn toward ${s.self_mind_drawn_toward || '—'} | "${s.self_mind_new_idea || '—'}"`,
+    '',
+    `SPACE`,
+    `Environment: ${s.space_environment_feel || '—'}, gap: ${s.space_environment_gap || '—'} | "${s.space_environment_story || '—'}"`,
+    `Tools: ${s.space_tools_keywords?.join(', ') || '—'} | "${s.space_tools_story || '—'}"`,
+    `Feedback: ${s.space_feedback_channel || '—'} | "${s.space_feedback_story || '—'}"`,
+    '',
+    `STORY`,
+    `Last 5yr: "${s.story_narrative_last5 || '—'}" | Next 5yr: "${s.story_narrative_next5 || '—'}" | Arc: ${s.story_narrative_arc || '—'}`,
+    `Mission: "${s.story_mission_completion || '—'}" | Clarity: ${s.story_mission_clarity || '—'} | Distraction: ${s.story_mission_distraction || '—'}`,
+    `Role: ${[s.story_role_pair1, s.story_role_pair2, s.story_role_pair3, s.story_role_pair4].filter(Boolean).join(' / ')} | "${s.story_role_story || '—'}"`,
+    '',
+    `SPIRIT`,
+    `Values: ${s.spirit_values_selected?.join(', ') || '—'} | In action: ${s.spirit_values_in_action || '—'}`,
+    `Curiosity: "${s.spirit_curiosity_flow_memory || '—'}" | Intersection: "${s.spirit_curiosity_intersection || '—'}" | Invisibility: ${s.spirit_curiosity_invisibility || '—'}`,
+    `Vision: peak "${s.spirit_vision_peak || '—'}" | Image: "${s.spirit_vision_image || '—'}" | Legacy: "${s.spirit_vision_legacy || '—'}"`,
+    '',
+    `SOUL SIGNATURE`,
+    `Myth: ${s.soul_myth_character || '—'} — "${s.soul_myth_quality || '—'}"`,
+    `Story arc: childhood ${s.soul_fairy_tale_childhood || '—'} → now ${s.soul_fairy_tale_now || '—'}`,
+    `Shadow: ${s.soul_shadow_projection || '—'}`,
+    `Nadir: ${s.soul_nadir_story || '—'}`,
+    `Turning point: ${s.soul_turning_point || '—'}`,
+    `Gift: ${s.soul_gift || '—'} | Hidden self: ${s.soul_hidden_self || '—'}`,
+    `Soul word: ${s.soul_word || '—'}`,
+    `Closing: "${s.soul_closing_stem || '—'}"`,
+  ];
 
-### Life Context
-
-**What's working:**
-${assessment.context_working}
-
-**What's stuck:**
-${assessment.context_stuck}
-
-**Building toward:**
-${assessment.context_building}
-
----
-
-### SELF (Reception)
-
-**Physical Energy (Focused Body):**
-${assessment.self_energy}
-
-**Emotions (Tuned Emotions):**
-${assessment.self_emotions}
-
-**Mental Clarity (Open Mind):**
-${assessment.self_focus}
-
----
-
-### SPACE (Transmission)
-
-**Environment (Intentional Space):**
-${assessment.space_environment}
-
-**Tools & Systems (Optimized Tools):**
-${assessment.space_tools}
-
-**Feedback Loops (Feedback Systems):**
-${assessment.space_feedback}
-
----
-
-### STORY (Direction)
-
-**Life Narrative (Generative Story):**
-${assessment.story_narrative}
-
-**Mission (Clear Mission):**
-${assessment.story_mission}
-
-**Role (Empowered Role):**
-${assessment.story_role}
-
----
-
-### SPIRIT (Timeless)
-
-**Values (Grounding Values):**
-${assessment.spirit_values}
-
-**Curiosity (Ignited Curiosity):**
-${assessment.spirit_curiosity}
-
-**Vision (Visualized Vision):**
-${assessment.spirit_vision}
-`.trim();
+  return lines.join('\n');
 }
 
 async function fetchAndCacheChartData(
