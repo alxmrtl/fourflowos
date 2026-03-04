@@ -40,18 +40,6 @@ function slugify(s: string): string {
   return s.toLowerCase().replace(/[\s_]+/g, '-');
 }
 
-// Normalise bullet label casing: "ESSENCE: ..." or "essence: ..." → "Essence: ..."
-function normalizeBullet(bullet: string): string {
-  const colonIdx = bullet.indexOf(': ');
-  if (colonIdx > 0) {
-    const label = bullet.slice(0, colonIdx);
-    const body = bullet.slice(colonIdx + 2);
-    const normalized = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
-    return `${normalized}: ${body}`;
-  }
-  return bullet;
-}
-
 function normalizeProfile(profile: FlowProfileJSON): FlowProfileJSON {
   const normalizedDims = {} as Record<DimensionType, DimensionData>;
 
@@ -62,13 +50,7 @@ function normalizeProfile(profile: FlowProfileJSON): FlowProfileJSON {
     const normalizedKeys: Partial<Record<KeyType, KeyData>> = {};
     for (const [rawKey, keyData] of Object.entries(dimData.keys ?? {})) {
       const key: KeyType = KEY_ALIASES[rawKey] ?? KEY_ALIASES[slugify(rawKey)] ?? (slugify(rawKey) as KeyType);
-      if (keyData) {
-        const kd = keyData as KeyData;
-        normalizedKeys[key] = {
-          ...kd,
-          bullets: kd.bullets?.map(normalizeBullet),
-        };
-      }
+      if (keyData) normalizedKeys[key] = keyData as KeyData;
     }
 
     normalizedDims[dim] = { summary: dimData.summary ?? '', keys: normalizedKeys };

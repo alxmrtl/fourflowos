@@ -13,14 +13,6 @@ interface Props {
   isLast?: boolean;
 }
 
-function parseBullet(bullet: string): { label: string; body: string } {
-  const colonIdx = bullet.indexOf(': ');
-  if (colonIdx > 0) {
-    return { label: bullet.slice(0, colonIdx), body: bullet.slice(colonIdx + 2) };
-  }
-  return { label: '', body: bullet };
-}
-
 export default function KeyReveal({ keySlug, data, accentColor, isLast }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -54,7 +46,6 @@ export default function KeyReveal({ keySlug, data, accentColor, isLast }: Props)
       }}
     >
       <div className="flex items-start gap-4 py-6">
-        {/* Key icon */}
         <div className="w-12 h-12 flex-shrink-0">
           {keyMeta?.icon ? (
             <Image
@@ -76,38 +67,9 @@ export default function KeyReveal({ keySlug, data, accentColor, isLast }: Props)
           >
             {keyMeta?.name ?? keySlug}
           </p>
-
-          {data.bullets && data.bullets.length > 0 ? (
-            <ul className="space-y-3">
-              {data.bullets.map((bullet, i) => {
-                const { label, body } = parseBullet(bullet);
-                return (
-                  <li key={i} className="text-sm text-gray-300 leading-relaxed">
-                    {label && (
-                      <span
-                        className="text-[10px] font-semibold tracking-widest uppercase mr-2 align-middle"
-                        style={{ color: accentColor }}
-                      >
-                        {label}
-                      </span>
-                    )}
-                    {body}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <>
-              <p className="text-sm text-gray-300 leading-relaxed mb-3">
-                {data.insight || fallbackInsight}
-              </p>
-              {data.invitation && (
-                <p className="text-xs text-gray-600 italic leading-relaxed">
-                  ↳ {data.invitation}
-                </p>
-              )}
-            </>
-          )}
+          <p className="text-sm text-gray-300 leading-relaxed">
+            {data.insight || fallbackInsight}
+          </p>
         </div>
       </div>
 

@@ -23,49 +23,6 @@ const DIM_KEYS: Record<DimensionType, KeyType[]> = {
   spirit: ['grounding-values', 'ignited-curiosity', 'visualized-vision'],
 };
 
-const CATEGORIES = ['Essence', 'Pattern', 'Block', 'Activation'] as const;
-type Category = (typeof CATEGORIES)[number];
-
-function parseBullet(bullet: string): { label: string; body: string } {
-  const colonIdx = bullet.indexOf(': ');
-  if (colonIdx > 0) {
-    return { label: bullet.slice(0, colonIdx), body: bullet.slice(colonIdx + 2) };
-  }
-  return { label: '', body: bullet };
-}
-
-function CategoryIcon({ category, color, size = 12 }: { category: string; color: string; size?: number }) {
-  switch (category) {
-    case 'Essence':
-      return (
-        <svg width={size} height={size} viewBox="0 0 12 12" fill={color}>
-          <path d="M6 0L7.2 4.8L12 6L7.2 7.2L6 12L4.8 7.2L0 6L4.8 4.8Z" />
-        </svg>
-      );
-    case 'Pattern':
-      return (
-        <svg width={size} height={size} viewBox="0 0 12 12" fill="none" stroke={color} strokeWidth="1.5">
-          <path d="M10 6a4 4 0 1 1-1-2.7" strokeLinecap="round" />
-          <path d="M10 1.5V4H7.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      );
-    case 'Block':
-      return (
-        <svg width={size} height={size} viewBox="0 0 12 12" fill="none" stroke={color} strokeWidth="1.5">
-          <circle cx="6" cy="6" r="4.5" />
-          <path d="M2.8 9.2L9.2 2.8" strokeLinecap="round" />
-        </svg>
-      );
-    case 'Activation':
-    default:
-      return (
-        <svg width={size} height={size} viewBox="0 0 12 12" fill={color}>
-          <path d="M2 1.5l9 4.5-9 4.5V1.5z" />
-        </svg>
-      );
-  }
-}
-
 interface Props {
   dim: DimensionType;
   data: DimensionData;
@@ -75,13 +32,9 @@ export default function DimensionBentoCard({ dim, data }: Props) {
   const meta = DIMENSIONS[dim];
   const keySlots = DIM_KEYS[dim];
 
-  // Hooks must always be called unconditionally (Rules of Hooks).
   const [activeKeySlug, setActiveKeySlug] = useState<KeyType | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<Category>('Essence');
 
-  // Guard: if dimension data is missing (normalisation didn't find a match),
-  // render an empty shell rather than crashing the whole BentoGrid.
   if (!data || !data.keys) {
     return (
       <div
@@ -103,21 +56,11 @@ export default function DimensionBentoCard({ dim, data }: Props) {
   const radialOrigin = KEY_ORIGINS[activeKeyIndex] ?? '50% 75%';
   const activeKeyData = activeKeySlug ? data.keys[activeKeySlug] : null;
   const activeKeyMeta = activeKeySlug ? KEYS[activeKeySlug] : null;
-
-  const activeBulletBody = (() => {
-    if (!activeKeyData?.bullets) return '';
-    const bullet = activeKeyData.bullets.find(
-      (b) => parseBullet(b).label === activeCategory
-    );
-    return bullet ? parseBullet(bullet).body : '';
-  })();
-
   const otherKeys = keySlots.filter((s) => s !== activeKeySlug);
 
   function handleKeyClick(slug: KeyType) {
     if (!data.keys[slug]) return;
     setActiveKeySlug(slug);
-    setActiveCategory('Essence');
     setIsOpen(true);
   }
 
@@ -128,7 +71,6 @@ export default function DimensionBentoCard({ dim, data }: Props) {
   function handleSwitchKey(slug: KeyType) {
     if (!data.keys[slug]) return;
     setActiveKeySlug(slug);
-    setActiveCategory('Essence');
   }
 
   return (
@@ -211,7 +153,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
         </div>
       </div>
 
-      {/* RADIAL OVERLAY — clipPath sweep, no pointer events */}
+      {/* RADIAL OVERLAY */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         initial={false}
@@ -224,7 +166,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
         style={{ background: `linear-gradient(135deg, ${meta.color}15, ${meta.color}08)` }}
       />
 
-      {/* BACK — solid background, covers front entirely */}
+      {/* BACK */}
       <motion.div
         className="absolute inset-0 flex flex-col p-4"
         initial={false}
@@ -235,8 +177,8 @@ export default function DimensionBentoCard({ dim, data }: Props) {
           background: 'rgba(14,14,14,0.99)',
         }}
       >
-        {/* Header: circle icon + key name + close */}
-        <div className="flex items-center gap-3 mb-3 flex-shrink-0">
+        {/* Header: icon + key name + close */}
+        <div className="flex items-center gap-3 mb-4 flex-shrink-0">
           <div
             className="w-9 h-9 rounded-full border flex items-center justify-center flex-shrink-0"
             style={{ borderColor: `${meta.color}50`, background: `${meta.color}15` }}
@@ -265,50 +207,20 @@ export default function DimensionBentoCard({ dim, data }: Props) {
           </button>
         </div>
 
-        {/* Category tab buttons */}
-        <div className="grid grid-cols-4 gap-1 mb-3 flex-shrink-0">
-          {CATEGORIES.map((cat) => {
-            const isActive = cat === activeCategory;
-            return (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`flex flex-col items-center gap-1 py-2 rounded-lg border text-[9px] uppercase tracking-wide font-medium transition-all ${
-                  isActive
-                    ? 'text-white'
-                    : 'border-white/10 text-gray-600 hover:text-gray-400 hover:border-white/20'
-                }`}
-                style={
-                  isActive
-                    ? { background: `${meta.color}25`, borderColor: `${meta.color}60` }
-                    : {}
-                }
-              >
-                <CategoryIcon category={cat} color={isActive ? meta.color : '#555'} size={11} />
-                {cat}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Content output box — one category at a time, no scrollbar */}
-        <motion.div
-          key={`${activeKeySlug}-${activeCategory}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.15 }}
-          className="flex-1 rounded-xl border p-3 min-h-0"
+        {/* Insight paragraph */}
+        <div
+          className="flex-1 rounded-xl border p-3 min-h-0 overflow-y-auto"
           style={{
             borderColor: `${meta.color}40`,
             background: `${meta.color}08`,
           }}
         >
           <p className="text-xs text-gray-300 leading-relaxed">
-            {activeBulletBody || <span className="text-gray-600 italic">—</span>}
+            {activeKeyData?.insight || <span className="text-gray-600 italic">—</span>}
           </p>
-        </motion.div>
+        </div>
 
-        {/* Footer: other keys as icon pills */}
+        {/* Footer: other key pills */}
         <div className="flex-shrink-0 flex items-center gap-2 mt-3">
           {otherKeys.map((slug) => {
             if (!data.keys[slug]) return null;

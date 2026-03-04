@@ -12,18 +12,9 @@ interface Props {
   onClose: () => void;
 }
 
-function parseBullet(bullet: string): { label: string; body: string } {
-  const colonIdx = bullet.indexOf(': ');
-  if (colonIdx > 0) {
-    return { label: bullet.slice(0, colonIdx), body: bullet.slice(colonIdx + 2) };
-  }
-  return { label: '', body: bullet };
-}
-
 export default function KeyDetailPanel({ active, profile, onClose }: Props) {
   const isOpen = !!active;
 
-  // Escape key listener
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
@@ -33,13 +24,8 @@ export default function KeyDetailPanel({ active, profile, onClose }: Props) {
     return () => document.removeEventListener('keydown', handler);
   }, [isOpen, onClose]);
 
-  // Lock body scroll on mobile when open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
@@ -64,12 +50,7 @@ export default function KeyDetailPanel({ active, profile, onClose }: Props) {
           hidden lg:block transition-transform duration-300 ease-out`}
         style={{ transform: isOpen ? 'translateX(0)' : 'translateX(100%)' }}
       >
-        <PanelContent
-          keyMeta={keyMeta}
-          dimMeta={dimMeta}
-          keyData={keyData}
-          onClose={onClose}
-        />
+        <PanelContent keyMeta={keyMeta} dimMeta={dimMeta} keyData={keyData} onClose={onClose} />
       </div>
 
       {/* Mobile: bottom sheet */}
@@ -81,25 +62,12 @@ export default function KeyDetailPanel({ active, profile, onClose }: Props) {
           transform: isOpen ? 'translateY(0)' : 'translateY(100%)',
         }}
       >
-        <PanelContent
-          keyMeta={keyMeta}
-          dimMeta={dimMeta}
-          keyData={keyData}
-          onClose={onClose}
-        />
+        <PanelContent keyMeta={keyMeta} dimMeta={dimMeta} keyData={keyData} onClose={onClose} />
       </div>
     </>
   );
 }
 
-interface PanelContentProps {
-  keyMeta: ReturnType<typeof Object.values<(typeof KEYS)[KeyType]>> extends (infer T)[] ? T : never;
-  dimMeta: ReturnType<typeof Object.values<(typeof DIMENSIONS)[DimensionType]>> extends (infer T)[] ? T : never;
-  keyData: import('@/types/profile-json').KeyData | null | undefined;
-  onClose: () => void;
-}
-
-// Simpler typed version
 function PanelContent({
   keyMeta,
   dimMeta,
@@ -156,56 +124,10 @@ function PanelContent({
       </div>
 
       {/* Content */}
-      {keyData ? (
-        keyData.bullets && keyData.bullets.length > 0 ? (
-          <ul className="space-y-4">
-            {keyData.bullets.map((bullet, i) => {
-              const { label, body } = parseBullet(bullet);
-              return (
-                <li key={i} className="text-sm text-gray-300 leading-relaxed">
-                  {label && (
-                    <span
-                      className="block text-[10px] font-semibold tracking-widest uppercase mb-1"
-                      style={{ color: dimMeta?.color ?? '#888' }}
-                    >
-                      {label}
-                    </span>
-                  )}
-                  {body}
-                </li>
-              );
-            })}
-          </ul>
-        ) : (
-          <div className="space-y-4">
-            {keyData.insight && (
-              <p className="text-sm text-gray-300 leading-relaxed">{keyData.insight}</p>
-            )}
-            {keyData.invitation && (
-              <p className="text-xs text-gray-500 italic leading-relaxed">
-                ↳ {keyData.invitation}
-              </p>
-            )}
-          </div>
-        )
+      {keyData?.insight ? (
+        <p className="text-sm text-gray-300 leading-relaxed">{keyData.insight}</p>
       ) : (
         <p className="text-sm text-gray-600">No data for this key.</p>
-      )}
-
-      {/* Legend */}
-      {keyData?.bullets && keyData.bullets.length > 0 && (
-        <div className="mt-8 pt-4 border-t border-white/5">
-          <p className="text-[10px] text-gray-700 uppercase tracking-widest mb-2">Legend</p>
-          <div className="grid grid-cols-2 gap-1">
-            {['Essence', 'Pattern', 'Block', 'Activation'].map((label) => (
-              <span key={label} className="text-[10px] text-gray-700">
-                <span className="font-semibold" style={{ color: dimMeta?.color ? `${dimMeta.color}99` : '#666' }}>
-                  {label}
-                </span>
-              </span>
-            ))}
-          </div>
-        </div>
       )}
     </div>
   );

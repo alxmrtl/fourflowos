@@ -9,14 +9,14 @@
  * Usage:
  *   npm run profile:generate <assessment-id>
  *
- * What it does:
- *   1. Fetches assessment from Supabase
- *   2. Fetches natal chart data (or uses cached)
- *   3. Generates archetypal chart summary with Haiku
- *   4. Generates Flow Archetype JSON with Opus using "Flow Archetype v1" template
- *   5. Validates JSON structure
- *   6. Saves flow_profile_json + marks delivered
- *   7. Sends delivery email to the user
+ * Pipeline:
+ *   1. Fetch assessment from Supabase
+ *   2. Fetch/cache natal chart data
+ *   3. Haiku pass: archetypal chart summary + per-key mechanic selection
+ *   4. Opus pass: full Flow Archetype JSON using "Flow Archetype v1" template
+ *   5. Validate JSON (schema v3: insight paragraph per key)
+ *   6. Save flow_profile_json + mark delivered
+ *   7. Send delivery email
  */
 
 import { config } from 'dotenv';
@@ -32,8 +32,6 @@ import type { IntakeStructuredV2 } from '../src/types/intake';
 const supabase = getSupabase();
 
 // ─── JSON normalisation ───────────────────────────────────────────────────────
-// The LLM sometimes outputs dimension/key names in wrong case or format.
-// Normalise before saving so the stored JSON always matches the component slugs.
 
 const DIM_ALIASES: Record<string, string> = {
   self: 'self', SELF: 'self', Self: 'self',
@@ -78,7 +76,102 @@ function normalizeProfileJson(profile: FlowProfileJSON): FlowProfileJSON {
   return { ...profile, dimensions: normalizedDims as FlowProfileJSON['dimensions'] };
 }
 
-const CHART_SUMMARY_PROMPT = `You are synthesizing multiple cosmological and archetypal frameworks to produce a soul-blueprint summary for a Flow Profile.
+// ─── Flow mechanics reference ─────────────────────────────────────────────────
+// Used by Haiku to select the 1-2 most relevant mechanics per key for this person.
+// Haiku names them; Opus uses them as conceptual lenses without naming them.
+
+const MECHANICS_REFERENCE = `tuned-emotions:
+  Psychological Safety — removes fear of judgment during execution
+  Outcome Detachment — prevents future-fixation from degrading present action
+  Anxiety Suppression — reduces anticipatory threat signals that fragment focus
+  Challenge-Skill Calibration — matches task difficulty to current capability to prevent boredom or overwhelm
+  Ego Monitoring Removal — eliminates self-evaluation loops during performance
+  Emotional Neutrality — prevents affective spikes from hijacking attention
+  Error Tolerance — allows rapid correction without identity threat
+  Effort-Reward Coupling — links exertion directly to perceived progress
+
+focused-body:
+  Mind-Body Coherence — aligns intention with physical execution
+  Sensory Coherence — reduces conflicting sensory inputs
+  Action-Awareness Merging — eliminates separation between doing and noticing
+  Energy Sufficiency — ensures metabolic and nervous system readiness
+  Rhythm and Pacing — establishes sustainable action cycles
+  Physiological Regulation — keeps arousal within functional ranges
+
+open-mind:
+  Growth Orientation — frames difficulty as information rather than failure
+  Compression Over Expansion — condenses concepts to reduce mental effort
+  Clarity Over Intensity — prioritizes understanding over emotional force
+  Attention Residue Elimination — prevents task-switching drag
+  Overchoice Elimination — reduces decision overhead before and during action
+  Cognitive Load Reduction — frees working memory for task-relevant processing
+  Ambiguity Control — keeps uncertainty within tolerable bounds
+
+intentional-setting:
+  Environmental Simplicity — reduces background cognitive noise
+  Social Field Alignment — aligns surrounding people with task intent
+  Interruption Control — prevents attention capture from external sources
+  Physical Space Priming — conditions the environment to cue focus
+  Constraint Elegance — uses limits to sharpen action
+
+optimized-tools:
+  Automation of Non-Creative Steps — preserves attention for high-leverage work
+  Subtraction Beats Addition — improves flow by removing rather than adding
+  Friction Removal — eliminates unnecessary steps and resistance
+  Tool-Task Alignment — matches tool capability to task demands
+  Error Cost Minimization — limits penalty of mistakes to maintain momentum
+
+feedback-systems:
+  Immediate Feedback — shortens the loop between action and information
+  Agency Loops — reinforces cause-effect understanding
+  Progress Visibility — makes advancement perceptible in real time
+  Speed of Consequence — accelerates learning through fast outcomes
+  Feedback Density — increases signal frequency without overload
+
+generative-story:
+  Identity Immersion — aligns behavior with a lived role
+  Tension-Release Dynamics — uses challenge and relief to maintain engagement
+  Positive Orientation — biases interpretation toward progress
+  Meaning Coherence — ensures actions fit a unified frame
+  Narrative Momentum — pulls action forward without force
+
+clear-mission:
+  Clear Goals — defines what success looks like now
+  Stakes Definition — specifies why the action matters
+  Priority Singularity — prevents goal competition
+  Outcome Horizon Setting — bounds attention to an appropriate timeframe
+
+empowered-role:
+  Identity Alignment — matches role to self-concept
+  Role Clarity — defines responsibility boundaries
+  Commitment Escalation — increases investment through action
+  Responsibility Without Evaluation Pressure — maintains ownership while suppressing judgment
+
+grounding-values:
+  Internal Alignment — removes value-based friction from action
+  Integrity Loops — reinforces trust in self-generated action
+  Meaning Stabilization — prevents motivational decay over time
+  Values Integration — embeds ethics into decision-making
+
+ignited-curiosity:
+  Intrinsic Reward Signaling — makes engagement self-reinforcing (clean fuel vs dirty fuel)
+  Playfulness — reduces threat perception during exploration
+  Strength Activation — leverages natural competencies
+  Exploration Bias — encourages discovery over optimization
+  Curiosity Loops — pulls attention forward through open questions
+
+visualized-vision:
+  Vision Priming — preloads direction before action begins
+  Long-Horizon Coherence — aligns short actions with distant outcomes
+  Inspirational Compression — condenses aspiration into simple symbols
+  Symbolic Meaning — uses imagery to bypass analytical load`;
+
+// ─── Haiku prompt (chart summary + mechanic selection) ────────────────────────
+
+const HAIKU_PROMPT = `You are synthesizing cosmological, numerological, and intake data to produce two things for a Flow Profile:
+
+1. A soul-blueprint summary (~350 words)
+2. A mechanic selection — identifying which flow mechanics are most alive for this specific person
 
 The Flow Profile maps four dimensions of consciousness:
 - SELF (Reception): body, emotions, mind — can they receive alignment signals?
@@ -86,21 +179,56 @@ The Flow Profile maps four dimensions of consciousness:
 - STORY (Temporal Direction): narrative, mission, role in the world
 - SPIRIT (Timeless Direction): values, curiosity, vision
 
-Your task: Generate a 350-word archetypal synthesis that cross-references the available modality data below. Write in clear, human language — no jargon. Focus on PATTERN and WIRING: how this person is built to move through the world, not generic descriptions.
+## PART 1 — ARCHETYPAL SUMMARY
 
-Structure your response as:
+Synthesize the modality and intake data below. Write in clear human language — no jargon. Focus on PATTERN and WIRING: how this person is built to move through the world, not generic descriptions.
+
+Structure:
 
 **Elemental Signature** (2-3 sentences): The dominant elemental and modal energy. How it shapes their experience.
 
-**Core Archetypal Tension** (2-3 sentences): The primary creative polarity or challenge in their blueprint — what they're reconciling.
+**Core Archetypal Tension** (2-3 sentences): The primary creative polarity in their blueprint — what they're reconciling.
 
 **Four-Pillar Implications** (4 brief paragraphs, one per pillar): How the combined blueprint suggests energy moves through SELF / SPACE / STORY / SPIRIT.
 
+## PART 2 — MECHANIC SELECTION
+
+After your written summary, select 1-2 mechanics per flow key that are most relevant or most alive for this specific person, based on their intake responses and archetypal blueprint.
+
+Output the selections as a JSON block between these exact markers (no other text between them):
+
+---MECHANICS---
+{
+  "tuned-emotions": ["MechanicName"],
+  "focused-body": ["MechanicName"],
+  "open-mind": ["MechanicName"],
+  "intentional-setting": ["MechanicName"],
+  "optimized-tools": ["MechanicName"],
+  "feedback-systems": ["MechanicName"],
+  "generative-story": ["MechanicName"],
+  "clear-mission": ["MechanicName"],
+  "empowered-role": ["MechanicName"],
+  "grounding-values": ["MechanicName"],
+  "ignited-curiosity": ["MechanicName"],
+  "visualized-vision": ["MechanicName"]
+}
+---END---
+
+Use only mechanic names from the reference list below. 1-2 per key.
+
+## MECHANICS REFERENCE
+
+${MECHANICS_REFERENCE}
+
 ---
 
-MODALITY DATA:
+## MODALITY DATA
 
-{CHART_DATA}`;
+{CHART_DATA}
+
+## INTAKE CONTEXT
+
+{INTAKE_DATA}`;
 
 // ─── Numerology calculator (Pythagorean) ─────────────────────────────────────
 
@@ -123,21 +251,27 @@ function reduceToSingle(n: number): number {
 
 function calcNumerology(name: string, birthDate: string): {
   lifePath: number;
+  birthdayNumber: number;
   expression: number;
   soulUrge: number;
+  personality: number;
 } {
-  // Life Path from birth date digits
   const digits = birthDate.replace(/\D/g, '').split('').map(Number);
   const lifePath = reduceToSingle(digits.reduce((s, d) => s + d, 0));
 
-  // Expression (all letters) and Soul Urge (vowels only)
+  const dayStr = birthDate.split(/[-\/]/)[2] ?? birthDate.slice(-2);
+  const birthdayNumber = reduceToSingle(parseInt(dayStr, 10));
+
   const letters = name.toLowerCase().replace(/[^a-z]/g, '').split('');
   const expression = reduceToSingle(letters.reduce((s, l) => s + (LETTER_VALUES[l] ?? 0), 0));
   const soulUrge = reduceToSingle(
     letters.filter(l => VOWELS.has(l)).reduce((s, l) => s + (LETTER_VALUES[l] ?? 0), 0)
   );
+  const personality = reduceToSingle(
+    letters.filter(l => !VOWELS.has(l)).reduce((s, l) => s + (LETTER_VALUES[l] ?? 0), 0)
+  );
 
-  return { lifePath, expression, soulUrge };
+  return { lifePath, birthdayNumber, expression, soulUrge, personality };
 }
 
 const LIFE_PATH_ARCHETYPES: Record<number, string> = {
@@ -155,27 +289,82 @@ const LIFE_PATH_ARCHETYPES: Record<number, string> = {
   33: 'The Master Teacher (Master 33) — selfless service, compassion at scale; here to uplift humanity',
 };
 
-// ─── Format intake data (v2 structured) ──────────────────────────────────────
+const BIRTHDAY_ARCHETYPES: Record<number, string> = {
+  1: 'natural leader; independent, original; gifts of initiative and self-direction',
+  2: 'born diplomat; sensitive, cooperative; gifts of perception and partnership',
+  3: 'innate communicator; creative, expressive; gifts of charm and artistic vision',
+  4: 'instinctive builder; disciplined, loyal; gifts of endurance and structural clarity',
+  5: 'born adventurer; versatile, magnetic; gifts of adaptability and sensory intelligence',
+  6: 'natural caretaker; responsible, harmonizing; gifts of empathy and aesthetic refinement',
+  7: 'instinctive analyst; introspective, precise; gifts of depth and pattern recognition',
+  8: 'born executive; ambitious, authoritative; gifts of strategic power and material mastery',
+  9: 'natural humanitarian; compassionate, idealistic; gifts of universality and completion',
+  11: 'born visionary (Master 11); intuitive, idealistic; gifts of inspiration and spiritual sensitivity',
+  22: 'master architect (Master 22); practical visionary; gifts of large-scale manifestation',
+  33: 'born teacher (Master 33); nurturing, self-sacrificing; gifts of unconditional service',
+};
+
+const EXPRESSION_ARCHETYPES: Record<number, string> = {
+  1: 'destined to originate and lead; built to pioneer, create independently, stand at the front',
+  2: 'destined to unite and harmonize; built to mediate, partner, and sense what others miss',
+  3: 'destined to create and communicate; built to inspire through self-expression and beauty',
+  4: 'destined to build and stabilize; built to create lasting systems, structures, and order',
+  5: 'destined to explore and liberate; built to expand boundaries and champion change',
+  6: 'destined to nurture and beautify; built to care, heal, and create harmony in relationships',
+  7: 'destined to seek and understand; built to penetrate surface and reveal hidden truth',
+  8: 'destined to lead and manifest; built to direct resources, wield authority, and produce results',
+  9: 'destined to serve and complete; built to embody wisdom and give back to the whole',
+  11: 'destined to illuminate (Master 11); built to channel inspiration and catalyze spiritual awakening',
+  22: 'destined to build at scale (Master 22); built to translate vision into world-changing form',
+  33: 'destined to teach and uplift (Master 33); built to hold others in unconditional care',
+};
+
+const PERSONALITY_ARCHETYPES: Record<number, string> = {
+  1: 'appears confident, decisive, self-sufficient; projects independence',
+  2: 'appears gentle, cooperative, supportive; projects approachability',
+  3: 'appears charming, witty, expressive; projects warmth and creativity',
+  4: 'appears reliable, grounded, trustworthy; projects stability',
+  5: 'appears energetic, spontaneous, free; projects excitement',
+  6: 'appears warm, nurturing, responsible; projects care and harmony',
+  7: 'appears reserved, thoughtful, private; projects quiet depth',
+  8: 'appears authoritative, polished, capable; projects competence',
+  9: 'appears wise, compassionate, broad-minded; projects wisdom',
+  11: 'appears otherworldly, magnetic, intense; projects visionary presence',
+  22: 'appears commanding, serious, purposeful; projects rare capability',
+  33: 'appears giving, luminous, devoted; projects saintly care',
+};
+
+// ─── Format intake data ───────────────────────────────────────────────────────
 
 function formatIntakeData(assessment: Record<string, unknown>): string {
   const s = assessment.intake_structured as IntakeStructuredV2 | null | undefined;
 
-  // v2 structured path
-  if (s && s.schema_version === '2.0') {
-    const num = calcNumerology(String(assessment.name), String(assessment.birth_date));
-    const lpDesc = LIFE_PATH_ARCHETYPES[num.lifePath] ?? `Life Path ${num.lifePath}`;
+  if (!s || s.schema_version !== '2.0') {
+    console.error('  Assessment has no v2 structured intake data. Re-run intake via the new form.');
+    process.exit(1);
+  }
 
+  const num = calcNumerology(String(assessment.name), String(assessment.birth_date));
+  const firstName = String(assessment.name).trim().split(/\s+/)[0];
 
-    return `
+  return `
 **Name**: ${assessment.name}
+**First Name (${firstName})**: consider the meaning and etymological origin of this name — note resonance or tension with the archetype pattern
 **Birth**: ${assessment.birth_date}${s.birth_time_known && s.birth_time ? `, ${s.birth_time}` : ' (time unknown)'}, ${assessment.birth_location}
 
 ---
 
 ### NUMEROLOGY SIGNATURE
-**Life Path ${num.lifePath}**: ${lpDesc}
-**Expression Number ${num.expression}**: the outer character and natural talents
-**Soul Urge ${num.soulUrge}**: the inner motivation and deepest desire
+Life Path and Soul Urge map to SPIRIT (timeless orientation, inner drive).
+Birthday Number maps to SELF (innate body-gifts).
+Expression maps to STORY (outer arc, mission).
+Personality maps to SPACE (transmission interface, how others receive this person).
+
+**Life Path ${num.lifePath}** [SPIRIT]: ${LIFE_PATH_ARCHETYPES[num.lifePath] ?? `orientation ${num.lifePath}`}
+**Birthday Number ${num.birthdayNumber}** [SELF]: ${BIRTHDAY_ARCHETYPES[num.birthdayNumber] ?? `gift ${num.birthdayNumber}`}
+**Expression ${num.expression}** [STORY]: ${EXPRESSION_ARCHETYPES[num.expression] ?? `outer destiny ${num.expression}`}
+**Soul Urge ${num.soulUrge}** [SPIRIT]: the vowel-heart; inner hunger and deepest motivation
+**Personality ${num.personality}** [SPACE]: ${PERSONALITY_ARCHETYPES[num.personality] ?? `outward face ${num.personality}`} — the exterior interface with the world
 
 ---
 
@@ -293,39 +482,6 @@ ${s.soul_word || '(not provided)'}
 **Closing Stem** ("The thing I most want someone who truly understands me to know..."):
 ${s.soul_closing_stem || '(not provided)'}
 `.trim();
-  }
-
-  // v1 fallback (legacy text fields)
-  const a = assessment;
-  return `
-**Name**: ${a.name}
-**Birth**: ${a.birth_date}${a.birth_time_known ? `, ${a.birth_time}` : ' (time unknown)'}, ${a.birth_location}
-
-### Life Context
-What's working: ${a.context_working}
-What's stuck: ${a.context_stuck}
-Building toward: ${a.context_building}
-
-### SELF
-Physical Energy: ${a.self_energy}
-Emotions: ${a.self_emotions}
-Mental Clarity: ${a.self_focus}
-
-### SPACE
-Environment: ${a.space_environment}
-Tools & Systems: ${a.space_tools}
-Feedback Loops: ${a.space_feedback}
-
-### STORY
-Life Narrative: ${a.story_narrative}
-Mission: ${a.story_mission}
-Role: ${a.story_role}
-
-### SPIRIT
-Values: ${a.spirit_values}
-Curiosity: ${a.spirit_curiosity}
-Vision: ${a.spirit_vision}
-`.trim();
 }
 
 async function fetchChartData(assessment: Record<string, unknown>): Promise<Record<string, unknown> | null> {
@@ -365,28 +521,10 @@ function buildModalityBlock(
 ): string {
   const name = String(assessment.name ?? '');
   const birthDate = String(assessment.birth_date ?? '');
-  const num = birthDate && name
+  const numBlock = birthDate && name
     ? (() => {
-        // inline numerology for the block
-        const LVALS: Record<string, number> = {
-          a:1,b:2,c:3,d:4,e:5,f:6,g:7,h:8,i:9,j:1,k:2,l:3,m:4,
-          n:5,o:6,p:7,q:8,r:9,s:1,t:2,u:3,v:4,w:5,x:6,y:7,z:8,
-        };
-        const VOW = new Set(['a','e','i','o','u']);
-        const reduce = (n: number): number => {
-          if (n === 11 || n === 22 || n === 33) return n;
-          while (n > 9) {
-            n = String(n).split('').reduce((s,d) => s + parseInt(d), 0);
-            if (n === 11 || n === 22 || n === 33) return n;
-          }
-          return n;
-        };
-        const digits = birthDate.replace(/\D/g,'').split('').map(Number);
-        const lp = reduce(digits.reduce((s,d) => s+d, 0));
-        const letters = name.toLowerCase().replace(/[^a-z]/g,'').split('');
-        const expr = reduce(letters.reduce((s,l) => s + (LVALS[l]??0), 0));
-        const soul = reduce(letters.filter(l => VOW.has(l)).reduce((s,l) => s + (LVALS[l]??0), 0));
-        return `Life Path ${lp} | Expression ${expr} | Soul Urge ${soul}`;
+        const n = calcNumerology(name, birthDate);
+        return `Life Path ${n.lifePath} | Birthday ${n.birthdayNumber} | Expression ${n.expression} | Soul Urge ${n.soulUrge} | Personality ${n.personality}`;
       })()
     : null;
 
@@ -394,33 +532,83 @@ function buildModalityBlock(
   const lines = [
     '## NATAL CHART (Astrology)',
     astro,
-    num ? `\n## NUMEROLOGY\n${num}` : '',
+    numBlock ? `\n## NUMEROLOGY\n${numBlock}` : '',
     '\n## NOTE ON HUMAN DESIGN',
     'Human Design data not yet integrated. Infer archetypal tendencies from natal chart patterns where relevant.',
   ];
   return lines.filter(Boolean).join('\n');
 }
 
-async function generateChartSummary(
+interface HaikuResult {
+  summary: string;
+  mechanicSelections: Record<string, string[]>;
+}
+
+function parseHaikuOutput(output: string): HaikuResult {
+  const mechStart = output.indexOf('---MECHANICS---');
+  const mechEnd = output.indexOf('---END---');
+
+  if (mechStart === -1 || mechEnd === -1 || mechEnd <= mechStart) {
+    console.warn('  Mechanic selections not found in Haiku output — proceeding without them');
+    return { summary: output.trim(), mechanicSelections: {} };
+  }
+
+  const summary = output.slice(0, mechStart).trim();
+  const jsonStr = output.slice(mechStart + 15, mechEnd).trim();
+
+  let mechanicSelections: Record<string, string[]> = {};
+  try {
+    mechanicSelections = JSON.parse(jsonStr);
+    const keyCount = Object.keys(mechanicSelections).length;
+    console.log(`      Mechanic selections parsed: ${keyCount} keys`);
+  } catch {
+    console.warn('  Could not parse mechanic selections JSON — proceeding without them');
+  }
+
+  return { summary, mechanicSelections };
+}
+
+function buildMechanicContext(selections: Record<string, string[]>): string {
+  if (Object.keys(selections).length === 0) return '';
+
+  const lines = Object.entries(selections)
+    .filter(([, mechanics]) => mechanics.length > 0)
+    .map(([key, mechanics]) => `  ${key}: ${mechanics.join(', ')}`);
+
+  return `\n\n---\n\n## KEY MECHANIC CONTEXT\nThese flow mechanics are most alive for this person. Use them as invisible lenses when writing each key's insight paragraph — draw from the underlying patterns and dynamics without naming the mechanics directly:\n\n${lines.join('\n')}`;
+}
+
+async function runHaikuPass(
   chartData: Record<string, unknown>,
+  intakeData: string,
   assessment: Record<string, unknown>,
   anthropic: Anthropic
-): Promise<string> {
-  console.log('  Generating multi-modal chart summary (Haiku)...');
+): Promise<HaikuResult> {
+  console.log('  Running Haiku pass (chart summary + mechanic selection)...');
   const modalityBlock = buildModalityBlock(assessment, chartData);
+
+  const prompt = HAIKU_PROMPT
+    .replace('{CHART_DATA}', modalityBlock)
+    .replace('{INTAKE_DATA}', intakeData);
+
   try {
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1200,
-      messages: [{ role: 'user', content: CHART_SUMMARY_PROMPT.replace('{CHART_DATA}', modalityBlock) }],
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }],
     });
-    return message.content[0].type === 'text' ? message.content[0].text : '';
-  } catch {
+    const text = message.content[0].type === 'text' ? message.content[0].text : '';
+    console.log(`      ${text.length} chars`);
+    return parseHaikuOutput(text);
+  } catch (err) {
+    console.warn('  Haiku pass failed:', err);
+    // Minimal fallback — no mechanic context
     const sun = (chartData.sun_sign as string) || '';
     const moon = (chartData.moon_sign as string) || '';
     const rising = (chartData.rising_sign as string) || '';
-    return [sun && `Sun: ${sun}`, moon && `Moon: ${moon}`, rising && `Rising: ${rising}`]
+    const fallbackSummary = [sun && `Sun: ${sun}`, moon && `Moon: ${moon}`, rising && `Rising: ${rising}`]
       .filter(Boolean).join(' | ') || 'Chart data unavailable.';
+    return { summary: fallbackSummary, mechanicSelections: {} };
   }
 }
 
@@ -476,7 +664,6 @@ Example:
     .single();
 
   if (!promptTemplate) {
-    // Fall back to first active template
     const { data: fallback } = await supabase
       .from('prompt_templates')
       .select('*')
@@ -494,7 +681,8 @@ Example:
   }
 
   const template = promptTemplate!;
-  console.log(`      Using: "${template.name}" (${template.model}, max ${Math.max(template.max_tokens, 4500)} tokens)`);
+  const maxTokens = Math.max(template.max_tokens, 4500);
+  console.log(`      Using: "${template.name}" (${template.model}, max ${maxTokens} tokens)`);
 
   // 3. Chart data
   console.log('[3/6] Resolving natal chart...');
@@ -511,24 +699,24 @@ Example:
     }
   }
 
-  // 4. Chart summary
-  console.log('[4/6] Generating archetypal summary...');
-  const chartContext = chartData
-    ? await generateChartSummary(chartData, assessment, anthropic)
-    : 'No natal chart data available.';
-  console.log(`      ${chartContext.length} chars`);
-
-  // 5. Generate profile
-  console.log('[5/6] Generating Flow Archetype profile (Opus)...');
+  // 4. Haiku pass: chart summary + mechanic selection
+  console.log('[4/6] Haiku pass (chart summary + mechanic selection)...');
   const intakeData = formatIntakeData(assessment);
+  const { summary: chartSummary, mechanicSelections } = chartData
+    ? await runHaikuPass(chartData, intakeData, assessment, anthropic)
+    : { summary: 'No natal chart data available.', mechanicSelections: {} as Record<string, string[]> };
+
+  const mechanicContext = buildMechanicContext(mechanicSelections);
+  const chartContext = chartSummary + mechanicContext;
+  console.log(`      Chart context: ${chartContext.length} chars`);
+
+  // 5. Generate profile (Opus)
+  console.log('[5/6] Generating Flow Archetype profile (Opus)...');
   const prompt = template.prompt_text
     .replace('{INTAKE_DATA}', intakeData)
     .replace('{CHART_DATA}', chartContext);
 
   let rawOutput = '';
-  // Concise prompts with max-20-word bullets fit within 4500 tokens.
-  // Override the UI default (3500) with this floor.
-  const maxTokens = Math.max(template.max_tokens, 4500);
 
   const stream = anthropic.messages.stream({
     model: template.model,
@@ -554,8 +742,6 @@ Example:
   console.log(`      ${rawOutput.length} chars generated`);
 
   // Parse and validate JSON
-  // Extract the JSON object by finding the outermost { ... } — this handles any
-  // markdown code fences, preamble text, or trailing commentary the model may add.
   const firstBrace = rawOutput.indexOf('{');
   const lastBrace = rawOutput.lastIndexOf('}');
   const cleanedOutput = firstBrace > -1 && lastBrace > firstBrace
@@ -568,29 +754,32 @@ Example:
     if (!profileJson.schema_version || !profileJson.archetype || !profileJson.dimensions) {
       throw new Error('Missing required fields: schema_version, archetype, or dimensions');
     }
-    // Normalise dimension and key slugs so the stored JSON always matches
-    // what the /me page components expect (lowercase-hyphenated).
     profileJson = normalizeProfileJson(profileJson);
     console.log(`      Archetype: "${profileJson.archetype.name}"`);
     console.log(`      Dimensions: ${Object.keys(profileJson.dimensions).join(', ')}`);
     for (const [dim, data] of Object.entries(profileJson.dimensions)) {
-      console.log(`        ${dim}: keys = [${Object.keys(data.keys).join(', ')}]`);
+      const keys = Object.keys(data.keys);
+      console.log(`        ${dim}: [${keys.join(', ')}]`);
+      // Warn if any key is missing insight
+      for (const k of keys) {
+        const kd = data.keys[k as keyof typeof data.keys];
+        if (!kd?.insight) console.warn(`        ⚠ ${dim}/${k} missing insight`);
+      }
     }
   } catch (err) {
     console.error('\nJSON parse failed — model did not return valid JSON.');
     console.error('Error:', err instanceof Error ? err.message : err);
     console.error('\nRaw output (first 500 chars):');
     console.error(rawOutput.slice(0, 500));
-    console.error('\nSave raw output? (check scripts/last-output.txt)');
     const fs = await import('fs');
     fs.writeFileSync(resolve(__dirname, 'last-output.txt'), cleanedOutput);
+    console.error('\nFull output saved to scripts/last-output.txt');
     process.exit(1);
   }
 
   // 6. Save + deliver
   console.log('[6/6] Saving to Supabase + delivering...');
 
-  // Save to profile_generations
   const { data: generation } = await supabase
     .from('profile_generations')
     .insert({
@@ -603,13 +792,11 @@ Example:
     .select('id')
     .single();
 
-  // Update assessment — deliver in same write
   const { error: updateError } = await supabase
     .from('assessments')
     .update({
       flow_profile_json: profileJson,
-      flow_profile_final: rawOutput,   // keeps /me query (.not flow_profile_final is null) working
-      flow_profile_draft: rawOutput,
+      flow_profile_final: rawOutput,
       prompt_template_id: template.id,
       status: 'delivered',
     })
@@ -621,7 +808,6 @@ Example:
   }
   console.log(`      Saved (generation: ${generation?.id ?? 'n/a'})`);
 
-  // Send delivery email
   const host = process.env.NEXT_PUBLIC_SITE_URL || 'fourflowos.com';
   const protocol = host.includes('localhost') ? 'http' : 'https';
   const cleanHost = host.replace(/^https?:\/\//, '');
@@ -643,7 +829,6 @@ Done.
   Archetype : ${profileJson.archetype.name}
   Status    : delivered
   View URL  : ${viewUrl}
-  /me page  : available immediately after sign-in
 `);
 }
 
