@@ -153,12 +153,12 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
   const itemCount = curiosity?.items?.length ?? 0;
 
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-[rgba(12,12,12,0.9)] p-6 mb-6">
+    <div className="rounded-2xl border border-white/[0.08] bg-[rgba(12,12,12,0.9)] p-8 mb-6">
       <ArchetypeHeader profile={normalized} />
 
-      {/* 2×2 Dimension grid */}
+      {/* Dimension rows */}
       <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Your Flow Map</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div className="flex flex-col gap-3 mb-6">
         {DIM_ORDER.map((dim, idx) => (
           <motion.div
             key={dim}
@@ -177,7 +177,7 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
       {/* Overview */}
       {normalized.overview?.headline && (
         <>
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Your Signal at a Glance</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Your Signal</p>
           <OverviewCard overview={normalized.overview} />
         </>
       )}

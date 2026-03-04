@@ -2,12 +2,10 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { DimensionType, KeyType } from '@/types/framework';
 import type { DimensionData } from '@/types/profile-json';
 import { DIMENSIONS, KEYS } from '@/data/framework';
-
-const KEY_ORIGINS = ['15% 75%', '50% 75%', '85% 75%'];
 
 const DIM_FUNCTION: Record<DimensionType, string> = {
   self: 'Reception Layer',
@@ -33,7 +31,6 @@ export default function DimensionBentoCard({ dim, data }: Props) {
   const keySlots = DIM_KEYS[dim];
 
   const [activeKeySlug, setActiveKeySlug] = useState<KeyType | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
 
   if (!data || !data.keys) {
     return (
@@ -52,20 +49,17 @@ export default function DimensionBentoCard({ dim, data }: Props) {
     );
   }
 
-  const activeKeyIndex = activeKeySlug ? keySlots.indexOf(activeKeySlug) : 0;
-  const radialOrigin = KEY_ORIGINS[activeKeyIndex] ?? '50% 75%';
   const activeKeyData = activeKeySlug ? data.keys[activeKeySlug] : null;
   const activeKeyMeta = activeKeySlug ? KEYS[activeKeySlug] : null;
   const otherKeys = keySlots.filter((s) => s !== activeKeySlug);
 
   function handleKeyClick(slug: KeyType) {
     if (!data.keys[slug]) return;
-    setActiveKeySlug(slug);
-    setIsOpen(true);
+    setActiveKeySlug(slug === activeKeySlug ? null : slug);
   }
 
   function handleClose() {
-    setIsOpen(false);
+    setActiveKeySlug(null);
   }
 
   function handleSwitchKey(slug: KeyType) {
@@ -75,178 +69,143 @@ export default function DimensionBentoCard({ dim, data }: Props) {
 
   return (
     <div
-      className="relative rounded-2xl overflow-hidden border border-white/10"
+      className="rounded-2xl overflow-hidden border border-white/10"
       style={{ background: 'rgba(20,20,20,0.95)' }}
     >
       {/* Top edge color bar */}
       <div style={{ height: 3, background: meta.color }} />
 
-      {/* FRONT — normal flow, drives card height */}
-      <div className="relative p-4">
-        {/* Dimension header */}
-        <div className="flex items-center gap-2.5 mb-3">
-          <div className="w-7 h-7 flex-shrink-0">
-            <Image
-              src={meta.sectionLogo}
-              alt={meta.name}
-              width={28}
-              height={28}
-              className="object-contain opacity-80"
-            />
-          </div>
-          <div>
-            <p
-              className="text-[10px] font-semibold tracking-widest uppercase leading-none"
-              style={{ color: meta.color }}
-            >
-              {meta.name}
-            </p>
-            <p className="text-[10px] text-gray-600 mt-0.5">{DIM_FUNCTION[dim]}</p>
-          </div>
-        </div>
+      {/* Row layout: stacked on mobile, horizontal on sm+ */}
+      <div className="flex flex-col sm:flex-row p-4 gap-4 sm:gap-0">
 
-        {/* Summary */}
-        <p className="text-sm text-gray-300 leading-relaxed mb-4">
-          {data.summary}
-        </p>
+        {/* LEFT COLUMN — dimension header + stacked key buttons */}
+        <div className="w-full sm:w-48 md:w-52 flex-shrink-0 flex flex-col gap-2 sm:pr-5 sm:border-r sm:border-white/[0.06]">
+          {/* Dimension header */}
+          <div className="flex items-center gap-2.5 mb-1">
+            <div className="w-7 h-7 flex-shrink-0">
+              <Image
+                src={meta.sectionLogo}
+                alt={meta.name}
+                width={28}
+                height={28}
+                className="object-contain opacity-80"
+              />
+            </div>
+            <div>
+              <p
+                className="text-[10px] font-semibold tracking-widest uppercase leading-none"
+                style={{ color: meta.color }}
+              >
+                {meta.name}
+              </p>
+              <p className="text-[10px] text-gray-600 mt-0.5">{DIM_FUNCTION[dim]}</p>
+            </div>
+          </div>
 
-        {/* Key buttons */}
-        <div className="grid grid-cols-3 gap-1.5">
+          {/* Stacked key buttons */}
           {keySlots.map((slug) => {
             const keyMeta = KEYS[slug];
             const hasData = !!data.keys[slug];
-            const nameParts = keyMeta.name.split(' ');
-            const nameLabel = nameParts[0];
-            const nameMain = nameParts.slice(1).join(' ') || nameParts[0];
+            const isActive = slug === activeKeySlug;
             return (
               <button
                 key={slug}
                 onClick={() => hasData && handleKeyClick(slug)}
                 disabled={!hasData}
-                className={`flex items-center gap-2 px-2.5 py-2.5 rounded-xl transition-opacity ${
-                  hasData ? 'cursor-pointer hover:opacity-80' : 'cursor-default opacity-30'
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all text-left w-full ${
+                  !hasData
+                    ? 'opacity-40 cursor-default border-white/5'
+                    : 'cursor-pointer'
                 }`}
-                style={{ background: hasData ? `${meta.color}50` : 'rgba(255,255,255,0.05)' }}
+                style={{
+                  background: isActive ? `${meta.color}30` : hasData ? 'rgba(255,255,255,0.04)' : 'transparent',
+                  borderColor: isActive ? `${meta.color}60` : 'rgba(255,255,255,0.10)',
+                }}
               >
                 <div
-                  className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center"
-                  style={{ background: `${meta.color}40` }}
+                  className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center"
+                  style={{ background: `${meta.color}25` }}
                 >
                   <Image
                     src={keyMeta.icon}
                     alt={keyMeta.name}
-                    width={18}
-                    height={18}
+                    width={14}
+                    height={14}
                     className="object-contain"
                   />
                 </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <p className="text-[9px] text-white/60 leading-none mb-0.5">{nameLabel}</p>
-                  <p className="text-xs font-bold text-white leading-tight">{nameMain}</p>
-                </div>
+                <span className="text-sm font-medium text-white flex-1 min-w-0 truncate">{keyMeta.name}</span>
                 {hasData && (
-                  <span className="text-white/50 text-sm flex-shrink-0">›</span>
+                  <span className="text-white/40 text-sm flex-shrink-0">›</span>
                 )}
               </button>
             );
           })}
         </div>
-      </div>
 
-      {/* RADIAL OVERLAY */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        initial={false}
-        animate={{
-          clipPath: isOpen
-            ? `circle(150% at ${radialOrigin})`
-            : `circle(0% at ${radialOrigin})`,
-        }}
-        transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-        style={{ background: `linear-gradient(135deg, ${meta.color}15, ${meta.color}08)` }}
-      />
-
-      {/* BACK */}
-      <motion.div
-        className="absolute inset-0 flex flex-col p-4"
-        initial={false}
-        animate={{ opacity: isOpen ? 1 : 0 }}
-        transition={{ duration: 0.3, delay: isOpen ? 0.3 : 0 }}
-        style={{
-          pointerEvents: isOpen ? 'auto' : 'none',
-          background: 'rgba(14,14,14,0.99)',
-        }}
-      >
-        {/* Header: icon + key name + close */}
-        <div className="flex items-center gap-3 mb-4 flex-shrink-0">
-          <div
-            className="w-9 h-9 rounded-full border flex items-center justify-center flex-shrink-0"
-            style={{ borderColor: `${meta.color}50`, background: `${meta.color}15` }}
-          >
-            {activeKeyMeta && (
-              <Image
-                src={activeKeyMeta.icon}
-                alt={activeKeyMeta.name}
-                width={20}
-                height={20}
-                className="object-contain"
-              />
-            )}
-          </div>
-          <p className="text-sm font-semibold text-white flex-1 uppercase tracking-wide leading-tight truncate">
-            {activeKeyMeta?.name ?? ''}
-          </p>
-          <button
-            onClick={handleClose}
-            className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-white/10 transition-colors"
-            aria-label="Close"
-          >
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-              <path d="M1 1l9 9M10 1L1 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Insight paragraph */}
-        <div
-          className="flex-1 rounded-xl border p-3 min-h-0 overflow-y-auto"
-          style={{
-            borderColor: `${meta.color}40`,
-            background: `${meta.color}08`,
-          }}
-        >
-          <p className="text-xs text-gray-300 leading-relaxed">
-            {activeKeyData?.insight || <span className="text-gray-600 italic">—</span>}
-          </p>
-        </div>
-
-        {/* Footer: other key pills */}
-        <div className="flex-shrink-0 flex items-center gap-2 mt-3">
-          {otherKeys.map((slug) => {
-            if (!data.keys[slug]) return null;
-            const kMeta = KEYS[slug];
-            const firstWord = kMeta.name.split(' ')[0];
-            return (
-              <button
-                key={slug}
-                onClick={() => handleSwitchKey(slug)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-white/10 hover:border-white/25 text-gray-500 hover:text-gray-300 transition-colors"
+        {/* RIGHT COLUMN — summary or key insight */}
+        <div className="flex-1 min-w-0 sm:pl-5 flex flex-col justify-center">
+          <AnimatePresence mode="wait">
+            {activeKeySlug && activeKeyData ? (
+              <motion.div
+                key={activeKeySlug}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-3"
               >
-                <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Image
-                    src={kMeta.icon}
-                    alt={kMeta.name}
-                    width={14}
-                    height={14}
-                    className="object-contain opacity-70"
-                  />
+                {/* Key label */}
+                <p
+                  className="text-[10px] font-semibold tracking-widest uppercase"
+                  style={{ color: meta.color }}
+                >
+                  {activeKeyMeta?.name}
+                </p>
+
+                {/* Insight paragraph */}
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  {activeKeyData.insight}
+                </p>
+
+                {/* Footer: back + other key pills */}
+                <div className="flex items-center gap-2 flex-wrap mt-1">
+                  <button
+                    onClick={handleClose}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-full border border-white/10 hover:border-white/25 text-gray-500 hover:text-gray-300 transition-colors text-[11px]"
+                  >
+                    ← back
+                  </button>
+                  {otherKeys.map((slug) => {
+                    if (!data.keys[slug]) return null;
+                    const kMeta = KEYS[slug];
+                    return (
+                      <button
+                        key={slug}
+                        onClick={() => handleSwitchKey(slug)}
+                        className="px-2.5 py-1 rounded-full border border-white/10 hover:border-white/25 text-gray-500 hover:text-gray-300 transition-colors text-[11px]"
+                      >
+                        {kMeta.name.split(' ')[0]}
+                      </button>
+                    );
+                  })}
                 </div>
-                <span className="text-[10px]">{firstWord}</span>
-              </button>
-            );
-          })}
+              </motion.div>
+            ) : (
+              <motion.p
+                key="summary"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="text-sm text-gray-300 leading-relaxed"
+              >
+                {data.summary}
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
