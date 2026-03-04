@@ -7,11 +7,19 @@ import type { DimensionType, KeyType } from '@/types/framework';
 import type { DimensionData } from '@/types/profile-json';
 import { DIMENSIONS, KEYS } from '@/data/framework';
 
-const DIM_FUNCTION: Record<DimensionType, string> = {
-  self: 'Reception Layer',
-  space: 'Transmission Layer',
-  story: 'Temporal Direction',
-  spirit: 'Timeless Direction',
+const KEY_QUESTIONS: Record<KeyType, string> = {
+  'tuned-emotions': 'How do your emotions either open or close the door to flow?',
+  'focused-body': 'How does your physical state support or block flow?',
+  'open-mind': 'How does the quality of your thinking shape your access to flow?',
+  'intentional-space': 'How does the space around you invite or block flow?',
+  'optimized-tools': 'How does friction in your toolkit translate into friction in your flow?',
+  'feedback-systems': 'How does knowing whether you\'re making impact keep flow alive?',
+  'generative-story': 'How does the narrative you\'re living support or stall flow?',
+  'clear-mission': 'How does clarity of direction affect your access to flow?',
+  'empowered-role': 'How does claiming your role — or not — shape your flow?',
+  'grounding-values': 'How does alignment between your values and your actions affect flow?',
+  'ignited-curiosity': 'How does genuine interest fuel or deplete flow?',
+  'visualized-vision': 'How does having a clear picture of where you\'re headed affect flow?',
 };
 
 const DIM_KEYS: Record<DimensionType, KeyType[]> = {
@@ -50,8 +58,6 @@ export default function DimensionBentoCard({ dim, data }: Props) {
   }
 
   const activeKeyData = activeKeySlug ? data.keys[activeKeySlug] : null;
-  const activeKeyMeta = activeKeySlug ? KEYS[activeKeySlug] : null;
-  const otherKeys = keySlots.filter((s) => s !== activeKeySlug);
 
   function handleKeyClick(slug: KeyType) {
     if (!data.keys[slug]) return;
@@ -60,11 +66,6 @@ export default function DimensionBentoCard({ dim, data }: Props) {
 
   function handleClose() {
     setActiveKeySlug(null);
-  }
-
-  function handleSwitchKey(slug: KeyType) {
-    if (!data.keys[slug]) return;
-    setActiveKeySlug(slug);
   }
 
   return (
@@ -82,24 +83,21 @@ export default function DimensionBentoCard({ dim, data }: Props) {
         <div className="w-full sm:w-48 md:w-52 flex-shrink-0 flex flex-col gap-2 sm:pr-5 sm:border-r sm:border-white/[0.06]">
           {/* Dimension header */}
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-7 h-7 flex-shrink-0">
+            <div className="w-8 h-8 flex-shrink-0">
               <Image
                 src={meta.sectionLogo}
                 alt={meta.name}
-                width={28}
-                height={28}
+                width={32}
+                height={32}
                 className="object-contain opacity-80"
               />
             </div>
-            <div>
-              <p
-                className="text-[10px] font-semibold tracking-widest uppercase leading-none"
-                style={{ color: meta.color }}
-              >
-                {meta.name}
-              </p>
-              <p className="text-[10px] text-gray-600 mt-0.5">{DIM_FUNCTION[dim]}</p>
-            </div>
+            <p
+              className="text-sm font-semibold tracking-widest uppercase leading-none"
+              style={{ color: meta.color }}
+            >
+              {meta.name}
+            </p>
           </div>
 
           {/* Stacked key buttons */}
@@ -155,41 +153,24 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                 transition={{ duration: 0.2 }}
                 className="flex flex-col gap-3"
               >
-                {/* Key label */}
-                <p
-                  className="text-[10px] font-semibold tracking-widest uppercase"
-                  style={{ color: meta.color }}
-                >
-                  {activeKeyMeta?.name}
-                </p>
+                {/* Question + X close */}
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-xs text-gray-500 leading-snug italic flex-1">
+                    {activeKeySlug && KEY_QUESTIONS[activeKeySlug]}
+                  </p>
+                  <button
+                    onClick={handleClose}
+                    className="flex-shrink-0 text-gray-600 hover:text-gray-300 transition-colors text-base leading-none mt-0.5"
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
 
                 {/* Insight paragraph */}
                 <p className="text-sm text-gray-300 leading-relaxed">
                   {activeKeyData.insight}
                 </p>
-
-                {/* Footer: back + other key pills */}
-                <div className="flex items-center gap-2 flex-wrap mt-1">
-                  <button
-                    onClick={handleClose}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-full border border-white/10 hover:border-white/25 text-gray-500 hover:text-gray-300 transition-colors text-[11px]"
-                  >
-                    ← back
-                  </button>
-                  {otherKeys.map((slug) => {
-                    if (!data.keys[slug]) return null;
-                    const kMeta = KEYS[slug];
-                    return (
-                      <button
-                        key={slug}
-                        onClick={() => handleSwitchKey(slug)}
-                        className="px-2.5 py-1 rounded-full border border-white/10 hover:border-white/25 text-gray-500 hover:text-gray-300 transition-colors text-[11px]"
-                      >
-                        {kMeta.name.split(' ')[0]}
-                      </button>
-                    );
-                  })}
-                </div>
               </motion.div>
             ) : (
               <motion.p
