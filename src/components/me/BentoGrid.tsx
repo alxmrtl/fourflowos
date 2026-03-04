@@ -156,9 +156,8 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
     <div className="rounded-2xl border border-white/[0.08] bg-[rgba(12,12,12,0.9)] p-6 mb-6">
       <ArchetypeHeader profile={normalized} />
 
-      {normalized.overview?.headline && <OverviewCard overview={normalized.overview} />}
-
       {/* 2×2 Dimension grid */}
+      <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Your Flow Map</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {DIM_ORDER.map((dim, idx) => (
           <motion.div
@@ -175,7 +174,16 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
         ))}
       </div>
 
+      {/* Overview */}
+      {normalized.overview?.headline && (
+        <>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Your Signal at a Glance</p>
+          <OverviewCard overview={normalized.overview} />
+        </>
+      )}
+
       {/* Signal row */}
+      <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Tools &amp; Next Steps</p>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
