@@ -19,14 +19,6 @@ interface Props {
   curiosity: CuriosityData | null;
 }
 
-function parseBullet(bullet: string): { label: string; body: string } {
-  const colonIdx = bullet.indexOf(': ');
-  if (colonIdx > 0) {
-    return { label: bullet.slice(0, colonIdx), body: bullet.slice(colonIdx + 2) };
-  }
-  return { label: '', body: bullet };
-}
-
 export default function CuriosityKeyReveal({ data, curiosity }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -94,37 +86,9 @@ export default function CuriosityKeyReveal({ data, curiosity }: Props) {
             Ignited Curiosity
           </p>
 
-          {data.bullets && data.bullets.length > 0 ? (
-            <ul className="space-y-3 mb-5">
-              {data.bullets.map((bullet, i) => {
-                const { label, body } = parseBullet(bullet);
-                return (
-                  <li key={i} className="text-sm text-gray-300 leading-relaxed">
-                    {label && (
-                      <span
-                        className="text-[10px] font-semibold tracking-widest uppercase mr-2 align-middle"
-                        style={{ color: AMETHYST }}
-                      >
-                        {label}
-                      </span>
-                    )}
-                    {body}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <>
-              <p className="text-sm text-gray-300 leading-relaxed mb-3">
-                {data.insight || fallbackInsight}
-              </p>
-              {data.invitation && (
-                <p className="text-xs text-gray-600 italic leading-relaxed mb-5">
-                  ↳ {data.invitation}
-                </p>
-              )}
-            </>
-          )}
+          <p className="text-sm text-gray-300 leading-relaxed mb-5">
+            {data.insight || fallbackInsight}
+          </p>
 
           {/* Live curiosity map */}
           {items.length > 0 ? (

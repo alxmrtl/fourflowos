@@ -67,12 +67,7 @@ function buildLlmContext(
       lines.push('');
       for (const [key, keyData] of Object.entries(data.keys)) {
         lines.push(`**${key}**`);
-        if (keyData.bullets && keyData.bullets.length > 0) {
-          keyData.bullets.forEach((b) => lines.push(`- ${b}`));
-        } else {
-          if (keyData.insight) lines.push(keyData.insight);
-          if (keyData.invitation) lines.push(`_${keyData.invitation}_`);
-        }
+        if (keyData.insight) lines.push(keyData.insight);
         lines.push('');
       }
     }
