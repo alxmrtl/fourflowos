@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import NavigationWrapper from "@/components/navigation/NavigationWrapper";
 import PageTransition from "@/components/PageTransition";
@@ -8,7 +8,18 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import { AudienceProvider } from "@/context/AudienceContext";
 import { AuthProvider } from "@/context/AuthContext";
 
-const inter = Inter({ subsets: ["latin"] });
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-dm-sans",
+});
 
 export const metadata: Metadata = {
   title: "FourFlowOS - The Operating System for Flow States",
@@ -44,7 +55,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${cormorant.variable} ${dmSans.variable} font-sans`}>
         <AuthProvider>
           <AudienceProvider>
             <LayoutWrapper>

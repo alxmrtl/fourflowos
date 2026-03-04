@@ -14,8 +14,8 @@ export default function HeroSectionV2() {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({
-        x: (e.clientX / window.innerWidth - 0.5) * 15,
-        y: (e.clientY / window.innerHeight - 0.5) * 15,
+        x: (e.clientX / window.innerWidth - 0.5) * 12,
+        y: (e.clientY / window.innerHeight - 0.5) * 12,
       });
     };
     window.addEventListener('mousemove', handleMouseMove);
@@ -44,18 +44,28 @@ export default function HeroSectionV2() {
           transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute left-1/4 bottom-0 w-72 h-72 rounded-full blur-3xl opacity-12"
+          className="absolute left-1/4 bottom-0 w-72 h-72 rounded-full blur-3xl opacity-10"
           style={{ background: '#6BA292' }}
           animate={{ x: [0, 40, 0], y: [0, -30, 0], scale: [1, 1.08, 1] }}
           transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute right-1/4 bottom-1/4 w-64 h-64 rounded-full blur-3xl opacity-10"
+          className="absolute right-1/4 bottom-1/4 w-64 h-64 rounded-full blur-3xl opacity-08"
           style={{ background: '#5B84B1' }}
           animate={{ x: [0, -30, 0], y: [0, 35, 0], scale: [1, 1.12, 1] }}
           transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
+
+      {/* Subtle noise overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '128px 128px',
+        }}
+      />
 
       {/* Grid overlay */}
       <div
@@ -78,13 +88,13 @@ export default function HeroSectionV2() {
           hidden: { opacity: 0 },
           visible: {
             opacity: 1,
-            transition: { duration: 0.6, staggerChildren: 0.15, delayChildren: 0.1 },
+            transition: { duration: 0.6, staggerChildren: 0.18, delayChildren: 0.1 },
           },
         }}
       >
         {/* Animated logo */}
         <motion.div
-          className="relative w-28 h-28 md:w-36 md:h-36 mx-auto mb-8"
+          className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-10"
           style={{ x: mousePosition.x, y: mousePosition.y }}
           variants={{
             hidden: { scale: 0, rotate: -180, opacity: 0 },
@@ -127,43 +137,41 @@ export default function HeroSectionV2() {
 
         {/* Headline */}
         <motion.h1
-          className="text-4xl md:text-6xl lg:text-7xl font-bold mb-3 text-white leading-tight"
+          className="font-display text-5xl md:text-7xl font-normal mb-2 text-white leading-[1.05] tracking-tight"
           variants={{
-            hidden: { opacity: 0, y: 40, filter: 'blur(10px)' },
-            visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.8, ease: 'easeOut' } },
+            hidden: { opacity: 0, y: 36, filter: 'blur(10px)' },
+            visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: 'easeOut' } },
           }}
         >
           Flow is your nature.
         </motion.h1>
 
         <motion.h2
-          className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight"
+          className="font-display text-5xl md:text-7xl font-normal italic mb-8 leading-[1.05] tracking-tight"
           variants={{
-            hidden: { opacity: 0, y: 40, filter: 'blur(10px)' },
-            visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.8, ease: 'easeOut' } },
+            hidden: { opacity: 0, y: 36, filter: 'blur(10px)' },
+            visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: 'easeOut' } },
           }}
         >
-          <span
-            className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent"
-          >
-            Let&apos;s see what&apos;s in the way.
+          <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
+            Find your way back to it.
           </span>
         </motion.h2>
 
         {/* Subtext */}
         <motion.p
-          className="text-base md:text-lg text-gray-400 max-w-xl mx-auto mb-10"
+          className="font-sans text-base md:text-lg text-gray-400 max-w-md mx-auto mb-10 leading-relaxed"
           variants={{
-            hidden: { opacity: 0, y: 25, filter: 'blur(6px)' },
+            hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
             visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: 'easeOut' } },
           }}
         >
-          12 questions. 4 dimensions. A clear picture of where your signal is blocked.
+          You&apos;ve been in that state before. Completely absorbed, things just working. The conditions that make it available are specific to you. FourFlowOS maps them.
         </motion.p>
 
         {/* CTAs */}
         <motion.div
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex flex-col items-center gap-4"
           variants={{
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
@@ -171,15 +179,15 @@ export default function HeroSectionV2() {
         >
           <Link
             href="/map"
-            className="px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
+            className="font-sans px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105"
           >
-            Map Your Signal
+            Discover your archetype
           </Link>
           <a
-            href="#how-it-works"
-            className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
+            href="#honest-moment"
+            className="font-sans text-sm text-gray-600 hover:text-gray-400 transition-colors"
           >
-            Learn how it works ↓
+            See how it works ↓
           </a>
         </motion.div>
       </motion.div>
