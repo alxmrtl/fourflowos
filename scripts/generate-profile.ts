@@ -184,12 +184,17 @@ const STYLE_RULES = `VOICE AND STYLE RULES — follow these without exception:
 12. No sycophantic framing. Don't affirm before stating.`;
 
 const OVERVIEW_INSTRUCTION = `The JSON must include an "overview" field:
-- "headline": one sentence — the most defining truth about how this person flows (e.g. "You flow when the stakes are real.")
-- "keys": array of 3-5 short statements, each a different lever, no more than 2 from the same dimension, specific to this person's intake, phrased as direct observations starting with "You" (e.g. "You build momentum through constraint, not freedom.")
+- "headline": one sentence — the most defining truth about how this person flows. Start with "You". (e.g. "You flow when the stakes are real and the path is clear.")
+- "flow": array of exactly 4 strings — behaviors, conditions, or states that generate flow for this person. What to lean into.
+- "friction": array of exactly 4 strings — patterns, habits, or conditions that block their flow. What to avoid or release.
+
+Each item starts with "You" and is a direct observation (10-15 words). Concrete and specific to this person's intake. Observation, not advice.
+Draw from all four dimensions — no more than 2 items from the same dimension across either list.
 
 Length targets:
-- overview.headline: 1 sentence
-- overview.keys: 3-5 items, each 10-20 words
+- overview.headline: 1 sentence, 10-20 words
+- overview.flow: exactly 4 items, each 10-15 words
+- overview.friction: exactly 4 items, each 10-15 words
 - archetype.framing: 2-3 sentences
 - Each dimension summary: 30-35 words
 - Each key insight: 50-60 words`;
@@ -697,7 +702,9 @@ Example:
     profileJson = normalizeProfileJson(profileJson);
     console.log(`      Archetype: "${profileJson.archetype.name}"`);
     if (profileJson.overview) {
-      console.log(`      Overview: "${profileJson.overview.headline}" (${profileJson.overview.keys.length} keys)`);
+      const flowCount = profileJson.overview.flow?.length ?? 0;
+      const frictionCount = profileJson.overview.friction?.length ?? 0;
+      console.log(`      Overview: "${profileJson.overview.headline}" (flow: ${flowCount}, friction: ${frictionCount})`);
     } else {
       console.warn('      ⚠ overview field missing from generated profile');
     }

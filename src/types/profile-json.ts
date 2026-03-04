@@ -10,8 +10,10 @@ export interface DimensionData {
 }
 
 export interface OverviewData {
-  headline: string;  // one sentence: the most defining truth about how this person flows
-  keys: string[];    // 3-5 cross-pillar statements, specific to this person
+  headline: string;    // one sentence: the most defining truth about how this person flows
+  flow?: string[];     // 4 items: behaviors/conditions that generate flow for this person
+  friction?: string[]; // 4 items: patterns that block flow for this person
+  keys?: string[];     // legacy: 3-5 cross-pillar statements (v3.0)
 }
 
 export interface FlowProfileJSON {
