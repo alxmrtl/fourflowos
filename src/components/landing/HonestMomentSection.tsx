@@ -43,8 +43,7 @@ export default function HonestMomentSection() {
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            AI didn&apos;t simplify things. It multiplied them.<br />
-            More options. More content. More futures competing for your attention. The speed didn&apos;t just get fast — it became structural. And the already-hard question of what actually matters? It got crowded into a smaller and smaller corner.
+            AI didn&apos;t simplify things. It multiplied them. The noise is structural now. What you actually want got harder to hear.
           </p>
           <div className="mt-8 space-y-3">
             <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">

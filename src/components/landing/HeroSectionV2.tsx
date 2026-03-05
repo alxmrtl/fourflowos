@@ -116,11 +116,9 @@ export default function HeroSectionV2() {
             visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: 'easeOut' } },
           }}
         >
-          The world keeps moving faster. That&apos;s not changing.<br /><br />
-          But there&apos;s a state — one you&apos;ve already been in — where the current stops sweeping you. Where work flows, thinking clears, and the right move just arrives.<br /><br />
-          The conditions that create that state are specific to you.{' '}
+          The world got faster. Flow is how you move well inside it.{' '}
           <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent [text-shadow:none] drop-shadow-[0_0_12px_rgba(255,111,97,0.45)]">
-            FourFlowOS maps them.
+            FourFlowOS maps your conditions.
           </span>
         </motion.p>
 

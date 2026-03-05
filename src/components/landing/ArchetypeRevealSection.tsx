@@ -126,9 +126,9 @@ export default function ArchetypeRevealSection() {
               Here&apos;s how you work.
             </h2>
             <p className="font-sans text-lg text-gray-400 leading-relaxed mb-8">
-              The Archetype draws on numerology, personality science, and behavioral patterns — and reads
-              them through the lens of the twelve keys. What comes back isn&apos;t a score. It&apos;s a blueprint.
-              A blueprint of how you run. Where you naturally catch. What creates the state — and what gets in the way.
+              The Archetype draws on ancient wisdom traditions, personality science, and behavioral patterns, read
+              through the lens of the twelve keys. What comes back is a blueprint: how you run, where you catch,
+              what opens the state and what gets in the way.
             </p>
 
             {/* Feature lines */}

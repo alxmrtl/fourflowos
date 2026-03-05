@@ -50,8 +50,7 @@ function UniquenessHeader() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
         >
-          The same twelve conditions determine whether flow is available — in every person. The biology is universal. The spark isn&apos;t.
-          How those twelve factors combine in you — which ones lead, which follow, where they pull against each other — that&apos;s particular. That&apos;s yours.
+          Twelve conditions govern whether flow is available. Same twelve, every person. How they combine in you is yours — which ones lead, which follow, where they work against each other. That&apos;s the map.
         </motion.p>
 
         {/* Pillar symbol cluster */}
@@ -87,7 +86,7 @@ function UniquenessHeader() {
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.36 }}
         >
-          Four dimensions. Twelve keys. One clear picture of how you specifically come alive.
+          Four dimensions. Twelve keys. One picture of how you come alive.
         </motion.p>
       </div>
     </div>

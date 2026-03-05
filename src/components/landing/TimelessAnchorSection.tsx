@@ -121,7 +121,7 @@ export default function TimelessAnchorSection() {
             animate={headerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.12 }}
           >
-            Every tradition in human history found their way to the same door.
+            They used different words. They arrived at the same place.
           </motion.p>
         </div>
 
@@ -135,25 +135,16 @@ export default function TimelessAnchorSection() {
         {/* Bridge copy */}
         <div className="max-w-2xl mx-auto mt-20 space-y-8">
           <BridgeParagraph>
-            This convergence is saying something.
+            That&apos;s too much agreement to ignore.
           </BridgeParagraph>
           <BridgeParagraph>
-            Taoists. Greek athletes. Jazz musicians. Neuroscientists. They didn&apos;t share notes. They found the same state through completely different paths. That kind of agreement — across millennia, across cultures, across disciplines — doesn&apos;t happen by coincidence. It means something essential about human beings is operating.
+            Taoists and jazz musicians and neuroscientists didn&apos;t compare notes. They all arrived at the same state. That&apos;s not cultural overlap. That&apos;s structural.
           </BridgeParagraph>
           <BridgeParagraph>
-            Here&apos;s why that matters more right now than it ever has.
-          </BridgeParagraph>
-          <BridgeParagraph>
-            We&apos;re living through the fastest era of change in human history. AI isn&apos;t a tool anymore — it&apos;s a tide. The options are multiplying. The decisions are heavier. The volume of everything is up.
-          </BridgeParagraph>
-          <BridgeParagraph>
-            In that environment, most people reach for better systems. Faster frameworks. More information.
+            The environment changed. AI isn&apos;t a feature. It&apos;s the context. The noise is up. The decisions are heavier.
           </BridgeParagraph>
           <BridgeParagraph delay={0.1}>
-            What they actually need is an anchor.
-          </BridgeParagraph>
-          <BridgeParagraph delay={0.1}>
-            Flow is that anchor. Not because it slows you down — because it&apos;s the state from which you can move <em>with</em> the current instead of against it.
+            Most people reach for more structure. Flow is the ground. Structure follows.
           </BridgeParagraph>
           <BridgeParagraph delay={0.15}>
             Every civilization that faced disruption had a name for it.
