@@ -173,6 +173,11 @@ function ToolRow({
           </span>
         </div>
 
+        {/* What it is */}
+        {app.what && (
+          <p className="text-xs text-gray-600 mb-2">{app.what}</p>
+        )}
+
         {/* Description */}
         <p className="text-sm text-gray-400 leading-relaxed max-w-2xl">{app.description}</p>
 
@@ -266,7 +271,10 @@ export default function PracticePage() {
               Practice System
             </p>
             <h1 className="font-display text-5xl md:text-6xl font-normal text-white mb-5 leading-[1.1]">
-              The tools that train flow.
+              The tools that{' '}
+              <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
+                train flow.
+              </span>
             </h1>
             <p className="text-lg text-gray-400 leading-relaxed max-w-xl mb-8">
               Each practice targets a specific condition that flow requires — attention, velocity, curiosity, movement.

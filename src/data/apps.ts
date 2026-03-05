@@ -22,6 +22,7 @@ export interface App {
   version?: string;
   releaseDate?: string;
   inDevelopment: boolean;
+  what?: string;
 }
 
 export const APPS: Record<string, App> = {
@@ -62,6 +63,7 @@ Use FlowSpark to orient your vision, choose projects, or simply understand yours
     accentColor: '#7A4DA4',
     relatedPillars: ['spirit'],
     inDevelopment: false,
+    what: 'A guided input tool that visualizes the overlaps between your curiosities.',
   },
   flowzone: {
     id: 'flowzone',
@@ -109,6 +111,7 @@ Goal linking connects sessions to your broader purpose, and statistics track you
     relatedPillars: ['self', 'space'],
     version: '1.0',
     inDevelopment: false,
+    what: 'A browser-based focus timer with session logging, rep counting, and breathwork.',
   },
   flowhabits: {
     id: 'flowhabits',
@@ -200,6 +203,7 @@ Regular practice helps you enter a reading flow state where words process effort
     accentColor: '#6BA292',
     relatedPillars: ['self', 'space'],
     inDevelopment: false,
+    what: 'A web-based speed reading trainer — word-chunking and adjustable speed drills to train focus and information velocity.',
   },
   flowrep: {
     id: 'flowrep',
@@ -245,6 +249,7 @@ Minimalist by design—built for consistent movement habits without traditional 
     relatedPillars: ['self'],
     version: '1.0',
     inDevelopment: false,
+    what: 'An iOS app for logging bodyweight reps throughout the day with daily targets and streaks.',
   },
 };
 
