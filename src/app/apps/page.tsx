@@ -369,7 +369,7 @@ export default function PracticePage() {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">
               Practice System
             </p>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-tight">
+            <h1 className="font-display text-5xl md:text-6xl font-normal text-white mb-5 leading-[1.1]">
               Train the conditions <br className="hidden sm:block" />
               <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
                 your profile measures.
@@ -440,7 +440,7 @@ export default function PracticePage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-2xl font-bold text-white mb-3">
+            <h2 className="font-display text-3xl md:text-4xl font-normal text-white mb-3">
               Start with your profile.
             </h2>
             <p className="text-gray-400 mb-6 max-w-md mx-auto text-sm leading-relaxed">

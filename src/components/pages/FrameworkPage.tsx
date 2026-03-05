@@ -73,7 +73,7 @@ export default function FrameworkPage() {
           </motion.p>
 
           <motion.h1
-            className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight"
+            className="font-display text-5xl md:text-6xl font-normal text-white mb-4 leading-[1.1]"
             initial={{ opacity: 0, y: 24 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1, duration: 0.7 }}
