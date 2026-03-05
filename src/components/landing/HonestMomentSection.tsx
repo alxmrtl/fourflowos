@@ -1,7 +1,95 @@
 'use client';
 
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { AnimatePresence, motion, useInView } from 'framer-motion';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+const QUESTIONS = [
+  'What makes you come alive?',
+  'What am I here for?',
+  'What makes my life meaningful?',
+  'What direction is right for me?',
+  'When do I feel most like myself?',
+  'What would I do if I knew I couldn\'t fail?',
+  'What lights me up without burning me out?',
+  'What am I building, really?',
+  'What do I already know that I\'m not acting on?',
+  'What does the right kind of hard feel like?',
+  'What am I putting off that actually matters?',
+  'What does moving well through life look like?',
+];
+
+// Subtle horizontal offsets per question index (px from center)
+const X_OFFSETS = [0, -24, 18, -32, 28, 8, -18, 32, -8, 22, -28, 12];
+
+interface RainItem {
+  id: number;
+  text: string;
+  x: number;
+}
+
+let uid = 0;
+
+function QuestionRain() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { amount: 0.3 });
+  const [items, setItems] = useState<RainItem[]>([]);
+  const queueRef = useRef(0);
+
+  const addItem = useCallback(() => {
+    const idx = queueRef.current % QUESTIONS.length;
+    queueRef.current++;
+    setItems(prev => [
+      ...prev,
+      { id: uid++, text: QUESTIONS[idx], x: X_OFFSETS[idx] },
+    ]);
+  }, []);
+
+  const removeItem = useCallback((id: number) => {
+    setItems(prev => prev.filter(item => item.id !== id));
+  }, []);
+
+  useEffect(() => {
+    if (!isInView) {
+      setItems([]);
+      queueRef.current = 0;
+      return;
+    }
+    addItem();
+    const interval = setInterval(addItem, 1800);
+    return () => clearInterval(interval);
+  }, [isInView, addItem]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative h-52 overflow-hidden"
+      style={{
+        maskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)',
+      }}
+    >
+      <AnimatePresence>
+        {items.map(item => (
+          <motion.p
+            key={item.id}
+            className="absolute left-0 right-0 text-center font-display text-xl md:text-2xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent"
+            style={{ x: item.x }}
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 210, opacity: [0, 1, 1, 0] }}
+            transition={{
+              duration: 4.5,
+              y: { ease: 'easeIn', duration: 4.5 },
+              opacity: { duration: 4.5, times: [0, 0.08, 0.82, 1], ease: 'linear' },
+            }}
+            onAnimationComplete={() => removeItem(item.id)}
+          >
+            {item.text}
+          </motion.p>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 function ScrollParagraph({ children }: { children: React.ReactNode }) {
   const ref = useRef(null);
@@ -45,18 +133,9 @@ export default function HonestMomentSection() {
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
             AI didn&apos;t simplify things. It multiplied them. The noise is structural now. What you actually want got harder to hear.
           </p>
-          <div className="mt-8 space-y-3">
-            <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
-              What do I actually want to build?
-            </p>
-            <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
-              What am I here for?
-            </p>
-            <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
-              What do I come alive doing?
-            </p>
-          </div>
         </ScrollParagraph>
+
+        <QuestionRain />
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">

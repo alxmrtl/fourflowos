@@ -116,9 +116,10 @@ export default function HeroSectionV2() {
             visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: 'easeOut' } },
           }}
         >
-          The world got faster. Flow is how you move well inside it.{' '}
+          The world is moving faster.<br />
+          Are you able to move with it?<br />
           <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent [text-shadow:none] drop-shadow-[0_0_12px_rgba(255,111,97,0.45)]">
-            FourFlowOS maps your conditions.
+            FourFlowOS shows you how.
           </span>
         </motion.p>
 
