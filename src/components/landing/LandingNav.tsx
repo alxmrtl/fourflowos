@@ -34,12 +34,12 @@ export default function LandingNav() {
 
   // Signal link: signed-in users go to their profile hub; others go to intake
   const signalLink = user
-    ? { href: '/me', label: 'Your Signal' }
-    : { href: '/map', label: 'Map Your Signal' };
+    ? { href: '/me', label: 'Your Archetype' }
+    : { href: '/map', label: 'Discover Your Archetype' };
 
   const mainNavLinks = [
+    { ...signalLink, featured: true },
     { href: '/framework', label: 'How It Works' },
-    signalLink,
     { href: '/apps', label: 'Practice' },
     { href: '/together', label: 'Work Together' },
   ];
@@ -81,30 +81,40 @@ export default function LandingNav() {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
-            {mainNavLinks.map((link, index) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="relative px-4 py-2 text-gray-400 hover:text-white transition-colors duration-300 text-sm font-medium group"
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                {link.label}
-                <motion.span
-                  className="absolute bottom-0 left-1/2 h-0.5 rounded-full"
-                  style={{
-                    backgroundColor: pillarColors[index % pillarColors.length],
-                    originX: 0.5,
-                  }}
-                  initial={{ width: 0, x: '-50%' }}
-                  animate={{
-                    width: hoveredIndex === index ? '60%' : 0,
-                    x: '-50%',
-                  }}
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
-                />
-              </Link>
-            ))}
+            {mainNavLinks.map((link, index) =>
+              (link as { featured?: boolean }).featured ? (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="relative px-4 py-1.5 text-white text-sm font-medium rounded-full border border-[#FF6F61]/35 bg-gradient-to-r from-[#FF6F61]/[0.08] to-[#7A4DA4]/[0.08] hover:from-[#FF6F61]/15 hover:to-[#7A4DA4]/15 hover:border-[#FF6F61]/55 transition-all duration-300 shadow-[0_0_14px_rgba(255,111,97,0.10)] hover:shadow-[0_0_22px_rgba(255,111,97,0.25)]"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="relative px-4 py-2 text-gray-400 hover:text-white transition-colors duration-300 text-sm font-medium group"
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  {link.label}
+                  <motion.span
+                    className="absolute bottom-0 left-1/2 h-0.5 rounded-full"
+                    style={{
+                      backgroundColor: pillarColors[index % pillarColors.length],
+                      originX: 0.5,
+                    }}
+                    initial={{ width: 0, x: '-50%' }}
+                    animate={{
+                      width: hoveredIndex === index ? '60%' : 0,
+                      x: '-50%',
+                    }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                  />
+                </Link>
+              )
+            )}
           </div>
 
           {/* Desktop: profile icon dropdown */}
@@ -258,7 +268,7 @@ export default function LandingNav() {
                   className="block w-full text-center px-5 py-3 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Map Your Signal
+                  Discover Your Archetype
                 </Link>
               </div>
             )}
