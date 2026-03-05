@@ -108,11 +108,11 @@ export default function LandingPage() {
       {/* 2. Honest Moment */}
       <HonestMomentSection />
 
-      {/* 3. Timeless Anchor */}
-      <TimelessAnchorSection />
-
-      {/* 4. Felt Beat */}
+      {/* 3. Felt Beat — personal recognition first */}
       <FeltBeatSection />
+
+      {/* 4. Timeless Anchor — historical validation */}
+      <TimelessAnchorSection />
 
       {/* 5. Framework: Uniqueness header + DimensionsSection */}
       <UniquenessHeader />

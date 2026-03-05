@@ -59,7 +59,7 @@ export default function HonestMomentSection() {
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            Those questions didn&apos;t go away. And the state where they become clear — that hasn&apos;t gone away either.
+            The state where those become clear — you&apos;ve already been in it.
           </p>
         </ScrollParagraph>
       </div>
