@@ -1,26 +1,13 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState, useRef } from 'react';
+import { useRef } from 'react';
 import ParticleBackground from './ParticleBackground';
 
 export default function HeroSectionV2() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { amount: 0.15 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth - 0.5) * 12,
-        y: (e.clientY / window.innerHeight - 0.5) * 12,
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   return (
     <section
@@ -57,6 +44,12 @@ export default function HeroSectionV2() {
         />
       </div>
 
+      {/* Dark radial vignette behind text */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 60% 70% at 50% 50%, rgba(10,10,10,0.65) 0%, transparent 100%)' }}
+      />
+
       {/* Subtle noise overlay */}
       <div
         className="absolute inset-0 opacity-[0.04] pointer-events-none"
@@ -92,49 +85,6 @@ export default function HeroSectionV2() {
           },
         }}
       >
-        {/* Animated logo */}
-        <motion.div
-          className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-10"
-          style={{ x: mousePosition.x, y: mousePosition.y }}
-          variants={{
-            hidden: { scale: 0, rotate: -180, opacity: 0 },
-            visible: {
-              scale: 1,
-              rotate: 0,
-              opacity: 1,
-              transition: { type: 'spring', stiffness: 80, damping: 15, duration: 1.2 },
-            },
-          }}
-        >
-          <motion.div
-            className="absolute -inset-4 rounded-full opacity-30"
-            style={{ background: 'radial-gradient(circle, rgba(122, 77, 164, 0.4) 0%, transparent 70%)' }}
-            animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.35, 0.2] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: 'conic-gradient(from 0deg, #FF6F61, #6BA292, #5B84B1, #7A4DA4, #FF6F61)',
-              filter: 'blur(20px)',
-            }}
-            animate={{ rotate: 360, scale: [1, 1.05, 1] }}
-            transition={{
-              rotate: { duration: 30, repeat: Infinity, ease: 'linear' },
-              scale: { duration: 6, repeat: Infinity, ease: 'easeInOut' },
-            }}
-          />
-          <div className="absolute inset-1 rounded-full overflow-hidden bg-[#0a0a0a]">
-            <Image
-              src="/assets/LOGOS/FOURFLOW - MAIN LOGO.png"
-              alt="FourFlowOS"
-              fill
-              className="object-contain p-2"
-              priority
-            />
-          </div>
-        </motion.div>
-
         {/* Headline */}
         <motion.h1
           className="font-display text-5xl md:text-7xl font-normal mb-2 text-white leading-[1.05] tracking-tight"
@@ -168,7 +118,8 @@ export default function HeroSectionV2() {
         >
           You&apos;ve been in that state before.<br />
           Completely absorbed, things just working.<br />
-          The conditions that make it available are specific to you.<br />
+          The conditions that make it available are{' '}
+          <span className="whitespace-nowrap">specific to you.</span><br />
           <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent [text-shadow:none] drop-shadow-[0_0_12px_rgba(255,111,97,0.45)]">
             FourFlowOS maps them.
           </span>

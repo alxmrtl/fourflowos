@@ -17,67 +17,84 @@ const dimensions = [
   { label: 'SPIRIT', color: '#7A4DA4', keys: ['Grounding Values', 'Ignited Curiosity', 'Visualized Vision'] },
 ];
 
+const dimensionSummaries: Record<string, string> = {
+  SELF: 'Your inner signal is strong when you let emotion inform rather than drive. The body holds steadiness your mind often overrides.',
+  SPACE: 'Your environment either amplifies or absorbs. The right constraints become launchpads — clutter is a hidden cost.',
+  STORY: 'You orient by meaning. When the arc is clear, execution becomes obvious. Disconnected tasks drain more than they build.',
+  SPIRIT: 'Curiosity is your compass. Values don\'t limit you — they\'re the ground you push off from.',
+};
+
 function BentoPreview() {
   return (
     <div className="relative w-full rounded-2xl overflow-hidden bg-[#0d0d0d] border border-white/10 p-4 md:p-5">
       {/* Archetype header */}
-      <div className="mb-4 pb-4 border-b border-white/8">
+      <div className="mb-4 pb-4 border-b border-white/[0.08]">
         <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-gray-600 mb-1">
           Your Flow Archetype
         </p>
-        <div className="h-5 w-40 rounded bg-gradient-to-r from-[#FF6F61]/30 to-[#7A4DA4]/30" />
-        <div className="h-3 w-56 rounded bg-white/5 mt-2" />
+        <p className="font-sans text-base font-light text-white/80 leading-tight">
+          The Resonant Architect
+        </p>
+        {/* 4-color hairline */}
+        <div className="flex h-[2px] mt-2 mb-2 rounded-full overflow-hidden">
+          <div className="flex-1" style={{ background: '#FF6F61' }} />
+          <div className="flex-1" style={{ background: '#6BA292' }} />
+          <div className="flex-1" style={{ background: '#5B84B1' }} />
+          <div className="flex-1" style={{ background: '#7A4DA4' }} />
+        </div>
+        <p className="font-sans text-[10px] italic text-gray-500">
+          You build with signal. Structure is how you transmit meaning.
+        </p>
       </div>
 
       {/* 2×2 dimension grid */}
-      <div className="grid grid-cols-2 gap-2.5 mb-2.5">
+      <div className="grid grid-cols-2 gap-2.5">
         {dimensions.map((dim) => (
           <div
             key={dim.label}
-            className="rounded-xl p-3"
-            style={{ backgroundColor: `${dim.color}0c`, border: `1px solid ${dim.color}22` }}
+            className="rounded-xl overflow-hidden"
+            style={{ border: `1px solid ${dim.color}22` }}
           >
-            <p
-              className="font-sans text-[8px] font-semibold tracking-widest uppercase mb-2"
-              style={{ color: dim.color }}
-            >
-              {dim.label}
-            </p>
-            {/* Summary line */}
-            <div className="h-2 w-full rounded bg-white/8 mb-1.5" />
-            <div className="h-2 w-3/4 rounded bg-white/5 mb-3" />
-            {/* Key pills */}
-            <div className="flex flex-col gap-1">
-              {dim.keys.map((key) => (
-                <div
-                  key={key}
-                  className="h-5 rounded-lg flex items-center px-1.5"
-                  style={{ backgroundColor: `${dim.color}18` }}
+            {/* Top color bar */}
+            <div className="h-[3px]" style={{ background: dim.color }} />
+            <div className="p-2.5 flex gap-2">
+              {/* Left col */}
+              <div className="w-[72px] flex-shrink-0">
+                <p
+                  className="font-sans text-[7px] font-semibold tracking-widest uppercase mb-2"
+                  style={{ color: dim.color }}
                 >
-                  <div
-                    className="w-1 h-1 rounded-full mr-1.5 flex-shrink-0"
-                    style={{ backgroundColor: dim.color }}
-                  />
-                  <span className="font-sans text-[7px] text-white/40 truncate">{key}</span>
+                  {dim.label}
+                </p>
+                <div className="flex flex-col gap-1">
+                  {dim.keys.map((key) => (
+                    <div
+                      key={key}
+                      className="rounded flex items-center gap-1 px-1 py-0.5"
+                      style={{ backgroundColor: `${dim.color}14` }}
+                    >
+                      <div
+                        className="w-1 h-1 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: dim.color }}
+                      />
+                      <span className="font-sans text-[6.5px] text-white/40 leading-tight truncate">{key}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+              {/* Right col — summary text */}
+              <div className="flex-1 min-w-0">
+                <p className="font-sans text-[7px] text-gray-500 leading-[1.55]">
+                  {dimensionSummaries[dim.label]}
+                </p>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Signal strip */}
-      <div className="grid grid-cols-3 gap-2">
-        {['Life Path', 'Expression', 'Soul Urge'].map((label, i) => (
-          <div key={label} className="rounded-lg bg-white/[0.03] border border-white/8 p-2 text-center">
-            <p className="font-sans text-[7px] text-gray-600 mb-1">{label}</p>
-            <div className="h-4 w-6 rounded mx-auto bg-white/10" />
-          </div>
-        ))}
-      </div>
-
       {/* Bottom gradient mask */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none" />
     </div>
   );
 }

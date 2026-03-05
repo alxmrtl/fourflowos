@@ -43,9 +43,9 @@ export default function HonestMomentSection() {
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            AI didn&apos;t make things clearer. It made them bigger. More to read, more options,
-            more generated content than anyone can actually use. And somewhere in all of it,
-            the quieter questions got crowded out.
+            AI didn&apos;t make things clearer. It made them bigger.<br />
+            More to read, more options, more generated content than anyone can actually use.<br />
+            And somewhere in all of it, the quieter questions got crowded out.
           </p>
           <div className="mt-8 space-y-3">
             <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
@@ -53,6 +53,9 @@ export default function HonestMomentSection() {
             </p>
             <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
               What are you here for?
+            </p>
+            <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
+              What do you come alive doing?
             </p>
           </div>
         </ScrollParagraph>
