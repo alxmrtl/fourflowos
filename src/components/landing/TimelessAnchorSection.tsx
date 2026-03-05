@@ -263,7 +263,21 @@ export default function TimelessAnchorSection() {
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.9, ease: 'easeOut' }}
           >
-            FourFlowOS is our attempt at a practical playbook for getting there.
+            <motion.span
+              className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent"
+              style={{ display: 'inline-block' }}
+              animate={{
+                filter: [
+                  'drop-shadow(0 0 5px rgba(255,111,97,0.55)) drop-shadow(0 0 14px rgba(255,111,97,0.22))',
+                  'drop-shadow(0 0 5px rgba(122,77,164,0.65)) drop-shadow(0 0 14px rgba(122,77,164,0.28))',
+                  'drop-shadow(0 0 5px rgba(255,111,97,0.55)) drop-shadow(0 0 14px rgba(255,111,97,0.22))',
+                ],
+              }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              FourFlowOS
+            </motion.span>
+            {' '}is our attempt at a practical playbook for getting there.
           </motion.p>
         </div>
       </div>

@@ -120,7 +120,7 @@ export default function DimensionsSection() {
             },
           }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="font-display text-3xl md:text-4xl font-normal text-white mb-4">
             The Four Dimensions
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">

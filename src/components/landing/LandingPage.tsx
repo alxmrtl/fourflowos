@@ -41,7 +41,10 @@ function UniquenessHeader() {
           animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
           transition={{ duration: 1.0, ease: 'easeOut', delay: 0.1 }}
         >
-          The conditions are universal. Your pattern isn&apos;t.
+          The conditions are universal.<br />
+          <span className="italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
+            Your pattern isn&apos;t.
+          </span>
         </motion.h2>
 
         <motion.p
@@ -50,7 +53,7 @@ function UniquenessHeader() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
         >
-          Twelve conditions govern whether flow is available. Same twelve, every person. How they combine in you is yours — which ones lead, which follow, where they work against each other. That&apos;s the map.
+          We&apos;ve mapped twelve keys that govern whether flow is available to you — across four dimensions of experience. The keys are the same for everyone. How they fit together in you is not. The map is how these keys open the state.
         </motion.p>
 
         {/* Pillar symbol cluster */}
@@ -86,7 +89,7 @@ function UniquenessHeader() {
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.36 }}
         >
-          Four dimensions. Twelve keys. One picture of how you come alive.
+          This is the map: Twelve Keys, across Four Dimensions. One picture of how you come alive.
         </motion.p>
       </div>
     </div>
