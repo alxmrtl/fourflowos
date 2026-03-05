@@ -239,10 +239,19 @@ export default function TimelessAnchorSection() {
             There is a state that humans have always found when they needed to function beyond their ordinary capacity.
           </BridgeParagraph>
           <BridgeParagraph>
-            Taoists found it through effortless surrender.
+            In the past, Taoists found it through effortless surrender.
           </BridgeParagraph>
           <BridgeParagraph>
-            Athletes found it through pressure and skill meeting a worthy challenge.
+            Samurai found it in mushin — mind emptied, body already moving.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Now, jazz musicians find it in the pocket. The groove locks. Effort leaves.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Programmers find it five hours deep in a problem they no longer have to think about.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Athletes find it in the zone, when performance outpaces what training can explain.
           </BridgeParagraph>
           <BridgeParagraph>
             Different paths, same place, because that place is wired into us.
