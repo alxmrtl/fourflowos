@@ -37,35 +37,40 @@ export default function HonestMomentSection() {
       <div className="relative max-w-2xl mx-auto px-6 space-y-12">
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            Something shifted in the last few years.
+            Let&apos;s be honest about what&apos;s happening.
           </p>
         </ScrollParagraph>
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            AI didn&apos;t make things clearer. It made them bigger.<br />
-            More to read, more options, more generated content than anyone can actually use.<br />
-            And somewhere in all of it, the quieter questions got crowded out.
+            AI didn&apos;t simplify things. It multiplied them.<br />
+            More options. More content. More futures competing for your attention. The speed didn&apos;t just get fast — it became structural. And the already-hard question of what actually matters? It got crowded into a smaller and smaller corner.
           </p>
           <div className="mt-8 space-y-3">
             <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
-              What do you actually want to build?
+              What do I actually want to build?
             </p>
             <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
-              What are you here for?
+              What am I here for?
             </p>
             <p className="font-display text-2xl md:text-3xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
-              What do you come alive doing?
+              What do I come alive doing?
             </p>
           </div>
         </ScrollParagraph>
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            Those aren&apos;t questions you think through.
+            These questions don&apos;t get answered by adding another system.
           </p>
           <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
-            They&apos;re answered in a state — one you&apos;ve been in, and can&apos;t always get back to.
+            They get answered in a state.
+          </p>
+          <p className="font-sans text-lg text-gray-300 leading-[1.8] mt-4">
+            One you already know.
+          </p>
+          <p className="font-sans text-lg text-gray-500 leading-[1.8] mt-2">
+            One we&apos;ve relied on for millennia.
           </p>
         </ScrollParagraph>
       </div>

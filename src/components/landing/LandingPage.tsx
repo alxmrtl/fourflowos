@@ -8,7 +8,6 @@ import LandingNav from './LandingNav';
 import HeroSectionV2 from './HeroSectionV2';
 import HonestMomentSection from './HonestMomentSection';
 import TimelessAnchorSection from './TimelessAnchorSection';
-import FeltBeatSection from './FeltBeatSection';
 import DimensionsSection from './DimensionsSection';
 import ArchetypeRevealSection from './ArchetypeRevealSection';
 import Footer from './Footer';
@@ -51,9 +50,8 @@ function UniquenessHeader() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
         >
-          Flow runs on the same biology in every person. But the 12 conditions that make it
-          available don&apos;t express the same way in everyone. How they combine, how they
-          weight — that part is yours.
+          The same twelve conditions determine whether flow is available — in every person. The biology is universal. The spark isn&apos;t.
+          How those twelve factors combine in you — which ones lead, which follow, where they pull against each other — that&apos;s particular. That&apos;s yours.
         </motion.p>
 
         {/* Pillar symbol cluster */}
@@ -89,8 +87,7 @@ function UniquenessHeader() {
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.36 }}
         >
-          The system maps 4 dimensions and 12 keys into a single archetype, built from how
-          those factors actually show up in you.
+          Four dimensions. Twelve keys. One clear picture of how you specifically come alive.
         </motion.p>
       </div>
     </div>
@@ -108,10 +105,7 @@ export default function LandingPage() {
       {/* 2. Honest Moment */}
       <HonestMomentSection />
 
-      {/* 3. Felt Beat — personal recognition first */}
-      <FeltBeatSection />
-
-      {/* 4. Timeless Anchor — historical validation */}
+      {/* 3. Timeless Anchor — historical validation */}
       <TimelessAnchorSection />
 
       {/* 5. Framework: Uniqueness header + DimensionsSection */}
@@ -129,10 +123,10 @@ export default function LandingPage() {
             Work Together
           </p>
           <h2 className="font-display text-2xl md:text-3xl font-normal text-white mb-4">
-            Walk through your profile with Alex.
+            Read your profile with someone who knows the terrain.
           </h2>
           <p className="font-sans text-sm text-gray-400 mb-8 max-w-md mx-auto">
-            One session to go from archetype to direction.
+            One session to go from archetype to a clear next move.
           </p>
           <Link
             href="/together"

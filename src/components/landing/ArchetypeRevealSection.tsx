@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { useRef } from 'react';
 
 const featureLines = [
-  { color: '#FF6F61', text: 'Which keys are central to your flow' },
-  { color: '#5B84B1', text: 'Where your four dimensions support or limit each other' },
-  { color: '#7A4DA4', text: 'Your clearest, most natural entry point' },
+  { color: '#FF6F61', text: 'Your natural entry point into flow — the condition that opens everything else' },
+  { color: '#5B84B1', text: 'How your four dimensions interact — where they lift you, where they create drag' },
+  { color: '#7A4DA4', text: 'The specific conditions that have always worked for you, named and mapped' },
 ];
 
 const dimensions = [
@@ -126,9 +126,9 @@ export default function ArchetypeRevealSection() {
               Here&apos;s how you work.
             </h2>
             <p className="font-sans text-lg text-gray-400 leading-relaxed mb-8">
-              The Archetype Signal pulls from numerology, personality science, and behavioral patterns,
-              reading them through the lens of the 12 keys. What comes back isn&apos;t a score — it&apos;s
-              a picture of how you specifically come alive.
+              The Archetype draws on numerology, personality science, and behavioral patterns — and reads
+              them through the lens of the twelve keys. What comes back isn&apos;t a score. It&apos;s a blueprint.
+              A blueprint of how you run. Where you naturally catch. What creates the state — and what gets in the way.
             </p>
 
             {/* Feature lines */}
@@ -150,7 +150,7 @@ export default function ArchetypeRevealSection() {
                 href="/map"
                 className="font-sans px-7 py-3.5 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105 text-sm"
               >
-                Discover your archetype
+                Map your signal
               </Link>
               <Link
                 href="/framework"

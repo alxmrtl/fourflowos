@@ -81,6 +81,23 @@ const cards = [
   },
 ];
 
+function BridgeParagraph({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.4 });
+
+  return (
+    <motion.p
+      ref={ref}
+      className="font-sans text-lg text-gray-400 leading-[1.8]"
+      initial={{ opacity: 0, y: 32, filter: 'blur(10px)' }}
+      animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+      transition={{ duration: 0.9, ease: 'easeOut', delay }}
+    >
+      {children}
+    </motion.p>
+  );
+}
+
 export default function TimelessAnchorSection() {
   const headerRef = useRef(null);
   const headerInView = useInView(headerRef, { once: true, amount: 0.4 });
@@ -104,7 +121,7 @@ export default function TimelessAnchorSection() {
             animate={headerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.12 }}
           >
-            Every tradition found it. Different words, different practices — same state.
+            Every tradition in human history found their way to the same door.
           </motion.p>
         </div>
 
@@ -113,6 +130,43 @@ export default function TimelessAnchorSection() {
           {cards.map((card, i) => (
             <AnchorCard key={card.tradition} card={card} index={i} />
           ))}
+        </div>
+
+        {/* Bridge copy */}
+        <div className="max-w-2xl mx-auto mt-20 space-y-8">
+          <BridgeParagraph>
+            This convergence is saying something.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Taoists. Greek athletes. Jazz musicians. Neuroscientists. They didn&apos;t share notes. They found the same state through completely different paths. That kind of agreement — across millennia, across cultures, across disciplines — doesn&apos;t happen by coincidence. It means something essential about human beings is operating.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Here&apos;s why that matters more right now than it ever has.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            We&apos;re living through the fastest era of change in human history. AI isn&apos;t a tool anymore — it&apos;s a tide. The options are multiplying. The decisions are heavier. The volume of everything is up.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            In that environment, most people reach for better systems. Faster frameworks. More information.
+          </BridgeParagraph>
+          <BridgeParagraph delay={0.1}>
+            What they actually need is an anchor.
+          </BridgeParagraph>
+          <BridgeParagraph delay={0.1}>
+            Flow is that anchor. Not because it slows you down — because it&apos;s the state from which you can move <em>with</em> the current instead of against it.
+          </BridgeParagraph>
+          <BridgeParagraph delay={0.15}>
+            Every civilization that faced disruption had a name for it.
+          </BridgeParagraph>
+          <motion.p
+            className="font-sans text-lg text-gray-300 leading-[1.8]"
+            initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.9, ease: 'easeOut' }}
+          >
+            They all arrived at the same place.
+          </motion.p>
         </div>
       </div>
     </section>
