@@ -233,10 +233,28 @@ export default function TimelessAnchorSection() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="max-w-2xl mx-auto mt-20 space-y-8">
           <BridgeParagraph>
-            What holds steady when the ground keeps shifting? There is a state that humans have always found when they needed to function beyond their ordinary capacity. Taoists found it through effortless surrender. Athletes found it through pressure and skill meeting a worthy challenge. Completely different paths, the same place, because that place is wired into us.
+            What holds steady when the ground keeps shifting?
           </BridgeParagraph>
-          <BridgeParagraph delay={0.1}>
-            The environment changed. Flow didn&apos;t. What changed is how optional it is. With AI compressing timelines and raising the weight of each decision, the people who can reliably return to this state will do the work that shapes what comes next.
+          <BridgeParagraph>
+            There is a state that humans have always found when they needed to function beyond their ordinary capacity.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Taoists found it through effortless surrender.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Athletes found it through pressure and skill meeting a worthy challenge.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Different paths, same place, because that place is wired into us.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Reaching it was optional when the pace of life allowed more room. AI removed that room.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Now, decisions carry more weight and what gave us meaning before is less certain.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            The people who can reliably return to this state will do the work that shapes what comes next.
           </BridgeParagraph>
           <motion.p
             className="font-sans text-lg text-gray-300 leading-[1.8]"
