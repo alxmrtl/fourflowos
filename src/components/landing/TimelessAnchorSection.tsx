@@ -145,17 +145,19 @@ function ScrollingCarousel() {
 
     const containerRect = containerRef.current.getBoundingClientRect();
     const containerCenter = containerRect.left + containerRect.width / 2;
-    const activationRadius = 260;
+    // Radius > card spacing (312px) so there's always a card in the focal zone.
+    // Exponent 2 = flat plateau near center, steeper falloff at edges.
+    const activationRadius = 400;
 
     const cardEls = trackRef.current.querySelectorAll<HTMLElement>('[data-card]');
     cardEls.forEach(el => {
       const rect = el.getBoundingClientRect();
       const cardCenter = rect.left + rect.width / 2;
       const dist = Math.abs(cardCenter - containerCenter);
-      const proximity = Math.max(0, 1 - Math.pow(dist / activationRadius, 1.2));
+      const proximity = Math.max(0, 1 - Math.pow(dist / activationRadius, 2));
 
-      el.style.filter = `blur(${((1 - proximity) * 10).toFixed(2)}px)`;
-      el.style.opacity = (0.15 + proximity * 0.85).toFixed(3);
+      el.style.filter = `blur(${((1 - proximity) * 7).toFixed(2)}px)`;
+      el.style.opacity = (0.2 + proximity * 0.8).toFixed(3);
     });
   });
 
