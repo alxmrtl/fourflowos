@@ -62,7 +62,10 @@ export default function HonestMomentSection() {
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            The state where those become clear — you&apos;ve already been in it.
+            Those aren&apos;t questions you think through.
+          </p>
+          <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
+            They&apos;re answered in a state — one you&apos;ve been in, and can&apos;t always get back to.
           </p>
         </ScrollParagraph>
       </div>
