@@ -4,45 +4,27 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getAllApps, App } from '@/data/apps';
+import { APPS, App } from '@/data/apps';
 import { DIMENSIONS } from '@/data/framework';
 import { DimensionType } from '@/types/framework';
 import LandingNav from '@/components/landing/LandingNav';
 import { useAuth } from '@/hooks/useAuth';
 
-// ─── Pillar meta: keys trained + practice rationale ───────────────────────────
+// ─── Live tool display order ───────────────────────────────────────────────────
 
-const PILLAR_PRACTICE_META: Record<DimensionType, {
-  trains: string[];
-  practiceRationale: string;
-}> = {
-  self: {
-    trains: ['Tuned Emotions', 'Focused Body', 'Open Mind'],
-    practiceRationale: 'The SELF pillar is your reception layer — how well you pick up your own signals. Training it means building the physical and mental conditions that let you enter flow on demand.',
-  },
-  space: {
-    trains: ['Intentional Space', 'Optimized Tools', 'Feedback Systems'],
-    practiceRationale: 'SPACE is the transmission layer — your environment either amplifies or dampens the signal. Training it means removing friction so the work flows instead of fights.',
-  },
-  story: {
-    trains: ['Generative Story', 'Clear Mission', 'Empowered Role'],
-    practiceRationale: 'STORY gives your effort direction across time. Training it means clarifying what you\'re building and why — so daily action connects to something larger.',
-  },
-  spirit: {
-    trains: ['Grounding Values', 'Ignited Curiosity', 'Visualized Vision'],
-    practiceRationale: 'SPIRIT is your timeless direction — what is always true for you. Training it means surfacing the curiosity and vision that make flow feel inevitable rather than forced.',
-  },
-};
+const LIVE_ORDER = ['flowzone', 'flowread', 'curiosity-explorer', 'flowrep'];
 
-// ─── App detail modal ─────────────────────────────────────────────────────────
+// ─── Platform badge ────────────────────────────────────────────────────────────
 
 function PlatformBadge({ platform }: { platform: string }) {
   return (
-    <span className="px-2 py-0.5 bg-white/10 rounded text-[10px] text-gray-400 uppercase font-semibold tracking-wider">
+    <span className="px-2 py-0.5 bg-white/8 rounded text-[10px] text-gray-500 uppercase font-semibold tracking-wider">
       {platform}
     </span>
   );
 }
+
+// ─── App detail modal ─────────────────────────────────────────────────────────
 
 function AppModal({ app, onClose }: { app: App; onClose: () => void }) {
   const isActive = !app.inDevelopment;
@@ -155,203 +137,118 @@ function AppModal({ app, onClose }: { app: App; onClose: () => void }) {
   );
 }
 
-// ─── Practice card (compact, pillar-aware) ────────────────────────────────────
+// ─── Live tool row ─────────────────────────────────────────────────────────────
 
-function PracticeCard({
+function ToolRow({
   app,
-  primaryPillar,
   index,
-  onClick,
+  onDetails,
 }: {
   app: App;
-  primaryPillar: DimensionType;
   index: number;
-  onClick: () => void;
+  onDetails: () => void;
 }) {
-  const isActive = !app.inDevelopment;
-  const dim = DIMENSIONS[primaryPillar];
-  // Secondary pillars (not the primary one displayed in this section)
-  const secondaryPillars = app.relatedPillars.filter((p) => p !== primaryPillar);
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.07 }}
-      className={`group relative rounded-2xl border overflow-hidden transition-all duration-300 ${
-        isActive
-          ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-white/20'
-          : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10'
-      }`}
+      className="flex items-start gap-4 md:gap-5 p-5 md:p-6 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.055] hover:border-white/[0.18] transition-all duration-300"
     >
-      {/* Pillar color top strip */}
-      <div className="h-0.5 w-full" style={{ background: isActive ? dim.color : `${dim.color}40` }} />
+      {/* Icon */}
+      <div
+        className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0 mt-0.5"
+        style={{ background: `${app.accentColor}18`, border: `1px solid ${app.accentColor}28` }}
+      >
+        <Image src={app.icon} alt={app.name} width={44} height={44} className="object-cover" />
+      </div>
 
-      <div className="p-5">
-        {/* Header row */}
-        <div className="flex items-start gap-3 mb-3">
-          <div
-            className={`w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 ${isActive ? '' : 'opacity-40'}`}
-            style={{ background: `${dim.color}15` }}
-          >
-            <Image src={app.icon} alt={app.name} width={40} height={40} className="object-cover" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className={`font-bold text-base ${isActive ? 'text-white' : 'text-gray-500'}`}>
-                {app.name}
-              </h3>
-              {!isActive && (
-                <span className="text-[10px] font-semibold text-gray-600 bg-white/5 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                  Soon
-                </span>
-              )}
-            </div>
-            <p className={`text-xs font-medium mt-0.5 ${isActive ? '' : 'text-gray-600'}`} style={isActive ? { color: app.accentColor } : undefined}>
-              {app.tagline}
-            </p>
-          </div>
-          <div className="flex gap-1 flex-shrink-0">
-            {app.platforms.map((p) => <PlatformBadge key={p} platform={p} />)}
-          </div>
+      {/* Body */}
+      <div className="flex-1 min-w-0">
+        {/* Name + tagline inline */}
+        <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5 mb-2">
+          <h3 className="text-base md:text-[17px] font-bold text-white leading-snug">{app.name}</h3>
+          <span className="text-sm font-medium" style={{ color: app.accentColor }}>
+            {app.tagline}
+          </span>
         </div>
 
         {/* Description */}
-        <p className={`text-sm leading-relaxed mb-4 ${isActive ? 'text-gray-400' : 'text-gray-600'}`}>
-          {app.description}
-        </p>
+        <p className="text-sm text-gray-400 leading-relaxed max-w-2xl">{app.description}</p>
 
-        {/* Footer row */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {secondaryPillars.map((sp) => {
-              const spDim = DIMENSIONS[sp];
-              if (!spDim) return null;
-              return (
-                <span
-                  key={sp}
-                  className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                  style={{ background: `${spDim.color}15`, color: `${spDim.color}99` }}
-                >
-                  + {spDim.name}
-                </span>
-              );
-            })}
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={onClick}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
-            >
-              Details
-            </button>
-            {isActive ? (
-              <a
-                href={app.webUrl || app.appStoreUrl || '#'}
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-black hover:bg-gray-100 transition-colors"
-              >
-                Open
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </a>
-            ) : null}
-          </div>
+        {/* Footer: platforms + actions */}
+        <div className="flex items-center gap-2 mt-3.5 flex-wrap">
+          {app.platforms.map((p) => <PlatformBadge key={p} platform={p} />)}
+          <div className="flex-1" />
+          <button
+            onClick={onDetails}
+            className="text-xs text-gray-600 hover:text-gray-400 transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
+          >
+            Details
+          </button>
+          <a
+            href={app.webUrl || app.appStoreUrl || '#'}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white text-black hover:bg-gray-100 transition-colors"
+          >
+            Open
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </a>
         </div>
       </div>
     </motion.div>
   );
 }
 
-// ─── Pillar section ───────────────────────────────────────────────────────────
+// ─── Coming soon card ─────────────────────────────────────────────────────────
 
-function PillarSection({
-  pillar,
-  apps,
-  onSelectApp,
-  baseIndex,
-}: {
-  pillar: DimensionType;
-  apps: App[];
-  onSelectApp: (app: App) => void;
-  baseIndex: number;
-}) {
-  const dim = DIMENSIONS[pillar];
-  const meta = PILLAR_PRACTICE_META[pillar];
-
+function ComingSoonCard({ app, index }: { app: App; index: number }) {
   return (
-    <section className="mb-16">
-      {/* Pillar header */}
-      <div className="flex items-start gap-4 mb-6">
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-          style={{ background: `${dim.color}15`, border: `1px solid ${dim.color}30` }}
-        >
-          <Image src={dim.icon} alt={dim.name} width={22} height={22} />
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.07 }}
+      className="flex items-start gap-4 p-5 rounded-2xl border border-white/6 bg-white/[0.018]"
+    >
+      <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 opacity-35 mt-0.5">
+        <Image src={app.icon} alt={app.name} width={40} height={40} className="object-cover" />
+      </div>
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="text-sm font-semibold text-gray-500">{app.name}</h3>
+          <span className="text-[10px] font-semibold text-gray-700 bg-white/5 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Soon
+          </span>
         </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-1">
-            <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: dim.color }}>
-              {dim.name}
-            </h2>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {meta.trains.map((key) => (
-                <span
-                  key={key}
-                  className="text-[10px] text-gray-500 px-2 py-0.5 rounded-full bg-white/5 font-medium"
-                >
-                  {key}
-                </span>
-              ))}
-            </div>
-          </div>
-          <p className="text-sm text-gray-500 leading-relaxed max-w-xl">
-            {meta.practiceRationale}
-          </p>
+        <p className="text-xs text-gray-600 leading-relaxed">{app.description}</p>
+        <div className="flex gap-1 mt-2.5">
+          {app.platforms.map((p) => <PlatformBadge key={p} platform={p} />)}
         </div>
       </div>
+    </motion.div>
+  );
+}
 
-      {/* App cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {apps.map((app, i) => (
-          <PracticeCard
-            key={app.id}
-            app={app}
-            primaryPillar={pillar}
-            index={baseIndex + i}
-            onClick={() => onSelectApp(app)}
-          />
-        ))}
-      </div>
-    </section>
+// ─── Section divider label ────────────────────────────────────────────────────
+
+function SectionLabel({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-5">
+      <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-widest">{label}</span>
+      <div className="flex-1 h-px bg-white/6" />
+    </div>
   );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function PracticePage() {
-  const apps = getAllApps();
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const { user } = useAuth();
 
-  // Group apps by their primary pillar (first in relatedPillars array).
-  // Each app appears only once, under its primary pillar.
-  const pillarOrder: DimensionType[] = ['self', 'space', 'story', 'spirit'];
-  const grouped: Record<DimensionType, App[]> = { self: [], space: [], story: [], spirit: [] };
-
-  apps.forEach((app) => {
-    const primary = app.relatedPillars[0];
-    if (primary && grouped[primary]) {
-      grouped[primary].push(app);
-    }
-  });
-
-  // Build pillar sections only for pillars that have apps
-  const activePillars = pillarOrder.filter((p) => grouped[p].length > 0);
-
-  // Running index for staggered animation
-  let runningIndex = 0;
+  const liveTools = LIVE_ORDER.map((id) => APPS[id]).filter((a): a is App => Boolean(a) && !a.inDevelopment);
+  const comingSoon = Object.values(APPS).filter((a) => a.inDevelopment);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -359,29 +256,23 @@ export default function PracticePage() {
 
       {/* Hero */}
       <section className="pt-32 pb-12 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            {/* Breadcrumb label */}
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">
               Practice System
             </p>
             <h1 className="font-display text-5xl md:text-6xl font-normal text-white mb-5 leading-[1.1]">
-              Train the conditions <br className="hidden sm:block" />
-              <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
-                your profile measures.
-              </span>
+              The tools that train flow.
             </h1>
-            <p className="text-lg text-gray-400 leading-relaxed max-w-2xl mb-8">
-              The Flow Profile maps which of the four pillars are restricting your flow.
-              Each practice below trains one or more of those pillars directly —
-              so you know exactly where to focus your effort.
+            <p className="text-lg text-gray-400 leading-relaxed max-w-xl mb-8">
+              Each practice targets a specific condition that flow requires — attention, velocity, curiosity, movement.
+              Use your Flow Profile to know where to start, or begin anywhere.
             </p>
 
-            {/* Profile bridge CTA */}
             {user ? (
               <Link
                 href="/me"
@@ -390,7 +281,7 @@ export default function PracticePage() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                View your signal to see which pillars to prioritize
+                See which conditions to prioritize
               </Link>
             ) : (
               <Link
@@ -408,31 +299,40 @@ export default function PracticePage() {
       </section>
 
       {/* Divider */}
-      <div className="max-w-4xl mx-auto px-6 mb-12">
+      <div className="max-w-3xl mx-auto px-6 mb-10">
         <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
-      {/* Pillar sections */}
-      <div className="max-w-4xl mx-auto px-6">
-        {activePillars.map((pillar) => {
-          const sectionApps = grouped[pillar];
-          const idx = runningIndex;
-          runningIndex += sectionApps.length;
-          return (
-            <PillarSection
-              key={pillar}
-              pillar={pillar}
-              apps={sectionApps}
-              onSelectApp={setSelectedApp}
-              baseIndex={idx}
+      {/* Live tools */}
+      <div className="max-w-3xl mx-auto px-6 mb-16">
+        <SectionLabel label="Live" />
+        <div className="flex flex-col gap-3">
+          {liveTools.map((app, i) => (
+            <ToolRow
+              key={app.id}
+              app={app}
+              index={i}
+              onDetails={() => setSelectedApp(app)}
             />
-          );
-        })}
+          ))}
+        </div>
       </div>
+
+      {/* Coming soon */}
+      {comingSoon.length > 0 && (
+        <div className="max-w-3xl mx-auto px-6 mb-24">
+          <SectionLabel label="Coming Soon" />
+          <div className="grid sm:grid-cols-2 gap-3">
+            {comingSoon.map((app, i) => (
+              <ComingSoonCard key={app.id} app={app} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Bottom CTA */}
       <section className="pb-24 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <motion.div
             className="p-8 md:p-10 rounded-3xl border border-white/8 bg-white/[0.03] text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -444,8 +344,8 @@ export default function PracticePage() {
               Start with your profile.
             </h2>
             <p className="text-gray-400 mb-6 max-w-md mx-auto text-sm leading-relaxed">
-              The assessment tells you which pillars are restricting your flow right now.
-              Use that to pick where to start — rather than guessing.
+              Your Flow Profile shows which conditions are restricting access right now.
+              Use that to choose where to focus — rather than guessing.
             </p>
             {user ? (
               <Link
@@ -471,7 +371,7 @@ export default function PracticePage() {
 
       {/* Footer */}
       <footer className="border-t border-white/5 py-8">
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-3xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm">
               &copy; {new Date().getFullYear()} FourFlowOS. All rights reserved.

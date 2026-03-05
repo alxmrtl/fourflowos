@@ -11,7 +11,7 @@ export default function CuriosityExplorerHeader() {
           WebkitTextFillColor: 'transparent',
         }}
       >
-        Curiosity Explorer
+        FlowSpark
       </h1>
       <div />
     </header>

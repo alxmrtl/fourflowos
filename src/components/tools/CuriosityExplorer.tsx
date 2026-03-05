@@ -284,7 +284,7 @@ export default function CuriosityExplorer() {
               </div>
 
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                Curiosity Explorer
+                FlowSpark
               </h2>
               <p className="text-gray-400 max-w-2xl mx-auto mb-3 leading-relaxed">
                 Your curiosities are clues to your purpose. This quick exercise helps you surface what genuinely

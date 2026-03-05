@@ -27,19 +27,19 @@ export interface App {
 export const APPS: Record<string, App> = {
   'curiosity-explorer': {
     id: 'curiosity-explorer',
-    name: 'Curiosity Explorer',
-    tagline: 'Discover Where Your Flow Lives',
-    summary: 'Map your curiosities to find where flow lives',
-    description: 'Curiosity is free focus. When something genuinely fascinates you, concentration comes naturally—and that\'s where flow starts. This tool helps you find your curiosity stacks: the intersections between your interests that reveal where your flow lives.',
-    fullDescription: `A guided braindump tool that helps you articulate what genuinely fascinates you—then visualizes the unexpected intersections between those curiosities.
+    name: 'FlowSpark',
+    tagline: 'Find where your flow lives.',
+    summary: 'Surface your curiosities and map the intersections where flow emerges',
+    description: 'Curiosity is the only focus that comes for free. FlowSpark surfaces what genuinely fascinates you, then maps where those interests overlap. The intersections reveal your natural flow zones — the places where deep work feels like play.',
+    fullDescription: `A guided braindump that helps you articulate what genuinely fascinates you — then visualizes the unexpected overlaps between those curiosities.
 
-The result is a map of your unique intersection points—where multiple curiosities overlap. These convergence zones are where flow states naturally emerge.
+Where multiple interests converge, flow tends to live. These intersection zones are where concentration arrives without effort, where work feels less like discipline and more like pull.
 
-Use it to set your vision, choose projects, or simply understand yourself better.`,
+Use FlowSpark to orient your vision, choose projects, or simply understand yourself better.`,
     icon: '/assets/LOGOS/IGNITED CURIOSITY.png',
     screenshots: [],
     platforms: ['web'],
-    webUrl: '/tools/curiosity-explorer',
+    webUrl: '/tools/flowspark',
     features: [
       {
         title: 'Guided Braindump',
@@ -66,10 +66,10 @@ Use it to set your vision, choose projects, or simply understand yourself better
   flowzone: {
     id: 'flowzone',
     name: 'FlowZone',
-    tagline: 'Your Flow-State Workspace',
+    tagline: 'Train your attention. One rep at a time.',
     summary: 'Build concentration strength through Focus Reps',
-    description: 'Everything you need to get stuff done, in one place. Set your intention, start a pomodoro timer, tune your nervous system with breathwork and binaural beats, then track Focus Reps to build the meta-skill of staying on task over time.',
-    fullDescription: `FlowZone is a focus training system built into the FourFlowOS website. It uses Focus Reps—pressing a button each time you choose focus over distraction—to make concentration visible and measurable.
+    description: 'Every moment you choose focus over distraction is a rep. FlowZone makes that invisible act visible — and builds it like a physical skill. Set your intention, start the session, use breathwork to settle in. Count your reps. Come back tomorrow.',
+    fullDescription: `FlowZone is a focus training system built into the FourFlowOS website. It uses Focus Reps — pressing a button each time you choose focus over distraction — to make concentration visible and measurable.
 
 The Struggle Phase (the first 25% of any session) gets ambient encouragement to help you push through. Integrated breathwork patterns help you transition into focused presence.
 
@@ -113,9 +113,9 @@ Goal linking connects sessions to your broader purpose, and statistics track you
   flowhabits: {
     id: 'flowhabits',
     name: 'FlowHabits',
-    tagline: 'Build Flow-Aligned Habits',
+    tagline: 'Build habits across all four pillars.',
     summary: 'Balance your habits across all four pillars',
-    description: 'Standard habit trackers treat every habit the same. FlowHabits organizes yours by Self, Space, Story, and Spirit—so you can see which dimensions of your life are thriving and which need attention. Gentle streaks, no guilt.',
+    description: 'Standard habit trackers treat every habit the same. FlowHabits organizes yours by SELF, SPACE, STORY, and SPIRIT — so you can see which dimensions of your life need attention. Gentle streaks, no guilt. Coming to iOS.',
     fullDescription: `Build habits organized by the four pillars—SELF, SPACE, STORY, SPIRIT—with visual balance indicators showing which dimensions need attention.
 
 Tracks streaks and completion rates with gentle accountability. Miss a day? It helps you get back on track without guilt. All data stays on-device.`,
@@ -158,10 +158,12 @@ Tracks streaks and completion rates with gentle accountability. Miss a day? It h
   flowread: {
     id: 'flowread',
     name: 'FlowRead',
-    tagline: 'Read Faster, Absorb More',
-    summary: 'Train reading speed with flow-inducing drills',
-    description: 'Slow reading kills momentum. FlowRead uses RSVP and word chunking to train your eyes to take in more, faster—until reading itself becomes a flow state. Progressive speed adapts as you improve.',
-    fullDescription: `RSVP (Rapid Serial Visual Presentation) and word chunking exercises train you to read faster while maintaining comprehension. Progressive speed training gradually increases your pace as your capacity grows.
+    tagline: 'Train attentional velocity.',
+    summary: 'Train reading speed and attentional focus with flow-inducing drills',
+    description: 'Speed reading is the surface. What FlowRead actually trains is attentional velocity — the ability to move through information cleanly, without drift. RSVP drills, word chunking, progressive speed. Ten minutes a day builds a different relationship with your own attention.',
+    fullDescription: `RSVP (Rapid Serial Visual Presentation) and word chunking exercises train the same attentional quality that makes flow accessible: the capacity to process information at speed, without drag or distraction.
+
+Progressive speed training gradually increases your pace as your capacity grows. The goal isn't faster reading — it's sharper, more deliberate attention.
 
 Regular practice helps you enter a reading flow state where words process effortlessly.`,
     icon: '/assets/apps/flowread-icon.png',
@@ -202,9 +204,9 @@ Regular practice helps you enter a reading flow state where words process effort
   flowrep: {
     id: 'flowrep',
     name: 'FlowRep',
-    tagline: 'Movement Reps, All Day',
+    tagline: 'Movement, accumulated.',
     summary: 'Accumulate exercise reps throughout your day',
-    description: 'You don\'t need a gym session to stay active. FlowRep lets you log push-ups, squats, and pull-ups throughout the day with a single tap. Set daily targets, track streaks, build the body dimension of Self.',
+    description: 'The body is part of the signal chain. FlowRep tracks movement throughout the day with a single tap — push-ups, squats, pull-ups, whatever your practice. Set daily targets, build streaks, keep the physical dimension of your focus alive.',
     fullDescription: `Accumulate exercise reps throughout the day rather than formal workout sessions. Set daily targets, log with a single tap, and track streaks of consecutive days hitting your goals.
 
 Minimalist by design—built for consistent movement habits without traditional workout app complexity.`,

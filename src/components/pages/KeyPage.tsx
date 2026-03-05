@@ -198,7 +198,7 @@ export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPa
         <section className="relative py-12 md:py-16">
           <div className="max-w-4xl mx-auto px-6">
             <Link
-              href="/tools/curiosity-explorer"
+              href="/tools/flowspark"
               className="group block p-6 md:p-8 rounded-2xl border border-white/10 hover:border-[#7A4DA4]/40 bg-gradient-to-r from-[#7A4DA4]/10 to-transparent transition-all duration-300"
             >
               <div className="flex items-center gap-4">
@@ -209,7 +209,7 @@ export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPa
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#7A4DA4' }}>Interactive Tool</p>
-                  <h3 className="text-lg font-semibold text-white group-hover:translate-x-1 transition-transform">Curiosity Explorer</h3>
+                  <h3 className="text-lg font-semibold text-white group-hover:translate-x-1 transition-transform">FlowSpark</h3>
                   <p className="text-gray-400 text-sm mt-1">Map your curiosities to find where flow lives.</p>
                 </div>
                 <svg className="w-5 h-5 text-[#7A4DA4] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
