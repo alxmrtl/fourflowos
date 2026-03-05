@@ -142,7 +142,22 @@ export default function HonestMomentSection() {
             These questions don&apos;t get answered by adding another system.
           </p>
           <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
-            They get answered in a state.
+            They get answered in a{' '}
+            <motion.span
+              className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent"
+              style={{ display: 'inline-block' }}
+              animate={{
+                filter: [
+                  'drop-shadow(0 0 5px rgba(255,111,97,0.55)) drop-shadow(0 0 14px rgba(255,111,97,0.22))',
+                  'drop-shadow(0 0 5px rgba(122,77,164,0.65)) drop-shadow(0 0 14px rgba(122,77,164,0.28))',
+                  'drop-shadow(0 0 5px rgba(255,111,97,0.55)) drop-shadow(0 0 14px rgba(255,111,97,0.22))',
+                ],
+              }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              state
+            </motion.span>
+            .
           </p>
           <p className="font-sans text-lg text-gray-300 leading-[1.8] mt-4">
             One you already know.

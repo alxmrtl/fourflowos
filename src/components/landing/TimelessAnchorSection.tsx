@@ -233,19 +233,10 @@ export default function TimelessAnchorSection() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="max-w-2xl mx-auto mt-20 space-y-8">
           <BridgeParagraph>
-            That&apos;s too much agreement to ignore.
-          </BridgeParagraph>
-          <BridgeParagraph>
-            Taoists and jazz musicians and neuroscientists didn&apos;t compare notes. They all arrived at the same state. That&apos;s not cultural overlap. That&apos;s structural.
-          </BridgeParagraph>
-          <BridgeParagraph>
-            The environment changed. AI isn&apos;t a feature. It&apos;s the context. The noise is up. The decisions are heavier.
+            What holds steady when the ground keeps shifting? There is a state that humans have always found when they needed to function beyond their ordinary capacity. Taoists found it through effortless surrender. Athletes found it through pressure and skill meeting a worthy challenge. Completely different paths, the same place, because that place is wired into us.
           </BridgeParagraph>
           <BridgeParagraph delay={0.1}>
-            Most people reach for more structure. Flow is the ground. Structure follows.
-          </BridgeParagraph>
-          <BridgeParagraph delay={0.15}>
-            Every civilization that faced disruption had a name for it.
+            The environment changed. Flow didn&apos;t. What changed is how optional it is. With AI compressing timelines and raising the weight of each decision, the people who can reliably return to this state will do the work that shapes what comes next.
           </BridgeParagraph>
           <motion.p
             className="font-sans text-lg text-gray-300 leading-[1.8]"
@@ -254,7 +245,7 @@ export default function TimelessAnchorSection() {
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.9, ease: 'easeOut' }}
           >
-            They all arrived at the same place.
+            FourFlowOS is our attempt at a practical playbook for getting there.
           </motion.p>
         </div>
       </div>
