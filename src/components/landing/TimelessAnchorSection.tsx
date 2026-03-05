@@ -1,7 +1,7 @@
 'use client';
 
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useAnimationFrame, useInView } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
 function WaterWavesIcon() {
   return (
@@ -81,6 +81,104 @@ const cards = [
   },
 ];
 
+const TRACK_CARDS = [...cards, ...cards, ...cards];
+
+function CarouselCard({ card }: { card: (typeof cards)[0] }) {
+  return (
+    <div
+      data-card=""
+      className="relative w-72 flex-shrink-0 rounded-xl p-6 flex flex-col gap-3 bg-white/[0.03] border border-white/[0.07]"
+    >
+      <div className="text-[#9B7CB5]">
+        <card.Icon />
+      </div>
+      <p className="font-sans text-[9px] font-semibold tracking-[0.18em] uppercase text-gray-600">
+        {card.tradition}
+      </p>
+      <p className="font-display text-2xl font-normal bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent leading-tight">
+        {card.analog}
+      </p>
+      <p className="font-sans text-sm text-gray-400 leading-relaxed">
+        {card.body}
+      </p>
+    </div>
+  );
+}
+
+function ScrollingCarousel() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const xRef = useRef(0);
+  const loopWidthRef = useRef(0);
+  const isInViewRef = useRef(false);
+  const isInView = useInView(sectionRef, { amount: 0.1 });
+
+  useEffect(() => {
+    isInViewRef.current = isInView;
+  }, [isInView]);
+
+  useEffect(() => {
+    const measure = () => {
+      if (!trackRef.current) return;
+      loopWidthRef.current = trackRef.current.scrollWidth / 3;
+      xRef.current = -loopWidthRef.current;
+      trackRef.current.style.transform = `translateX(${xRef.current}px)`;
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
+  useAnimationFrame((_, delta) => {
+    if (!isInViewRef.current) return;
+    if (!trackRef.current || !containerRef.current || loopWidthRef.current === 0) return;
+
+    const dt = Math.min(delta, 100);
+    xRef.current -= (45 * dt) / 1000;
+
+    if (xRef.current <= -(loopWidthRef.current * 2)) {
+      xRef.current += loopWidthRef.current;
+    }
+
+    trackRef.current.style.transform = `translateX(${xRef.current}px)`;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const containerCenter = containerRect.left + containerRect.width / 2;
+    const activationRadius = 260;
+
+    const cardEls = trackRef.current.querySelectorAll<HTMLElement>('[data-card]');
+    cardEls.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
+      const dist = Math.abs(cardCenter - containerCenter);
+      const proximity = Math.max(0, 1 - Math.pow(dist / activationRadius, 1.2));
+
+      el.style.filter = `blur(${((1 - proximity) * 10).toFixed(2)}px)`;
+      el.style.opacity = (0.15 + proximity * 0.85).toFixed(3);
+    });
+  });
+
+  return (
+    <div ref={sectionRef}>
+      <div
+        ref={containerRef}
+        className="overflow-hidden py-8"
+        style={{
+          maskImage: 'linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%)',
+        }}
+      >
+        <div ref={trackRef} className="flex gap-6 w-max">
+          {TRACK_CARDS.map((card, i) => (
+            <CarouselCard key={i} card={card} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function BridgeParagraph({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.4 });
@@ -124,15 +222,13 @@ export default function TimelessAnchorSection() {
             They used different words. They arrived at the same place.
           </motion.p>
         </div>
+      </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {cards.map((card, i) => (
-            <AnchorCard key={card.tradition} card={card} index={i} />
-          ))}
-        </div>
+      {/* Full-width carousel — outside max-w container */}
+      <ScrollingCarousel />
 
-        {/* Bridge copy */}
+      {/* Bridge copy */}
+      <div className="max-w-6xl mx-auto px-6">
         <div className="max-w-2xl mx-auto mt-20 space-y-8">
           <BridgeParagraph>
             That&apos;s too much agreement to ignore.
@@ -161,40 +257,5 @@ export default function TimelessAnchorSection() {
         </div>
       </div>
     </section>
-  );
-}
-
-function AnchorCard({ card, index }: { card: (typeof cards)[0]; index: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.3 });
-
-  return (
-    <motion.div
-      ref={ref}
-      className="relative rounded-xl p-5 flex flex-col gap-3 bg-white/[0.03] border border-white/[0.07] hover:bg-white/[0.05] transition-colors duration-200 cursor-default"
-      initial={{ opacity: 0, y: 56, filter: 'blur(14px)' }}
-      animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-      transition={{ duration: 1.0, ease: 'easeOut', delay: 0.07 * index }}
-    >
-      {/* Icon */}
-      <div className="text-[#9B7CB5]">
-        <card.Icon />
-      </div>
-
-      {/* Tradition overline */}
-      <p className="font-sans text-[9px] font-semibold tracking-[0.18em] uppercase text-gray-600">
-        {card.tradition}
-      </p>
-
-      {/* Analog word — gradient, display */}
-      <p className="font-display text-2xl font-normal bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent leading-tight">
-        {card.analog}
-      </p>
-
-      {/* Description */}
-      <p className="font-sans text-xs text-gray-400 leading-relaxed">
-        {card.body}
-      </p>
-    </motion.div>
   );
 }
