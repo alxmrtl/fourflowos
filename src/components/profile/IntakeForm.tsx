@@ -55,11 +55,11 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
 
       <div className="space-y-4">
         <h2 className="text-2xl md:text-3xl font-display font-bold italic text-white leading-snug">
-          This isn&apos;t a test.
+          Before you begin.
         </h2>
         <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto">
-          It&apos;s a conversation — one that&apos;s been waiting to happen.
-          The only thing that matters here is honesty, not impressiveness.
+          Answer honestly, not impressively.
+          That&apos;s the only instruction that matters.
         </p>
       </div>
 
