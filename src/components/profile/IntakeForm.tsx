@@ -42,21 +42,19 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.5 }}
-      className="max-w-xl mx-auto text-center py-8 space-y-8"
+      className="max-w-xl mx-auto"
     >
-      {/* Breathing visual */}
-      <motion.div
-        className="w-16 h-16 mx-auto rounded-full border border-white/10"
-        animate={{
-          scale: [1, 1.18, 1],
-          opacity: [0.3, 0.6, 0.3],
+      <div
+        className="rounded-3xl p-8 md:p-10 text-center space-y-6"
+        style={{
+          border: '1px solid rgba(99,48,160,0.35)',
+          boxShadow: '0 0 60px rgba(99,48,160,0.18), 0 0 120px rgba(99,48,160,0.08), inset 0 0 40px rgba(99,48,160,0.04)',
+          background: 'rgba(99,48,160,0.04)',
         }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ background: 'radial-gradient(circle, #6330A020, transparent)' }}
-      />
+      >
 
       <div className="space-y-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-white leading-snug">
+        <h2 className="text-2xl md:text-3xl font-display font-bold italic text-white leading-snug">
           This isn&apos;t a test.
         </h2>
         <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto">
@@ -99,6 +97,7 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
         >
           I&apos;m ready
         </button>
+      </div>
       </div>
     </motion.div>
   );
