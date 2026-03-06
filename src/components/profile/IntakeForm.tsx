@@ -57,14 +57,9 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
         <h2 className="text-2xl md:text-3xl font-display font-bold italic text-white leading-snug">
           Before you begin.
         </h2>
-        <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto">
-          Answer honestly, not impressively.
-          That&apos;s the only instruction that matters.
-        </p>
       </div>
 
       <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 text-left space-y-3">
-        <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Before you begin</p>
         <ul className="space-y-2.5 text-sm text-gray-300">
           <li className="flex items-start gap-2.5">
             <span className="text-gray-600 mt-0.5">—</span>
