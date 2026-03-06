@@ -63,11 +63,11 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
         <ul className="space-y-2.5 text-sm text-gray-300">
           <li className="flex items-start gap-2.5">
             <span className="text-gray-600 mt-0.5">—</span>
-            <span>Answer quickly. Your first instinct is usually the most accurate one.</span>
+            <span>Don&apos;t overthink your answers. Rely on your first instinct.</span>
           </li>
           <li className="flex items-start gap-2.5">
             <span className="text-gray-600 mt-0.5">—</span>
-            <span>There are no impressive answers here. Only true ones and cautious ones.</span>
+            <span>There are no impressive answers here. Answer honestly.</span>
           </li>
           <li className="flex items-start gap-2.5">
             <span className="text-gray-600 mt-0.5">—</span>
