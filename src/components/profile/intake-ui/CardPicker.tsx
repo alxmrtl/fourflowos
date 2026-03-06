@@ -20,7 +20,7 @@ export default function CardPicker({
   options,
   selected,
   onChange,
-  accent = '#7A4DA4',
+  accent = '#6330A0',
   columns = 2,
   className = '',
 }: CardPickerProps) {

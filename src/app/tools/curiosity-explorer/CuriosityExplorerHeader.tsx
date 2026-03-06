@@ -6,7 +6,7 @@ export default function CuriosityExplorerHeader() {
       <h1
         className="text-lg font-bold tracking-tight"
         style={{
-          background: 'linear-gradient(135deg, #7A4DA4, #5B84B1)',
+          background: 'linear-gradient(135deg, #6330A0, #3E6FA3)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}

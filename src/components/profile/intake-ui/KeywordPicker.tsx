@@ -16,7 +16,7 @@ export default function KeywordPicker({
   words,
   selected,
   onChange,
-  accent = '#7A4DA4',
+  accent = '#6330A0',
   max,
   className = '',
 }: KeywordPickerProps) {

@@ -3,6 +3,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useAudience } from '@/context/AudienceContext';
+import { CORAL, SAGE, GRADIENTS } from '@/styles/brand-colors';
 
 const individualContent = {
   opener: 'You know the feeling.',
@@ -58,8 +59,8 @@ export default function ProblemSection() {
           className="absolute inset-0 opacity-[0.03]"
           style={{
             background: isLeader
-              ? 'radial-gradient(ellipse at 50% 50%, #6BA292 0%, transparent 60%)'
-              : 'radial-gradient(ellipse at 50% 50%, #FF6F61 0%, transparent 60%)',
+              ? `radial-gradient(ellipse at 50% 50%, ${SAGE} 0%, transparent 60%)`
+              : `radial-gradient(ellipse at 50% 50%, ${CORAL} 0%, transparent 60%)`,
           }}
         />
       </div>
@@ -162,7 +163,8 @@ export default function ProblemSection() {
         >
           <p className="text-xl md:text-2xl text-gray-400 mb-3">{content.pivot}</p>
           <p
-            className="text-2xl md:text-3xl lg:text-4xl font-semibold bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent"
+            className="text-2xl md:text-3xl lg:text-4xl font-semibold bg-clip-text text-transparent"
+            style={{ backgroundImage: GRADIENTS.textWide }}
           >
             {content.pivotHighlight}
           </p>

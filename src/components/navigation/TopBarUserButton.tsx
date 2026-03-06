@@ -63,7 +63,7 @@ export default function TopBarUserButton() {
       >
         <svg
           className="w-5 h-5"
-          style={{ color: '#6BA292' }}
+          style={{ color: '#4E8C73' }}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

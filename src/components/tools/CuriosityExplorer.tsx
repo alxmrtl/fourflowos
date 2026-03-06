@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CuriosityPool from './CuriosityPool';
+import { AMETHYST } from '@/styles/brand-colors';
 import { useAuth } from '@/hooks/useAuth';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
 
@@ -56,8 +57,6 @@ const PROMPTS = [
     question: 'What would you explore if nobody was watching and failure wasn\'t possible?',
   },
 ];
-
-const AMETHYST = '#7A4DA4';
 
 // --- Helpers ---
 

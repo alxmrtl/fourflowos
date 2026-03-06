@@ -21,7 +21,7 @@ export default function AudienceIndicator() {
               onClick={() => setAudience('individual')}
               className={`p-2.5 rounded-full transition-all duration-300 ${
                 audience === 'individual'
-                  ? 'bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white'
+                  ? 'bg-gradient-to-r from-[#E84535] to-[#6330A0] text-white'
                   : 'text-gray-500 hover:text-gray-300'
               }`}
               aria-label="Personal practice"
@@ -34,7 +34,7 @@ export default function AudienceIndicator() {
               onClick={() => setAudience('leader')}
               className={`p-2.5 rounded-full transition-all duration-300 ${
                 audience === 'leader'
-                  ? 'bg-gradient-to-r from-[#6BA292] to-[#5B84B1] text-white'
+                  ? 'bg-gradient-to-r from-[#4E8C73] to-[#3E6FA3] text-white'
                   : 'text-gray-500 hover:text-gray-300'
               }`}
               aria-label="Leadership framework"

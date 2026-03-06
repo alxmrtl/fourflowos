@@ -2,6 +2,7 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 export default function AgentTeaserSection() {
   const ref = useRef(null);
@@ -22,7 +23,7 @@ export default function AgentTeaserSection() {
           </p>
           <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
             The{' '}
-            <span className="bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textGreen }}>
               FourFlow Agent
             </span>
           </h2>

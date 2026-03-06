@@ -1,4 +1,5 @@
 import { Dimension, Key, DimensionType, KeyType } from '@/types/framework';
+import { CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
 
 // Audience-specific copy for dimensions
 export const DIMENSION_AUDIENCE_COPY: Record<DimensionType, {
@@ -110,7 +111,7 @@ export const DIMENSIONS: Record<DimensionType, Dimension> = {
   self: {
     id: 'self',
     name: 'SELF',
-    color: '#FF6F61',
+    color: CORAL,
     description: 'Tuning your inner compass for flow navigation',
     icon: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SELF - Frequencies.png',
     sectionLogo: '/assets/LOGOS/SELF - Section Logo.png',
@@ -119,7 +120,7 @@ export const DIMENSIONS: Record<DimensionType, Dimension> = {
   space: {
     id: 'space',
     name: 'SPACE',
-    color: '#6BA292',
+    color: SAGE,
     description: 'Creating environments that amplify your potential',
     icon: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPACE - Sqaure.png',
     sectionLogo: '/assets/LOGOS/SPACE - Section Logo.png',
@@ -128,7 +129,7 @@ export const DIMENSIONS: Record<DimensionType, Dimension> = {
   story: {
     id: 'story',
     name: 'STORY',
-    color: '#5B84B1',
+    color: STEEL,
     description: 'Crafting narratives that drive meaningful action',
     icon: '/assets/LOGOS/MAIN LOGO - ELEMENTS/STORY - Cross.png',
     sectionLogo: '/assets/LOGOS/STORY - Section Logo.png',
@@ -137,7 +138,7 @@ export const DIMENSIONS: Record<DimensionType, Dimension> = {
   spirit: {
     id: 'spirit',
     name: 'SPIRIT',
-    color: '#7A4DA4',
+    color: AMETHYST,
     description: 'Aligning with your deepest values and vision',
     icon: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png',
     sectionLogo: '/assets/LOGOS/SPIRIT - Section Logo.png',

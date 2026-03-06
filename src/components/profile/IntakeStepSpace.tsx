@@ -5,7 +5,7 @@ import KeywordPicker from './intake-ui/KeywordPicker';
 import CardPicker from './intake-ui/CardPicker';
 import type { IntakeFormData } from '@/types/intake';
 
-const ACCENT = '#6BA292';
+const ACCENT = '#4E8C73';
 
 const ENVIRONMENT_OPTIONS = [
   {

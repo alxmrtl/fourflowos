@@ -4,6 +4,7 @@ import Image from 'next/image';
 import type { FlowProfileJSON } from '@/types/profile-json';
 import type { DimensionType } from '@/types/framework';
 import { DIMENSIONS } from '@/data/framework';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 const DIMENSION_ORDER: DimensionType[] = ['self', 'space', 'story', 'spirit'];
 
@@ -54,7 +55,7 @@ export default function ArchetypeHero({ profile }: Props) {
       <div
         className="h-px mb-6 rounded-full"
         style={{
-          background: 'linear-gradient(90deg, #FF6F61 0%, #6BA292 33%, #5B84B1 66%, #7A4DA4 100%)',
+          background: GRADIENTS.fourPillar,
           opacity: 0.6,
         }}
       />

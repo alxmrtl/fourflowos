@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 interface AdminAuthProps {
   children: ReactNode;
@@ -76,7 +77,8 @@ export default function AdminAuth({ children }: AdminAuthProps) {
 
             <button
               type="submit"
-              className="w-full px-4 py-3 bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] text-white rounded-xl font-medium hover:shadow-lg transition-all"
+              className="w-full px-4 py-3 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+              style={{ background: GRADIENTS.tertiaryCta }}
             >
               Enter
             </button>

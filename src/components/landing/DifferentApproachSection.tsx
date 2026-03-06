@@ -17,7 +17,7 @@ const principles = [
         />
       </svg>
     ),
-    gradient: 'from-[#FF6F61]/20 to-[#6BA292]/20',
+    gradient: 'from-[#E84535]/20 to-[#4E8C73]/20',
   },
   {
     title: 'Resistance is Information',
@@ -32,7 +32,7 @@ const principles = [
         />
       </svg>
     ),
-    gradient: 'from-[#6BA292]/20 to-[#5B84B1]/20',
+    gradient: 'from-[#4E8C73]/20 to-[#3E6FA3]/20',
   },
   {
     title: 'Work as Play',
@@ -53,7 +53,7 @@ const principles = [
         />
       </svg>
     ),
-    gradient: 'from-[#5B84B1]/20 to-[#7A4DA4]/20',
+    gradient: 'from-[#3E6FA3]/20 to-[#6330A0]/20',
   },
 ];
 
@@ -70,7 +70,7 @@ export default function DifferentApproachSection() {
         animate={isInView ? { opacity: 0.03 } : { opacity: 0 }}
         transition={{ duration: 1.5, ease: 'easeOut' }}
         style={{
-          background: 'radial-gradient(ellipse at center, #FF6F61 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse at center, #E84535 0%, transparent 70%)',
         }}
       />
 

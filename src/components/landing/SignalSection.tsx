@@ -3,6 +3,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
+import { CORAL, GRADIENTS } from '@/styles/brand-colors';
 
 // BREATHING PULSE - Core insight animation
 function BreathingPulse() {
@@ -24,16 +25,16 @@ function BreathingPulse() {
       `}</style>
 
       {/* Outer rings */}
-      <div className="ring-3 absolute w-44 h-44 rounded-full border border-[#FF6F61]/10" />
-      <div className="ring-2 absolute w-32 h-32 rounded-full border border-[#FF6F61]/20" />
-      <div className="ring-1 absolute w-20 h-20 rounded-full border border-[#FF6F61]/30" />
+      <div className="ring-3 absolute w-44 h-44 rounded-full border border-[#E84535]/10" />
+      <div className="ring-2 absolute w-32 h-32 rounded-full border border-[#E84535]/20" />
+      <div className="ring-1 absolute w-20 h-20 rounded-full border border-[#E84535]/30" />
 
       {/* Core */}
       <div
         className="core relative w-16 h-16 rounded-full"
         style={{
-          background: 'radial-gradient(circle, #FF6F61 0%, #FF6F6180 50%, transparent 80%)',
-          boxShadow: '0 0 40px #FF6F6180',
+          background: `radial-gradient(circle, ${CORAL} 0%, ${CORAL}80 50%, transparent 80%)`,
+          boxShadow: '0 0 40px #E8453580',
         }}
       />
     </div>
@@ -80,7 +81,7 @@ function EmblemAnimation() {
           fill
           className="object-contain"
         />
-        <div className="absolute inset-0 rounded-full blur-xl bg-[#7A4DA4]/30" style={{ zIndex: -1 }} />
+        <div className="absolute inset-0 rounded-full blur-xl bg-[#6330A0]/30" style={{ zIndex: -1 }} />
       </div>
 
       <div className="shape-tr absolute w-16 h-16 translate-x-8 -translate-y-8" style={{ zIndex: 2 }}>
@@ -90,7 +91,7 @@ function EmblemAnimation() {
           fill
           className="object-contain"
         />
-        <div className="absolute inset-0 rounded-full blur-xl bg-[#6BA292]/30" style={{ zIndex: -1 }} />
+        <div className="absolute inset-0 rounded-full blur-xl bg-[#4E8C73]/30" style={{ zIndex: -1 }} />
       </div>
 
       <div className="shape-bl absolute w-16 h-16 -translate-x-8 translate-y-8" style={{ zIndex: 3 }}>
@@ -100,7 +101,7 @@ function EmblemAnimation() {
           fill
           className="object-contain"
         />
-        <div className="absolute inset-0 rounded-full blur-xl bg-[#5B84B1]/30" style={{ zIndex: -1 }} />
+        <div className="absolute inset-0 rounded-full blur-xl bg-[#3E6FA3]/30" style={{ zIndex: -1 }} />
       </div>
 
       <div className="shape-tl absolute w-16 h-16 -translate-x-8 -translate-y-8" style={{ zIndex: 4 }}>
@@ -110,7 +111,7 @@ function EmblemAnimation() {
           fill
           className="object-contain"
         />
-        <div className="absolute inset-0 rounded-full blur-xl bg-[#FF6F61]/30" style={{ zIndex: -1 }} />
+        <div className="absolute inset-0 rounded-full blur-xl bg-[#E84535]/30" style={{ zIndex: -1 }} />
       </div>
 
       {/* Center glow when aligned */}
@@ -128,10 +129,10 @@ function EmblemAnimation() {
 type AnimationPhase = 'scramble' | 'spirit' | 'story' | 'space' | 'self' | 'aligned';
 
 const DIMENSIONS = [
-  { id: 'spirit', name: 'SPIRIT', color: '#7A4DA4' },
-  { id: 'story', name: 'STORY', color: '#5B84B1' },
-  { id: 'space', name: 'SPACE', color: '#6BA292' },
-  { id: 'self', name: 'SELF', color: '#FF6F61' },
+  { id: 'spirit', name: 'SPIRIT', color: '#6330A0' },
+  { id: 'story', name: 'STORY', color: '#3E6FA3' },
+  { id: 'space', name: 'SPACE', color: '#4E8C73' },
+  { id: 'self', name: 'SELF', color: '#E84535' },
 ];
 
 // Clockwise relationships: Spirit → Story → Space → Self → Spirit
@@ -213,10 +214,10 @@ function CircularFrequencyAnimation({ inView }: { inView: boolean }) {
   // Get dimension color by angle
   const getBarColor = (angle: number) => {
     const a = ((angle % 360) + 360) % 360;
-    if (a >= 315 || a < 45) return { color: '#7A4DA4', id: 'spirit' };
-    if (a >= 45 && a < 135) return { color: '#5B84B1', id: 'story' };
-    if (a >= 135 && a < 225) return { color: '#6BA292', id: 'space' };
-    return { color: '#FF6F61', id: 'self' };
+    if (a >= 315 || a < 45) return { color: '#6330A0', id: 'spirit' };
+    if (a >= 45 && a < 135) return { color: '#3E6FA3', id: 'story' };
+    if (a >= 135 && a < 225) return { color: '#4E8C73', id: 'space' };
+    return { color: '#E84535', id: 'self' };
   };
 
   // Arrow path with outward curve
@@ -408,7 +409,7 @@ export default function SignalSection() {
             When Alignment Happens
           </p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
-            <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
               Flow
             </span>{' '}
             Is the Signal

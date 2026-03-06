@@ -298,7 +298,7 @@ export default function FlowZone() {
                       type="text"
                       defaultValue={priority.text}
                       autoFocus
-                      className="flex-1 bg-transparent text-white text-sm outline-none border-b border-white/20 focus:border-[#FF6F61]/60 py-1"
+                      className="flex-1 bg-transparent text-white text-sm outline-none border-b border-white/20 focus:border-[#E84535]/60 py-1"
                       onBlur={e => {
                         const val = e.target.value.trim();
                         if (val) store.updatePriority(priority.id, val);
@@ -336,7 +336,7 @@ export default function FlowZone() {
                   value={newPriority}
                   onChange={e => setNewPriority(e.target.value)}
                   placeholder="+ Add priority..."
-                  className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 outline-none border-b border-white/10 focus:border-[#FF6F61]/40 py-1.5 transition-colors"
+                  className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 outline-none border-b border-white/10 focus:border-[#E84535]/40 py-1.5 transition-colors"
                   onKeyDown={e => {
                     if (e.key === 'Enter') handleAddPriority();
                   }}
@@ -407,11 +407,11 @@ export default function FlowZone() {
                     onClick={() => store.updateSettings({ breathworkPatternId: pattern.id })}
                     className={`flex items-start gap-2.5 p-3 rounded-xl text-left transition-all ${
                       isSelected
-                        ? 'bg-[#6BA292]/15 border-[#6BA292]/40'
+                        ? 'bg-[#4E8C73]/15 border-[#4E8C73]/40'
                         : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.1]'
                     } border`}
                   >
-                    <span className={`flex-shrink-0 mt-0.5 ${isSelected ? 'text-[#6BA292]' : 'text-gray-500'}`}>
+                    <span className={`flex-shrink-0 mt-0.5 ${isSelected ? 'text-[#4E8C73]' : 'text-gray-500'}`}>
                       {BreathworkIcons[pattern.id]}
                     </span>
                     <div className="min-w-0">
@@ -430,7 +430,7 @@ export default function FlowZone() {
                   type="checkbox"
                   checked={store.settings.breathworkPre}
                   onChange={e => store.updateSettings({ breathworkPre: e.target.checked })}
-                  className="accent-[#6BA292] w-3.5 h-3.5"
+                  className="accent-[#4E8C73] w-3.5 h-3.5"
                 />
                 <span className="text-xs text-gray-400">Pre-session</span>
               </label>
@@ -439,7 +439,7 @@ export default function FlowZone() {
                   type="checkbox"
                   checked={store.settings.breathworkPost}
                   onChange={e => store.updateSettings({ breathworkPost: e.target.checked })}
-                  className="accent-[#6BA292] w-3.5 h-3.5"
+                  className="accent-[#4E8C73] w-3.5 h-3.5"
                 />
                 <span className="text-xs text-gray-400">Post-session</span>
               </label>
@@ -473,7 +473,7 @@ export default function FlowZone() {
                 step={0.05}
                 value={store.settings.audioVolume}
                 onChange={e => store.updateSettings({ audioVolume: parseFloat(e.target.value) })}
-                className="flex-1 accent-[#7A4DA4]"
+                className="flex-1 accent-[#6330A0]"
               />
             </div>
           </div>
@@ -528,7 +528,7 @@ export default function FlowZone() {
                   onChange={e => store.updateSettings({ youtubeCustomUrl: e.target.value })}
                   placeholder="https://youtube.com/watch?v=..."
                   autoFocus
-                  className="w-full mt-3 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#7A4DA4]/50 transition-colors"
+                  className="w-full mt-3 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#6330A0]/50 transition-colors"
                 />
               </motion.div>
             )}
@@ -651,11 +651,11 @@ function AudioButton({
       onClick={onClick}
       className={`flex items-start gap-2.5 p-3 rounded-xl text-left transition-all ${
         selected
-          ? 'bg-[#7A4DA4]/15 border-[#7A4DA4]/40'
+          ? 'bg-[#6330A0]/15 border-[#6330A0]/40'
           : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.1]'
       } border`}
     >
-      <span className={`flex-shrink-0 mt-0.5 ${selected ? 'text-[#7A4DA4]' : 'text-gray-500'}`}>
+      <span className={`flex-shrink-0 mt-0.5 ${selected ? 'text-[#6330A0]' : 'text-gray-500'}`}>
         {icon}
       </span>
       <div className="min-w-0 flex-1">

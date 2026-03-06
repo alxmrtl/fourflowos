@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 
-const PILLAR_COLORS = ['#FF6F61', '#6BA292', '#5B84B1', '#7A4DA4'];
+const PILLAR_COLORS = ['#E84535', '#4E8C73', '#3E6FA3', '#6330A0'];
 const PARTICLE_COUNT = 50;
 const MERGE_DISTANCE = 60;
 const STAR_DURATION = 500;

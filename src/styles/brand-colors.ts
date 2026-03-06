@@ -1,128 +1,64 @@
 /**
- * FourFlowOS Brand Colors
- * Centralized color definitions for consistent branding across the website
+ * FourFlowOS Brand Colors — Single Source of Truth
+ *
+ * To pivot the entire color palette: edit the 4 hex constants below.
+ * To pivot gradient design: edit the GRADIENTS object below.
+ * Everything else (components, tools) derives from these.
  */
 
-export const BRAND_COLORS = {
-  // The Four Pillars
-  pillars: {
-    self: {
-      primary: '#FF6F61',
-      dark: '#E64A45',
-      light: '#FF8A80',
-      rgb: '255, 111, 97',
-    },
-    space: {
-      primary: '#6BA292',
-      dark: '#517D63',
-      light: '#8FC4B0',
-      rgb: '107, 162, 146',
-    },
-    story: {
-      primary: '#5B84B1',
-      dark: '#3B4F71',
-      light: '#7DA3C9',
-      rgb: '91, 132, 177',
-    },
-    spirit: {
-      primary: '#7A4DA4',
-      dark: '#5E3570',
-      light: '#9A6DC4',
-      rgb: '122, 77, 164',
-    },
-  },
+// ─── Pillar Colors ────────────────────────────────────────────────────────────
+// Edit these 4 values to shift the whole brand palette.
+export const CORAL    = '#E84535';  // SELF    (was #FF6F61)
+export const SAGE     = '#4E8C73';  // SPACE   (was #6BA292)
+export const STEEL    = '#3E6FA3';  // STORY   (was #5B84B1)
+export const AMETHYST = '#6330A0';  // SPIRIT  (was #7A4DA4)
 
-  // Neutral Colors
+// ─── Gradient Roles ───────────────────────────────────────────────────────────
+// Named by function, not color. Change values here to pivot gradient design.
+// All consume the pillar constants above — one edit propagates everywhere.
+export const GRADIENTS = {
+  // CTA buttons
+  primaryCta:   `linear-gradient(135deg, ${STEEL}, ${AMETHYST})`,    // main CTAs — steel leads, confident
+  secondaryCta: `linear-gradient(135deg, ${STEEL}, ${CORAL})`,       // alternate — cool to warm
+  tertiaryCta:  `linear-gradient(135deg, ${SAGE}, ${STEEL})`,        // form/intake — grounded, cool
+
+  // Text highlights (use as backgroundImage with bg-clip-text)
+  textAccent:   `linear-gradient(90deg, ${CORAL}, ${STEEL})`,        // fire→ice, high contrast
+  textWide:     `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})`, // full spectrum
+  textBlue:     `linear-gradient(90deg, ${STEEL}, ${AMETHYST})`,     // blue-to-purple variant
+  textGreen:    `linear-gradient(90deg, ${SAGE}, ${AMETHYST})`,      // green-to-purple variant
+
+  // Decorative
+  fourPillar:   `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})`,
+  fourPillarV:  `linear-gradient(135deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})`,
+
+  // Ambient glows (radial)
+  selfGlow:     `radial-gradient(circle, ${CORAL}26, transparent 70%)`,
+  spiritGlow:   `radial-gradient(circle, ${AMETHYST}26, transparent 70%)`,
+  sageGlow:     `radial-gradient(circle, ${SAGE}26, transparent 70%)`,
+  steelGlow:    `radial-gradient(circle, ${STEEL}26, transparent 70%)`,
+} as const;
+
+// ─── Pillar Color Array ───────────────────────────────────────────────────────
+// Ordered: SELF, SPACE, STORY, SPIRIT
+export const PILLAR_COLORS = [CORAL, SAGE, STEEL, AMETHYST] as const;
+
+// ─── BRAND_COLORS object (structured reference) ───────────────────────────────
+export const BRAND_COLORS = {
+  pillars: {
+    self:   { primary: CORAL,    dark: '#C4311F', light: '#F05A49', rgb: '232, 69, 53' },
+    space:  { primary: SAGE,     dark: '#37634F', light: '#6AAF8E', rgb: '78, 140, 115' },
+    story:  { primary: STEEL,    dark: '#2B5080', light: '#5A8DC2', rgb: '62, 111, 163' },
+    spirit: { primary: AMETHYST, dark: '#461F78', light: '#8248C8', rgb: '99, 48, 160' },
+  },
   neutral: {
     charcoal: '#333333',
     ivory: '#F5F5F5',
     dark: '#0a0a0a',
     darker: '#050505',
-    gray: {
-      50: '#fafafa',
-      100: '#f4f4f5',
-      200: '#e4e4e7',
-      300: '#d4d4d8',
-      400: '#a1a1aa',
-      500: '#71717a',
-      600: '#52525b',
-      700: '#3f3f46',
-      800: '#27272a',
-      900: '#18181b',
-    },
-  },
-
-  // Gradients
-  gradients: {
-    fourPillars: 'linear-gradient(90deg, #FF6F61, #6BA292, #5B84B1, #7A4DA4)',
-    selfToSpirit: 'linear-gradient(90deg, #FF6F61, #7A4DA4)',
-    selfToSpace: 'linear-gradient(90deg, #FF6F61, #6BA292)',
-    storyToSpirit: 'linear-gradient(90deg, #5B84B1, #7A4DA4)',
-    radialGlow: 'radial-gradient(circle, rgba(122, 77, 164, 0.15) 0%, transparent 70%)',
-  },
-
-  // Tailwind-compatible class strings
-  tailwind: {
-    self: {
-      bg: 'bg-[#FF6F61]',
-      text: 'text-[#FF6F61]',
-      border: 'border-[#FF6F61]',
-      bgLight: 'bg-[#FF6F61]/10',
-    },
-    space: {
-      bg: 'bg-[#6BA292]',
-      text: 'text-[#6BA292]',
-      border: 'border-[#6BA292]',
-      bgLight: 'bg-[#6BA292]/10',
-    },
-    story: {
-      bg: 'bg-[#5B84B1]',
-      text: 'text-[#5B84B1]',
-      border: 'border-[#5B84B1]',
-      bgLight: 'bg-[#5B84B1]/10',
-    },
-    spirit: {
-      bg: 'bg-[#7A4DA4]',
-      text: 'text-[#7A4DA4]',
-      border: 'border-[#7A4DA4]',
-      bgLight: 'bg-[#7A4DA4]/10',
-    },
   },
 } as const;
 
-// Helper function to get pillar color by dimension ID
-export const getPillarColor = (pillar: 'self' | 'space' | 'story' | 'spirit') => {
-  return BRAND_COLORS.pillars[pillar].primary;
-};
+export type PillarType = 'self' | 'space' | 'story' | 'spirit';
 
-// Helper function to get gradient between two pillars
-export const getPillarGradient = (from: string, to: string) => {
-  return `linear-gradient(90deg, ${from}, ${to})`;
-};
-
-// Animation timing for zen/meditative feel
-export const ANIMATION_TIMING = {
-  breathing: '8s ease-in-out infinite',
-  slowSpin: '30s linear infinite',
-  slowPulse: '4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-  floatingOrb: '25s ease-in-out infinite',
-  gradientShift: '20s linear infinite',
-} as const;
-
-// Typography scale
-export const TYPOGRAPHY = {
-  fonts: {
-    heading: 'Inter, system-ui, -apple-system, sans-serif',
-    body: 'Inter, system-ui, -apple-system, sans-serif',
-  },
-  sizes: {
-    hero: 'text-5xl md:text-7xl lg:text-8xl',
-    h1: 'text-4xl md:text-5xl lg:text-6xl',
-    h2: 'text-3xl md:text-4xl',
-    h3: 'text-2xl md:text-3xl',
-    body: 'text-base md:text-lg',
-    small: 'text-sm',
-  },
-} as const;
-
-export type PillarType = keyof typeof BRAND_COLORS.pillars;
+export const getPillarColor = (pillar: PillarType) => BRAND_COLORS.pillars[pillar].primary;

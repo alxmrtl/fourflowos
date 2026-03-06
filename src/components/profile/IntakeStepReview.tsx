@@ -39,7 +39,7 @@ export default function IntakeStepReview({ data, onGoToStep }: Props) {
     {
       title: 'Opening Frame',
       step: 3,
-      color: '#7A4DA4',
+      color: '#6330A0',
       summary: () => [
         data.opening_season ? `Season: ${data.opening_season}` : null,
         data.opening_chapter_title ? `"${data.opening_chapter_title}"` : null,
@@ -48,7 +48,7 @@ export default function IntakeStepReview({ data, onGoToStep }: Props) {
     {
       title: 'Self',
       step: 4,
-      color: '#FF6F61',
+      color: '#E84535',
       summary: () => [
         data.self_emotions_keywords.length ? `${data.self_emotions_keywords.length} emotion words` : null,
         `Energy: ${data.self_body_energy}/10`,
@@ -58,7 +58,7 @@ export default function IntakeStepReview({ data, onGoToStep }: Props) {
     {
       title: 'Space',
       step: 5,
-      color: '#6BA292',
+      color: '#4E8C73',
       summary: () => [
         data.space_environment_feel || null,
         data.space_feedback_channel ? `Feedback: ${data.space_feedback_channel}` : null,
@@ -67,7 +67,7 @@ export default function IntakeStepReview({ data, onGoToStep }: Props) {
     {
       title: 'Story',
       step: 6,
-      color: '#5B84B1',
+      color: '#3E6FA3',
       summary: () => [
         data.story_narrative_arc || null,
         data.story_mission_clarity || null,
@@ -76,7 +76,7 @@ export default function IntakeStepReview({ data, onGoToStep }: Props) {
     {
       title: 'Spirit',
       step: 7,
-      color: '#7A4DA4',
+      color: '#6330A0',
       summary: () => [
         data.spirit_values_selected.length ? `${data.spirit_values_selected.length} values` : null,
         data.spirit_curiosity_intersection ? `"${data.spirit_curiosity_intersection}"` : null,
@@ -85,7 +85,7 @@ export default function IntakeStepReview({ data, onGoToStep }: Props) {
     {
       title: 'Soul Signature',
       step: 8,
-      color: '#7A4DA4',
+      color: '#6330A0',
       summary: () => [
         data.soul_myth_character ? `${data.soul_myth_character}` : null,
         data.soul_word ? `"${data.soul_word}"` : null,

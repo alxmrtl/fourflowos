@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 type ModalState = 'idle' | 'submitting' | 'sent';
 
@@ -102,7 +103,7 @@ function IdleState({
         {/* Four pillar gradient dot */}
         <div
           className="mx-auto mb-4 h-10 w-10 rounded-full"
-          style={{ background: 'linear-gradient(135deg, #FF6F61, #6BA292, #5B84B1, #7A4DA4)' }}
+          style={{ background: GRADIENTS.fourPillarV }}
         />
         <h2 className="text-xl font-semibold text-white">Sign in to continue</h2>
         <p className="mt-1 text-sm" style={{ color: '#888' }}>
@@ -129,7 +130,7 @@ function IdleState({
         />
 
         {error && (
-          <p className="text-xs" style={{ color: '#FF6F61' }}>
+          <p className="text-xs" style={{ color: '#E84535' }}>
             {error}
           </p>
         )}
@@ -138,7 +139,7 @@ function IdleState({
           type="submit"
           disabled={submitting || !email.trim()}
           className="w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:opacity-40"
-          style={{ background: 'linear-gradient(135deg, #5B84B1, #7A4DA4)' }}
+          style={{ background: GRADIENTS.primaryCta }}
         >
           {submitting ? 'Sending…' : 'Send magic link'}
         </button>
@@ -151,7 +152,7 @@ function SentState({ email, onResend }: { email: string; onResend: () => void })
   return (
     <div className="text-center">
       <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'rgba(107,162,146,0.15)' }}>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6BA292" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#4E8C73" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 10l5 5 9-9" />
         </svg>
       </div>

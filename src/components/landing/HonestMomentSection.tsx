@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion, useInView } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 const QUESTIONS = [
   'What makes you come alive?',
@@ -72,8 +73,8 @@ function QuestionRain() {
         {items.map(item => (
           <motion.p
             key={item.id}
-            className="absolute left-0 right-0 text-center font-display text-xl md:text-2xl italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent"
-            style={{ x: item.x }}
+            className="absolute left-0 right-0 text-center font-display text-xl md:text-2xl italic bg-clip-text text-transparent"
+            style={{ x: item.x, backgroundImage: GRADIENTS.textAccent }}
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: 210, opacity: [0, 1, 1, 0] }}
             transition={{
@@ -144,13 +145,13 @@ export default function HonestMomentSection() {
           <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
             They get answered in a{' '}
             <motion.span
-              className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent"
-              style={{ display: 'inline-block' }}
+              className="bg-clip-text text-transparent"
+              style={{ display: 'inline-block', backgroundImage: GRADIENTS.textAccent }}
               animate={{
                 filter: [
-                  'drop-shadow(0 0 5px rgba(255,111,97,0.55)) drop-shadow(0 0 14px rgba(255,111,97,0.22))',
-                  'drop-shadow(0 0 5px rgba(122,77,164,0.65)) drop-shadow(0 0 14px rgba(122,77,164,0.28))',
-                  'drop-shadow(0 0 5px rgba(255,111,97,0.55)) drop-shadow(0 0 14px rgba(255,111,97,0.22))',
+                  'drop-shadow(0 0 5px rgba(232,69,53,0.55)) drop-shadow(0 0 14px rgba(232,69,53,0.22))',
+                  'drop-shadow(0 0 5px rgba(62,111,163,0.65)) drop-shadow(0 0 14px rgba(62,111,163,0.28))',
+                  'drop-shadow(0 0 5px rgba(232,69,53,0.55)) drop-shadow(0 0 14px rgba(232,69,53,0.22))',
                 ],
               }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}

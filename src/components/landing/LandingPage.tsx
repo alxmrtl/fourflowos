@@ -6,6 +6,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import LandingNav from './LandingNav';
 import HeroSectionV2 from './HeroSectionV2';
+import { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
 import HonestMomentSection from './HonestMomentSection';
 import TimelessAnchorSection from './TimelessAnchorSection';
 import DimensionsSection from './DimensionsSection';
@@ -13,10 +14,10 @@ import ArchetypeRevealSection from './ArchetypeRevealSection';
 import Footer from './Footer';
 
 const pillarSymbols = [
-  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SELF - Frequencies.png', alt: 'SELF', color: '#FF6F61', x: '-8%', y: '-4%' },
-  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPACE - Sqaure.png', alt: 'SPACE', color: '#6BA292', x: '6%', y: '4%' },
-  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/STORY - Cross.png', alt: 'STORY', color: '#5B84B1', x: '-4%', y: '6%' },
-  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png', alt: 'SPIRIT', color: '#7A4DA4', x: '8%', y: '-2%' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SELF - Frequencies.png', alt: 'SELF', color: CORAL, x: '-8%', y: '-4%' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPACE - Sqaure.png', alt: 'SPACE', color: SAGE, x: '6%', y: '4%' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/STORY - Cross.png', alt: 'STORY', color: STEEL, x: '-4%', y: '6%' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png', alt: 'SPIRIT', color: AMETHYST, x: '8%', y: '-2%' },
 ];
 
 function UniquenessHeader() {
@@ -42,7 +43,7 @@ function UniquenessHeader() {
           transition={{ duration: 1.0, ease: 'easeOut', delay: 0.1 }}
         >
           The conditions are universal.<br />
-          <span className="italic bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
+          <span className="italic bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textAccent }}>
             Your pattern isn&apos;t.
           </span>
         </motion.h2>
@@ -132,7 +133,8 @@ export default function LandingPage() {
           </p>
           <Link
             href="/together"
-            className="font-sans inline-flex px-8 py-4 bg-gradient-to-r from-[#5B84B1] to-[#7A4DA4] text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105 text-sm"
+            className="font-sans inline-flex px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300 hover:scale-105 text-sm"
+            style={{ background: GRADIENTS.primaryCta }}
           >
             Book a signal session
           </Link>

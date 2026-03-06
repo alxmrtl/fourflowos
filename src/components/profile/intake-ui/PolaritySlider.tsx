@@ -14,7 +14,7 @@ export default function PolaritySlider({
   onChange,
   labelLeft,
   labelRight,
-  accent = '#7A4DA4',
+  accent = '#6330A0',
   className = '',
 }: PolaritySliderProps) {
   const pct = (value / 10) * 100;

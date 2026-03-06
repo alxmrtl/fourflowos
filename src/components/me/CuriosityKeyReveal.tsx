@@ -5,8 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { KeyData } from '@/types/profile-json';
 import { KEYS } from '@/data/framework';
-
-const AMETHYST = '#7A4DA4';
+import { AMETHYST } from '@/styles/brand-colors';
 
 interface CuriosityData {
   items: unknown[];

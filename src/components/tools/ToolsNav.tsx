@@ -12,7 +12,7 @@ const TOOLS = [
     name: 'FlowZone',
     description: 'Deep work companion',
     path: '/tools/flowzone',
-    color: '#FF6F61',
+    color: '#E84535',
     logo: '/assets/LOGOS/FOURFLOW - MAIN LOGO.png',
   },
   {
@@ -20,7 +20,7 @@ const TOOLS = [
     name: 'FlowSpark',
     description: 'Find where your flow lives',
     path: '/tools/flowspark',
-    color: '#7A4DA4',
+    color: '#6330A0',
     logo: '/assets/LOGOS/IGNITED CURIOSITY.png',
   },
   {
@@ -28,12 +28,12 @@ const TOOLS = [
     name: 'FlowRead',
     description: 'Speed reading trainer',
     path: '/tools/flowread',
-    color: '#6BA292',
+    color: '#4E8C73',
     logo: '/assets/apps/flowread-icon.png',
   },
 ];
 
-const FOUR_PILLAR_GRADIENT = 'linear-gradient(135deg, #FF6F61, #6BA292, #5B84B1, #7A4DA4)';
+const FOUR_PILLAR_GRADIENT = 'linear-gradient(135deg, #E84535, #4E8C73, #3E6FA3, #6330A0)';
 
 export default function ToolsNav() {
   const [open, setOpen] = useState(false);

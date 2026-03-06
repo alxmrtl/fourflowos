@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AMETHYST } from '@/styles/brand-colors';
 
 interface CuriosityItem {
   id: string;
@@ -25,10 +26,8 @@ interface CuriosityPoolProps {
   onRemoveIntersection: (id: string) => void;
 }
 
-const AMETHYST = '#7A4DA4';
-
 const SOURCE_TINTS: Record<string, string> = {
-  freeform: '#7A4DA4',
+  freeform: AMETHYST,
   strengths: '#8B4DA0',
   timeless: '#6A5DAA',
   sparks: '#8A55B5',

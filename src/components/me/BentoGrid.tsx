@@ -60,10 +60,7 @@ function normalizeProfile(profile: FlowProfileJSON): FlowProfileJSON {
   return { ...profile, dimensions: normalizedDims };
 }
 
-const CORAL = '#FF6F61';
-const SAGE = '#6BA292';
-const STEEL = '#5B84B1';
-const AMETHYST = '#7A4DA4';
+import { CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
 
 interface SessionRow {
   id: string;

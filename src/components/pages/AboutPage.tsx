@@ -3,10 +3,11 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import PageLayout from '@/components/layout/PageLayout';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 export default function AboutPage() {
   return (
-    <PageLayout accentColor="#7A4DA4">
+    <PageLayout accentColor="#6330A0">
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
@@ -27,7 +28,7 @@ export default function AboutPage() {
             transition={{ delay: 0.1, duration: 0.8 }}
           >
             Hi, I&apos;m{' '}
-            <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textAccent }}>
               Alex
             </span>
           </motion.h1>
@@ -71,7 +72,8 @@ export default function AboutPage() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/contact"
-                  className="px-6 py-3 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
+                  className="px-6 py-3 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300 hover:scale-105"
+                  style={{ background: GRADIENTS.primaryCta }}
                 >
                   Get in Touch
                 </Link>

@@ -3,16 +3,17 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
+import { GRADIENTS } from '@/styles/brand-colors';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
 import AuthModal from '@/components/auth/AuthModal';
 
 const PILLAR_COLORS = {
-  SELF: '#FF6F61',
-  SPACE: '#6BA292',
-  STORY: '#5B84B1',
-  SPIRIT: '#7A4DA4',
+  SELF: '#E84535',
+  SPACE: '#4E8C73',
+  STORY: '#3E6FA3',
+  SPIRIT: '#6330A0',
 };
 
 interface ProfileData {
@@ -101,10 +102,10 @@ function CopyButton({ profile, signals }: { profile: ProfileData; signals: Signa
     >
       {copied ? (
         <>
-          <svg className="w-3.5 h-3.5" fill="none" stroke="#6BA292" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="#4E8C73" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          <span style={{ color: '#6BA292' }}>Copied</span>
+          <span style={{ color: '#4E8C73' }}>Copied</span>
         </>
       ) : (
         <>
@@ -179,7 +180,7 @@ function SignalDashboard({ profile }: { profile: ProfileData }) {
           <button
             onClick={() => setShowAuth(true)}
             className="px-4 py-2 text-sm rounded-lg text-white transition-colors hover:opacity-80"
-            style={{ background: 'linear-gradient(135deg, #5B84B1, #7A4DA4)' }}
+            style={{ background: GRADIENTS.primaryCta }}
           >
             Activate dashboard
           </button>
@@ -219,7 +220,7 @@ function CompactFlowZoneCard({ sessions }: { sessions: SessionRow[] }) {
 
   return (
     <div className="rounded-xl border border-white/10 overflow-hidden" style={{ background: 'rgba(20,20,20,0.95)' }}>
-      <div style={{ height: 2, background: `linear-gradient(90deg, #FF6F61, #6BA292)` }} />
+      <div style={{ height: 2, background: `linear-gradient(90deg, #E84535, #4E8C73)` }} />
       <div className="p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-white">FlowZone</h3>
@@ -229,11 +230,11 @@ function CompactFlowZoneCard({ sessions }: { sessions: SessionRow[] }) {
           <>
             <div className="grid grid-cols-3 gap-2 mb-2">
               <div>
-                <div className="text-lg font-bold" style={{ color: '#FF6F61' }}>{totalSessions}</div>
+                <div className="text-lg font-bold" style={{ color: '#E84535' }}>{totalSessions}</div>
                 <div className="text-[10px] text-gray-600">sessions</div>
               </div>
               <div>
-                <div className="text-lg font-bold" style={{ color: '#6BA292' }}>{totalReps}</div>
+                <div className="text-lg font-bold" style={{ color: '#4E8C73' }}>{totalReps}</div>
                 <div className="text-[10px] text-gray-600">reps</div>
               </div>
               <div>
@@ -258,7 +259,7 @@ function CompactCuriosityCard({ curiosity }: { curiosity: CuriosityData | null }
 
   return (
     <div className="rounded-xl border border-white/10 overflow-hidden" style={{ background: 'rgba(20,20,20,0.95)' }}>
-      <div style={{ height: 2, background: '#7A4DA4' }} />
+      <div style={{ height: 2, background: '#6330A0' }} />
       <div className="p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-white">Curiosity Map</h3>
@@ -267,11 +268,11 @@ function CompactCuriosityCard({ curiosity }: { curiosity: CuriosityData | null }
         {connected ? (
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <div className="text-lg font-bold" style={{ color: '#7A4DA4' }}>{itemCount}</div>
+              <div className="text-lg font-bold" style={{ color: '#6330A0' }}>{itemCount}</div>
               <div className="text-[10px] text-gray-600">curiosities</div>
             </div>
             <div>
-              <div className="text-lg font-bold" style={{ color: '#7A4DA4' }}>{intersectionCount}</div>
+              <div className="text-lg font-bold" style={{ color: '#6330A0' }}>{intersectionCount}</div>
               <div className="text-[10px] text-gray-600">intersections</div>
             </div>
           </div>
@@ -314,7 +315,7 @@ export default function ProfileViewPage() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-white/20 border-t-[#6BA292] rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-8 h-8 border-2 border-white/20 border-t-[#4E8C73] rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-500 text-sm">Loading your Flow Profile...</p>
         </div>
       </div>
@@ -424,7 +425,8 @@ export default function ProfileViewPage() {
             </p>
             <a
               href="mailto:fourflowos@gmail.com?subject=Book a Live Flow Session&body=Hi, I'd like to book a facilitated Flow Session to go deeper on my profile."
-              className="inline-block px-8 py-3.5 bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02]"
+              className="inline-block px-8 py-3.5 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02]"
+              style={{ background: GRADIENTS.tertiaryCta }}
             >
               Book a Live Flow Session
             </a>
@@ -490,7 +492,7 @@ export default function ProfileViewPage() {
           margin: 2rem 0;
         }
         .profile-content blockquote {
-          border-left: 3px solid #6BA292;
+          border-left: 3px solid #4E8C73;
           padding-left: 1rem;
           margin: 1.5rem 0;
           color: #a1a1aa;

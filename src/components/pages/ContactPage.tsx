@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
+import { GRADIENTS } from '@/styles/brand-colors';
 import PageLayout from '@/components/layout/PageLayout';
 
 export default function ContactPage() {
@@ -74,7 +75,7 @@ export default function ContactPage() {
     }`;
 
   return (
-    <PageLayout accentColor="#6BA292">
+    <PageLayout accentColor="#4E8C73">
       {/* Hero Section */}
       <section ref={heroRef} className="relative py-12 md:py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
@@ -97,7 +98,7 @@ export default function ContactPage() {
             transition={{ delay: 0.1, duration: 0.8 }}
           >
             Let&apos;s{' '}
-            <span className="bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textGreen }}>
               Connect
             </span>
           </motion.h1>
@@ -252,7 +253,8 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full px-6 py-4 bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="w-full px-6 py-4 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    style={{ background: GRADIENTS.tertiaryCta }}
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center gap-2">
@@ -334,7 +336,7 @@ export default function ContactPage() {
                 </p>
                 <a
                   href="mailto:fourflowos@gmail.com"
-                  className="inline-flex items-center gap-2 text-[#6BA292] hover:text-white transition-colors"
+                  className="inline-flex items-center gap-2 text-[#4E8C73] hover:text-white transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

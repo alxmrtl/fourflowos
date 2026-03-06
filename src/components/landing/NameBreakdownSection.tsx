@@ -3,6 +3,7 @@
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import { useRef } from 'react';
+import { CORAL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
 import { useAudience } from '@/context/AudienceContext';
 
 const individualNameBreakdown = [
@@ -10,19 +11,19 @@ const individualNameBreakdown = [
     word: 'FOUR',
     meaning: 'dimensions of life tuned to generate',
     connector: '...',
-    color: '#FF6F61',
+    color: '#E84535',
   },
   {
     word: 'FLOW',
     meaning: '— effortless action, peak engagement — through your own',
     connector: '...',
-    color: '#6BA292',
+    color: '#4E8C73',
   },
   {
     word: 'OS',
     meaning: '— an operating system for how you work and live.',
     connector: '',
-    color: '#7A4DA4',
+    color: '#6330A0',
   },
 ];
 
@@ -31,27 +32,27 @@ const leaderNameBreakdown = [
     word: 'FOUR',
     meaning: 'dimensions that unlock engagement in',
     connector: '...',
-    color: '#FF6F61',
+    color: '#E84535',
   },
   {
     word: 'FLOW',
     meaning: '— the state where people do their best work — through a shared',
     connector: '...',
-    color: '#6BA292',
+    color: '#4E8C73',
   },
   {
     word: 'OS',
     meaning: '— an operating system for how teams thrive.',
     connector: '',
-    color: '#7A4DA4',
+    color: '#6330A0',
   },
 ];
 
 const shapeImages = [
-  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SELF - Frequencies.png', color: '#FF6F61' },
-  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPACE - Sqaure.png', color: '#6BA292' },
-  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/STORY - Cross.png', color: '#5B84B1' },
-  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png', color: '#7A4DA4' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SELF - Frequencies.png', color: '#E84535' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPACE - Sqaure.png', color: '#4E8C73' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/STORY - Cross.png', color: '#3E6FA3' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png', color: '#6330A0' },
 ];
 
 export default function NameBreakdownSection() {
@@ -69,8 +70,8 @@ export default function NameBreakdownSection() {
           className="absolute inset-0"
           style={{
             backgroundImage: `
-              radial-gradient(circle at 20% 30%, #FF6F61 0%, transparent 40%),
-              radial-gradient(circle at 80% 70%, #7A4DA4 0%, transparent 40%)
+              radial-gradient(circle at 20% 30%, ${CORAL} 0%, transparent 40%),
+              radial-gradient(circle at 80% 70%, ${AMETHYST} 0%, transparent 40%)
             `,
           }}
         />
@@ -107,7 +108,7 @@ export default function NameBreakdownSection() {
         >
           <p className="text-gray-500 text-sm uppercase tracking-widest mb-4">Introducing</p>
           <h2 className="text-3xl md:text-4xl font-bold text-white">
-            <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
               FourFlowOS
             </span>
           </h2>

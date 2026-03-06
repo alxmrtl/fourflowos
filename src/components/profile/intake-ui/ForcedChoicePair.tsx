@@ -20,7 +20,7 @@ export default function ForcedChoicePair({
   optionB,
   selected,
   onChange,
-  accent = '#7A4DA4',
+  accent = '#6330A0',
   className = '',
 }: ForcedChoicePairProps) {
   const btn = (opt: ChoiceOption) => {

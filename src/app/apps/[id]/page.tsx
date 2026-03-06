@@ -243,13 +243,13 @@ export default function AppDetailPage({ params }: { params: Promise<{ id: string
                   remain completely private.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  <Link href="/privacy" className="text-[#7A4DA4] hover:text-[#9A6DC4] transition-colors text-sm font-medium">
+                  <Link href="/privacy" className="text-[#6330A0] hover:text-[#9A6DC4] transition-colors text-sm font-medium">
                     Privacy Policy →
                   </Link>
-                  <Link href="/terms" className="text-[#7A4DA4] hover:text-[#9A6DC4] transition-colors text-sm font-medium">
+                  <Link href="/terms" className="text-[#6330A0] hover:text-[#9A6DC4] transition-colors text-sm font-medium">
                     Terms of Service →
                   </Link>
-                  <Link href="/support" className="text-[#7A4DA4] hover:text-[#9A6DC4] transition-colors text-sm font-medium">
+                  <Link href="/support" className="text-[#6330A0] hover:text-[#9A6DC4] transition-colors text-sm font-medium">
                     Support →
                   </Link>
                 </div>

@@ -12,7 +12,7 @@ export default function FlowSparkPage() {
     <AuthGate>
       <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
         <CuriosityExplorerHeader />
-        <div className="h-px mx-6" style={{ background: 'linear-gradient(90deg, #7A4DA4, #5B84B1)', opacity: 0.4 }} />
+        <div className="h-px mx-6" style={{ background: 'linear-gradient(90deg, #6330A0, #3E6FA3)', opacity: 0.4 }} />
         <CuriosityExplorer />
       </div>
     </AuthGate>

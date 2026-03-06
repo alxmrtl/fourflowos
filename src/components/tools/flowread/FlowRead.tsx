@@ -18,7 +18,7 @@ export default function FlowRead() {
         <h1
           className="text-lg font-semibold tracking-tight"
           style={{
-            background: `linear-gradient(135deg, ${SAGE}, #5B84B1)`,
+            background: `linear-gradient(135deg, ${SAGE}, #3E6FA3)`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}

@@ -4,6 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { useRef } from 'react';
 import ParticleBackground from './ParticleBackground';
+import { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
 
 export default function HeroSectionV2() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -20,25 +21,25 @@ export default function HeroSectionV2() {
       <div className="absolute inset-0">
         <motion.div
           className="absolute w-96 h-96 rounded-full blur-3xl opacity-15"
-          style={{ background: '#FF6F61' }}
+          style={{ background: CORAL }}
           animate={{ x: [0, 80, 0], y: [0, -40, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="absolute right-0 top-1/4 w-80 h-80 rounded-full blur-3xl opacity-15"
-          style={{ background: '#7A4DA4' }}
+          style={{ background: AMETHYST }}
           animate={{ x: [0, -60, 0], y: [0, 50, 0], scale: [1, 1.15, 1] }}
           transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="absolute left-1/4 bottom-0 w-72 h-72 rounded-full blur-3xl opacity-10"
-          style={{ background: '#6BA292' }}
+          style={{ background: SAGE }}
           animate={{ x: [0, 40, 0], y: [0, -30, 0], scale: [1, 1.08, 1] }}
           transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="absolute right-1/4 bottom-1/4 w-64 h-64 rounded-full blur-3xl opacity-08"
-          style={{ background: '#5B84B1' }}
+          style={{ background: STEEL }}
           animate={{ x: [0, -30, 0], y: [0, 35, 0], scale: [1, 1.12, 1] }}
           transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
         />
@@ -103,7 +104,7 @@ export default function HeroSectionV2() {
             visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: 'easeOut' } },
           }}
         >
-          <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textAccent }}>
             Find your way back to it.
           </span>
         </motion.h2>
@@ -118,7 +119,7 @@ export default function HeroSectionV2() {
         >
           The world is moving faster.<br />
           Are you able to move with it?<br />
-          <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent [text-shadow:none] drop-shadow-[0_0_12px_rgba(255,111,97,0.45)]">
+          <span className="bg-clip-text text-transparent [text-shadow:none]" style={{ backgroundImage: GRADIENTS.textAccent }}>
             FourFlowOS shows you how.
           </span>
         </motion.p>
@@ -133,7 +134,8 @@ export default function HeroSectionV2() {
         >
           <Link
             href="/map"
-            className="font-sans px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105"
+            className="font-sans px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105"
+            style={{ background: GRADIENTS.primaryCta }}
           >
             Discover your archetype
           </Link>

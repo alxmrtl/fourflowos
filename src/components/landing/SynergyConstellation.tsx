@@ -7,10 +7,10 @@ import { KEYS, KEY_SYNERGIES } from '@/data/framework';
 import { KeyType } from '@/types/framework';
 
 const DIMENSION_COLORS: Record<string, string> = {
-  self: '#FF6F61',
-  space: '#6BA292',
-  story: '#5B84B1',
-  spirit: '#7A4DA4',
+  self: '#E84535',
+  space: '#4E8C73',
+  story: '#3E6FA3',
+  spirit: '#6330A0',
 };
 
 // Home positions for each key within their quadrant (percentage based)

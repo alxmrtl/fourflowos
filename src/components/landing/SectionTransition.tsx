@@ -11,8 +11,8 @@ interface SectionTransitionProps {
 
 export default function SectionTransition({
   variant = 'gradient',
-  fromColor = '#FF6F61',
-  toColor = '#7A4DA4',
+  fromColor = '#E84535',
+  toColor = '#6330A0',
 }: SectionTransitionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.5 });
@@ -44,7 +44,7 @@ export default function SectionTransition({
   }
 
   if (variant === 'dots') {
-    const colors = [fromColor, '#6BA292', '#5B84B1', toColor];
+    const colors = [fromColor, '#4E8C73', '#3E6FA3', toColor];
     return (
       <div ref={ref} className="relative py-8 flex justify-center items-center gap-3">
         {colors.map((color, index) => (

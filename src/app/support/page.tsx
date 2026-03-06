@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LegalPageLayout from '@/components/legal/LegalPageLayout';
+import { GRADIENTS } from '@/styles/brand-colors';
 import Image from 'next/image';
 
 interface FAQItem {
@@ -88,10 +89,10 @@ export default function SupportPage() {
 
   const categoryColors = {
     general: '#333333',
-    flowzone: '#FF6F61',
-    flowhabits: '#6BA292',
-    flowread: '#5B84B1',
-    flowrep: '#FF6F61',
+    flowzone: '#E84535',
+    flowhabits: '#4E8C73',
+    flowread: '#3E6FA3',
+    flowrep: '#E84535',
   };
 
   return (
@@ -106,14 +107,15 @@ export default function SupportPage() {
 
       {/* Quick Contact */}
       <section className="mb-12">
-        <div className="p-6 bg-gradient-to-r from-[#FF6F61]/10 to-[#7A4DA4]/10 border border-white/10 rounded-xl">
+        <div className="p-6 bg-gradient-to-r from-[#E84535]/10 to-[#6330A0]/10 border border-white/10 rounded-xl">
           <h2 className="text-xl font-bold text-white mb-4">Need Direct Help?</h2>
           <p className="text-gray-400 mb-4">
             We typically respond within 24-48 hours on business days.
           </p>
           <a
             href="mailto:fourflowos@gmail.com"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300"
+            style={{ background: GRADIENTS.primaryCta }}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -199,7 +201,7 @@ export default function SupportPage() {
         <h2 className="text-2xl font-bold text-white mb-6">App Resources</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[#FF6F61]/20 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-[#E84535]/20 flex items-center justify-center mb-4">
               <span className="text-2xl">🎯</span>
             </div>
             <h3 className="text-white font-semibold mb-2">FlowZone</h3>
@@ -209,7 +211,7 @@ export default function SupportPage() {
             </p>
           </div>
           <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[#6BA292]/20 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-[#4E8C73]/20 flex items-center justify-center mb-4">
               <span className="text-2xl">✨</span>
             </div>
             <h3 className="text-white font-semibold mb-2">FlowHabits</h3>
@@ -219,7 +221,7 @@ export default function SupportPage() {
             </p>
           </div>
           <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[#5B84B1]/20 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-[#3E6FA3]/20 flex items-center justify-center mb-4">
               <span className="text-2xl">📖</span>
             </div>
             <h3 className="text-white font-semibold mb-2">FlowRead</h3>
@@ -229,7 +231,7 @@ export default function SupportPage() {
             </p>
           </div>
           <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[#FF6F61]/20 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-[#E84535]/20 flex items-center justify-center mb-4">
               <span className="text-2xl">💪</span>
             </div>
             <h3 className="text-white font-semibold mb-2">FlowRep</h3>
@@ -270,7 +272,7 @@ export default function SupportPage() {
       </section>
 
       {/* Contact Summary */}
-      <section className="p-8 bg-gradient-to-br from-[#FF6F61]/10 via-[#6BA292]/10 to-[#7A4DA4]/10 border border-white/10 rounded-2xl">
+      <section className="p-8 bg-gradient-to-br from-[#E84535]/10 via-[#4E8C73]/10 to-[#6330A0]/10 border border-white/10 rounded-2xl">
         <h2 className="text-2xl font-bold text-white mb-4">Still Need Help?</h2>
         <p className="text-gray-300 mb-6">
           We&apos;re here to help you get the most out of FourFlowOS. Don&apos;t hesitate to reach out!

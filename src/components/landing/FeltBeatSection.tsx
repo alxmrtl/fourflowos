@@ -113,7 +113,7 @@ export default function FeltBeatSection() {
         <CloserLine className="font-sans text-lg text-gray-300">
           You were just in it.
         </CloserLine>
-        <CloserLine className="font-sans text-xl" style={{ color: '#FF6F61cc' }}>
+        <CloserLine className="font-sans text-xl" style={{ color: '#E84535cc' }}>
           That&apos;s the one.
         </CloserLine>
       </div>

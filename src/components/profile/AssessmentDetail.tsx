@@ -21,16 +21,16 @@ const STATUS_COLORS: Record<AssessmentStatus, string> = {
   lite_generated: '#8B5CF6',
   processing: '#EAB308',
   session_1_scheduled: '#F97316',
-  session_1_complete: '#6BA292',
-  synthesis: '#5B84B1',
-  session_2_scheduled: '#7A4DA4',
+  session_1_complete: '#4E8C73',
+  synthesis: '#3E6FA3',
+  session_2_scheduled: '#6330A0',
   delivered: '#22C55E',
 };
 
 const PILLAR_SECTIONS = [
   {
     title: 'Self',
-    color: '#FF6F61',
+    color: '#E84535',
     fields: [
       { key: 'self_energy', label: 'Physical Energy (Focused Body)' },
       { key: 'self_emotions', label: 'Emotions (Tuned Emotions)' },
@@ -39,7 +39,7 @@ const PILLAR_SECTIONS = [
   },
   {
     title: 'Space',
-    color: '#6BA292',
+    color: '#4E8C73',
     fields: [
       { key: 'space_environment', label: 'Environment (Intentional Space)' },
       { key: 'space_tools', label: 'Tools & Systems (Optimized Tools)' },
@@ -48,7 +48,7 @@ const PILLAR_SECTIONS = [
   },
   {
     title: 'Story',
-    color: '#5B84B1',
+    color: '#3E6FA3',
     fields: [
       { key: 'story_narrative', label: 'Life Narrative (Generative Story)' },
       { key: 'story_mission', label: 'Mission (Clear Mission)' },
@@ -57,7 +57,7 @@ const PILLAR_SECTIONS = [
   },
   {
     title: 'Spirit',
-    color: '#7A4DA4',
+    color: '#6330A0',
     fields: [
       { key: 'spirit_values', label: 'Values (Grounding Values)' },
       { key: 'spirit_curiosity', label: 'Curiosity (Ignited Curiosity)' },
@@ -505,7 +505,7 @@ ${a.spirit_vision}`.trim();
           margin: 1.5rem 0;
         }
         .admin-profile-content blockquote {
-          border-left: 3px solid #6BA292;
+          border-left: 3px solid #4E8C73;
           padding-left: 1rem;
           margin: 1.25rem 0;
           color: #a1a1aa;
@@ -605,7 +605,7 @@ ${a.spirit_vision}`.trim();
                 <div>
                   <p className="text-xs font-medium text-gray-400">Full prompt</p>
                   <p className="text-xs text-gray-600 mt-0.5">
-                    Intake data is pre-filled. <span className="text-[#6BA292]/70">{'{CHART_DATA}'}</span> is replaced at runtime with a Haiku-generated archetypal summary.
+                    Intake data is pre-filled. <span className="text-[#4E8C73]/70">{'{CHART_DATA}'}</span> is replaced at runtime with a Haiku-generated archetypal summary.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -653,7 +653,7 @@ ${a.spirit_vision}`.trim();
             loading={generating}
             disabled={generating}
             onClick={generateProfile}
-            color={isCustomPromptActive ? 'from-[#F97316] to-[#7A4DA4]' : assessment.status === 'intake_submitted' ? 'from-[#6BA292] to-[#7A4DA4]' : 'from-[#5B84B1] to-[#7A4DA4]'}
+            color={isCustomPromptActive ? 'from-[#F97316] to-[#6330A0]' : assessment.status === 'intake_submitted' ? 'from-[#4E8C73] to-[#6330A0]' : 'from-[#3E6FA3] to-[#6330A0]'}
           />
 
           {/* Terminal command */}
@@ -685,7 +685,7 @@ ${a.spirit_vision}`.trim();
                   </div>
                 )}
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 text-xs text-[#6BA292] font-mono bg-white/[0.04] px-3 py-2 rounded-lg border border-white/[0.07] select-all">
+                  <code className="flex-1 text-xs text-[#4E8C73] font-mono bg-white/[0.04] px-3 py-2 rounded-lg border border-white/[0.07] select-all">
                     {cliCommand}
                   </code>
                   <button
@@ -744,7 +744,7 @@ ${a.spirit_vision}`.trim();
             {/* Astro Reading */}
             <CollapsibleSection
               title="Astro Reading"
-              color="#7A4DA4"
+              color="#6330A0"
               open={astroOpen}
               onToggle={() => setAstroOpen(v => !v)}
             >
@@ -823,7 +823,7 @@ ${a.spirit_vision}`.trim();
                           </span>
                         )}
                         {isActiveDraft && (
-                          <span className="text-xs text-[#5B84B1] bg-[#5B84B1]/10 px-1.5 py-0.5 rounded border border-[#5B84B1]/20">
+                          <span className="text-xs text-[#3E6FA3] bg-[#3E6FA3]/10 px-1.5 py-0.5 rounded border border-[#3E6FA3]/20">
                             Active Draft
                           </span>
                         )}
@@ -912,7 +912,7 @@ ${a.spirit_vision}`.trim();
                               loading={delivering}
                               disabled={delivering}
                               onClick={deliverProfile}
-                              color="from-[#22C55E] to-[#6BA292]"
+                              color="from-[#22C55E] to-[#4E8C73]"
                             />
                           </div>
                         )}
@@ -921,7 +921,7 @@ ${a.spirit_vision}`.trim();
                         {isDelivered && assessment.view_token && (
                           <div className="mt-5 pt-4 border-t border-white/[0.06]">
                             <p className="text-xs text-gray-500 mb-1">Client view link:</p>
-                            <code className="text-xs text-[#6BA292] break-all">
+                            <code className="text-xs text-[#4E8C73] break-all">
                               {typeof window !== 'undefined'
                                 ? `${window.location.origin}/profile/view/${assessment.view_token}`
                                 : `/profile/view/${assessment.view_token}`}
@@ -1010,7 +1010,7 @@ function ActionButton({
   loading,
   disabled,
   onClick,
-  color = 'from-[#6BA292] to-[#7A4DA4]',
+  color = 'from-[#4E8C73] to-[#6330A0]',
 }: {
   label: string;
   loading: boolean;

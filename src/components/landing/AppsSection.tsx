@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, useInView, AnimatePresence, Variants } from 'framer-motion';
 import Image from 'next/image';
+import { GRADIENTS } from '@/styles/brand-colors';
 import Link from 'next/link';
 import { useRef } from 'react';
 import { getAllApps, App } from '@/data/apps';
@@ -240,8 +241,8 @@ export default function AppsSection() {
       ref={ref}
       className="relative py-24 md:py-32 bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] overflow-hidden"
     >
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#7A4DA4]/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#FF6F61]/10 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#6330A0]/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#E84535]/10 rounded-full blur-3xl" />
 
       <motion.div
         className="max-w-7xl mx-auto px-6 relative z-10"
@@ -258,7 +259,7 @@ export default function AppsSection() {
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             Tools That Put It{' '}
-            <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textAccent }}>
               Into Practice
             </span>
           </h2>

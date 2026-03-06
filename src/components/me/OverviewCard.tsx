@@ -33,10 +33,10 @@ export default function OverviewCard({ overview }: Props) {
       {hasNew ? (
         <div className="grid grid-cols-2 gap-x-6 gap-y-4">
           {flow.length > 0 && (
-            <SignalList label="FLOW" color="text-[#6BA292]" items={flow} />
+            <SignalList label="FLOW" color="text-[#4E8C73]" items={flow} />
           )}
           {friction.length > 0 && (
-            <SignalList label="FRICTION" color="text-[#FF6F61]" items={friction} />
+            <SignalList label="FRICTION" color="text-[#E84535]" items={friction} />
           )}
         </div>
       ) : legacyKeys.length > 0 ? (

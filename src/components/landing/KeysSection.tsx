@@ -3,6 +3,7 @@
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import { useRef } from 'react';
+import { GRADIENTS } from '@/styles/brand-colors';
 import { DIMENSIONS, KEYS } from '@/data/framework';
 import { KeyType } from '@/types/framework';
 
@@ -48,7 +49,7 @@ export default function KeysSection() {
             The System
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
               12 Flow Keys
             </span>
           </h2>
@@ -169,7 +170,7 @@ export default function KeysSection() {
         >
           <div className="flex items-center gap-2">
             {[...Array(12)].map((_, i) => {
-              const colors = ['#FF6F61', '#FF6F61', '#FF6F61', '#6BA292', '#6BA292', '#6BA292', '#5B84B1', '#5B84B1', '#5B84B1', '#7A4DA4', '#7A4DA4', '#7A4DA4'];
+              const colors = ['#E84535', '#E84535', '#E84535', '#4E8C73', '#4E8C73', '#4E8C73', '#3E6FA3', '#3E6FA3', '#3E6FA3', '#6330A0', '#6330A0', '#6330A0'];
               return (
                 <motion.div
                   key={i}

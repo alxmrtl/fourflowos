@@ -7,8 +7,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TopBarUserButton from '@/components/navigation/TopBarUserButton';
 import { useAuth } from '@/hooks/useAuth';
+import { PILLAR_COLORS } from '@/styles/brand-colors';
 
-const pillarColors = ['#FF6F61', '#6BA292', '#5B84B1', '#7A4DA4'];
+const pillarColors = PILLAR_COLORS;
 
 export default function LandingNav() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -86,7 +87,7 @@ export default function LandingNav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="relative px-4 py-1.5 text-white text-sm font-medium rounded-full border border-[#FF6F61]/35 bg-gradient-to-r from-[#FF6F61]/[0.08] to-[#7A4DA4]/[0.08] hover:from-[#FF6F61]/15 hover:to-[#7A4DA4]/15 hover:border-[#FF6F61]/55 transition-all duration-300 shadow-[0_0_14px_rgba(255,111,97,0.10)] hover:shadow-[0_0_22px_rgba(255,111,97,0.25)]"
+                  className="relative px-4 py-1.5 text-white text-sm font-medium rounded-full border border-[#3E6FA3]/35 bg-gradient-to-r from-[#3E6FA3]/[0.08] to-[#6330A0]/[0.08] hover:from-[#3E6FA3]/15 hover:to-[#6330A0]/15 hover:border-[#3E6FA3]/55 transition-all duration-300 shadow-[0_0_14px_rgba(62,111,163,0.10)] hover:shadow-[0_0_22px_rgba(62,111,163,0.25)]"
                 >
                   {link.label}
                 </Link>
@@ -265,7 +266,8 @@ export default function LandingNav() {
               <div className="mt-2">
                 <Link
                   href="/map"
-                  className="block w-full text-center px-5 py-3 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+                  className="block w-full text-center px-5 py-3 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300"
+                  style={{ background: 'linear-gradient(135deg, #3E6FA3, #6330A0)' }}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Discover Your Archetype

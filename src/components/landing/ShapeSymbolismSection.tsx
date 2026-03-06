@@ -11,7 +11,7 @@ const shapes = [
     image: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SELF - Frequencies.png',
     symbolism: 'Energy that pulses through you.',
     description: 'The wave of vitality—always moving, never static.',
-    color: '#FF6F61',
+    color: '#E84535',
   },
   {
     name: 'Space',
@@ -19,7 +19,7 @@ const shapes = [
     image: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPACE - Sqaure.png',
     symbolism: 'Structure that grounds you.',
     description: 'Four corners, stable foundation—order from chaos.',
-    color: '#6BA292',
+    color: '#4E8C73',
   },
   {
     name: 'Story',
@@ -27,7 +27,7 @@ const shapes = [
     image: '/assets/LOGOS/MAIN LOGO - ELEMENTS/STORY - Cross.png',
     symbolism: 'The present moment.',
     description: 'Where your timeline intersects with now—the only point you can act.',
-    color: '#5B84B1',
+    color: '#3E6FA3',
   },
   {
     name: 'Spirit',
@@ -35,7 +35,7 @@ const shapes = [
     image: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png',
     symbolism: 'Infinite potential.',
     description: 'The most efficient shape in nature—completeness without edges.',
-    color: '#7A4DA4',
+    color: '#6330A0',
   },
 ];
 

@@ -3,6 +3,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useAudience } from '@/context/AudienceContext';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 const individualContent = {
   paragraphs: [
@@ -72,7 +73,7 @@ const leaderContent = {
 
 const styleClasses: Record<string, string> = {
   opener: 'text-2xl md:text-3xl lg:text-4xl text-white font-light',
-  highlight: 'text-3xl md:text-4xl lg:text-5xl font-semibold bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent',
+  highlight: 'text-3xl md:text-4xl lg:text-5xl font-semibold bg-gradient-to-r from-[#E84535] via-[#4E8C73] to-[#6330A0] bg-clip-text text-transparent',
   body: 'text-lg md:text-xl text-gray-400 leading-relaxed',
   emphasis: 'text-xl md:text-2xl lg:text-3xl text-white font-medium',
   closing: 'text-lg md:text-xl text-gray-300 leading-relaxed',
@@ -97,7 +98,7 @@ export default function SolutionSection() {
       <div className="absolute inset-0">
         <motion.div
           className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-[0.04]"
-          style={{ background: '#7A4DA4' }}
+          style={{ background: '#6330A0' }}
           animate={{
             scale: [1, 1.1, 1],
             opacity: [0.04, 0.06, 0.04],
@@ -106,7 +107,7 @@ export default function SolutionSection() {
         />
         <motion.div
           className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-[0.04]"
-          style={{ background: '#6BA292' }}
+          style={{ background: '#4E8C73' }}
           animate={{
             scale: [1, 1.15, 1],
             opacity: [0.04, 0.05, 0.04],
@@ -147,7 +148,7 @@ export default function SolutionSection() {
           >
             {para.style === 'closing' && para.text.startsWith('FourFlowOS')
               ? <>
-                  <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent font-medium">FourFlowOS</span>
+                  <span className="bg-clip-text text-transparent font-medium" style={{ backgroundImage: GRADIENTS.textWide }}>FourFlowOS</span>
                   {para.text.slice('FourFlowOS'.length)}
                 </>
               : para.text}

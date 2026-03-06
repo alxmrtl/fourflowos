@@ -1,8 +1,6 @@
-// Brand colors (Space pillar accent)
-export const SAGE = '#6BA292';
-export const CORAL = '#FF6F61';
-export const STEEL = '#5B84B1';
-export const AMETHYST = '#7A4DA4';
+// Brand colors — sourced from brand-colors.ts (single source of truth)
+export { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
+import { CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
 
 export const FOUR_PILLAR_GRADIENT = `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})`;
 

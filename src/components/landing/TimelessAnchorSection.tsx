@@ -2,6 +2,7 @@
 
 import { motion, useAnimationFrame, useInView } from 'framer-motion';
 import { useEffect, useRef } from 'react';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 function WaterWavesIcon() {
   return (
@@ -95,7 +96,7 @@ function CarouselCard({ card }: { card: (typeof cards)[0] }) {
       <p className="font-sans text-[9px] font-semibold tracking-[0.18em] uppercase text-gray-600">
         {card.tradition}
       </p>
-      <p className="font-display text-2xl font-normal bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent leading-tight">
+      <p className="font-display text-2xl font-normal bg-clip-text text-transparent leading-tight" style={{ backgroundImage: GRADIENTS.textAccent }}>
         {card.analog}
       </p>
       <p className="font-sans text-sm text-gray-400 leading-relaxed">
@@ -273,13 +274,13 @@ export default function TimelessAnchorSection() {
             transition={{ duration: 0.9, ease: 'easeOut' }}
           >
             <motion.span
-              className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent"
-              style={{ display: 'inline-block' }}
+              className="bg-clip-text text-transparent"
+              style={{ display: 'inline-block', backgroundImage: GRADIENTS.textAccent }}
               animate={{
                 filter: [
-                  'drop-shadow(0 0 5px rgba(255,111,97,0.55)) drop-shadow(0 0 14px rgba(255,111,97,0.22))',
-                  'drop-shadow(0 0 5px rgba(122,77,164,0.65)) drop-shadow(0 0 14px rgba(122,77,164,0.28))',
-                  'drop-shadow(0 0 5px rgba(255,111,97,0.55)) drop-shadow(0 0 14px rgba(255,111,97,0.22))',
+                  'drop-shadow(0 0 5px rgba(232,69,53,0.55)) drop-shadow(0 0 14px rgba(232,69,53,0.22))',
+                  'drop-shadow(0 0 5px rgba(62,111,163,0.65)) drop-shadow(0 0 14px rgba(62,111,163,0.28))',
+                  'drop-shadow(0 0 5px rgba(232,69,53,0.55)) drop-shadow(0 0 14px rgba(232,69,53,0.22))',
                 ],
               }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}

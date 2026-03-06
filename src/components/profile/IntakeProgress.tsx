@@ -6,11 +6,11 @@ const STEP_COLORS = [
   '#ffffff',  // 1: Personal (white)
   '#ffffff',  // 2: Birth (white)
   '#ffffff',  // 3: Context (white)
-  '#FF6F61',  // 4: Self (coral)
-  '#6BA292',  // 5: Space (sage)
-  '#5B84B1',  // 6: Story (steel blue)
-  '#7A4DA4',  // 7: Spirit (amethyst)
-  '#6BA292',  // 8: Review (gradient start)
+  '#E84535',  // 4: Self (coral)
+  '#4E8C73',  // 5: Space (sage)
+  '#3E6FA3',  // 6: Story (steel blue)
+  '#6330A0',  // 7: Spirit (amethyst)
+  '#4E8C73',  // 8: Review (gradient start)
 ];
 
 const STEP_LABELS = [
@@ -31,7 +31,7 @@ interface IntakeProgressProps {
 
 export default function IntakeProgress({ currentStep, totalSteps }: IntakeProgressProps) {
   const progress = ((currentStep) / totalSteps) * 100;
-  const currentColor = STEP_COLORS[currentStep - 1] || '#7A4DA4';
+  const currentColor = STEP_COLORS[currentStep - 1] || '#6330A0';
 
   return (
     <div className="w-full max-w-2xl mx-auto mb-8">
@@ -54,7 +54,7 @@ export default function IntakeProgress({ currentStep, totalSteps }: IntakeProgre
           className="h-full rounded-full"
           style={{
             background: currentStep >= 4
-              ? `linear-gradient(90deg, #FF6F61, ${currentColor})`
+              ? `linear-gradient(90deg, #E84535, ${currentColor})`
               : 'rgba(255,255,255,0.3)',
           }}
           initial={{ width: 0 }}

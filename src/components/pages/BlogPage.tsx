@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { GRADIENTS } from '@/styles/brand-colors';
 import { DIMENSIONS } from '@/data/framework';
 import { ContentItem, DimensionType } from '@/types/framework';
 import PageLayout from '@/components/layout/PageLayout';
@@ -94,7 +95,7 @@ export default function BlogPage({ initialContent }: BlogPageProps) {
   const dimensionFilters = Object.values(DIMENSIONS);
 
   return (
-    <PageLayout accentColor="#5B84B1">
+    <PageLayout accentColor="#3E6FA3">
       {/* Hero Section */}
       <section ref={heroRef} className="relative py-12 md:py-20 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6">
@@ -118,7 +119,7 @@ export default function BlogPage({ initialContent }: BlogPageProps) {
               transition={{ delay: 0.1, duration: 0.8 }}
             >
               Flow{' '}
-              <span className="bg-gradient-to-r from-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textBlue }}>
                 Resources
               </span>
             </motion.h1>
@@ -450,7 +451,8 @@ export default function BlogPage({ initialContent }: BlogPageProps) {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/framework"
-                  className="px-8 py-4 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-semibold rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300 hover:scale-105"
+                  style={{ background: GRADIENTS.primaryCta }}
                 >
                   Explore Framework
                 </Link>

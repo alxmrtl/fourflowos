@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import type { FlowProfileJSON } from '@/types/profile-json';
-
-const SAGE = '#6BA292';
+import { SAGE } from '@/styles/brand-colors';
 
 interface SessionRow {
   id: string;

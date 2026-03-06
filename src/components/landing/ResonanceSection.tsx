@@ -2,6 +2,7 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { CORAL, GRADIENTS } from '@/styles/brand-colors';
 
 export default function ResonanceSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -13,7 +14,7 @@ export default function ResonanceSection() {
       <motion.div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]"
         style={{
-          background: 'radial-gradient(circle, #FF6F61 0%, transparent 70%)',
+          background: `radial-gradient(circle, ${CORAL} 0%, transparent 70%)`,
         }}
         animate={{
           scale: [1, 1.1, 1],
@@ -28,7 +29,7 @@ export default function ResonanceSection() {
             key={i}
             className="absolute w-1 h-1 rounded-full"
             style={{
-              background: ['#FF6F61', '#6BA292', '#5B84B1', '#7A4DA4'][i % 4],
+              background: ['#E84535', '#4E8C73', '#3E6FA3', '#6330A0'][i % 4],
               left: `${20 + (i * 5)}%`,
               top: '50%',
             }}
@@ -112,7 +113,7 @@ export default function ResonanceSection() {
           }}
         >
           What if the problem isn&apos;t discipline?{' '}
-          <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] to-[#7A4DA4] bg-clip-text text-transparent">
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
             What if it&apos;s disconnection?
           </span>
         </motion.p>

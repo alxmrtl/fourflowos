@@ -18,7 +18,7 @@ interface PageLayoutProps {
 export default function PageLayout({
   children,
   showFooter = true,
-  accentColor = '#7A4DA4'
+  accentColor = '#6330A0'
 }: PageLayoutProps) {
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
@@ -41,7 +41,7 @@ export default function PageLayout({
         <motion.div
           className="absolute w-[500px] h-[500px] rounded-full blur-[100px] opacity-[0.05]"
           style={{
-            background: '#FF6F61',
+            background: '#E84535',
             right: '-5%',
             bottom: '20%',
           }}

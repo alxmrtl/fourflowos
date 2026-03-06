@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { GRADIENTS } from '@/styles/brand-colors';
 import Link from 'next/link';
 import { APPS, App } from '@/data/apps';
 import { DIMENSIONS } from '@/data/framework';
@@ -272,7 +273,7 @@ export default function PracticePage() {
             </p>
             <h1 className="font-display text-5xl md:text-6xl font-normal text-white mb-5 leading-[1.1]">
               The tools that{' '}
-              <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
                 train flow.
               </span>
             </h1>
@@ -294,7 +295,8 @@ export default function PracticePage() {
             ) : (
               <Link
                 href="/map"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white text-sm font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all"
+                style={{ background: GRADIENTS.primaryCta }}
               >
                 Map your signal first
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -365,7 +367,8 @@ export default function PracticePage() {
             ) : (
               <Link
                 href="/map"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white text-sm font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white text-sm font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all"
+                style={{ background: GRADIENTS.primaryCta }}
               >
                 Map your signal
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

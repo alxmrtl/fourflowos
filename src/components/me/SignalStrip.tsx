@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-
-const CORAL = '#FF6F61';
-const AMETHYST = '#7A4DA4';
+import { CORAL, AMETHYST } from '@/styles/brand-colors';
 
 interface SessionRow {
   id: string;

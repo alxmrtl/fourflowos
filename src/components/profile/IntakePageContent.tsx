@@ -4,13 +4,14 @@ import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import PageLayout from '@/components/layout/PageLayout';
 import IntakeForm from './IntakeForm';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 export default function IntakePageContent() {
   const heroRef = useRef(null);
   const heroInView = useInView(heroRef, { once: true });
 
   return (
-    <PageLayout showFooter={false} accentColor="#7A4DA4">
+    <PageLayout showFooter={false} accentColor="#6330A0">
       {/* Hero */}
       <section ref={heroRef} className="relative py-8 md:py-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
@@ -31,7 +32,7 @@ export default function IntakePageContent() {
             transition={{ delay: 0.1, duration: 0.8 }}
           >
             Map Your{' '}
-            <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
               Flow State
             </span>
           </motion.h1>

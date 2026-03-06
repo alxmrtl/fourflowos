@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { GRADIENTS } from '@/styles/brand-colors';
 import Link from 'next/link';
 import PageLayout from '@/components/layout/PageLayout';
 
-const STEEL = '#5B84B1';
-const AMETHYST = '#7A4DA4';
+import { STEEL, AMETHYST } from '@/styles/brand-colors';
 
 export default function TogetherPage() {
   const [formData, setFormData] = useState({

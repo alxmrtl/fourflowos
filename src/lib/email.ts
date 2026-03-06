@@ -77,7 +77,7 @@ export async function sendDeliveryEmail({
   const resend = getResend();
 
   const customNotesHtml = customNotes?.trim()
-    ? `<div style="margin: 24px 0; padding: 20px; background: #f5f5f5; border-left: 3px solid #6BA292; border-radius: 4px;">
+    ? `<div style="margin: 24px 0; padding: 20px; background: #f5f5f5; border-left: 3px solid #4E8C73; border-radius: 4px;">
         <p style="font-size: 15px; line-height: 1.7; color: #444; margin: 0; white-space: pre-wrap;">${customNotes.trim()}</p>
        </div>`
     : '';
@@ -103,7 +103,7 @@ export async function sendDeliveryEmail({
         ${customNotesHtml}
 
         <div style="text-align: center; margin: 32px 0;">
-          <a href="${viewUrl}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6BA292, #7A4DA4); color: white; text-decoration: none; border-radius: 12px; font-size: 16px; font-weight: 600;">
+          <a href="${viewUrl}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4E8C73, #6330A0); color: white; text-decoration: none; border-radius: 12px; font-size: 16px; font-weight: 600;">
             View Your Flow Profile
           </a>
         </div>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
+import { GRADIENTS } from '@/styles/brand-colors';
 import IntakeProgress from './IntakeProgress';
 import IntakeStepPersonal from './IntakeStepPersonal';
 import IntakeStepBirth from './IntakeStepBirth';
@@ -51,7 +52,7 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
           opacity: [0.3, 0.6, 0.3],
         }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ background: 'radial-gradient(circle, #7A4DA420, transparent)' }}
+        style={{ background: 'radial-gradient(circle, #6330A020, transparent)' }}
       />
 
       <div className="space-y-4">
@@ -93,7 +94,8 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
         <button
           type="button"
           onClick={onBegin}
-          className="px-8 py-3 bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02]"
+          className="px-8 py-3 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02]"
+          style={{ background: GRADIENTS.tertiaryCta }}
         >
           I&apos;m ready
         </button>
@@ -189,7 +191,7 @@ export default function IntakeForm() {
         transition={{ duration: 0.5 }}
         className="max-w-2xl mx-auto text-center py-16"
       >
-        <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-gradient-to-br from-[#6BA292] to-[#7A4DA4] flex items-center justify-center">
+        <div className="w-20 h-20 mx-auto mb-8 rounded-full flex items-center justify-center" style={{ background: GRADIENTS.tertiaryCta }}>
           <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
@@ -303,7 +305,8 @@ export default function IntakeForm() {
               type="button"
               onClick={handleNext}
               disabled={!isStepValid(step)}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="px-6 py-2.5 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+              style={{ background: GRADIENTS.tertiaryCta }}
             >
               Continue
             </button>
@@ -312,7 +315,8 @@ export default function IntakeForm() {
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="px-8 py-3 bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="px-8 py-3 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              style={{ background: GRADIENTS.tertiaryCta }}
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2">

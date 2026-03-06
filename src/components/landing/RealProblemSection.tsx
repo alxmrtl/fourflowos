@@ -2,19 +2,20 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 const disconnectionPoints = [
   {
     text: 'Your mind is ready but your body is exhausted.',
-    colors: ['#FF6F61', '#FF6F61'],
+    colors: ['#E84535', '#E84535'],
   },
   {
     text: 'Your goals are clear but your environment is chaotic.',
-    colors: ['#5B84B1', '#6BA292'],
+    colors: ['#3E6FA3', '#4E8C73'],
   },
   {
     text: 'Your values say one thing; your calendar says another.',
-    colors: ['#7A4DA4', '#5B84B1'],
+    colors: ['#6330A0', '#3E6FA3'],
   },
 ];
 
@@ -34,7 +35,7 @@ export default function RealProblemSection() {
           {/* Tangled state - curved intersecting paths */}
           <motion.path
             d="M50 100 Q100 50, 150 100 T250 100 Q300 150, 350 100"
-            stroke="#FF6F61"
+            stroke="#E84535"
             strokeWidth="2"
             strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
@@ -43,7 +44,7 @@ export default function RealProblemSection() {
           />
           <motion.path
             d="M50 80 Q120 130, 200 80 T350 80"
-            stroke="#6BA292"
+            stroke="#4E8C73"
             strokeWidth="2"
             strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
@@ -52,7 +53,7 @@ export default function RealProblemSection() {
           />
           <motion.path
             d="M50 120 Q150 60, 200 120 Q250 180, 350 120"
-            stroke="#5B84B1"
+            stroke="#3E6FA3"
             strokeWidth="2"
             strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
@@ -61,7 +62,7 @@ export default function RealProblemSection() {
           />
           <motion.path
             d="M50 100 Q100 160, 200 100 Q300 40, 350 100"
-            stroke="#7A4DA4"
+            stroke="#6330A0"
             strokeWidth="2"
             strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
@@ -134,7 +135,7 @@ export default function RealProblemSection() {
           }}
         >
           But you&apos;re not broken.{' '}
-          <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textAccent }}>
             You&apos;re disconnected.
           </span>
         </motion.p>

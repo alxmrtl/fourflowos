@@ -3,6 +3,7 @@
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { GRADIENTS } from '@/styles/brand-colors';
 import { useRef, useState } from 'react';
 import { DIMENSIONS } from '@/data/framework';
 import PageLayout from '@/components/layout/PageLayout';
@@ -57,14 +58,14 @@ export default function FrameworkPage() {
   };
 
   return (
-    <PageLayout accentColor="#7A4DA4">
+    <PageLayout accentColor="#6330A0">
 
       {/* ── Hero ──────────────────────────────────────────────────────────────── */}
       <section ref={heroRef} className="relative py-16 md:py-24">
         <div className="max-w-3xl mx-auto px-6">
           <motion.p
             className="text-xs font-semibold tracking-[0.2em] uppercase mb-3"
-            style={{ color: '#7A4DA4' }}
+            style={{ color: '#6330A0' }}
             initial={{ opacity: 0, y: 20 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
@@ -79,7 +80,7 @@ export default function FrameworkPage() {
             transition={{ delay: 0.1, duration: 0.7 }}
           >
             The map behind{' '}
-            <span className="bg-gradient-to-r from-[#FF6F61] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
               your profile.
             </span>
           </motion.h1>
@@ -408,9 +409,9 @@ export default function FrameworkPage() {
               >
                 <div
                   className="w-8 h-8 rounded-lg mb-4 flex items-center justify-center"
-                  style={{ background: '#FF6F6115' }}
+                  style={{ background: '#E8453515' }}
                 >
-                  <div className="w-3 h-3 rounded-full" style={{ background: '#FF6F61' }} />
+                  <div className="w-3 h-3 rounded-full" style={{ background: '#E84535' }} />
                 </div>
                 <h3 className="text-white font-bold mb-2">Train it</h3>
                 <p className="text-sm text-gray-500 leading-relaxed mb-4">
@@ -431,9 +432,9 @@ export default function FrameworkPage() {
               >
                 <div
                   className="w-8 h-8 rounded-lg mb-4 flex items-center justify-center"
-                  style={{ background: '#5B84B115' }}
+                  style={{ background: '#3E6FA315' }}
                 >
-                  <div className="w-3 h-3 rounded-full" style={{ background: '#5B84B1' }} />
+                  <div className="w-3 h-3 rounded-full" style={{ background: '#3E6FA3' }} />
                 </div>
                 <h3 className="text-white font-bold mb-2">Interpret it</h3>
                 <p className="text-sm text-gray-500 leading-relaxed mb-4">
@@ -450,13 +451,13 @@ export default function FrameworkPage() {
               {/* Map your signal */}
               <Link
                 href="/map"
-                className="group relative rounded-2xl border border-white/10 p-6 hover:border-[#7A4DA4]/40 hover:bg-[#7A4DA4]/[0.05] transition-all duration-300"
+                className="group relative rounded-2xl border border-white/10 p-6 hover:border-[#6330A0]/40 hover:bg-[#6330A0]/[0.05] transition-all duration-300"
               >
                 <div
                   className="w-8 h-8 rounded-lg mb-4 flex items-center justify-center"
-                  style={{ background: '#7A4DA415' }}
+                  style={{ background: '#6330A015' }}
                 >
-                  <div className="w-3 h-3 rounded-full" style={{ background: '#7A4DA4' }} />
+                  <div className="w-3 h-3 rounded-full" style={{ background: '#6330A0' }} />
                 </div>
                 <h3 className="text-white font-bold mb-2">Map your signal</h3>
                 <p className="text-sm text-gray-500 leading-relaxed mb-4">
@@ -464,7 +465,7 @@ export default function FrameworkPage() {
                 </p>
                 <span
                   className="inline-flex items-center gap-1 text-xs font-semibold group-hover:gap-2 transition-all duration-200"
-                  style={{ color: '#7A4DA4' }}
+                  style={{ color: '#6330A0' }}
                 >
                   Take the assessment
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

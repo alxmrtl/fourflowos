@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { GRADIENTS } from '@/styles/brand-colors';
 import type { PromptTemplate } from '@/lib/supabase';
 
 const MODEL_OPTIONS = [
@@ -189,7 +190,8 @@ export default function PromptManager() {
             </div>
             <button
               onClick={() => setCreating(true)}
-              className="px-4 py-2 bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] text-white rounded-xl text-sm font-medium hover:shadow-lg transition-all"
+              className="px-4 py-2 text-white rounded-xl text-sm font-medium hover:shadow-lg transition-all"
+              style={{ background: GRADIENTS.tertiaryCta }}
             >
               + New Template
             </button>
@@ -262,7 +264,7 @@ export default function PromptManager() {
                       min={500}
                       max={4000}
                       step={100}
-                      className="w-full h-1.5 rounded-full appearance-none bg-white/10 accent-[#6BA292] cursor-pointer"
+                      className="w-full h-1.5 rounded-full appearance-none bg-white/10 accent-[#4E8C73] cursor-pointer"
                     />
                     <p className="text-xs text-gray-500 mt-1">{tokenLabel(formData.max_tokens)}</p>
                   </div>
@@ -299,7 +301,8 @@ export default function PromptManager() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => creating ? handleCreate() : handleUpdate(editingId!)}
-                    className="px-5 py-2 bg-gradient-to-r from-[#6BA292] to-[#7A4DA4] text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all"
+                    className="px-5 py-2 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-all"
+                    style={{ background: GRADIENTS.tertiaryCta }}
                   >
                     {creating ? 'Create' : 'Save Changes'}
                   </button>

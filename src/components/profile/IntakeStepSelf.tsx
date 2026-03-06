@@ -6,7 +6,7 @@ import PolaritySlider from './intake-ui/PolaritySlider';
 import CardPicker from './intake-ui/CardPicker';
 import type { IntakeFormData } from '@/types/intake';
 
-const ACCENT = '#FF6F61';
+const ACCENT = '#E84535';
 
 const EMOTION_KEYWORDS = [
   // Light / active

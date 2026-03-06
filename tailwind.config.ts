@@ -13,26 +13,26 @@ const config: Config = {
         display: ["var(--font-cormorant)", "Georgia", "serif"],
       },
       colors: {
-        // FourFlow Brand Colors
+        // FourFlow Brand Colors — keep in sync with src/styles/brand-colors.ts
         self: {
-          DEFAULT: "#FF6F61",
-          light: "#FF8A7E",
-          dark: "#E65548",
+          DEFAULT: "#E84535",
+          light: "#F05A49",
+          dark: "#C4311F",
         },
         space: {
-          DEFAULT: "#6BA292",
-          light: "#88B8A8",
-          dark: "#558C7C",
+          DEFAULT: "#4E8C73",
+          light: "#6AAF8E",
+          dark: "#37634F",
         },
         story: {
-          DEFAULT: "#5B84B1",
-          light: "#7A9DC4",
-          dark: "#466A8F",
+          DEFAULT: "#3E6FA3",
+          light: "#5A8DC2",
+          dark: "#2B5080",
         },
         spirit: {
-          DEFAULT: "#7A4DA4",
-          light: "#9468BA",
-          dark: "#613D83",
+          DEFAULT: "#6330A0",
+          light: "#8248C8",
+          dark: "#461F78",
         },
         neutral: {
           DEFAULT: "#333333",

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import KeywordPicker from './intake-ui/KeywordPicker';
 import type { IntakeFormData } from '@/types/intake';
 
-const ACCENT = '#7A4DA4';
+const ACCENT = '#6330A0';
 
 const VALUES_WORDS = [
   // Aspirational

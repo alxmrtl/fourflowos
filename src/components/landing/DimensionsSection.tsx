@@ -17,7 +17,7 @@ const dimensionData = [
     symbolism: 'Energy that pulses through you',
     meta: 'Your inner state — body, mind, emotions',
     question: 'How am I right now?',
-    color: '#FF6F61',
+    color: '#E84535',
     keys: ['tuned-emotions', 'open-mind', 'focused-body'] as KeyType[],
   },
   {
@@ -28,7 +28,7 @@ const dimensionData = [
     symbolism: 'Structure that grounds you',
     meta: 'Your environment — setting, systems, tools',
     question: 'What supports my flow?',
-    color: '#6BA292',
+    color: '#4E8C73',
     keys: ['intentional-space', 'optimized-tools', 'feedback-systems'] as KeyType[],
   },
   {
@@ -39,7 +39,7 @@ const dimensionData = [
     symbolism: 'Where past meets future',
     meta: 'Your direction — narrative, mission, role',
     question: 'What am I building?',
-    color: '#5B84B1',
+    color: '#3E6FA3',
     keys: ['generative-story', 'clear-mission', 'empowered-role'] as KeyType[],
   },
   {
@@ -50,7 +50,7 @@ const dimensionData = [
     symbolism: 'Infinite potential',
     meta: 'Your core — values, vision, curiosity',
     question: 'What drives me?',
-    color: '#7A4DA4',
+    color: '#6330A0',
     keys: ['grounding-values', 'visualized-vision', 'ignited-curiosity'] as KeyType[],
   },
 ];
@@ -86,10 +86,10 @@ export default function DimensionsSection() {
           className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage: `
-              radial-gradient(circle at 20% 20%, #FF6F61 0%, transparent 30%),
-              radial-gradient(circle at 80% 30%, #6BA292 0%, transparent 30%),
-              radial-gradient(circle at 30% 80%, #5B84B1 0%, transparent 30%),
-              radial-gradient(circle at 70% 70%, #7A4DA4 0%, transparent 30%)
+              radial-gradient(circle at 20% 20%, #E84535 0%, transparent 30%),
+              radial-gradient(circle at 80% 30%, #4E8C73 0%, transparent 30%),
+              radial-gradient(circle at 30% 80%, #3E6FA3 0%, transparent 30%),
+              radial-gradient(circle at 70% 70%, #6330A0 0%, transparent 30%)
             `,
           }}
         />

@@ -4,27 +4,28 @@ import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import { useRef } from 'react';
 import { DIMENSIONS } from '@/data/framework';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 const dimensionDetails = {
   self: {
     descriptor: 'Inner Mastery',
     fullDescription: 'Tuning your inner compass for flow navigation. Master your emotions, sharpen your mind, and optimize your body to become a vessel for peak performance.',
-    gradient: 'from-[#FF6F61]/20 to-transparent',
+    gradient: 'from-[#E84535]/20 to-transparent',
   },
   space: {
     descriptor: 'Environment Design',
     fullDescription: 'Creating environments that amplify your potential. Design intentional spaces, optimize your tools, and build feedback systems that make flow inevitable.',
-    gradient: 'from-[#6BA292]/20 to-transparent',
+    gradient: 'from-[#4E8C73]/20 to-transparent',
   },
   story: {
     descriptor: 'Direction Setting',
     fullDescription: 'Crafting narratives that drive meaningful action. Develop a generative story, build a clear mission, and embody an empowered role in your journey.',
-    gradient: 'from-[#5B84B1]/20 to-transparent',
+    gradient: 'from-[#3E6FA3]/20 to-transparent',
   },
   spirit: {
     descriptor: 'Inner Drive',
     fullDescription: 'Aligning with your deepest values and vision. Ground yourself in core values, visualize your future, and ignite the curiosity that fuels endless growth.',
-    gradient: 'from-[#7A4DA4]/20 to-transparent',
+    gradient: 'from-[#6330A0]/20 to-transparent',
   },
 };
 
@@ -40,7 +41,7 @@ export default function FrameworkSection() {
     >
       {/* Background elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4]" />
+        <div className="absolute top-0 left-0 w-full h-1" style={{ background: GRADIENTS.fourPillar }} />
       </div>
 
       <div className="max-w-7xl mx-auto px-6">
@@ -61,7 +62,7 @@ export default function FrameworkSection() {
           </motion.span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             Four Dimensions of{' '}
-            <span className="bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] bg-clip-text text-transparent">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textAccent }}>
               Flow
             </span>
           </h2>
@@ -181,7 +182,7 @@ export default function FrameworkSection() {
         >
           <div className="relative">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] opacity-20 blur-xl" />
+              <div className="w-32 h-32 rounded-full opacity-20 blur-xl" style={{ background: GRADIENTS.fourPillar }} />
             </div>
             <div className="relative px-8 py-4 bg-white/5 border border-white/10 rounded-full">
               <span className="text-gray-300 font-medium">

@@ -5,7 +5,7 @@ import CardPicker from './intake-ui/CardPicker';
 import ForcedChoicePair from './intake-ui/ForcedChoicePair';
 import type { IntakeFormData } from '@/types/intake';
 
-const ACCENT = '#5B84B1';
+const ACCENT = '#3E6FA3';
 
 const ARC_OPTIONS = [
   {

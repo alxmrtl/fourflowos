@@ -5,16 +5,16 @@ import Link from 'next/link';
 import { useRef } from 'react';
 
 const featureLines = [
-  { color: '#FF6F61', text: 'Your natural entry point into flow — the condition that opens everything else' },
-  { color: '#5B84B1', text: 'How your four dimensions interact — where they lift you, where they create drag' },
-  { color: '#7A4DA4', text: 'The specific conditions that have always worked for you, named and mapped' },
+  { color: '#E84535', text: 'Your natural entry point into flow — the condition that opens everything else' },
+  { color: '#3E6FA3', text: 'How your four dimensions interact — where they lift you, where they create drag' },
+  { color: '#6330A0', text: 'The specific conditions that have always worked for you, named and mapped' },
 ];
 
 const dimensions = [
-  { label: 'SELF', color: '#FF6F61', keys: ['Tuned Emotions', 'Focused Body', 'Open Mind'] },
-  { label: 'SPACE', color: '#6BA292', keys: ['Intentional Space', 'Optimized Tools', 'Feedback Systems'] },
-  { label: 'STORY', color: '#5B84B1', keys: ['Generative Story', 'Clear Mission', 'Empowered Role'] },
-  { label: 'SPIRIT', color: '#7A4DA4', keys: ['Grounding Values', 'Ignited Curiosity', 'Visualized Vision'] },
+  { label: 'SELF', color: '#E84535', keys: ['Tuned Emotions', 'Focused Body', 'Open Mind'] },
+  { label: 'SPACE', color: '#4E8C73', keys: ['Intentional Space', 'Optimized Tools', 'Feedback Systems'] },
+  { label: 'STORY', color: '#3E6FA3', keys: ['Generative Story', 'Clear Mission', 'Empowered Role'] },
+  { label: 'SPIRIT', color: '#6330A0', keys: ['Grounding Values', 'Ignited Curiosity', 'Visualized Vision'] },
 ];
 
 const dimensionSummaries: Record<string, string> = {
@@ -37,10 +37,10 @@ function BentoPreview() {
         </p>
         {/* 4-color hairline */}
         <div className="flex h-[2px] mt-2 mb-2 rounded-full overflow-hidden">
-          <div className="flex-1" style={{ background: '#FF6F61' }} />
-          <div className="flex-1" style={{ background: '#6BA292' }} />
-          <div className="flex-1" style={{ background: '#5B84B1' }} />
-          <div className="flex-1" style={{ background: '#7A4DA4' }} />
+          <div className="flex-1" style={{ background: '#E84535' }} />
+          <div className="flex-1" style={{ background: '#4E8C73' }} />
+          <div className="flex-1" style={{ background: '#3E6FA3' }} />
+          <div className="flex-1" style={{ background: '#6330A0' }} />
         </div>
         <p className="font-sans text-[10px] italic text-gray-500">
           You build with signal. Structure is how you transmit meaning.
@@ -148,7 +148,8 @@ export default function ArchetypeRevealSection() {
             <div className="flex flex-col sm:flex-row items-start gap-4">
               <Link
                 href="/map"
-                className="font-sans px-7 py-3.5 bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] text-white font-medium rounded-full hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105 text-sm"
+                className="font-sans px-7 py-3.5 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105 text-sm"
+                style={{ background: 'linear-gradient(135deg, #3E6FA3, #6330A0)' }}
               >
                 Map your signal
               </Link>

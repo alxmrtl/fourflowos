@@ -4,8 +4,9 @@ import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useAudience, AudienceType } from '@/context/AudienceContext';
+import { GRADIENTS } from '@/styles/brand-colors';
 
-const PILLAR_COLORS = ['#FF6F61', '#6BA292', '#5B84B1', '#7A4DA4'];
+const PILLAR_COLORS = ['#E84535', '#4E8C73', '#3E6FA3', '#6330A0'];
 const PARTICLE_COUNT = 50;
 const MERGE_DISTANCE = 60;
 const STAR_DURATION = 500; // ms
@@ -168,7 +169,7 @@ const audienceOptions = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     ),
-    gradient: 'from-[#FF6F61] to-[#7A4DA4]',
+    gradient: 'from-[#3E6FA3] to-[#6330A0]',
   },
   {
     id: 'leader' as const,
@@ -179,7 +180,7 @@ const audienceOptions = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     ),
-    gradient: 'from-[#6BA292] to-[#5B84B1]',
+    gradient: 'from-[#4E8C73] to-[#3E6FA3]',
   },
 ];
 
@@ -225,7 +226,7 @@ export default function HeroSection() {
         {/* Floating orbs - slower, breathing rhythm */}
         <motion.div
           className="absolute w-96 h-96 rounded-full blur-3xl opacity-15"
-          style={{ background: '#FF6F61' }}
+          style={{ background: '#E84535' }}
           animate={{
             x: [0, 80, 0],
             y: [0, -40, 0],
@@ -235,7 +236,7 @@ export default function HeroSection() {
         />
         <motion.div
           className="absolute right-0 top-1/4 w-80 h-80 rounded-full blur-3xl opacity-15"
-          style={{ background: '#7A4DA4' }}
+          style={{ background: '#6330A0' }}
           animate={{
             x: [0, -60, 0],
             y: [0, 50, 0],
@@ -245,7 +246,7 @@ export default function HeroSection() {
         />
         <motion.div
           className="absolute left-1/4 bottom-0 w-72 h-72 rounded-full blur-3xl opacity-12"
-          style={{ background: '#6BA292' }}
+          style={{ background: '#4E8C73' }}
           animate={{
             x: [0, 40, 0],
             y: [0, -30, 0],
@@ -256,7 +257,7 @@ export default function HeroSection() {
         {/* Fourth orb for Story pillar */}
         <motion.div
           className="absolute right-1/4 bottom-1/4 w-64 h-64 rounded-full blur-3xl opacity-10"
-          style={{ background: '#5B84B1' }}
+          style={{ background: '#3E6FA3' }}
           animate={{
             x: [0, -30, 0],
             y: [0, 35, 0],
@@ -334,7 +335,7 @@ export default function HeroSection() {
           <motion.div
             className="absolute inset-0 rounded-full"
             style={{
-              background: 'conic-gradient(from 0deg, #FF6F61, #6BA292, #5B84B1, #7A4DA4, #FF6F61)',
+              background: 'conic-gradient(from 0deg, #E84535, #4E8C73, #3E6FA3, #6330A0, #E84535)',
               filter: 'blur(20px)',
             }}
             animate={{
@@ -373,7 +374,7 @@ export default function HeroSection() {
           }}
         >
           Flow isn&apos;t forced.{' '}
-          <span className="bg-gradient-to-r from-[#FF6F61] via-[#6BA292] via-[#5B84B1] to-[#7A4DA4] bg-clip-text text-transparent">
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
             It&apos;s cultivated.
           </span>
         </motion.h1>

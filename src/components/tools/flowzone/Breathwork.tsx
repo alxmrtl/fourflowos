@@ -6,7 +6,7 @@ import { SAGE, AMETHYST, BREATHWORK_PATTERNS } from './constants';
 import { BreathworkPattern } from './types';
 import { useBreathwork } from './useBreathwork';
 
-const PATTERN_ACCENTS = ['#6BA292', '#5B84B1', '#7A4DA4', '#FF6F61'];
+const PATTERN_ACCENTS = ['#4E8C73', '#3E6FA3', '#6330A0', '#E84535'];
 
 interface BreathworkProps {
   onDone: () => void;
@@ -85,7 +85,7 @@ export default function Breathwork({ onDone, onSkip, label, patternId }: Breathw
                 <button
                   key={pattern.id}
                   onClick={() => handleSelectAndStart(pattern)}
-                  className="w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#7A4DA4]/40 text-left transition-all group flex items-stretch gap-3 overflow-hidden"
+                  className="w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#6330A0]/40 text-left transition-all group flex items-stretch gap-3 overflow-hidden"
                 >
                   {/* Colored accent bar */}
                   <div

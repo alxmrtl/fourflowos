@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { GRADIENTS } from '@/styles/brand-colors';
 import { ReactNode } from 'react';
 
 interface LegalPageLayoutProps {
@@ -104,7 +105,7 @@ export function LegalSection({
   return (
     <section className="mb-12">
       <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-        <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+        <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
           {number}
         </span>
         {title}

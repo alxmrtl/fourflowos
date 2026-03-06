@@ -3,11 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import type { FlowProfileJSON } from '@/types/profile-json';
-
-const SAGE = '#6BA292';
-const AMETHYST = '#7A4DA4';
-const CORAL = '#FF6F61';
-const STEEL = '#5B84B1';
+import { CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
 
 interface SessionRow {
   id: string;

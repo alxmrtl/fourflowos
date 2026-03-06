@@ -72,7 +72,7 @@ export default function ContentPage({ initialContent, initialRelatedArticles = [
                   {estimatedTime} min
                 </span>
                 {content.scientific_backing && (
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#5B84B1]/20 text-[#7DA3C9]">
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#3E6FA3]/20 text-[#7DA3C9]">
                     Science-backed
                   </span>
                 )}
@@ -107,7 +107,7 @@ export default function ContentPage({ initialContent, initialRelatedArticles = [
                 strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
                 em: ({ children }) => <em className="italic text-gray-300">{children}</em>,
                 code: ({ children }) => <code className="bg-white/10 text-gray-200 px-2 py-1 rounded text-sm font-mono">{children}</code>,
-                link: ({ children, value }) => <a href={value.href} className="text-[#7A4DA4] hover:text-[#9A6DC4] underline">{children}</a>
+                link: ({ children, value }) => <a href={value.href} className="text-[#6330A0] hover:text-[#9A6DC4] underline">{children}</a>
               },
               list: {
                 bullet: ({ children }) => <ul className="list-disc list-inside space-y-2 mb-6 ml-4">{children}</ul>,

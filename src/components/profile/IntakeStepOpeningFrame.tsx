@@ -66,7 +66,7 @@ export default function IntakeStepOpeningFrame({ data, onChange }: Props) {
           options={SEASONS}
           selected={data.opening_season}
           onChange={(v) => onChange('opening_season', v)}
-          accent="#7A4DA4"
+          accent="#6330A0"
           columns={2}
         />
       </div>

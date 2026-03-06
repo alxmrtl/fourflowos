@@ -19,7 +19,7 @@ export default function ArchetypeHeader({ profile }: Props) {
       <div
         className="h-[3px] mb-4 rounded-full"
         style={{
-          background: 'linear-gradient(90deg, #FF6F61 0%, #6BA292 33%, #5B84B1 66%, #7A4DA4 100%)',
+          background: 'linear-gradient(90deg, #E84535 0%, #4E8C73 33%, #3E6FA3 66%, #6330A0 100%)',
           opacity: 0.7,
         }}
       />

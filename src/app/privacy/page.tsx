@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 export default function PrivacyPage() {
   const lastUpdated = 'February 6, 2025';
@@ -81,7 +82,7 @@ export default function PrivacyPage() {
             {/* Apps Covered */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
                   1
                 </span>
                 Apps Covered by This Policy
@@ -145,7 +146,7 @@ export default function PrivacyPage() {
             {/* Data Collection */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
                   2
                 </span>
                 Information We Collect
@@ -168,7 +169,7 @@ export default function PrivacyPage() {
             {/* Data Storage */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
                   3
                 </span>
                 Data Storage
@@ -201,7 +202,7 @@ export default function PrivacyPage() {
             {/* Third Parties */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
                   4
                 </span>
                 Third-Party Sharing
@@ -240,7 +241,7 @@ export default function PrivacyPage() {
             {/* Data Types by App */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
                   5
                 </span>
                 Data Stored on Your Device (by App)
@@ -283,7 +284,7 @@ export default function PrivacyPage() {
             {/* Data Deletion */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
                   6
                 </span>
                 Data Deletion
@@ -293,15 +294,15 @@ export default function PrivacyPage() {
               </p>
               <ul className="space-y-2 text-gray-400">
                 <li className="flex items-start gap-2">
-                  <span className="text-[#FF6F61]">•</span>
+                  <span className="text-[#E84535]">•</span>
                   Delete individual items (habits, goals, sessions) within the app
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#6BA292]">•</span>
+                  <span className="text-[#4E8C73]">•</span>
                   Uninstall the app to remove all associated data
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#5B84B1]">•</span>
+                  <span className="text-[#3E6FA3]">•</span>
                   Use iOS Settings to manage app storage
                 </li>
               </ul>
@@ -310,7 +311,7 @@ export default function PrivacyPage() {
             {/* Children */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
                   7
                 </span>
                 Children&apos;s Privacy
@@ -325,7 +326,7 @@ export default function PrivacyPage() {
             {/* Changes */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
                   8
                 </span>
                 Changes to This Policy
@@ -340,7 +341,7 @@ export default function PrivacyPage() {
             {/* Contact */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#FF6F61] to-[#7A4DA4] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: GRADIENTS.primaryCta }}>
                   9
                 </span>
                 Contact Us
@@ -351,7 +352,7 @@ export default function PrivacyPage() {
               <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
                 <a
                   href="mailto:fourflowos@gmail.com"
-                  className="text-[#7A4DA4] hover:text-[#9A6DC4] transition-colors font-medium"
+                  className="text-[#6330A0] hover:text-[#7A40C0] transition-colors font-medium"
                 >
                   fourflowos@gmail.com
                 </a>
@@ -359,7 +360,7 @@ export default function PrivacyPage() {
             </section>
 
             {/* Summary */}
-            <section className="p-8 bg-gradient-to-br from-[#FF6F61]/10 via-[#6BA292]/10 to-[#7A4DA4]/10 border border-white/10 rounded-2xl">
+            <section className="p-8 bg-gradient-to-br from-[#E84535]/10 via-[#4E8C73]/10 to-[#6330A0]/10 border border-white/10 rounded-2xl">
               <h2 className="text-2xl font-bold text-white mb-4">Summary</h2>
               <ul className="space-y-3 text-gray-300">
                 <li className="flex items-start gap-3">

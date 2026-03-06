@@ -17,7 +17,7 @@ export default function Footer() {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
       {/* Background decoration */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-t from-[#7A4DA4]/5 to-transparent rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-t from-[#6330A0]/5 to-transparent rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Main footer content */}
@@ -48,7 +48,7 @@ export default function Footer() {
               Self, Space, Story, and Spirit.
             </p>
             <div className="flex items-center gap-2">
-              {['#FF6F61', '#6BA292', '#5B84B1', '#7A4DA4'].map((color, i) => (
+              {['#E84535', '#4E8C73', '#3E6FA3', '#6330A0'].map((color, i) => (
                 <motion.div
                   key={i}
                   className="w-3 h-3 rounded-full"

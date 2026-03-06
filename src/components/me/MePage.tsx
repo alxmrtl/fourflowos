@@ -10,11 +10,7 @@ import { getSupabaseBrowser } from '@/lib/supabase-browser';
 import LandingNav from '@/components/landing/LandingNav';
 import BentoGrid from './BentoGrid';
 import RawProfileDrawer from './RawProfileDrawer';
-
-const CORAL = '#FF6F61';
-const SAGE = '#6BA292';
-const STEEL = '#5B84B1';
-const AMETHYST = '#7A4DA4';
+import { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
 
 function relativeTime(dateStr: string | null | undefined): string {
   if (!dateStr) return 'never';
