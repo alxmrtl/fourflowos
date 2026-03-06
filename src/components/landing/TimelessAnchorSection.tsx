@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useAnimationFrame, useInView } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GRADIENTS } from '@/styles/brand-colors';
 
 function WaterWavesIcon() {
@@ -115,6 +115,13 @@ function ScrollingCarousel() {
   const isInViewRef = useRef(false);
   const isInView = useInView(sectionRef, { amount: 0.1 });
 
+  // Drag state
+  const isDraggingRef = useRef(false);
+  const dragLastXRef = useRef(0);
+  const dragLastTimeRef = useRef(0);
+  const momentumRef = useRef(0); // px/ms, positive = rightward
+  const [isDragging, setIsDragging] = useState(false);
+
   useEffect(() => {
     isInViewRef.current = isInView;
   }, [isInView]);
@@ -136,18 +143,24 @@ function ScrollingCarousel() {
     if (!trackRef.current || !containerRef.current || loopWidthRef.current === 0) return;
 
     const dt = Math.min(delta, 100);
-    xRef.current -= (45 * dt) / 1000;
 
-    if (xRef.current <= -(loopWidthRef.current * 2)) {
-      xRef.current += loopWidthRef.current;
+    if (!isDraggingRef.current) {
+      // Auto-scroll
+      xRef.current -= (55 * dt) / 1000;
+      // Momentum carries over from drag, decays to 0
+      xRef.current += momentumRef.current * dt;
+      momentumRef.current *= Math.pow(0.88, dt / 16);
+      if (Math.abs(momentumRef.current) < 0.001) momentumRef.current = 0;
     }
+
+    // Seamless loop — bidirectional
+    while (xRef.current > -loopWidthRef.current) xRef.current -= loopWidthRef.current;
+    while (xRef.current <= -(loopWidthRef.current * 2)) xRef.current += loopWidthRef.current;
 
     trackRef.current.style.transform = `translateX(${xRef.current}px)`;
 
     const containerRect = containerRef.current.getBoundingClientRect();
     const containerCenter = containerRect.left + containerRect.width / 2;
-    // Radius > card spacing (312px) so there's always a card in the focal zone.
-    // Exponent 2 = flat plateau near center, steeper falloff at edges.
     const activationRadius = 400;
 
     const cardEls = trackRef.current.querySelectorAll<HTMLElement>('[data-card]');
@@ -162,17 +175,47 @@ function ScrollingCarousel() {
     });
   });
 
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingRef.current = true;
+    dragLastXRef.current = e.clientX;
+    dragLastTimeRef.current = e.timeStamp;
+    momentumRef.current = 0;
+    setIsDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return;
+    const dx = e.clientX - dragLastXRef.current;
+    const dt = e.timeStamp - dragLastTimeRef.current;
+    xRef.current += dx;
+    if (dt > 0) momentumRef.current = dx / dt;
+    dragLastXRef.current = e.clientX;
+    dragLastTimeRef.current = e.timeStamp;
+  };
+
+  const onPointerUp = () => {
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    // momentumRef holds the last velocity — animation loop decays it
+  };
+
   return (
     <div ref={sectionRef}>
       <div
         ref={containerRef}
-        className="overflow-hidden py-8"
+        className={`overflow-hidden py-8 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         style={{
           maskImage: 'linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%)',
         }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onDragStart={e => e.preventDefault()}
       >
-        <div ref={trackRef} className="flex gap-6 w-max">
+        <div ref={trackRef} className="flex gap-6 w-max select-none">
           {TRACK_CARDS.map((card, i) => (
             <CarouselCard key={i} card={card} />
           ))}
