@@ -111,7 +111,6 @@ function ScrollParagraph({ children }: { children: React.ReactNode }) {
 export default function HonestMomentSection() {
   return (
     <section id="honest-moment" className="relative py-32 md:py-44 bg-[#050505]">
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Noise texture */}
       <div

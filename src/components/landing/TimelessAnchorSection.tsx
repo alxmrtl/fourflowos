@@ -49,6 +49,23 @@ function MusicNoteIcon() {
   );
 }
 
+function PeakIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 20L8.5 7l4.5 6 3.5-5L22 20H2z" />
+    </svg>
+  );
+}
+
+function FlameIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2c0 4-4 6-4 10a4 4 0 008 0c0-2-1-3.5-1-3.5s-.5 2-3 2.5C13 8.5 12 2 12 2z" />
+    </svg>
+  );
+}
+
+
 const cards = [
   {
     tradition: 'Taoism',
@@ -79,6 +96,18 @@ const cards = [
     analog: 'The pocket',
     body: 'Playing beyond technique. The groove that arrives when you stop trying to find it.',
     Icon: MusicNoteIcon,
+  },
+  {
+    tradition: 'Humanistic Psychology',
+    analog: 'Peak Experience',
+    body: 'The moment self-consciousness dissolves and capacity expands beyond its ordinary limits. Maslow saw these as glimpses of our full nature.',
+    Icon: PeakIcon,
+  },
+  {
+    tradition: 'Philosophy',
+    analog: 'Rausch',
+    body: 'Creative intoxication — where vitality surges, the self loosens, and something larger flows through. Nietzsche called this the source of all great art and action.',
+    Icon: FlameIcon,
   },
 ];
 
@@ -281,6 +310,12 @@ export default function TimelessAnchorSection() {
           </BridgeParagraph>
           <BridgeParagraph>
             There is a state that humans have always found when they needed to function beyond their ordinary capacity.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            It started before language. When resources were scarce and survival demanded more than muscle, evolution shaped a different gear — one that unlocked creativity, cooperation, and problem-solving at the edge of what seemed possible.
+          </BridgeParagraph>
+          <BridgeParagraph>
+            Once survival was no longer the only game, we found the state again — this time by choice.
           </BridgeParagraph>
           <BridgeParagraph>
             In the past, Taoists found it through effortless surrender.

@@ -2,13 +2,18 @@
 
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import ParticleBackground from './ParticleBackground';
 import { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
 
 export default function HeroSectionV2() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { amount: 0.15 });
+
+  const scrollToNext = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    document.getElementById('honest-moment')?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
 
   return (
     <section
@@ -71,6 +76,12 @@ export default function HeroSectionV2() {
           `,
           backgroundSize: '60px 60px',
         }}
+      />
+
+      {/* Bottom fade into next section */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none z-10"
+        style={{ background: 'linear-gradient(to bottom, transparent, #050505)' }}
       />
 
       {/* Main content */}
@@ -141,9 +152,10 @@ export default function HeroSectionV2() {
           </Link>
           <a
             href="#honest-moment"
-            className="font-sans text-sm text-gray-600 hover:text-gray-400 transition-colors"
+            onClick={scrollToNext}
+            className="font-sans px-7 py-3 text-sm font-medium rounded-full border border-white/20 text-white/60 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all duration-300"
           >
-            See how it works ↓
+            Walk me through it
           </a>
         </motion.div>
       </motion.div>
