@@ -19,6 +19,7 @@ export default function HeroSectionV2() {
     <section
       ref={sectionRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050505]"
+      style={{ transform: 'translateZ(0)' }}
     >
       <ParticleBackground />
 

@@ -220,22 +220,24 @@ function TimelineScrubber({
               boxShadow: `0 0 8px ${AMETHYST}cc`,
             }}
           />
-          {/* Timestamp ticks */}
-          {TIMESTAMP_TICKS.map(idx => {
-            const pct = (idx / (CARDS.length - 1)) * 100;
-            return (
-              <div
-                key={idx}
-                className="absolute -translate-x-1/2 flex flex-col items-center gap-0.5"
-                style={{ left: `${pct}%`, top: 2 }}
-              >
-                <div className="w-px h-2.5 bg-white/15" />
-                <span className="font-sans text-[8px] tracking-[0.08em] text-gray-700 whitespace-nowrap">
-                  {CARDS[idx].era}
-                </span>
-              </div>
-            );
-          })}
+          {/* Timestamp ticks — hidden on mobile to prevent label overlap */}
+          <div className="hidden sm:block">
+            {TIMESTAMP_TICKS.map(idx => {
+              const pct = (idx / (CARDS.length - 1)) * 100;
+              return (
+                <div
+                  key={idx}
+                  className="absolute -translate-x-1/2 flex flex-col items-center gap-0.5"
+                  style={{ left: `${pct}%`, top: 2 }}
+                >
+                  <div className="w-px h-2.5 bg-white/15" />
+                  <span className="font-sans text-[8px] tracking-[0.08em] text-gray-700 whitespace-nowrap">
+                    {CARDS[idx].era}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* ── End labels ── */}
