@@ -474,15 +474,20 @@ export default function TimelessAnchorSectionV2() {
         </div>
       </div>
 
-      <ScrollingCarousel />
-
       <div className="max-w-6xl mx-auto px-6">
-        <div className="max-w-2xl mx-auto mt-20 space-y-8">
+        <div className="max-w-2xl mx-auto mt-0 space-y-8">
           <BridgeParagraph>Before language, this was a survival tool.</BridgeParagraph>
           <BridgeParagraph>When ordinary capacity wasn't enough, evolution gave us another gear.</BridgeParagraph>
           <BridgeParagraph>Once survival stopped being the only game, we found it again — by choice.</BridgeParagraph>
           <BridgeParagraph>Every civilization that pushed human performance to its edge ended up in the same place.</BridgeParagraph>
           <BridgeParagraph>Different directions, different words, same coordinates.</BridgeParagraph>
+        </div>
+      </div>
+
+      <ScrollingCarousel />
+
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-2xl mx-auto mt-16 space-y-8">
           <BridgeParagraph>That doesn't happen by accident.</BridgeParagraph>
           <BridgeParagraph>The state is real, and it's not tied to any tradition — it's in the biology.</BridgeParagraph>
           <BridgeParagraph>Most of what we used to orient by hasn't kept pace.</BridgeParagraph>
