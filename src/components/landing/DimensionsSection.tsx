@@ -6,6 +6,14 @@ import { useRef, useState } from 'react';
 import { KEYS, DIMENSION_AUDIENCE_COPY, KEY_AUDIENCE_COPY } from '@/data/framework';
 import { useAudience } from '@/context/AudienceContext';
 import { KeyType } from '@/types/framework';
+import { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
+
+const pillarSymbols = [
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SELF - Frequencies.png', alt: 'SELF', color: CORAL, x: '-8%', y: '-4%' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPACE - Sqaure.png', alt: 'SPACE', color: SAGE, x: '6%', y: '4%' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/STORY - Cross.png', alt: 'STORY', color: STEEL, x: '-4%', y: '6%' },
+  { src: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png', alt: 'SPIRIT', color: AMETHYST, x: '8%', y: '-2%' },
+];
 
 const dimensionData = [
   {
@@ -78,7 +86,7 @@ export default function DimensionsSection() {
   };
 
   return (
-    <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#050505] overflow-hidden">
+    <section ref={sectionRef} className="relative pt-28 md:pt-36 pb-20 md:pb-28 bg-[#050505] overflow-hidden">
       {/* Subtle background */}
       <div className="absolute inset-0">
         <div
@@ -106,48 +114,94 @@ export default function DimensionsSection() {
           },
         }}
       >
-        {/* Section header - audience aware */}
-        <motion.div
-          className="text-center mb-12 md:mb-16"
-          variants={{
-            hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
-            visible: {
-              opacity: 1,
-              y: 0,
-              filter: 'blur(0px)',
-              transition: { duration: 0.7, ease: 'easeOut' },
-            },
-          }}
-        >
-          <h2 className="font-display text-3xl md:text-4xl font-normal text-white mb-4">
+        {/* Section header — "conditions are universal" + pillar symbols */}
+        <div className="text-center mb-16 md:mb-20">
+          <motion.p
+            className="font-sans text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-600 mb-4"
+            variants={{
+              hidden: { opacity: 0, y: 24 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.7 } },
+            }}
+          >
+            The framework
+          </motion.p>
+
+          <motion.h2
+            className="font-display text-3xl md:text-4xl font-normal text-white mb-5 leading-[1.1]"
+            variants={{
+              hidden: { opacity: 0, y: 56, filter: 'blur(14px)' },
+              visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1.0, ease: 'easeOut', delay: 0.1 } },
+            }}
+          >
+            The conditions are universal.<br />
+            <span className="italic bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textAccent }}>
+              Your pattern isn&apos;t.
+            </span>
+          </motion.h2>
+
+          <motion.p
+            className="font-sans text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto mb-4"
+            variants={{
+              hidden: { opacity: 0, y: 32 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut', delay: 0.2 } },
+            }}
+          >
+            We&apos;ve mapped twelve keys that govern whether flow is available to you — across four dimensions of experience. The keys are the same for everyone. How they fit together in you is not.
+          </motion.p>
+
+          {/* Pillar symbol cluster */}
+          <motion.div
+            className="relative flex items-center justify-center gap-3 my-10 h-16"
+            variants={{
+              hidden: { opacity: 0, scale: 0.88 },
+              visible: { opacity: 1, scale: 1, transition: { duration: 0.9, ease: 'easeOut', delay: 0.28 } },
+            }}
+          >
+            {pillarSymbols.map((symbol) => (
+              <div
+                key={symbol.alt}
+                className="relative w-10 h-10"
+                style={{ transform: `translate(${symbol.x}, ${symbol.y})` }}
+              >
+                <div
+                  className="absolute inset-0 rounded-full blur-lg opacity-40"
+                  style={{ backgroundColor: symbol.color }}
+                />
+                <Image
+                  src={symbol.src}
+                  alt={symbol.alt}
+                  fill
+                  className="object-contain relative z-10 opacity-70"
+                />
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Cards label */}
+          <motion.p
+            className="font-sans text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-600 mt-10"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1, transition: { duration: 0.6, delay: 0.35 } },
+            }}
+          >
             The Four Dimensions
-          </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            {hasSelected ? (
-              isLeader
-                ? 'Four areas to cultivate in your team. When aligned, they create the conditions for collective flow.'
-                : 'Four interconnected areas of life. When aligned, they create the conditions for your flow.'
-            ) : (
-              'Four interconnected areas of life. When aligned, they create the conditions for flow.'
-            )}
-          </p>
+          </motion.p>
 
           {/* Audience indicator badge */}
           {hasSelected && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10"
+              className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10"
             >
-              <span className="text-xs text-gray-400">
-                Viewing as:
-              </span>
+              <span className="text-xs text-gray-400">Viewing as:</span>
               <span className="text-xs font-medium text-white">
                 {isLeader ? 'Leader' : 'Individual'}
               </span>
             </motion.div>
           )}
-        </motion.div>
+        </div>
 
         {/* Four dimension cards */}
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">

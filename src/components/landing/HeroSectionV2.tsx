@@ -18,7 +18,7 @@ export default function HeroSectionV2() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050505]"
     >
       <ParticleBackground />
 
