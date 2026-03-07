@@ -4,7 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { useRef, useCallback } from 'react';
 import ParticleBackground from './ParticleBackground';
-import { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
+import { GRADIENTS } from '@/styles/brand-colors';
 
 export default function HeroSectionV2() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -18,37 +18,22 @@ export default function HeroSectionV2() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center bg-[#050505]"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]"
     >
       <ParticleBackground />
 
-      {/* Floating orbs */}
-      <div className="absolute inset-0">
-        <motion.div
-          className="absolute w-96 h-96 rounded-full blur-3xl opacity-15"
-          style={{ background: CORAL }}
-          animate={{ x: [0, 80, 0], y: [0, -40, 0], scale: [1, 1.1, 1] }}
-          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute right-0 top-1/4 w-80 h-80 rounded-full blur-3xl opacity-15"
-          style={{ background: AMETHYST }}
-          animate={{ x: [0, -60, 0], y: [0, 50, 0], scale: [1, 1.15, 1] }}
-          transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute left-1/4 bottom-0 w-72 h-72 rounded-full blur-3xl opacity-10"
-          style={{ background: SAGE }}
-          animate={{ x: [0, 40, 0], y: [0, -30, 0], scale: [1, 1.08, 1] }}
-          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute right-1/4 bottom-1/4 w-64 h-64 rounded-full blur-3xl opacity-08"
-          style={{ background: STEEL }}
-          animate={{ x: [0, -30, 0], y: [0, 35, 0], scale: [1, 1.12, 1] }}
-          transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      </div>
+      {/* Ambient colour wash — static radial gradients, no GPU compositing layers */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(ellipse 50% 50% at 10% 15%, rgba(232,69,53,0.15) 0%, transparent 60%),
+            radial-gradient(ellipse 45% 45% at 90% 40%, rgba(122,77,164,0.15) 0%, transparent 60%),
+            radial-gradient(ellipse 40% 40% at 28% 92%, rgba(107,162,146,0.10) 0%, transparent 60%),
+            radial-gradient(ellipse 35% 35% at 72% 68%, rgba(91,132,177,0.08) 0%, transparent 60%)
+          `,
+        }}
+      />
 
       {/* Dark radial vignette behind text */}
       <div
@@ -81,7 +66,7 @@ export default function HeroSectionV2() {
       {/* Bottom fade into next section */}
       <div
         className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none z-10"
-        style={{ background: 'linear-gradient(to bottom, transparent, #050505)' }}
+        style={{ background: 'linear-gradient(to bottom, transparent, #0a0a0a)' }}
       />
 
       {/* Main content */}
