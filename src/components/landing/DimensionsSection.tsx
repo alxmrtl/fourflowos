@@ -2,7 +2,6 @@
 
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { KEYS, DIMENSION_AUDIENCE_COPY, KEY_AUDIENCE_COPY } from '@/data/framework';
 import { useAudience } from '@/context/AudienceContext';
@@ -366,55 +365,6 @@ export default function DimensionsSection() {
           })}
         </div>
 
-        {/* Explore Framework CTA */}
-        <motion.div
-          className="mt-12 md:mt-16 text-center"
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: { duration: 0.6, ease: 'easeOut', delay: 0.4 },
-            },
-          }}
-        >
-          <Link
-            href="/framework"
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/[0.03] border border-white/10 hover:border-white/20 hover:bg-white/[0.05] transition-all duration-300 group"
-          >
-            <span className="text-gray-400 group-hover:text-white transition-colors">
-              Explore the Framework
-            </span>
-            <svg
-              className="w-4 h-4 text-gray-500 group-hover:text-white group-hover:translate-x-0.5 transition-all"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </Link>
-        </motion.div>
-
-        {/* Combined logo hint */}
-        <motion.p
-          className="text-center text-gray-600 mt-12 text-sm"
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: { duration: 0.6, ease: 'easeOut', delay: 0.5 },
-            },
-          }}
-        >
-          Together, the four shapes form the FourFlow symbol — four forces in harmony.
-        </motion.p>
       </motion.div>
     </section>
   );

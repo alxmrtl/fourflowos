@@ -84,14 +84,6 @@ function UniquenessHeader() {
           ))}
         </motion.div>
 
-        <motion.p
-          className="font-sans text-lg text-gray-500"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.36 }}
-        >
-          This is the map: Twelve Keys, across Four Dimensions. One picture of how you come alive.
-        </motion.p>
       </div>
     </div>
   );
