@@ -60,7 +60,7 @@ export default function LandingNav() {
       >
         {/* Background */}
         <motion.div
-          className="absolute inset-0 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5"
+          className="absolute inset-0 bg-[#0a0a0a]/90 border-b border-white/5"
           style={{ opacity: backgroundOpacity }}
         />
 
