@@ -5,7 +5,7 @@ import LandingNav from './LandingNav';
 import HeroSectionV2 from './HeroSectionV2';
 import { GRADIENTS } from '@/styles/brand-colors';
 import HonestMomentSection from './HonestMomentSection';
-import TimelessAnchorSection from './TimelessAnchorSection';
+import TimelessAnchorSectionV2 from './TimelessAnchorSectionV2';
 import DimensionsSection from './DimensionsSection';
 import ArchetypeRevealSection from './ArchetypeRevealSection';
 import Footer from './Footer';
@@ -22,8 +22,8 @@ export default function LandingPage() {
       {/* 2. Honest Moment */}
       <HonestMomentSection />
 
-      {/* 3. Timeless Anchor — historical validation */}
-      <TimelessAnchorSection />
+      {/* 3. Timeless Anchor — historical timeline carousel */}
+      <TimelessAnchorSectionV2 />
 
       {/* 5. Framework: DimensionsSection (includes "conditions are universal" header) */}
       <DimensionsSection />
