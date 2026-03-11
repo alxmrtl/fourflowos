@@ -125,13 +125,25 @@ export default function HonestMomentSection() {
       <div className="relative max-w-2xl mx-auto px-6 space-y-12">
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            Let&apos;s be honest about what&apos;s happening.
+            Everything sped up.
           </p>
         </ScrollParagraph>
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            AI didn&apos;t simplify things. It multiplied them. The noise is structural now. What you actually want got harder to hear.
+            AI accelerated that. More you can build. More pulling at your attention while you try.
+          </p>
+        </ScrollParagraph>
+
+        <ScrollParagraph>
+          <p className="font-sans text-lg text-gray-400 leading-[1.8]">
+            The pace doesn&apos;t ease. It compounds.
+          </p>
+        </ScrollParagraph>
+
+        <ScrollParagraph>
+          <p className="font-sans text-lg text-gray-400 leading-[1.8]">
+            Without something to come back to, you drift toward whatever&apos;s loudest. Loud is easy. It&apos;s not the same as right.
           </p>
         </ScrollParagraph>
 
@@ -139,7 +151,7 @@ export default function HonestMomentSection() {
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            These questions don&apos;t get answered by adding another system.
+            These questions don&apos;t get answered by going faster.
           </p>
           <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
             They get answered in a{' '}
@@ -157,12 +169,12 @@ export default function HonestMomentSection() {
             >
               state
             </motion.span>
-            .
+            . One that&apos;s been here longer than the noise.
           </p>
-          <p className="font-sans text-lg text-gray-300 leading-[1.8] mt-4">
+          <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
             One you already know.
           </p>
-          <p className="font-sans text-lg text-gray-500 leading-[1.8] mt-2">
+          <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
             One we&apos;ve relied on for millennia.
           </p>
         </ScrollParagraph>
