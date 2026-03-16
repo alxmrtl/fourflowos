@@ -49,7 +49,7 @@ const FEEDBACK_OPTIONS = [
   {
     value: 'embodied',
     title: 'My body tells me',
-    description: 'Something relaxes — or tightens — and that\'s the signal.',
+    description: 'Something relaxes — or tightens — and that tells me everything.',
   },
 ];
 
@@ -88,7 +88,7 @@ export default function IntakeStepSpace({ data, onChange }: Props) {
         </h2>
         <p className="text-gray-400 text-sm leading-relaxed">
           The spaces we occupy, the systems we use, the way we get feedback —
-          these are either amplifying your signal or muffling it.
+          these either support your best work or quietly drain it.
         </p>
       </div>
 
@@ -103,7 +103,7 @@ export default function IntakeStepSpace({ data, onChange }: Props) {
 
         <div className="space-y-2">
           <label className="block text-sm text-gray-300">
-            Right now, my physical spaces feel like:
+            My physical spaces tend to feel like:
           </label>
           <CardPicker
             options={ENVIRONMENT_OPTIONS}

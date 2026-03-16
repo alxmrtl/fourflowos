@@ -4,35 +4,66 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
 import { GRADIENTS } from '@/styles/brand-colors';
-import IntakeProgress from './IntakeProgress';
-import IntakeStepPersonal from './IntakeStepPersonal';
-import IntakeStepBirth from './IntakeStepBirth';
-import IntakeStepOpeningFrame from './IntakeStepOpeningFrame';
-import IntakeStepSelf from './IntakeStepSelf';
-import IntakeStepSpace from './IntakeStepSpace';
-import IntakeStepStory from './IntakeStepStory';
-import IntakeStepSpirit from './IntakeStepSpirit';
-import IntakeStepSoulSignature from './IntakeStepSoulSignature';
-import IntakeStepReview from './IntakeStepReview';
 import { INITIAL_INTAKE_DATA, toIntakeStructured } from '@/types/intake';
 import type { IntakeFormData } from '@/types/intake';
 
-const TOTAL_STEPS = 9;
+// ── Slide components ──────────────────────────────────────────────────────────
+import Slide01Personal from './intake-slides/Slide01Personal';
+import Slide02Birth from './intake-slides/Slide02Birth';
+import Slide03Season from './intake-slides/Slide03Season';
+import Slide04Chapter from './intake-slides/Slide04Chapter';
+import Slide05Emotions from './intake-slides/Slide05Emotions';
+import Slide06Pressure from './intake-slides/Slide06Pressure';
+import Slide07MentalMode from './intake-slides/Slide07MentalMode';
+import Slide08Spaces from './intake-slides/Slide08Spaces';
+import Slide09HowYouWork from './intake-slides/Slide09HowYouWork';
+import Slide10HowYouKnow from './intake-slides/Slide10HowYouKnow';
+import Slide11Arc from './intake-slides/Slide11Arc';
+import Slide12Mission from './intake-slides/Slide12Mission';
+import Slide13Wired from './intake-slides/Slide13Wired';
+import Slide14MadeOf from './intake-slides/Slide14MadeOf';
+import Slide15Pulls from './intake-slides/Slide15Pulls';
+import Slide16AliveMovement from './intake-slides/Slide16AliveMovement';
+import Slide17Myth from './intake-slides/Slide17Myth';
+import Slide18Shadow from './intake-slides/Slide18Shadow';
+import Slide19Gift from './intake-slides/Slide19Gift';
+import Slide20Closing from './intake-slides/Slide20Closing';
 
-// Required fields per step — keep minimal; most of the form is encouraged, not blocked
-const STEP_REQUIRED: Record<number, (keyof IntakeFormData)[]> = {
+const TOTAL_SLIDES = 20;
+
+// Required fields per slide — minimal; most slides are encouraged, not blocked
+const SLIDE_REQUIRED: Record<number, (keyof IntakeFormData)[]> = {
   1: ['name', 'email'],
   2: ['birth_date', 'birth_location'],
-  3: ['opening_season', 'opening_chapter_title'],
-  4: [],  // sliders always valid; keywords + text are encouraged
-  5: [],
-  6: [],
-  7: [],
-  8: [],
-  9: [],
+  3: ['opening_season'],
+  4: ['opening_chapter_title'],
+  // Slides 5–20: all encouraged but not required
 };
 
-// ─── Gateway — pre-suasion screen shown before step 1 ────────────────────────
+// ─── Progress bar ─────────────────────────────────────────────────────────────
+
+function IntakeProgress({ current, total }: { current: number; total: number }) {
+  const pct = ((current - 1) / (total - 1)) * 100;
+  return (
+    <div className="mb-6">
+      <div className="flex justify-between text-xs text-gray-600 mb-2">
+        <span>{current} of {total}</span>
+        <span>{Math.round(pct)}%</span>
+      </div>
+      <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+        <motion.div
+          className="h-full rounded-full"
+          style={{ background: GRADIENTS.tertiaryCta }}
+          initial={false}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Gateway ──────────────────────────────────────────────────────────────────
 
 function IntakeGateway({ onBegin }: { onBegin: () => void }) {
   return (
@@ -52,47 +83,46 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
           background: 'rgba(99,48,160,0.04)',
         }}
       >
+        <div className="space-y-4">
+          <h2 className="text-2xl md:text-3xl font-display font-bold italic text-white leading-snug">
+            Before you begin.
+          </h2>
+        </div>
 
-      <div className="space-y-4">
-        <h2 className="text-2xl md:text-3xl font-display font-bold italic text-white leading-snug">
-          Before you begin.
-        </h2>
-      </div>
+        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 text-left space-y-3">
+          <ul className="space-y-2.5 text-sm text-gray-300">
+            <li className="flex items-start gap-2.5">
+              <span className="text-gray-600 mt-0.5">—</span>
+              <span>Don&apos;t overthink your answers. Rely on your first instinct.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-gray-600 mt-0.5">—</span>
+              <span>There are no impressive answers here. Answer honestly.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-gray-600 mt-0.5">—</span>
+              <span>Write like you&apos;re telling a trusted friend — not composing an essay.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-gray-600 mt-0.5">—</span>
+              <span>On a phone? Try voice-to-text for longer answers — it&apos;s faster and usually more honest.</span>
+            </li>
+          </ul>
+        </div>
 
-      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 text-left space-y-3">
-        <ul className="space-y-2.5 text-sm text-gray-300">
-          <li className="flex items-start gap-2.5">
-            <span className="text-gray-600 mt-0.5">—</span>
-            <span>Don&apos;t overthink your answers. Rely on your first instinct.</span>
-          </li>
-          <li className="flex items-start gap-2.5">
-            <span className="text-gray-600 mt-0.5">—</span>
-            <span>There are no impressive answers here. Answer honestly.</span>
-          </li>
-          <li className="flex items-start gap-2.5">
-            <span className="text-gray-600 mt-0.5">—</span>
-            <span>Write like you&apos;re telling a trusted friend — not composing an essay.</span>
-          </li>
-          <li className="flex items-start gap-2.5">
-            <span className="text-gray-600 mt-0.5">—</span>
-            <span>On a phone? Try voice-to-text for longer answers — it&apos;s faster and usually more honest.</span>
-          </li>
-        </ul>
-      </div>
-
-      <div className="space-y-3">
-        <p className="text-xs text-gray-600">
-          Takes about 12–15 minutes. You can save your progress by completing it in one session.
-        </p>
-        <button
-          type="button"
-          onClick={onBegin}
-          className="px-8 py-3 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02]"
-          style={{ background: GRADIENTS.tertiaryCta }}
-        >
-          I&apos;m ready
-        </button>
-      </div>
+        <div className="space-y-3">
+          <p className="text-xs text-gray-600">
+            Takes about 10–12 minutes. Answer each question as it comes.
+          </p>
+          <button
+            type="button"
+            onClick={onBegin}
+            className="px-8 py-3 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02]"
+            style={{ background: GRADIENTS.tertiaryCta }}
+          >
+            I&apos;m ready
+          </button>
+        </div>
       </div>
     </motion.div>
   );
@@ -102,7 +132,7 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
 
 export default function IntakeForm() {
   const [hasStarted, setHasStarted] = useState(false);
-  const [step, setStep] = useState(1);
+  const [slide, setSlide] = useState(1);
   const [formData, setFormData] = useState<IntakeFormData>(INITIAL_INTAKE_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -112,34 +142,29 @@ export default function IntakeForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const isStepValid = (stepNum: number): boolean => {
-    const required = STEP_REQUIRED[stepNum] || [];
+  const isSlideValid = (slideNum: number): boolean => {
+    const required = SLIDE_REQUIRED[slideNum] || [];
     return required.every((field) => {
       const value = formData[field];
       if (typeof value === 'boolean') return true;
-      if (Array.isArray(value)) return true;
+      if (Array.isArray(value)) return value.length > 0;
       if (typeof value === 'number') return true;
       return String(value).trim().length > 0;
     });
   };
 
   const handleNext = () => {
-    if (step < TOTAL_STEPS && isStepValid(step)) {
-      setStep((prev) => prev + 1);
+    if (slide < TOTAL_SLIDES && isSlideValid(slide)) {
+      setSlide((prev) => prev + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleBack = () => {
-    if (step > 1) {
-      setStep((prev) => prev - 1);
+    if (slide > 1) {
+      setSlide((prev) => prev - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
-
-  const handleGoToStep = (targetStep: number) => {
-    setStep(targetStep);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSubmit = async () => {
@@ -196,7 +221,7 @@ export default function IntakeForm() {
         </h2>
 
         <p className="text-lg text-gray-400 mb-6 max-w-md mx-auto">
-          Your signal has been received. Check your email for a confirmation —
+          Your responses have been received. Check your email for a confirmation —
           your Flow Profile will arrive once it&apos;s ready.
         </p>
 
@@ -231,44 +256,44 @@ export default function IntakeForm() {
     );
   }
 
-  // ── Form ───────────────────────────────────────────────────────────────────
-  const stepProps = { onChange: handleChange };
+  // ── Slide renderer ─────────────────────────────────────────────────────────
+  const renderSlide = () => {
+    const p = { data: formData, onChange: handleChange };
+    switch (slide) {
+      case 1:  return <Slide01Personal key="s1"  data={p.data} onChange={p.onChange} />;
+      case 2:  return <Slide02Birth    key="s2"  data={p.data} onChange={p.onChange} />;
+      case 3:  return <Slide03Season   key="s3"  data={p.data} onChange={p.onChange} />;
+      case 4:  return <Slide04Chapter  key="s4"  data={p.data} onChange={p.onChange} />;
+      case 5:  return <Slide05Emotions key="s5"  data={p.data} onChange={(f, v) => handleChange(f, v as string[])} />;
+      case 6:  return <Slide06Pressure key="s6"  data={p.data} onChange={p.onChange} />;
+      case 7:  return <Slide07MentalMode key="s7" data={p.data} onChange={(f, v) => handleChange(f, v as number)} />;
+      case 8:  return <Slide08Spaces   key="s8"  data={p.data} onChange={p.onChange} />;
+      case 9:  return <Slide09HowYouWork key="s9" data={p.data} onChange={(f, v) => handleChange(f, v as string[])} />;
+      case 10: return <Slide10HowYouKnow key="s10" data={p.data} onChange={p.onChange} />;
+      case 11: return <Slide11Arc      key="s11" data={p.data} onChange={p.onChange} />;
+      case 12: return <Slide12Mission  key="s12" data={p.data} onChange={p.onChange} />;
+      case 13: return <Slide13Wired    key="s13" data={p.data} onChange={p.onChange} />;
+      case 14: return <Slide14MadeOf   key="s14" data={p.data} onChange={(f, v) => handleChange(f, v as string[])} />;
+      case 15: return <Slide15Pulls    key="s15" data={p.data} onChange={p.onChange} />;
+      case 16: return <Slide16AliveMovement key="s16" data={p.data} onChange={p.onChange} />;
+      case 17: return <Slide17Myth     key="s17" data={p.data} onChange={p.onChange} />;
+      case 18: return <Slide18Shadow   key="s18" data={p.data} onChange={p.onChange} />;
+      case 19: return <Slide19Gift     key="s19" data={p.data} onChange={p.onChange} />;
+      case 20: return <Slide20Closing  key="s20" data={p.data} onChange={p.onChange} />;
+      default: return null;
+    }
+  };
+
+  const isLast = slide === TOTAL_SLIDES;
+  const canContinue = isSlideValid(slide);
 
   return (
     <div className="max-w-2xl mx-auto">
-      <IntakeProgress currentStep={step} totalSteps={TOTAL_STEPS} />
+      <IntakeProgress current={slide} total={TOTAL_SLIDES} />
 
       <div className="p-6 md:p-8 rounded-2xl bg-white/[0.03] border border-white/10">
         <AnimatePresence mode="wait">
-          {step === 1 && (
-            <IntakeStepPersonal key="personal" data={formData} {...stepProps}
-              focusedField={null} setFocusedField={() => {}} />
-          )}
-          {step === 2 && (
-            <IntakeStepBirth key="birth" data={formData} {...stepProps}
-              focusedField={null} setFocusedField={() => {}} />
-          )}
-          {step === 3 && (
-            <IntakeStepOpeningFrame key="opening" data={formData} {...stepProps} />
-          )}
-          {step === 4 && (
-            <IntakeStepSelf key="self" data={formData} {...stepProps} />
-          )}
-          {step === 5 && (
-            <IntakeStepSpace key="space" data={formData} {...stepProps} />
-          )}
-          {step === 6 && (
-            <IntakeStepStory key="story" data={formData} {...stepProps} />
-          )}
-          {step === 7 && (
-            <IntakeStepSpirit key="spirit" data={formData} {...stepProps} />
-          )}
-          {step === 8 && (
-            <IntakeStepSoulSignature key="soul" data={formData} {...stepProps} />
-          )}
-          {step === 9 && (
-            <IntakeStepReview key="review" data={formData} onGoToStep={handleGoToStep} />
-          )}
+          {renderSlide()}
         </AnimatePresence>
 
         {submitStatus === 'error' && (
@@ -286,7 +311,7 @@ export default function IntakeForm() {
             type="button"
             onClick={handleBack}
             className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
-              step === 1
+              slide === 1
                 ? 'opacity-0 pointer-events-none'
                 : 'text-gray-400 hover:text-white border border-white/10 hover:border-white/30'
             }`}
@@ -294,11 +319,11 @@ export default function IntakeForm() {
             Back
           </button>
 
-          {step < TOTAL_STEPS ? (
+          {!isLast ? (
             <button
               type="button"
               onClick={handleNext}
-              disabled={!isStepValid(step)}
+              disabled={!canContinue}
               className="px-6 py-2.5 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
               style={{ background: GRADIENTS.tertiaryCta }}
             >
@@ -321,7 +346,7 @@ export default function IntakeForm() {
                   Sending...
                 </span>
               ) : (
-                'Send my signal'
+                'Send my profile'
               )}
             </button>
           )}

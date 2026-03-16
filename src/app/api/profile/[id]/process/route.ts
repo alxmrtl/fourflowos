@@ -32,6 +32,20 @@ function isAuthorized(request: NextRequest): boolean {
   return key === process.env.PROFILE_ADMIN_KEY;
 }
 
+/**
+ * Calculate Life Path Number from a birth date string (YYYY-MM-DD).
+ * Reduces all digits to a single digit (1–9) or master number (11, 22, 33).
+ */
+function calcLifePath(birthDate: string): string {
+  const digits = birthDate.replace(/-/g, '').split('').map(Number);
+  let sum = digits.reduce((acc, d) => acc + d, 0);
+  // Reduce to single digit or master number
+  while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+    sum = sum.toString().split('').reduce((a, c) => a + Number(c), 0);
+  }
+  return String(sum);
+}
+
 function formatIntakeData(assessment: Record<string, unknown>): string {
   const s = assessment.intake_structured as IntakeStructuredV2 | null | undefined;
 
@@ -40,8 +54,12 @@ function formatIntakeData(assessment: Record<string, unknown>): string {
     return `Name: ${assessment.name} | Birth: ${assessment.birth_date}, ${assessment.birth_location}\n\n(No structured intake data — intake_structured v2 required for full profile generation)`;
   }
 
+  const firstName = String(assessment.name || '').split(' ')[0] || '';
+  const lifePath = assessment.birth_date ? calcLifePath(String(assessment.birth_date)) : '—';
+
   const lines = [
-    `Name: ${assessment.name} | Birth: ${assessment.birth_date}${s.birth_time_known && s.birth_time ? `, ${s.birth_time}` : ''}, ${assessment.birth_location}`,
+    `Name: ${assessment.name} | First Name: ${firstName} | Birth: ${assessment.birth_date}${s.birth_time_known && s.birth_time ? `, ${s.birth_time}` : ''}, ${assessment.birth_location}`,
+    `Life Path Number: ${lifePath}`,
     '',
     `OPENING`,
     `Season: ${s.opening_season || '—'} | Chapter: "${s.opening_chapter_title || '—'}" | Attention: ${s.opening_orientation_word || '—'}`,

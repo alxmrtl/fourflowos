@@ -64,7 +64,7 @@ export default function IntakeStepSelf({ data, onChange }: Props) {
           <span className="text-xs font-semibold tracking-widest text-gray-500 uppercase">Self</span>
         </div>
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-          How is the signal moving through you?
+          What&apos;s the state of your inner world?
         </h2>
         <p className="text-gray-400 text-sm leading-relaxed">
           This section is about your inner world — the state of your body, your emotions,
@@ -77,7 +77,7 @@ export default function IntakeStepSelf({ data, onChange }: Props) {
         <div>
           <h3 className="text-base font-semibold text-white mb-1">Your emotional landscape</h3>
           <p className="text-xs text-gray-500">
-            Select every word that feels true right now — don&apos;t filter.
+            Select every word that tends to be true for you — don&apos;t overthink it.
             There are no good or bad words here.
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function IntakeStepSelf({ data, onChange }: Props) {
 
         <div className="space-y-2">
           <label className="block text-sm text-gray-300">
-            My physical energy right now:
+            My physical energy, most days:
           </label>
           <PolaritySlider
             value={data.self_body_energy}

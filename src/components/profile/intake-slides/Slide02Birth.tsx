@@ -1,9 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import LocationAutocomplete from './LocationAutocomplete';
+import { useState } from 'react';
+import LocationAutocomplete from '../LocationAutocomplete';
 
-interface IntakeStepBirthProps {
+interface Props {
   data: {
     birth_date: string;
     birth_time: string;
@@ -13,14 +14,14 @@ interface IntakeStepBirthProps {
     birth_lng: string;
   };
   onChange: (field: string, value: string | boolean) => void;
-  focusedField: string | null;
-  setFocusedField: (field: string | null) => void;
 }
 
-export default function IntakeStepBirth({ data, onChange, focusedField, setFocusedField }: IntakeStepBirthProps) {
-  const inputClasses = (fieldName: string) =>
+export default function Slide02Birth({ data, onChange }: Props) {
+  const [focused, setFocused] = useState<string | null>(null);
+
+  const inputClasses = (field: string) =>
     `w-full px-4 py-3 bg-white/[0.05] border rounded-xl text-white placeholder-gray-500 transition-all duration-300 focus:outline-none ${
-      focusedField === fieldName
+      focused === field
         ? 'border-white/30 bg-white/[0.08] ring-2 ring-white/10'
         : 'border-white/10 hover:border-white/20'
     }`;
@@ -31,13 +32,13 @@ export default function IntakeStepBirth({ data, onChange, focusedField, setFocus
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6"
+      className="space-y-8"
     >
-      <div className="text-center mb-8">
+      <div>
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-          Birth Information
+          When were you born?
         </h2>
-        <p className="text-gray-400">
+        <p className="text-gray-400 text-sm">
           Your birthdate, time, and place hold a specific pattern — we weave it into your profile alongside everything else you share.
         </p>
       </div>
@@ -53,13 +54,12 @@ export default function IntakeStepBirth({ data, onChange, focusedField, setFocus
             required
             value={data.birth_date}
             onChange={(e) => onChange('birth_date', e.target.value)}
-            onFocus={() => setFocusedField('birth_date')}
-            onBlur={() => setFocusedField(null)}
+            onFocus={() => setFocused('birth_date')}
+            onBlur={() => setFocused(null)}
             className={`${inputClasses('birth_date')} [color-scheme:dark]`}
           />
         </div>
 
-        {/* Birth time toggle */}
         <div>
           <div className="flex items-center gap-3 mb-3">
             <button
@@ -75,9 +75,7 @@ export default function IntakeStepBirth({ data, onChange, focusedField, setFocus
                 }`}
               />
             </button>
-            <span className="text-sm text-gray-400">
-              I know my birth time
-            </span>
+            <span className="text-sm text-gray-400">I know my birth time</span>
           </div>
 
           {data.birth_time_known ? (
@@ -95,8 +93,8 @@ export default function IntakeStepBirth({ data, onChange, focusedField, setFocus
                 id="birth_time"
                 value={data.birth_time}
                 onChange={(e) => onChange('birth_time', e.target.value)}
-                onFocus={() => setFocusedField('birth_time')}
-                onBlur={() => setFocusedField(null)}
+                onFocus={() => setFocused('birth_time')}
+                onBlur={() => setFocused(null)}
                 className={`${inputClasses('birth_time')} [color-scheme:dark]`}
               />
             </motion.div>
@@ -118,8 +116,8 @@ export default function IntakeStepBirth({ data, onChange, focusedField, setFocus
           <LocationAutocomplete
             value={data.birth_location}
             onChange={(field, value) => onChange(field, value)}
-            focusedField={focusedField}
-            setFocusedField={setFocusedField}
+            focusedField={focused}
+            setFocusedField={setFocused}
           />
           {data.birth_location && !data.birth_lat && (
             <p className="mt-2 text-xs text-amber-500/70">
