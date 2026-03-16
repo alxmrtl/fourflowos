@@ -36,27 +36,38 @@ export default function Slide17Myth({ data, onChange }: Props) {
         </p>
       </div>
 
-      {/* Optional archetype hint grid */}
+      {/* Clickable archetype grid — tap to select, or type your own below */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {ARCHETYPE_HINTS.map((a) => (
-          <div
-            key={a.label}
-            className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.07] text-left"
-          >
-            <div className="text-xs font-semibold text-gray-300 mb-0.5">{a.label}</div>
-            <div className="text-xs text-gray-600 leading-snug">{a.note}</div>
-          </div>
-        ))}
+        {ARCHETYPE_HINTS.map((a) => {
+          const isSelected = data.soul_fairy_tale_now === a.label;
+          return (
+            <button
+              key={a.label}
+              type="button"
+              onClick={() => onChange('soul_fairy_tale_now', isSelected ? '' : a.label)}
+              className={`p-3 rounded-xl border text-left transition-all duration-200 ${
+                isSelected
+                  ? 'bg-white/[0.08] border-white/30 text-white'
+                  : 'bg-white/[0.03] border-white/[0.07] hover:border-white/20 hover:bg-white/[0.06]'
+              }`}
+            >
+              <div className={`text-xs font-semibold mb-0.5 ${isSelected ? 'text-white' : 'text-gray-300'}`}>
+                {a.label}
+              </div>
+              <div className="text-xs text-gray-600 leading-snug">{a.note}</div>
+            </button>
+          );
+        })}
       </div>
 
       <div className="space-y-2">
+        <p className="text-xs text-gray-500">Or describe your own:</p>
         <input
           type="text"
           value={data.soul_fairy_tale_now}
           onChange={(e) => onChange('soul_fairy_tale_now', e.target.value)}
           placeholder="e.g. The Alchemist / Odysseus / something you can't quite name..."
           className={input}
-          autoFocus
         />
         <p className="text-xs text-gray-600">
           Trust the first thing that comes. It doesn&apos;t need to be impressive.
