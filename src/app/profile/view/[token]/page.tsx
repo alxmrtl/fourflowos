@@ -8,6 +8,10 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
 import AuthModal from '@/components/auth/AuthModal';
+import type { FlowProfileJSON, DimensionData, KeyData } from '@/types/profile-json';
+import type { DimensionType, KeyType } from '@/types/framework';
+import { KEYS, DIMENSIONS } from '@/data/framework';
+import Image from 'next/image';
 
 const PILLAR_COLORS = {
   SELF: '#E84535',
@@ -19,6 +23,7 @@ const PILLAR_COLORS = {
 interface ProfileData {
   name: string;
   content: string;
+  profile_json?: FlowProfileJSON | null;
   created_at: string;
 }
 
@@ -284,6 +289,144 @@ function CompactCuriosityCard({ curiosity }: { curiosity: CuriosityData | null }
   );
 }
 
+// ─── Structured JSON profile rendering ────────────────────────────────────────
+
+const DIM_ORDER: DimensionType[] = ['self', 'space', 'story', 'spirit'];
+
+function StructuredKey({ keySlug, data, accentColor, isLast }: {
+  keySlug: KeyType;
+  data: KeyData;
+  accentColor: string;
+  isLast?: boolean;
+}) {
+  const keyMeta = KEYS[keySlug];
+  return (
+    <div>
+      <div className="flex items-start gap-4 py-6">
+        <div className="w-10 h-10 flex-shrink-0">
+          {keyMeta?.icon ? (
+            <Image src={keyMeta.icon} alt={keyMeta.name} width={40} height={40} className="object-contain opacity-70" />
+          ) : (
+            <div className="w-10 h-10 rounded-full border border-white/10" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-semibold tracking-widest uppercase mb-2" style={{ color: accentColor }}>
+            {keyMeta?.name ?? keySlug}
+          </p>
+          {data.personal_key && (
+            <p className="text-sm text-white font-medium leading-snug mb-2 italic">
+              {data.personal_key}
+            </p>
+          )}
+          <p className="text-sm text-gray-400 leading-relaxed">
+            {data.insight}
+          </p>
+        </div>
+      </div>
+      {!isLast && <div className="h-px ml-14" style={{ background: 'rgba(255,255,255,0.05)' }} />}
+    </div>
+  );
+}
+
+function StructuredDimension({ dimId, data }: { dimId: DimensionType; data: DimensionData }) {
+  const dimMeta = DIMENSIONS[dimId];
+  const accentColor = dimMeta?.color ?? '#fff';
+  const keyEntries = Object.entries(data.keys ?? {}) as [KeyType, KeyData][];
+
+  return (
+    <div className="mb-10">
+      <div className="flex items-center gap-3 mb-1">
+        <div className="w-1.5 h-5 rounded-full" style={{ background: accentColor }} />
+        <h2 className="text-xs font-semibold tracking-widest uppercase" style={{ color: accentColor }}>
+          {dimMeta?.name ?? dimId}
+        </h2>
+      </div>
+      {data.summary && (
+        <p className="text-sm text-gray-500 leading-relaxed mb-2 pl-5">{data.summary}</p>
+      )}
+      <div className="pl-5">
+        {keyEntries.map(([slug, keyData], i) => (
+          <StructuredKey
+            key={slug}
+            keySlug={slug}
+            data={keyData}
+            accentColor={accentColor}
+            isLast={i === keyEntries.length - 1}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StructuredProfileContent({ profile_json }: { profile_json: FlowProfileJSON }) {
+  const { archetype, overview, dimensions } = profile_json;
+
+  return (
+    <div>
+      {/* Archetype */}
+      <div className="mb-10">
+        <p className="text-xs tracking-widest uppercase text-gray-600 mb-1">Archetype</p>
+        <h2 className="text-2xl font-bold text-white mb-1">{archetype.name}</h2>
+        {archetype.tagline && (
+          <p className="text-sm text-gray-500 italic mb-4">{archetype.tagline}</p>
+        )}
+        {archetype.framing && (
+          <p className="text-sm text-gray-400 leading-relaxed">{archetype.framing}</p>
+        )}
+      </div>
+
+      {/* Overview */}
+      {overview && (
+        <div className="mb-10 p-5 rounded-2xl border border-white/8" style={{ background: 'rgba(255,255,255,0.02)' }}>
+          {overview.headline && (
+            <p className="text-base text-white font-medium mb-5">{overview.headline}</p>
+          )}
+          <div className="grid md:grid-cols-2 gap-6">
+            {overview.flow && overview.flow.length > 0 && (
+              <div>
+                <p className="text-[10px] tracking-widest uppercase text-gray-600 mb-3">Opens flow</p>
+                <ul className="space-y-2">
+                  {overview.flow.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                      <span className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#4E8C73' }} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {overview.friction && overview.friction.length > 0 && (
+              <div>
+                <p className="text-[10px] tracking-widest uppercase text-gray-600 mb-3">Closes flow</p>
+                <ul className="space-y-2">
+                  {overview.friction.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                      <span className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#E84535' }} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Dimensions */}
+      <div className="h-px bg-white/5 mb-10" />
+      {DIM_ORDER.map(dimId => {
+        const data = dimensions[dimId];
+        if (!data) return null;
+        return <StructuredDimension key={dimId} dimId={dimId} data={data} />;
+      })}
+    </div>
+  );
+}
+
+// ─── Main page ─────────────────────────────────────────────────────────────────
+
 export default function ProfileViewPage() {
   const params = useParams();
   const token = params.token as string;
@@ -397,9 +540,13 @@ export default function ProfileViewPage() {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="max-w-3xl mx-auto px-6 py-10"
       >
-        <div className="profile-content prose prose-invert prose-lg max-w-none">
-          <ProfileMarkdown content={profile.content} />
-        </div>
+        {profile.profile_json ? (
+          <StructuredProfileContent profile_json={profile.profile_json} />
+        ) : (
+          <div className="profile-content prose prose-invert prose-lg max-w-none">
+            <ProfileMarkdown content={profile.content} />
+          </div>
+        )}
       </motion.main>
 
       {/* Signal Dashboard */}

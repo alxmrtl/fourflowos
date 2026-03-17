@@ -16,7 +16,7 @@ export async function GET(
   try {
     const { data: assessment, error } = await supabase
       .from('assessments')
-      .select('name, status, flow_profile_final, created_at')
+      .select('name, status, flow_profile_final, flow_profile_json, created_at')
       .eq('view_token', token)
       .single();
 
@@ -33,6 +33,7 @@ export async function GET(
       profile: {
         name: assessment.name,
         content: assessment.flow_profile_final,
+        profile_json: assessment.flow_profile_json ?? null,
         created_at: assessment.created_at,
       },
     });
