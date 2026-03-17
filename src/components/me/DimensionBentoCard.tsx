@@ -7,20 +7,17 @@ import type { DimensionType, KeyType } from '@/types/framework';
 import type { DimensionData } from '@/types/profile-json';
 import { DIMENSIONS, KEYS } from '@/data/framework';
 
-const KEY_QUESTIONS: Record<KeyType, string> = {
-  'tuned-emotions': 'How do your emotions either open or close the door to flow?',
-  'focused-body': 'How does your physical state support or block flow?',
-  'open-mind': 'How does the quality of your thinking shape your access to flow?',
-  'intentional-space': 'How does the space around you invite or block flow?',
-  'optimized-tools': 'How does friction in your toolkit translate into friction in your flow?',
-  'feedback-systems': "How does knowing whether you're making impact keep flow alive?",
-  'generative-story': 'How does the narrative you\'re living support or stall flow?',
-  'clear-mission': 'How does clarity of direction affect your access to flow?',
-  'empowered-role': 'How does claiming your role — or not — shape your flow?',
-  'grounding-values': 'How does alignment between your values and your actions affect flow?',
-  'ignited-curiosity': 'How does genuine interest fuel or deplete flow?',
-  'visualized-vision': "How does having a clear picture of where you're headed affect flow?",
-};
+// Strip the layup stem prefix from a personal_key so only the completion is shown.
+// e.g. stem "Your body enters flow when it..." + key "Your body enters flow when it moves fast"
+// → "moves fast"
+function getKeyCompletion(personalKey: string, stem: string | null | undefined): string {
+  if (!stem) return personalKey;
+  const prefix = stem.replace(/[.…]+$/, '').trim();
+  if (personalKey.toLowerCase().startsWith(prefix.toLowerCase())) {
+    return personalKey.slice(prefix.length).replace(/^\s+/, '');
+  }
+  return personalKey;
+}
 
 const DIM_KEYS: Record<DimensionType, KeyType[]> = {
   self: ['tuned-emotions', 'focused-body', 'open-mind'],
@@ -218,10 +215,10 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                 transition={{ duration: 0.2, delay: 0.15 }}
                 className="flex flex-col gap-3 relative z-10"
               >
-                {/* Framing question + close */}
+                {/* Stem header + close */}
                 <div className="flex items-start justify-between gap-3">
-                  <p className="text-[11px] text-gray-500 leading-snug italic flex-1">
-                    {KEY_QUESTIONS[activeKeySlug]}
+                  <p className="text-[12px] font-medium leading-snug flex-1" style={{ color: `rgba(${rgb}, 0.65)` }}>
+                    {KEYS[activeKeySlug]?.layupStem ?? ''}
                   </p>
                   <button
                     onClick={handleClose}
@@ -232,7 +229,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                   </button>
                 </div>
 
-                {/* Personal key container */}
+                {/* Personal key container — completion only */}
                 {activeKeyData.personal_key && (
                   <div
                     className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl"
@@ -245,7 +242,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                       <KeyIcon color={meta.color} size={15} />
                     </div>
                     <p className="text-sm font-bold italic leading-snug" style={{ color: meta.color }}>
-                      {activeKeyData.personal_key}
+                      {getKeyCompletion(activeKeyData.personal_key, KEYS[activeKeySlug]?.layupStem)}
                     </p>
                   </div>
                 )}
