@@ -61,31 +61,31 @@ export default function CuriosityKeyReveal({ data, curiosity }: Props) {
         transform: visible ? 'translateY(0)' : 'translateY(16px)',
       }}
     >
-      <div className="flex items-start gap-4 py-6">
-        {/* Key icon */}
-        <div className="w-12 h-12 flex-shrink-0">
+      <div className="flex items-start gap-3 py-5">
+        {/* Key icon — smaller */}
+        <div className="w-8 h-8 flex-shrink-0 mt-0.5">
           {keyMeta?.icon ? (
             <Image
               src={keyMeta.icon}
               alt="Ignited Curiosity"
-              width={48}
-              height={48}
-              className="object-contain opacity-75"
+              width={32}
+              height={32}
+              className="object-contain opacity-60"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full border border-white/15" />
+            <div className="w-8 h-8 rounded-full border border-white/15" />
           )}
         </div>
 
         <div className="flex-1 min-w-0">
           <p
-            className="text-[11px] font-semibold tracking-widest uppercase mb-3"
+            className="text-[10px] font-semibold tracking-widest uppercase mb-2.5"
             style={{ color: AMETHYST }}
           >
             Ignited Curiosity
           </p>
 
-          <p className="text-sm text-gray-300 leading-relaxed mb-5">
+          <p className="text-[12px] text-gray-400 leading-relaxed mb-4">
             {data.insight || fallbackInsight}
           </p>
 

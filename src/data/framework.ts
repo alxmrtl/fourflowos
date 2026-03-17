@@ -157,7 +157,8 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'Your emotions are a real-time dashboard showing whether you\'re in flow, approaching it, or drifting away.',
     flowConnection: 'Flow lives in the channel between boredom and anxiety—tuned emotions let you navigate there.',
-    withoutThis: 'You\'ll burn out chasing intensity or stall out in apathy, never finding the sweet spot.'
+    withoutThis: 'You\'ll burn out chasing intensity or stall out in apathy, never finding the sweet spot.',
+    layupStem: 'Your emotional sweet spot for flow is...',
   },
   'open-mind': {
     id: 'open-mind',
@@ -168,7 +169,8 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'A cluttered mind is a closed door to flow—mental flexibility creates space for insight and adaptation.',
     flowConnection: 'Flow requires releasing fixed patterns so new solutions can emerge moment-to-moment.',
-    withoutThis: 'You\'ll get stuck in loops, miss obvious solutions, and fight reality instead of flowing with it.'
+    withoutThis: 'You\'ll get stuck in loops, miss obvious solutions, and fight reality instead of flowing with it.',
+    layupStem: 'Your mind opens to flow by...',
   },
   'focused-body': {
     id: 'focused-body',
@@ -179,9 +181,10 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'Your body is your anchor to the present moment—when you\'re in your body, you can\'t be lost in worry or distraction.',
     flowConnection: 'Flow is an embodied state—physical presence pulls you out of mental noise and into direct experience.',
-    withoutThis: 'You\'ll overthink, disconnect from intuition, and exhaust yourself in your head while your body goes numb.'
+    withoutThis: 'You\'ll overthink, disconnect from intuition, and exhaust yourself in your head while your body goes numb.',
+    layupStem: 'Your body enters flow when...',
   },
-  
+
   // Space Keys
   'intentional-space': {
     id: 'intentional-space',
@@ -192,7 +195,8 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'Your environment is either pulling you toward flow or pushing you away—there is no neutral.',
     flowConnection: 'The right space eliminates friction and decision fatigue, letting you drop into focus automatically.',
-    withoutThis: 'You\'ll waste willpower fighting your surroundings instead of using it for the work itself.'
+    withoutThis: 'You\'ll waste willpower fighting your surroundings instead of using it for the work itself.',
+    layupStem: 'Your space unlocks flow through...',
   },
   'optimized-tools': {
     id: 'optimized-tools',
@@ -203,7 +207,8 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'The right tools disappear—they extend your capability without demanding your attention.',
     flowConnection: 'Seamless tools remove the gap between intention and action, keeping you in unbroken focus.',
-    withoutThis: 'You\'ll stumble over friction, break immersion constantly, and never build momentum.'
+    withoutThis: 'You\'ll stumble over friction, break immersion constantly, and never build momentum.',
+    layupStem: 'Your tools serve flow by...',
   },
   'feedback-systems': {
     id: 'feedback-systems',
@@ -214,9 +219,10 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'Flow requires knowing how you\'re doing right now—not tomorrow, not next week.',
     flowConnection: 'Immediate feedback creates the tight action-response loop that flow states require.',
-    withoutThis: 'You\'ll work in the dark, lose motivation, and miss the chance to course-correct before it\'s too late.'
+    withoutThis: 'You\'ll work in the dark, lose motivation, and miss the chance to course-correct before it\'s too late.',
+    layupStem: 'Your flow stays alive through...',
   },
-  
+
   // Story Keys
   'generative-story': {
     id: 'generative-story',
@@ -227,7 +233,8 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'The story you tell about your work determines whether challenges feel like obstacles or adventures.',
     flowConnection: 'A compelling narrative transforms effort into meaning, making struggle feel purposeful rather than pointless.',
-    withoutThis: 'Setbacks will drain you instead of fuel you, and difficulty will feel like punishment.'
+    withoutThis: 'Setbacks will drain you instead of fuel you, and difficulty will feel like punishment.',
+    layupStem: 'Your story generates flow when...',
   },
   'clear-mission': {
     id: 'clear-mission',
@@ -238,7 +245,8 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'Clarity creates momentum—when you know exactly what to do next, action becomes effortless.',
     flowConnection: 'A clear mission hierarchy connects today\'s task to your larger vision, making each action feel purposeful.',
-    withoutThis: 'You\'ll drift between tasks without direction, unsure if your effort is moving you forward.'
+    withoutThis: 'You\'ll drift between tasks without direction, unsure if your effort is moving you forward.',
+    layupStem: 'Your mission focuses flow on...',
   },
   'empowered-role': {
     id: 'empowered-role',
@@ -249,9 +257,10 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'Knowing exactly what you own and why it matters turns scattered effort into directed power.',
     flowConnection: 'A clear role creates autonomy and mastery—two core conditions for flow states.',
-    withoutThis: 'You\'ll feel like a cog, uncertain of your contribution, working hard without ownership.'
+    withoutThis: 'You\'ll feel like a cog, uncertain of your contribution, working hard without ownership.',
+    layupStem: 'Your role powers flow through...',
   },
-  
+
   // Spirit Keys
   'grounding-values': {
     id: 'grounding-values',
@@ -262,7 +271,8 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'Values are decision-making shortcuts—when you know what you stand for, choices become obvious.',
     flowConnection: 'Aligned values eliminate internal conflict, freeing energy for full engagement.',
-    withoutThis: 'You\'ll second-guess constantly, feel pulled in multiple directions, and act against yourself.'
+    withoutThis: 'You\'ll second-guess constantly, feel pulled in multiple directions, and act against yourself.',
+    layupStem: 'Your values anchor flow in...',
   },
   'visualized-vision': {
     id: 'visualized-vision',
@@ -273,7 +283,8 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'A clear vision acts like a magnet—it organizes your attention and reveals relevant opportunities.',
     flowConnection: 'Vision provides direction that makes each action feel like progress, sustaining flow over time.',
-    withoutThis: 'You\'ll drift without direction, react to circumstances, and lose the thread of your life.'
+    withoutThis: 'You\'ll drift without direction, react to circumstances, and lose the thread of your life.',
+    layupStem: 'Your vision draws flow toward...',
   },
   'ignited-curiosity': {
     id: 'ignited-curiosity',
@@ -284,7 +295,8 @@ export const KEYS: Record<KeyType, Key> = {
     content: { learn: [], practice: [] },
     coreInsight: 'Genuine interest is the most renewable fuel for focus—you can\'t force attention, but you can follow fascination.',
     flowConnection: 'Curiosity transforms work into play, making the exploration itself rewarding.',
-    withoutThis: 'Everything becomes obligation, attention becomes effortful, and burnout becomes inevitable.'
+    withoutThis: 'Everything becomes obligation, attention becomes effortful, and burnout becomes inevitable.',
+    layupStem: 'Your curiosity ignites flow through...',
   }
 };
 

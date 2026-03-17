@@ -34,6 +34,8 @@ export interface Key {
   coreInsight: string;
   flowConnection: string;
   withoutThis: string;
+  // Layup sentence stem — personal_key completes this
+  layupStem: string;
 }
 
 export interface ContentItem {

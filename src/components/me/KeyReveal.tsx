@@ -35,6 +35,7 @@ export default function KeyReveal({ keySlug, data, accentColor, isLast }: Props)
 
   const keyMeta = KEYS[keySlug];
   const fallbackInsight = keyMeta?.coreInsight ?? '';
+  const stem = keyMeta?.layupStem ?? null;
 
   return (
     <div
@@ -45,41 +46,62 @@ export default function KeyReveal({ keySlug, data, accentColor, isLast }: Props)
         transform: visible ? 'translateY(0)' : 'translateY(16px)',
       }}
     >
-      <div className="flex items-start gap-4 py-6">
-        <div className="w-12 h-12 flex-shrink-0">
+      <div className="flex items-start gap-3 py-5">
+        {/* Key icon — smaller */}
+        <div className="w-8 h-8 flex-shrink-0 mt-0.5">
           {keyMeta?.icon ? (
             <Image
               src={keyMeta.icon}
               alt={keyMeta.name}
-              width={48}
-              height={48}
-              className="object-contain opacity-75"
+              width={32}
+              height={32}
+              className="object-contain opacity-60"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full border border-white/15" />
+            <div className="w-8 h-8 rounded-full border border-white/15" />
           )}
         </div>
 
         <div className="flex-1 min-w-0">
+          {/* Key name label */}
           <p
-            className="text-[11px] font-semibold tracking-widest uppercase mb-3"
+            className="text-[10px] font-semibold tracking-widest uppercase mb-2.5"
             style={{ color: accentColor }}
           >
             {keyMeta?.name ?? keySlug}
           </p>
-          {data.personal_key && (
-            <p className="text-sm text-white font-medium leading-snug mb-2 italic">
+
+          {/* Stem + personal_key as completion */}
+          {data.personal_key && stem ? (
+            <div
+              className="rounded-lg px-3 py-2.5 mb-3"
+              style={{
+                background: `${accentColor}08`,
+                borderLeft: `2px solid ${accentColor}35`,
+              }}
+            >
+              <p className="text-[11px] text-gray-500 italic leading-snug mb-1.5">
+                {stem}
+              </p>
+              <p className="text-[12px] font-medium leading-snug" style={{ color: 'rgba(255,255,255,0.85)' }}>
+                {data.personal_key}
+              </p>
+            </div>
+          ) : data.personal_key ? (
+            <p className="text-[12px] font-medium leading-snug mb-3 italic" style={{ color: 'rgba(255,255,255,0.85)' }}>
               {data.personal_key}
             </p>
-          )}
-          <p className="text-sm text-gray-300 leading-relaxed">
+          ) : null}
+
+          {/* Insight */}
+          <p className="text-[12px] text-gray-400 leading-relaxed">
             {data.insight || fallbackInsight}
           </p>
         </div>
       </div>
 
       {!isLast && (
-        <div className="h-px ml-16" style={{ background: 'rgba(255,255,255,0.05)' }} />
+        <div className="h-px ml-11" style={{ background: 'rgba(255,255,255,0.04)' }} />
       )}
     </div>
   );
