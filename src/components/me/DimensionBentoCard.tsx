@@ -8,8 +8,6 @@ import type { DimensionData } from '@/types/profile-json';
 import { DIMENSIONS, KEYS } from '@/data/framework';
 
 // Strip the layup stem prefix from a personal_key so only the completion is shown.
-// e.g. stem "Your body enters flow when it..." + key "Your body enters flow when it moves fast"
-// → "moves fast"
 function getKeyCompletion(personalKey: string, stem: string | null | undefined): string {
   if (!stem) return personalKey;
   const prefix = stem.replace(/[.…]+$/, '').trim();
@@ -17,6 +15,13 @@ function getKeyCompletion(personalKey: string, stem: string | null | undefined):
     return personalKey.slice(prefix.length).replace(/^\s+/, '');
   }
   return personalKey;
+}
+
+// Split text at the first sentence boundary — returns [firstSentence, remainder].
+function splitFirstSentence(text: string): [string, string] {
+  const match = text.match(/^(.+?[.!?])(\s+[\s\S]+)$/);
+  if (match) return [match[1], match[2].trimStart()];
+  return [text, ''];
 }
 
 const DIM_KEYS: Record<DimensionType, KeyType[]> = {
@@ -232,6 +237,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                 {activeKeyData.personal_key && (() => {
                   const stem = KEYS[activeKeySlug]?.layupStem ?? '';
                   const completion = getKeyCompletion(activeKeyData.personal_key!, stem);
+                  const [first, rest] = splitFirstSentence(completion);
                   return (
                     <div
                       className="px-4 py-4 rounded-xl"
@@ -240,18 +246,19 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         border: `1px solid rgba(${rgb}, 0.28)`,
                       }}
                     >
-                      {/* Stem — italic bold header */}
+                      {/* Stem — same size as completion, bold italic */}
                       <div className="flex items-center gap-2.5 mb-3">
                         <div className="flex-shrink-0">
                           <KeyIcon color={meta.color} size={14} />
                         </div>
-                        <p className="text-[12px] font-bold italic leading-snug" style={{ color: meta.color }}>
+                        <p className="text-[13px] font-bold italic leading-snug" style={{ color: meta.color }}>
                           {stem}
                         </p>
                       </div>
-                      {/* Completion — bold italic, leading ... */}
-                      <p className="text-[13px] font-bold italic leading-relaxed" style={{ color: meta.color }}>
-                        ...{completion}
+                      {/* Completion — first sentence bold, rest normal weight */}
+                      <p className="text-[13px] italic leading-relaxed" style={{ color: meta.color }}>
+                        <span className="font-bold">...{first}</span>
+                        {rest && <span className="font-normal"> {rest}</span>}
                       </p>
                     </div>
                   );
