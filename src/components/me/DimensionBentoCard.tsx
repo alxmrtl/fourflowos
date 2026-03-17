@@ -190,7 +190,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
 
         {/* RIGHT COLUMN — summary or key insight */}
         <div className="flex-1 min-w-0 sm:pl-5 flex flex-col justify-center relative overflow-hidden">
-          {/* Radial ink sweep — fires when a key is active */}
+          {/* Radial ink sweep — expands then fades, leaving box color only */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
             initial={false}
@@ -198,8 +198,12 @@ export default function DimensionBentoCard({ dim, data }: Props) {
               clipPath: activeKeySlug
                 ? 'circle(150% at 10% 10%)'
                 : 'circle(0% at 10% 10%)',
+              opacity: activeKeySlug ? [0, 1, 0] : 0,
             }}
-            transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
+            transition={{
+              clipPath: { duration: 0.55, ease: [0.4, 0, 0.2, 1] },
+              opacity: { duration: 1.1, times: [0, 0.2, 1], ease: 'easeOut' },
+            }}
             style={{
               background: `linear-gradient(135deg, rgba(${rgb}, 0.14), rgba(${rgb}, 0.05))`,
             }}
