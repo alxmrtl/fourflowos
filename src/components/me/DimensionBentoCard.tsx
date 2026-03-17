@@ -13,13 +13,13 @@ const KEY_QUESTIONS: Record<KeyType, string> = {
   'open-mind': 'How does the quality of your thinking shape your access to flow?',
   'intentional-space': 'How does the space around you invite or block flow?',
   'optimized-tools': 'How does friction in your toolkit translate into friction in your flow?',
-  'feedback-systems': 'How does knowing whether you\'re making impact keep flow alive?',
+  'feedback-systems': "How does knowing whether you're making impact keep flow alive?",
   'generative-story': 'How does the narrative you\'re living support or stall flow?',
   'clear-mission': 'How does clarity of direction affect your access to flow?',
   'empowered-role': 'How does claiming your role — or not — shape your flow?',
   'grounding-values': 'How does alignment between your values and your actions affect flow?',
   'ignited-curiosity': 'How does genuine interest fuel or deplete flow?',
-  'visualized-vision': 'How does having a clear picture of where you\'re headed affect flow?',
+  'visualized-vision': "How does having a clear picture of where you're headed affect flow?",
 };
 
 const DIM_KEYS: Record<DimensionType, KeyType[]> = {
@@ -29,6 +29,24 @@ const DIM_KEYS: Record<DimensionType, KeyType[]> = {
   spirit: ['grounding-values', 'ignited-curiosity', 'visualized-vision'],
 };
 
+function hexToRgb(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
+function KeyIcon({ color, size = 15 }: { color: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="5.5" cy="5.5" r="3.75" stroke={color} strokeWidth="1.5" />
+      <line x1="8.5" y1="8.5" x2="13.5" y2="13.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="11.5" y1="12.5" x2="11.5" y2="14.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="13" y1="11" x2="15" y2="11" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 interface Props {
   dim: DimensionType;
   data: DimensionData;
@@ -37,16 +55,23 @@ interface Props {
 export default function DimensionBentoCard({ dim, data }: Props) {
   const meta = DIMENSIONS[dim];
   const keySlots = DIM_KEYS[dim];
+  const rgb = hexToRgb(meta.color);
 
   const [activeKeySlug, setActiveKeySlug] = useState<KeyType | null>(null);
 
   if (!data || !data.keys) {
     return (
       <div
-        className="rounded-2xl overflow-hidden border border-white/10"
+        className="rounded-2xl overflow-hidden border border-white/10 flex flex-row"
         style={{ background: 'rgba(20,20,20,0.95)' }}
       >
-        <div style={{ height: 3, background: meta.color }} />
+        <div
+          className="flex-shrink-0 w-4"
+          style={{
+            background: `rgba(${rgb}, 0.06)`,
+            borderRight: `1px solid rgba(${rgb}, 0.12)`,
+          }}
+        />
         <div className="p-4">
           <p className="text-[10px] font-semibold tracking-widest uppercase" style={{ color: meta.color }}>
             {meta.name}
@@ -70,18 +95,44 @@ export default function DimensionBentoCard({ dim, data }: Props) {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden border border-white/10"
+      className="rounded-2xl overflow-hidden border border-white/10 flex flex-row"
       style={{ background: 'rgba(20,20,20,0.95)' }}
     >
-      {/* Top edge color bar */}
-      <div style={{ height: 3, background: meta.color }} />
+      {/* ── Left Spine — Signal Pulse ──────────────────────────────── */}
+      <div
+        className="flex-shrink-0 w-4 flex flex-col items-center justify-evenly py-4"
+        style={{
+          background: `rgba(${rgb}, 0.06)`,
+          borderRight: `1px solid rgba(${rgb}, 0.12)`,
+        }}
+      >
+        {keySlots.map((slug) => {
+          const isActive = slug === activeKeySlug;
+          const hasData = !!data.keys[slug];
+          return (
+            <div
+              key={slug}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: isActive ? 7 : 4,
+                height: isActive ? 7 : 4,
+                background: isActive
+                  ? meta.color
+                  : `rgba(${rgb}, ${hasData ? '0.3' : '0.15'})`,
+                boxShadow: isActive
+                  ? `0 0 8px 3px rgba(${rgb}, 0.45)`
+                  : 'none',
+              }}
+            />
+          );
+        })}
+      </div>
 
-      {/* Row layout: stacked on mobile, horizontal on sm+ */}
-      <div className="flex flex-col sm:flex-row p-4 gap-4 sm:gap-0">
+      {/* ── Main content ───────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row flex-1 p-4 gap-4 sm:gap-0">
 
         {/* LEFT COLUMN — dimension header + stacked key buttons */}
         <div className="w-full sm:w-48 md:w-52 flex-shrink-0 flex flex-col gap-2 sm:pr-5 sm:border-r sm:border-white/[0.06]">
-          {/* Dimension header */}
           <div className="flex items-center gap-2.5 mb-1">
             <div className="w-8 h-8 flex-shrink-0">
               <Image
@@ -100,7 +151,6 @@ export default function DimensionBentoCard({ dim, data }: Props) {
             </p>
           </div>
 
-          {/* Stacked key buttons */}
           {keySlots.map((slug) => {
             const keyMeta = KEYS[slug];
             const hasData = !!data.keys[slug];
@@ -147,16 +197,16 @@ export default function DimensionBentoCard({ dim, data }: Props) {
             {activeKeySlug && activeKeyData ? (
               <motion.div
                 key={activeKeySlug}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, scale: 0.96, y: 6, filter: 'blur(3px)' }}
+                animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -4, filter: 'blur(2px)' }}
+                transition={{ type: 'spring', stiffness: 380, damping: 28 }}
                 className="flex flex-col gap-3"
               >
-                {/* Question + X close */}
+                {/* Framing question + close */}
                 <div className="flex items-start justify-between gap-3">
-                  <p className="text-xs text-gray-500 leading-snug italic flex-1">
-                    {activeKeySlug && KEY_QUESTIONS[activeKeySlug]}
+                  <p className="text-[11px] text-gray-500 leading-snug italic flex-1">
+                    {KEY_QUESTIONS[activeKeySlug]}
                   </p>
                   <button
                     onClick={handleClose}
@@ -167,15 +217,26 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                   </button>
                 </div>
 
-                {/* Personal key */}
+                {/* Personal key container */}
                 {activeKeyData.personal_key && (
-                  <p className="text-sm font-bold italic leading-snug" style={{ color: meta.color }}>
-                    {activeKeyData.personal_key}
-                  </p>
+                  <div
+                    className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl"
+                    style={{
+                      background: `rgba(${rgb}, 0.10)`,
+                      border: `1px solid rgba(${rgb}, 0.28)`,
+                    }}
+                  >
+                    <div className="flex-shrink-0 mt-0.5">
+                      <KeyIcon color={meta.color} size={15} />
+                    </div>
+                    <p className="text-sm font-bold italic leading-snug" style={{ color: meta.color }}>
+                      {activeKeyData.personal_key}
+                    </p>
+                  </div>
                 )}
 
                 {/* Insight paragraph */}
-                <p className="text-sm text-gray-300 leading-relaxed">
+                <p className="text-xs text-gray-400 leading-relaxed">
                   {activeKeyData.insight}
                 </p>
               </motion.div>

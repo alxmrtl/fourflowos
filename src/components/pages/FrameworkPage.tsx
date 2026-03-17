@@ -137,15 +137,34 @@ export default function FrameworkPage() {
                       borderColor: isThisDimensionActive ? `${dimension.color}40` : 'rgba(255,255,255,0.1)',
                     }}
                   >
-                    {/* Top accent line */}
+                    {/* Left spine — Signal Pulse */}
                     <div
-                      className="absolute top-0 left-0 right-0 h-1 z-10"
-                      style={{ background: dimension.color }}
-                    />
+                      className="absolute top-0 left-0 bottom-0 w-4 z-10 flex flex-col items-center justify-evenly py-8"
+                      style={{
+                        background: `${dimension.color}0D`,
+                        borderRight: `1px solid ${dimension.color}20`,
+                      }}
+                    >
+                      {dimension.keys.map((key) => {
+                        const isKeyActive = selectedKey?.keyId === key.id && isThisDimensionActive;
+                        return (
+                          <div
+                            key={key.id}
+                            className="rounded-full transition-all duration-300"
+                            style={{
+                              width: isKeyActive ? 7 : 4,
+                              height: isKeyActive ? 7 : 4,
+                              background: isKeyActive ? dimension.color : `${dimension.color}40`,
+                              boxShadow: isKeyActive ? `0 0 8px 3px ${dimension.color}70` : 'none',
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
 
                     {/* ── Front layer: dimension header + compact key buttons (drives card height) ── */}
                     <motion.div
-                      className="relative p-6 md:p-8 pt-7 md:pt-9"
+                      className="relative p-6 md:p-8 pt-7 md:pt-9 pl-8 md:pl-10"
                       animate={{
                         opacity: isThisDimensionActive ? 0 : 1,
                         pointerEvents: isThisDimensionActive ? 'none' : 'auto',
@@ -259,7 +278,7 @@ export default function FrameworkPage() {
 
                     {/* ── Back layer: key detail + switcher tabs ── */}
                     <motion.div
-                      className="absolute inset-0 p-6 md:p-8 pt-7 md:pt-9 flex flex-col overflow-hidden"
+                      className="absolute inset-0 pt-7 md:pt-9 pr-6 md:pr-8 pb-6 md:pb-8 pl-8 md:pl-10 flex flex-col overflow-hidden"
                       initial={false}
                       animate={{
                         opacity: isThisDimensionActive ? 1 : 0,

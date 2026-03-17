@@ -109,11 +109,12 @@ function SignalMiniCard({
 }) {
   return (
     <div
-      className={`flex-1 rounded-xl overflow-hidden border ${muted ? 'border-white/5' : 'border-white/10'}`}
+      className={`flex-1 rounded-xl overflow-hidden border flex flex-row ${muted ? 'border-white/5' : 'border-white/10'}`}
       style={{ background: muted ? 'rgba(20,20,20,0.5)' : 'rgba(20,20,20,0.95)' }}
     >
-      <div style={{ height: 3, background: topEdge }} />
-      <div className="p-4">
+      {/* Left spine accent */}
+      <div style={{ width: 3, background: topEdge, flexShrink: 0 }} />
+      <div className="p-4 flex-1">
         <p className={`text-xs font-medium mb-2 ${muted ? 'text-gray-600' : 'text-gray-400'}`}>{title}</p>
         <p className={`text-2xl font-bold mb-0.5 ${muted ? 'text-gray-600' : 'text-white'}`}>{stat}</p>
         <p className={`text-[11px] mb-3 ${muted ? 'text-gray-700' : 'text-gray-500'}`}>{label}</p>
@@ -202,11 +203,11 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
           href="/tools/curiosity-explorer"
         />
         <div
-          className="flex-1 rounded-xl overflow-hidden border border-white/10"
+          className="flex-1 rounded-xl overflow-hidden border border-white/10 flex flex-row"
           style={{ background: 'rgba(20,20,20,0.95)' }}
         >
-          <div style={{ height: 3, background: STEEL }} />
-          <div className="p-4">
+          <div style={{ width: 3, background: STEEL, flexShrink: 0 }} />
+          <div className="p-4 flex-1">
             <p className="text-xs font-medium text-gray-400 mb-2">Work Together</p>
             <p className="text-sm text-gray-300 mb-3 leading-snug">
               Walk through your profile with Alex
