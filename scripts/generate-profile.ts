@@ -24,6 +24,7 @@ import { resolve } from 'path';
 config({ path: resolve(__dirname, '../.env.local') });
 
 import Anthropic from '@anthropic-ai/sdk';
+import { jsonrepair } from 'jsonrepair';
 import { getSupabase } from '../src/lib/supabase';
 import { sendDeliveryEmail } from '../src/lib/email';
 import type { FlowProfileJSON } from '../src/types/profile-json';
@@ -684,7 +685,14 @@ Example:
 
   let profileJson: FlowProfileJSON;
   try {
-    profileJson = JSON.parse(cleanedOutput) as FlowProfileJSON;
+    let parseable = cleanedOutput;
+    try {
+      JSON.parse(parseable);
+    } catch {
+      console.log('      Native parse failed — attempting jsonrepair...');
+      parseable = jsonrepair(parseable);
+    }
+    profileJson = JSON.parse(parseable) as FlowProfileJSON;
     if (!profileJson.schema_version || !profileJson.archetype || !profileJson.dimensions) {
       throw new Error('Missing required fields: schema_version, archetype, or dimensions');
     }
