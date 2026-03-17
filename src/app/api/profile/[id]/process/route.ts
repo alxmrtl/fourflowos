@@ -369,6 +369,8 @@ export async function POST(
       const assessmentUpdate: Record<string, unknown> = {
         flow_profile_draft: finalProfileText,
         prompt_template_id: promptTemplate.id,
+        chart_archetypal_summary: chartContext,
+        deep_signature_data: deepSignatureData,
         ...statusUpdate,
       };
 
