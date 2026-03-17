@@ -6,7 +6,6 @@ import type { FlowProfileJSON, DimensionData, KeyData } from '@/types/profile-js
 import type { DimensionType, KeyType } from '@/types/framework';
 import ArchetypeHeader from './ArchetypeHeader';
 import DimensionBentoCard from './DimensionBentoCard';
-import OverviewCard from './OverviewCard';
 
 // ─── Profile normalisation ────────────────────────────────────────────────────
 // The LLM sometimes emits dimension keys (SELF / Space) or key slugs
@@ -140,7 +139,6 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
       Object.entries(profile.dimensions ?? {}).map(([d, data]) => [d, Object.keys((data as DimensionData)?.keys ?? {})])
     );
     console.log('[BentoGrid] raw dimension keys:', rawDimKeys);
-    console.log('[BentoGrid] overview present:', !!profile.overview, profile.overview ?? '(none)');
   }
 
   const totalSessions = sessions.length;
@@ -171,14 +169,6 @@ export default function BentoGrid({ profile, sessions, curiosity, assessment }: 
           </motion.div>
         ))}
       </div>
-
-      {/* Overview */}
-      {normalized.overview?.headline && (
-        <>
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Your Signal</p>
-          <OverviewCard overview={normalized.overview} />
-        </>
-      )}
 
       {/* Signal row */}
       <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Tools &amp; Next Steps</p>

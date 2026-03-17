@@ -361,7 +361,7 @@ function StructuredDimension({ dimId, data }: { dimId: DimensionType; data: Dime
 }
 
 function StructuredProfileContent({ profile_json }: { profile_json: FlowProfileJSON }) {
-  const { archetype, overview, dimensions } = profile_json;
+  const { archetype, dimensions } = profile_json;
 
   return (
     <div>
@@ -376,43 +376,6 @@ function StructuredProfileContent({ profile_json }: { profile_json: FlowProfileJ
           <p className="text-sm text-gray-400 leading-relaxed">{archetype.framing}</p>
         )}
       </div>
-
-      {/* Overview */}
-      {overview && (
-        <div className="mb-10 p-5 rounded-2xl border border-white/8" style={{ background: 'rgba(255,255,255,0.02)' }}>
-          {overview.headline && (
-            <p className="text-base text-white font-medium mb-5">{overview.headline}</p>
-          )}
-          <div className="grid md:grid-cols-2 gap-6">
-            {overview.flow && overview.flow.length > 0 && (
-              <div>
-                <p className="text-[10px] tracking-widest uppercase text-gray-600 mb-3">Opens flow</p>
-                <ul className="space-y-2">
-                  {overview.flow.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
-                      <span className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#4E8C73' }} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {overview.friction && overview.friction.length > 0 && (
-              <div>
-                <p className="text-[10px] tracking-widest uppercase text-gray-600 mb-3">Closes flow</p>
-                <ul className="space-y-2">
-                  {overview.friction.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
-                      <span className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#E84535' }} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Dimensions */}
       <div className="h-px bg-white/5 mb-10" />
