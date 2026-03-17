@@ -192,16 +192,31 @@ export default function DimensionBentoCard({ dim, data }: Props) {
         </div>
 
         {/* RIGHT COLUMN — summary or key insight */}
-        <div className="flex-1 min-w-0 sm:pl-5 flex flex-col justify-center">
+        <div className="flex-1 min-w-0 sm:pl-5 flex flex-col justify-center relative overflow-hidden">
+          {/* Radial ink sweep — fires when a key is active */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            initial={false}
+            animate={{
+              clipPath: activeKeySlug
+                ? 'circle(150% at 10% 10%)'
+                : 'circle(0% at 10% 10%)',
+            }}
+            transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
+            style={{
+              background: `linear-gradient(135deg, rgba(${rgb}, 0.14), rgba(${rgb}, 0.05))`,
+            }}
+          />
+
           <AnimatePresence mode="wait">
             {activeKeySlug && activeKeyData ? (
               <motion.div
                 key={activeKeySlug}
-                initial={{ opacity: 0, scale: 0.96, y: 6, filter: 'blur(3px)' }}
-                animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -4, filter: 'blur(2px)' }}
-                transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-                className="flex flex-col gap-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2, delay: 0.15 }}
+                className="flex flex-col gap-3 relative z-10"
               >
                 {/* Framing question + close */}
                 <div className="flex items-start justify-between gap-3">
@@ -247,7 +262,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="text-sm text-gray-300 leading-relaxed"
+                className="text-sm text-gray-300 leading-relaxed relative z-10"
               >
                 {data.summary}
               </motion.p>
