@@ -167,6 +167,13 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                   </button>
                 </div>
 
+                {/* Personal key */}
+                {activeKeyData.personal_key && (
+                  <p className="text-sm font-bold italic leading-snug" style={{ color: meta.color }}>
+                    {activeKeyData.personal_key}
+                  </p>
+                )}
+
                 {/* Insight paragraph */}
                 <p className="text-sm text-gray-300 leading-relaxed">
                   {activeKeyData.insight}
