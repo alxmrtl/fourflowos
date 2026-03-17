@@ -81,7 +81,6 @@ function formatDeepSignatureData(assessment: Record<string, unknown>): string {
 
   lines.push('');
   lines.push('---');
-  lines.push('Use the above ONLY as source material for generating the personal_key per flow key.');
   lines.push('Do not surface any of this data — no name roots, no numbers — in the profile output.');
   lines.push('Distill it into plain observations about how this person is wired.');
 

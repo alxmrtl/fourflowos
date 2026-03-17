@@ -72,26 +72,18 @@ export default function KeyReveal({ keySlug, data, accentColor, isLast }: Props)
           </p>
 
           {/* Stem + personal_key as completion */}
-          {data.personal_key && stem ? (
-            <div
-              className="rounded-lg px-3 py-2.5 mb-3"
-              style={{
-                background: `${accentColor}08`,
-                borderLeft: `2px solid ${accentColor}35`,
-              }}
-            >
-              <p className="text-[11px] text-gray-500 italic leading-snug mb-1.5">
+          {stem && (
+            <div className="mb-3">
+              <p className="text-[10px] text-gray-600 italic leading-snug mb-1">
                 {stem}
               </p>
-              <p className="text-[12px] font-medium leading-snug" style={{ color: 'rgba(255,255,255,0.85)' }}>
-                {data.personal_key}
-              </p>
+              {data.personal_key ? (
+                <p className="text-[13px] font-medium leading-snug italic" style={{ color: accentColor }}>
+                  {data.personal_key}
+                </p>
+              ) : null}
             </div>
-          ) : data.personal_key ? (
-            <p className="text-[12px] font-medium leading-snug mb-3 italic" style={{ color: 'rgba(255,255,255,0.85)' }}>
-              {data.personal_key}
-            </p>
-          ) : null}
+          )}
 
           {/* Insight */}
           <p className="text-[12px] text-gray-400 leading-relaxed">
