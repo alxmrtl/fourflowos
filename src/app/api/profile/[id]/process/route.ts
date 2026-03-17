@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
 import type { IntakeStructuredV2 } from '@/types/intake';
+import { buildNumerologyProfile } from '@/lib/numerology';
+import { formatNameSignature } from '@/lib/name-etymology';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -44,6 +46,46 @@ function calcLifePath(birthDate: string): string {
     sum = sum.toString().split('').reduce((a, c) => a + Number(c), 0);
   }
   return String(sum);
+}
+
+function formatDeepSignatureData(assessment: Record<string, unknown>): string {
+  const fullName = String(assessment.name || '').trim();
+  const birthDate = String(assessment.birth_date || '');
+
+  if (!fullName || !birthDate) return '';
+
+  const lines: string[] = ['## DEEP SIGNATURE DATA', ''];
+
+  // Name etymology
+  const nameSignature = formatNameSignature(fullName);
+  if (nameSignature) {
+    lines.push('### Name Roots');
+    lines.push(nameSignature);
+    lines.push('');
+  }
+
+  // Numerology
+  if (birthDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const num = buildNumerologyProfile(fullName, birthDate);
+    lines.push('### Core Wiring (numerological)');
+    lines.push(`Life Path ${num.lifePath}: ${num.lifePathMeaning}`);
+    lines.push(`Expression ${num.expression}: ${num.expressionMeaning}`);
+    lines.push(`Soul Urge ${num.soulUrge}: ${num.soulUrgeMeaning}`);
+    lines.push(`Personality ${num.personality}: ${num.personalityMeaning}`);
+    lines.push(`Birthday ${num.birthdayNumber}: ${num.birthdayMeaning}`);
+    if (num.convergenceNote) {
+      lines.push('');
+      lines.push(`Convergence: ${num.convergenceNote}`);
+    }
+  }
+
+  lines.push('');
+  lines.push('---');
+  lines.push('Use the above ONLY as source material for generating the personal_key per flow key.');
+  lines.push('Do not surface any of this data — no name roots, no numbers — in the profile output.');
+  lines.push('Distill it into plain observations about how this person is wired.');
+
+  return lines.join('\n');
 }
 
 function formatIntakeData(assessment: Record<string, unknown>): string {
@@ -251,10 +293,12 @@ export async function POST(
 
       // Phase 2: Build final prompt — use custom text if provided, else template
       const intakeData = formatIntakeData(assessment);
+      const deepSignatureData = formatDeepSignatureData(assessment);
       const basePromptText = body.custom_prompt_text || promptTemplate.prompt_text;
       const prompt = basePromptText
         .replace('{INTAKE_DATA}', intakeData)
-        .replace('{CHART_DATA}', chartContext);
+        .replace('{CHART_DATA}', chartContext)
+        .replace('{DEEP_SIGNATURE_DATA}', deepSignatureData);
 
       let profileText = '';
 

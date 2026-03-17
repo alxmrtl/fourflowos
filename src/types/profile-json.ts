@@ -1,6 +1,7 @@
 import type { KeyType, DimensionType } from './framework';
 
 export interface KeyData {
+  personal_key?: string; // 1-2 sentence distilled unlock, personalized to this person's signature
   insight: string; // 50-60 word personal paragraph, mechanic-informed
 }
 

@@ -67,6 +67,11 @@ export default function KeyReveal({ keySlug, data, accentColor, isLast }: Props)
           >
             {keyMeta?.name ?? keySlug}
           </p>
+          {data.personal_key && (
+            <p className="text-sm text-white font-medium leading-snug mb-2 italic">
+              {data.personal_key}
+            </p>
+          )}
           <p className="text-sm text-gray-300 leading-relaxed">
             {data.insight || fallbackInsight}
           </p>
