@@ -183,18 +183,7 @@ const STYLE_RULES = `VOICE AND STYLE RULES — follow these without exception:
 11. No negative parallelism: never "it's not just X — it's Y".
 12. No sycophantic framing. Don't affirm before stating.`;
 
-const OVERVIEW_INSTRUCTION = `The JSON must include an "overview" field:
-- "headline": one sentence — the most defining truth about how this person flows. Start with "You". (e.g. "You flow when the stakes are real and the path is clear.")
-- "flow": array of exactly 4 strings — behaviors, conditions, or states that generate flow for this person. What to lean into.
-- "friction": array of exactly 4 strings — patterns, habits, or conditions that block their flow. What to avoid or release.
-
-Each item starts with "You" and is a direct observation (10-15 words). Concrete and specific to this person's intake. Observation, not advice.
-Draw from all four dimensions — no more than 2 items from the same dimension across either list.
-
-Length targets:
-- overview.headline: 1 sentence, 10-20 words
-- overview.flow: exactly 4 items, each 10-15 words
-- overview.friction: exactly 4 items, each 10-15 words
+const LENGTH_TARGETS = `Length targets:
 - archetype.framing: 2-3 sentences
 - Each dimension summary: 30-35 words
 - Each key insight: 50-60 words`;
@@ -659,7 +648,7 @@ Example:
   const basePrompt = template.prompt_text
     .replace('{INTAKE_DATA}', intakeData)
     .replace('{CHART_DATA}', chartContext);
-  const prompt = STYLE_RULES + '\n\n' + OVERVIEW_INSTRUCTION + '\n\n---\n\n' + basePrompt;
+  const prompt = STYLE_RULES + '\n\n' + LENGTH_TARGETS + '\n\n---\n\n' + basePrompt;
 
   let rawOutput = '';
 
@@ -701,13 +690,6 @@ Example:
     }
     profileJson = normalizeProfileJson(profileJson);
     console.log(`      Archetype: "${profileJson.archetype.name}"`);
-    if (profileJson.overview) {
-      const flowCount = profileJson.overview.flow?.length ?? 0;
-      const frictionCount = profileJson.overview.friction?.length ?? 0;
-      console.log(`      Overview: "${profileJson.overview.headline}" (flow: ${flowCount}, friction: ${frictionCount})`);
-    } else {
-      console.warn('      ⚠ overview field missing from generated profile');
-    }
     console.log(`      Dimensions: ${Object.keys(profileJson.dimensions).join(', ')}`);
     for (const [dim, data] of Object.entries(profileJson.dimensions)) {
       const keys = Object.keys(data.keys);
