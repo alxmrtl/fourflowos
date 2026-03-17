@@ -215,37 +215,43 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                 transition={{ duration: 0.2, delay: 0.15 }}
                 className="flex flex-col gap-3 relative z-10"
               >
-                {/* Stem header + close */}
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-[12px] font-medium leading-snug flex-1" style={{ color: `rgba(${rgb}, 0.65)` }}>
-                    {KEYS[activeKeySlug]?.layupStem ?? ''}
-                  </p>
-                  <button
-                    onClick={handleClose}
-                    className="flex-shrink-0 text-gray-600 hover:text-gray-300 transition-colors text-base leading-none mt-0.5"
-                    aria-label="Close"
-                  >
-                    ×
-                  </button>
-                </div>
+                {/* Close button — absolute top-right */}
+                <button
+                  onClick={handleClose}
+                  className="absolute top-0 right-0 text-gray-600 hover:text-gray-300 transition-colors text-base leading-none"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
 
-                {/* Personal key container — completion only */}
-                {activeKeyData.personal_key && (
-                  <div
-                    className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl"
-                    style={{
-                      background: `rgba(${rgb}, 0.10)`,
-                      border: `1px solid rgba(${rgb}, 0.28)`,
-                    }}
-                  >
-                    <div className="flex-shrink-0 mt-0.5">
-                      <KeyIcon color={meta.color} size={15} />
+                {/* Personal key box — stem header + ...completion */}
+                {activeKeyData.personal_key && (() => {
+                  const stem = KEYS[activeKeySlug]?.layupStem ?? '';
+                  const completion = getKeyCompletion(activeKeyData.personal_key!, stem);
+                  return (
+                    <div
+                      className="px-4 py-4 rounded-xl"
+                      style={{
+                        background: `rgba(${rgb}, 0.10)`,
+                        border: `1px solid rgba(${rgb}, 0.28)`,
+                      }}
+                    >
+                      {/* Stem — italic bold header */}
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <div className="flex-shrink-0">
+                          <KeyIcon color={meta.color} size={14} />
+                        </div>
+                        <p className="text-[12px] font-bold italic leading-snug" style={{ color: meta.color }}>
+                          {stem}
+                        </p>
+                      </div>
+                      {/* Completion — bold italic, leading ... */}
+                      <p className="text-[13px] font-bold italic leading-relaxed" style={{ color: meta.color }}>
+                        ...{completion}
+                      </p>
                     </div>
-                    <p className="text-sm font-bold italic leading-snug" style={{ color: meta.color }}>
-                      {getKeyCompletion(activeKeyData.personal_key, KEYS[activeKeySlug]?.layupStem)}
-                    </p>
-                  </div>
-                )}
+                  );
+                })()}
 
                 {/* Insight paragraph */}
                 <p className="text-xs text-gray-400 leading-relaxed">
