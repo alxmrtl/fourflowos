@@ -187,13 +187,13 @@ export default function DimensionBentoCard({ dim, data }: Props) {
               <button
                 onClick={() => hasData && handleKeyClick(slug)}
                 disabled={!hasData}
-                className={`flex items-start w-full text-left relative z-10 px-4 py-3 gap-3 ${hasData ? 'cursor-pointer' : 'cursor-default'}`}
+                className={`flex items-center w-full text-left relative z-10 px-4 h-[56px] gap-3 ${hasData ? 'cursor-pointer' : 'cursor-default'}`}
                 style={{
                   background: isActive ? `rgba(${rgb}, 0.06)` : 'transparent',
                 }}
               >
-                {/* Col 1: key icon circle + name */}
-                <div className="flex items-center gap-2 flex-shrink-0 w-[120px]">
+                {/* Col 1: key icon circle + name — narrower */}
+                <div className="flex items-center gap-2 flex-shrink-0 w-[88px]">
                   <div
                     className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center"
                     style={{ background: `${meta.color}22` }}
@@ -209,8 +209,8 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                   <span className="text-xs font-medium text-white leading-tight">{keyMeta.name}</span>
                 </div>
 
-                {/* Col 2+3: collapsed or expanded */}
-                <div className="flex-1 min-w-0">
+                {/* Col 2+3: fixed-height container — content swaps in place, no reflow */}
+                <div className="relative flex-1 min-w-0 h-full overflow-hidden">
                   <AnimatePresence mode="wait">
                     {isActive ? (
                       <motion.div
@@ -219,9 +219,10 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2, delay: 0.1 }}
+                        className="absolute inset-0 flex items-center"
                       >
-                        {/* Insight only — no personal_key duplication */}
-                        <p className="text-xs text-gray-300 leading-relaxed">
+                        {/* Insight only */}
+                        <p className="text-[11px] italic text-gray-300 leading-relaxed line-clamp-3">
                           {keyData?.insight}
                         </p>
                       </motion.div>
@@ -232,15 +233,15 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.15 }}
-                        className="flex gap-3 items-start min-w-0"
+                        className="absolute inset-0 flex items-center gap-3"
                       >
                         {completion ? (
                           <>
                             {/* Left: key icon + headline (stem + firstSent) */}
-                            <div className="flex items-start gap-1.5 flex-[3] min-w-0">
+                            <div className="flex items-center gap-1.5 flex-[3] min-w-0">
                               <svg
-                                width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                className="flex-shrink-0 mt-0.5"
+                                width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                className="flex-shrink-0"
                                 style={{ color: meta.color }}
                               >
                                 <path
@@ -249,7 +250,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                                 />
                               </svg>
                               <p
-                                className="text-[13px] font-bold leading-snug"
+                                className="text-[13px] font-bold leading-snug line-clamp-2"
                                 style={{ color: meta.color }}
                               >
                                 {stemText} {firstSent}
@@ -257,7 +258,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                             </div>
                             {/* Right: restSent in ivory */}
                             {restSent && (
-                              <p className="text-[11px] text-[#F5F5F5]/75 leading-snug flex-[2] min-w-0">
+                              <p className="text-[11px] text-[#F5F5F5]/75 leading-snug flex-[2] min-w-0 line-clamp-2">
                                 {restSent}
                               </p>
                             )}
@@ -272,7 +273,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
 
                 {/* Chevron */}
                 {hasData && (
-                  <span className="flex-shrink-0 text-gray-500 text-base leading-none self-start pt-0.5">
+                  <span className="flex-shrink-0 text-gray-500 text-base leading-none">
                     {isActive ? '×' : '›'}
                   </span>
                 )}
