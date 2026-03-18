@@ -219,19 +219,8 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2, delay: 0.1 }}
-                        className="flex flex-col gap-2"
                       >
-                        {/* Personal key — de-emphasized, first sentence bold */}
-                        {completion && (
-                          <p
-                            className="text-[11px] italic leading-snug"
-                            style={{ color: `rgba(${rgb}, 0.65)` }}
-                          >
-                            <span className="font-bold">...{firstSent}</span>
-                            {restSent && <span className="font-normal"> {restSent}</span>}
-                          </p>
-                        )}
-                        {/* Full insight */}
+                        {/* Insight only — no personal_key duplication */}
                         <p className="text-xs text-gray-300 leading-relaxed">
                           {keyData?.insight}
                         </p>
@@ -243,29 +232,38 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.15 }}
-                        className="flex flex-col gap-1 min-w-0"
+                        className="flex gap-3 items-start min-w-0"
                       >
                         {completion ? (
                           <>
-                            {/* Headline: stem + firstSent */}
-                            <p
-                              className="text-[14px] font-bold italic leading-snug"
-                              style={{ color: meta.color }}
-                            >
-                              {stemText} {firstSent}
-                            </p>
-                            {/* Supporting: restSent */}
-                            {restSent && (
-                              <p
-                                className="text-[11px] italic leading-snug"
-                                style={{ color: `rgba(${rgb}, 0.55)` }}
+                            {/* Left: key icon + headline (stem + firstSent) */}
+                            <div className="flex items-start gap-1.5 flex-[3] min-w-0">
+                              <svg
+                                width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                className="flex-shrink-0 mt-0.5"
+                                style={{ color: meta.color }}
                               >
+                                <path
+                                  d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"
+                                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                />
+                              </svg>
+                              <p
+                                className="text-[13px] font-bold leading-snug"
+                                style={{ color: meta.color }}
+                              >
+                                {stemText} {firstSent}
+                              </p>
+                            </div>
+                            {/* Right: restSent in ivory */}
+                            {restSent && (
+                              <p className="text-[11px] text-[#F5F5F5]/75 leading-snug flex-[2] min-w-0">
                                 {restSent}
                               </p>
                             )}
                           </>
                         ) : (
-                          <p className="text-xs text-gray-600 italic">—</p>
+                          <p className="text-xs text-gray-600">—</p>
                         )}
                       </motion.div>
                     )}
