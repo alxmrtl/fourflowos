@@ -187,7 +187,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
               <button
                 onClick={() => hasData && handleKeyClick(slug)}
                 disabled={!hasData}
-                className={`flex items-center w-full text-left relative z-10 px-4 py-3 gap-3 ${hasData ? 'cursor-pointer' : 'cursor-default'}`}
+                className={`flex items-center w-full text-left relative z-10 px-4 py-4 min-h-[72px] gap-3 ${hasData ? 'cursor-pointer' : 'cursor-default'}`}
                 style={{
                   background: isActive ? `rgba(${rgb}, 0.06)` : 'transparent',
                 }}
