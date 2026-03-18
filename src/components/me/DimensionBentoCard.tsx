@@ -237,7 +237,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         {completion ? (
                           <>
                             {/* Left: key icon + headline (stem + firstSent) */}
-                            <div className="flex items-center gap-1.5 flex-[3] min-w-0">
+                            <div className="flex items-center gap-1.5 flex-[2] min-w-0">
                               <svg
                                 width="12" height="12" viewBox="0 0 24 24" fill="none"
                                 className="flex-shrink-0"
@@ -257,7 +257,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                             </div>
                             {/* Right: restSent in ivory */}
                             {restSent && (
-                              <p className="text-[11px] text-[#F5F5F5]/75 leading-snug flex-[2] min-w-0">
+                              <p className="text-[11px] text-[#F5F5F5]/75 leading-snug flex-[3] min-w-0">
                                 {restSent}
                               </p>
                             )}
