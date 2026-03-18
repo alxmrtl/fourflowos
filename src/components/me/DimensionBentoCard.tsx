@@ -243,27 +243,29 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.15 }}
-                        className="flex gap-3 items-start"
+                        className="flex flex-col gap-1 min-w-0"
                       >
-                        {/* Col 2: stem + completion bold italic */}
-                        <div className="flex-1 min-w-0">
-                          {completion ? (
+                        {completion ? (
+                          <>
+                            {/* Headline: stem + firstSent */}
                             <p
-                              className="text-[13px] font-bold italic leading-snug"
+                              className="text-[14px] font-bold italic leading-snug"
                               style={{ color: meta.color }}
                             >
-                              {stemText} {completion}
+                              {stemText} {firstSent}
                             </p>
-                          ) : (
-                            <p className="text-xs text-gray-600 italic">—</p>
-                          )}
-                        </div>
-
-                        {/* Col 3: insight preview */}
-                        {hasData && keyData?.insight && (
-                          <p className="text-xs text-gray-400 leading-snug line-clamp-3 w-[35%] flex-shrink-0">
-                            {keyData.insight}
-                          </p>
+                            {/* Supporting: restSent */}
+                            {restSent && (
+                              <p
+                                className="text-[11px] italic leading-snug"
+                                style={{ color: `rgba(${rgb}, 0.55)` }}
+                              >
+                                {restSent}
+                              </p>
+                            )}
+                          </>
+                        ) : (
+                          <p className="text-xs text-gray-600 italic">—</p>
                         )}
                       </motion.div>
                     )}
