@@ -187,7 +187,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
               <button
                 onClick={() => hasData && handleKeyClick(slug)}
                 disabled={!hasData}
-                className={`flex items-center w-full text-left relative z-10 px-4 py-4 min-h-[72px] gap-3 ${hasData ? 'cursor-pointer' : 'cursor-default'}`}
+                className={`flex items-center w-full text-left relative z-10 px-4 h-[96px] gap-3 ${hasData ? 'cursor-pointer' : 'cursor-default'}`}
                 style={{
                   background: isActive ? `rgba(${rgb}, 0.06)` : 'transparent',
                 }}
@@ -209,8 +209,8 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                   <span className="text-xs font-medium text-white leading-tight">{keyMeta.name}</span>
                 </div>
 
-                {/* Col 2+3: natural height, content swaps in place */}
-                <div className="flex-1 min-w-0">
+                {/* Col 2+3: fixed height, both states swap in place via absolute */}
+                <div className="relative flex-1 min-w-0 self-stretch overflow-hidden">
                   <AnimatePresence mode="wait">
                     {isActive ? (
                       <motion.div
@@ -219,6 +219,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2, delay: 0.1 }}
+                        className="absolute inset-0 flex items-center py-4"
                       >
                         {/* Insight only */}
                         <p className="text-[11px] italic text-gray-300 leading-relaxed">
@@ -232,7 +233,7 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.15 }}
-                        className="flex gap-3 items-center min-w-0"
+                        className="absolute inset-0 flex items-center gap-3 py-4"
                       >
                         {completion ? (
                           <>
