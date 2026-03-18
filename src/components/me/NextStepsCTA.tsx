@@ -59,7 +59,7 @@ function buildLlmContext(
     lines.push('');
     for (const [dim, data] of Object.entries(p.dimensions)) {
       lines.push(`### ${dim.toUpperCase()}`);
-      lines.push(data.summary);
+      if (data.summary) lines.push(data.summary);
       lines.push('');
       for (const [key, keyData] of Object.entries(data.keys)) {
         lines.push(`**${key}**`);

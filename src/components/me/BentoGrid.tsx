@@ -53,7 +53,7 @@ function normalizeProfile(profile: FlowProfileJSON): FlowProfileJSON {
       if (keyData) normalizedKeys[key] = keyData as KeyData;
     }
 
-    normalizedDims[dim] = { summary: dimData.summary ?? '', keys: normalizedKeys };
+    normalizedDims[dim] = { summary: dimData.summary, keys: normalizedKeys };
   }
 
   return { ...profile, dimensions: normalizedDims };

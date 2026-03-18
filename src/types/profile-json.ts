@@ -6,7 +6,7 @@ export interface KeyData {
 }
 
 export interface DimensionData {
-  summary: string;
+  summary?: string;  // optional — removed from new profiles, kept for backwards compat
   keys: Partial<Record<KeyType, KeyData>>;
 }
 

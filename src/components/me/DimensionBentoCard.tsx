@@ -38,17 +38,6 @@ function hexToRgb(hex: string): string {
   return `${r}, ${g}, ${b}`;
 }
 
-function KeyIcon({ color, size = 15 }: { color: string; size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="5.5" cy="5.5" r="3.75" stroke={color} strokeWidth="1.5" />
-      <line x1="8.5" y1="8.5" x2="13.5" y2="13.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="11.5" y1="12.5" x2="11.5" y2="14.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="13" y1="11" x2="15" y2="11" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 interface Props {
   dim: DimensionType;
   data: DimensionData;
@@ -84,15 +73,9 @@ export default function DimensionBentoCard({ dim, data }: Props) {
     );
   }
 
-  const activeKeyData = activeKeySlug ? data.keys[activeKeySlug] : null;
-
   function handleKeyClick(slug: KeyType) {
     if (!data.keys[slug]) return;
     setActiveKeySlug(slug === activeKeySlug ? null : slug);
-  }
-
-  function handleClose() {
-    setActiveKeySlug(null);
   }
 
   return (
@@ -131,158 +114,172 @@ export default function DimensionBentoCard({ dim, data }: Props) {
       </div>
 
       {/* ── Main content ───────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row flex-1 p-4 gap-4 sm:gap-0">
+      <div className="flex-1 flex flex-col min-w-0">
 
-        {/* LEFT COLUMN — dimension header + stacked key buttons */}
-        <div className="w-full sm:w-48 md:w-52 flex-shrink-0 flex flex-col gap-2 sm:pr-5 sm:border-r sm:border-white/[0.06]">
-          <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-8 h-8 flex-shrink-0">
-              <Image
-                src={meta.sectionLogo}
-                alt={meta.name}
-                width={32}
-                height={32}
-                className="object-contain opacity-80"
-              />
-            </div>
-            <p
-              className="text-sm font-semibold tracking-widest uppercase leading-none"
-              style={{ color: meta.color }}
-            >
-              {meta.name}
-            </p>
+        {/* Dimension header row */}
+        <div
+          className="flex items-center gap-2.5 px-4 py-3 flex-shrink-0"
+          style={{ borderBottom: `1px solid rgba(${rgb}, 0.12)` }}
+        >
+          <div className="w-7 h-7 flex-shrink-0">
+            <Image
+              src={meta.sectionLogo}
+              alt={meta.name}
+              width={28}
+              height={28}
+              className="object-contain opacity-80"
+            />
           </div>
+          <p
+            className="text-sm font-semibold tracking-widest uppercase leading-none"
+            style={{ color: meta.color }}
+          >
+            {meta.name}
+          </p>
+          {meta.subtitle && (
+            <>
+              <span className="text-white/15 text-xs mx-0.5">|</span>
+              <p className="text-[10px] font-medium tracking-widest uppercase text-gray-500 leading-none">
+                {meta.subtitle}
+              </p>
+            </>
+          )}
+        </div>
 
-          {keySlots.map((slug) => {
-            const keyMeta = KEYS[slug];
-            const hasData = !!data.keys[slug];
-            const isActive = slug === activeKeySlug;
-            return (
+        {/* Key rows */}
+        {keySlots.map((slug) => {
+          const keyMeta = KEYS[slug];
+          const keyData = data.keys[slug];
+          const hasData = !!keyData;
+          const isActive = slug === activeKeySlug;
+          const stem = KEYS[slug]?.layupStem ?? '';
+          const stemText = stem.replace(/[.…]+$/, '').trim();
+          const completion = hasData && keyData?.personal_key
+            ? getKeyCompletion(keyData.personal_key, stem)
+            : null;
+          const [firstSent, restSent] = completion ? splitFirstSentence(completion) : ['', ''];
+
+          return (
+            <div
+              key={slug}
+              className={`relative transition-all duration-300 ${!hasData ? 'opacity-40' : ''}`}
+              style={{ borderTop: `1px solid rgba(${rgb}, 0.08)` }}
+            >
+              {/* Ink sweep — per row */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                initial={false}
+                animate={{
+                  clipPath: isActive
+                    ? 'circle(150% at 10% 50%)'
+                    : 'circle(0% at 10% 50%)',
+                  opacity: isActive ? [0, 1, 0] : 0,
+                }}
+                transition={{
+                  clipPath: { duration: 0.55, ease: [0.4, 0, 0.2, 1] },
+                  opacity: { duration: 1.1, times: [0, 0.2, 1], ease: 'easeOut' },
+                }}
+                style={{
+                  background: `linear-gradient(135deg, rgba(${rgb}, 0.14), rgba(${rgb}, 0.05))`,
+                }}
+              />
+
               <button
-                key={slug}
                 onClick={() => hasData && handleKeyClick(slug)}
                 disabled={!hasData}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all text-left w-full ${
-                  !hasData
-                    ? 'opacity-40 cursor-default border-white/5'
-                    : 'cursor-pointer'
-                }`}
+                className={`flex items-start w-full text-left relative z-10 px-4 py-3 gap-3 ${hasData ? 'cursor-pointer' : 'cursor-default'}`}
                 style={{
-                  background: isActive ? `${meta.color}30` : hasData ? 'rgba(255,255,255,0.04)' : 'transparent',
-                  borderColor: isActive ? `${meta.color}60` : 'rgba(255,255,255,0.10)',
+                  background: isActive ? `rgba(${rgb}, 0.06)` : 'transparent',
                 }}
               >
-                <div
-                  className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center"
-                  style={{ background: `${meta.color}25` }}
-                >
-                  <Image
-                    src={keyMeta.icon}
-                    alt={keyMeta.name}
-                    width={14}
-                    height={14}
-                    className="object-contain"
-                  />
+                {/* Col 1: key icon circle + name */}
+                <div className="flex items-center gap-2 flex-shrink-0 w-[120px]">
+                  <div
+                    className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center"
+                    style={{ background: `${meta.color}22` }}
+                  >
+                    <Image
+                      src={keyMeta.icon}
+                      alt={keyMeta.name}
+                      width={13}
+                      height={13}
+                      className="object-contain"
+                    />
+                  </div>
+                  <span className="text-xs font-medium text-white leading-tight">{keyMeta.name}</span>
                 </div>
-                <span className="text-sm font-medium text-white flex-1 min-w-0 truncate">{keyMeta.name}</span>
+
+                {/* Col 2+3: collapsed or expanded */}
+                <div className="flex-1 min-w-0">
+                  <AnimatePresence mode="wait">
+                    {isActive ? (
+                      <motion.div
+                        key="expanded"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2, delay: 0.1 }}
+                        className="flex flex-col gap-2"
+                      >
+                        {/* Personal key — de-emphasized, first sentence bold */}
+                        {completion && (
+                          <p
+                            className="text-[11px] italic leading-snug"
+                            style={{ color: `rgba(${rgb}, 0.65)` }}
+                          >
+                            <span className="font-bold">...{firstSent}</span>
+                            {restSent && <span className="font-normal"> {restSent}</span>}
+                          </p>
+                        )}
+                        {/* Full insight */}
+                        <p className="text-xs text-gray-300 leading-relaxed">
+                          {keyData?.insight}
+                        </p>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="collapsed"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="flex gap-3 items-start"
+                      >
+                        {/* Col 2: stem + completion bold italic */}
+                        <div className="flex-1 min-w-0">
+                          {completion ? (
+                            <p
+                              className="text-[13px] font-bold italic leading-snug"
+                              style={{ color: meta.color }}
+                            >
+                              {stemText} {completion}
+                            </p>
+                          ) : (
+                            <p className="text-xs text-gray-600 italic">—</p>
+                          )}
+                        </div>
+
+                        {/* Col 3: insight preview */}
+                        {hasData && keyData?.insight && (
+                          <p className="text-xs text-gray-400 leading-snug line-clamp-3 w-[35%] flex-shrink-0">
+                            {keyData.insight}
+                          </p>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Chevron */}
                 {hasData && (
-                  <span className="text-white/40 text-sm flex-shrink-0">›</span>
+                  <span className="flex-shrink-0 text-gray-500 text-base leading-none self-start pt-0.5">
+                    {isActive ? '×' : '›'}
+                  </span>
                 )}
               </button>
-            );
-          })}
-        </div>
-
-        {/* RIGHT COLUMN — summary or key insight */}
-        <div className="flex-1 min-w-0 sm:pl-5 flex flex-col justify-center relative overflow-hidden">
-          {/* Radial ink sweep — expands then fades, leaving box color only */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            initial={false}
-            animate={{
-              clipPath: activeKeySlug
-                ? 'circle(150% at 10% 10%)'
-                : 'circle(0% at 10% 10%)',
-              opacity: activeKeySlug ? [0, 1, 0] : 0,
-            }}
-            transition={{
-              clipPath: { duration: 0.55, ease: [0.4, 0, 0.2, 1] },
-              opacity: { duration: 1.1, times: [0, 0.2, 1], ease: 'easeOut' },
-            }}
-            style={{
-              background: `linear-gradient(135deg, rgba(${rgb}, 0.14), rgba(${rgb}, 0.05))`,
-            }}
-          />
-
-          <AnimatePresence mode="wait">
-            {activeKeySlug && activeKeyData ? (
-              <motion.div
-                key={activeKeySlug}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2, delay: 0.15 }}
-                className="flex flex-col gap-3 relative z-10"
-              >
-                {/* Close button — absolute top-right */}
-                <button
-                  onClick={handleClose}
-                  className="absolute top-0 right-0 text-gray-600 hover:text-gray-300 transition-colors text-base leading-none"
-                  aria-label="Close"
-                >
-                  ×
-                </button>
-
-                {/* Personal key box — stem header + ...completion */}
-                {activeKeyData.personal_key && (() => {
-                  const stem = KEYS[activeKeySlug]?.layupStem ?? '';
-                  const completion = getKeyCompletion(activeKeyData.personal_key!, stem);
-                  const [first, rest] = splitFirstSentence(completion);
-                  return (
-                    <div
-                      className="px-4 py-4 rounded-xl"
-                      style={{
-                        background: `rgba(${rgb}, 0.10)`,
-                        border: `1px solid rgba(${rgb}, 0.28)`,
-                      }}
-                    >
-                      {/* Stem — same size as completion, bold italic */}
-                      <div className="flex items-center gap-2.5 mb-3">
-                        <div className="flex-shrink-0">
-                          <KeyIcon color={meta.color} size={14} />
-                        </div>
-                        <p className="text-[13px] font-bold italic leading-snug" style={{ color: meta.color }}>
-                          {stem}
-                        </p>
-                      </div>
-                      {/* Completion — first sentence bold, rest normal weight */}
-                      <p className="text-[13px] italic leading-relaxed" style={{ color: meta.color }}>
-                        <span className="font-bold">...{first}</span>
-                        {rest && <span className="font-normal"> {rest}</span>}
-                      </p>
-                    </div>
-                  );
-                })()}
-
-                {/* Insight paragraph */}
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  {activeKeyData.insight}
-                </p>
-              </motion.div>
-            ) : (
-              <motion.p
-                key="summary"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="text-sm text-gray-300 leading-relaxed relative z-10"
-              >
-                {data.summary}
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

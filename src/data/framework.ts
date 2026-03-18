@@ -115,6 +115,7 @@ export const DIMENSIONS: Record<DimensionType, Dimension> = {
     description: 'Tuning your inner compass for flow navigation',
     icon: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SELF - Frequencies.png',
     sectionLogo: '/assets/LOGOS/SELF - Section Logo.png',
+    subtitle: 'YOUR INNER STATE',
     keys: []
   },
   space: {
@@ -124,6 +125,7 @@ export const DIMENSIONS: Record<DimensionType, Dimension> = {
     description: 'Creating environments that amplify your potential',
     icon: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPACE - Sqaure.png',
     sectionLogo: '/assets/LOGOS/SPACE - Section Logo.png',
+    subtitle: 'YOUR ENVIRONMENT',
     keys: []
   },
   story: {
@@ -133,6 +135,7 @@ export const DIMENSIONS: Record<DimensionType, Dimension> = {
     description: 'Crafting narratives that drive meaningful action',
     icon: '/assets/LOGOS/MAIN LOGO - ELEMENTS/STORY - Cross.png',
     sectionLogo: '/assets/LOGOS/STORY - Section Logo.png',
+    subtitle: 'YOUR DIRECTION',
     keys: []
   },
   spirit: {
@@ -142,6 +145,7 @@ export const DIMENSIONS: Record<DimensionType, Dimension> = {
     description: 'Aligning with your deepest values and vision',
     icon: '/assets/LOGOS/MAIN LOGO - ELEMENTS/SPIRIT - Circle.png',
     sectionLogo: '/assets/LOGOS/SPIRIT - Section Logo.png',
+    subtitle: 'YOUR TIMELESS GROUND',
     keys: []
   }
 };

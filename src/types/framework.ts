@@ -18,6 +18,7 @@ export interface Dimension {
   icon: string;
   sectionLogo: string;
   keys: Key[];
+  subtitle?: string;
 }
 
 export interface Key {
