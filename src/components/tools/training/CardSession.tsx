@@ -1,0 +1,105 @@
+'use client';
+
+import MechanicCard from './MechanicCard';
+import type { QueueItem, Quality } from '@/types/training';
+
+interface SessionResult {
+  mechanic_id: string;
+  quality: Quality;
+  title: string;
+}
+
+interface CardSessionProps {
+  queue: QueueItem[];
+  currentIndex: number;
+  sessionResults: SessionResult[];
+  onRate: (quality: Quality) => void;
+  onNewSession: () => void;
+}
+
+const QUALITY_LABELS: Record<number, { icon: string; color: string }> = {
+  1: { icon: '○', color: 'text-red-500' },
+  3: { icon: '◐', color: 'text-amber-500' },
+  5: { icon: '●', color: 'text-green-500' },
+};
+
+export default function CardSession({
+  queue,
+  currentIndex,
+  sessionResults,
+  onRate,
+  onNewSession,
+}: CardSessionProps) {
+  const currentCard = queue[currentIndex] ?? null;
+  const isComplete = currentIndex >= queue.length;
+
+  // Completion screen
+  if (isComplete) {
+    const nailed = sessionResults.filter(r => r.quality >= 5).length;
+    const gotIt = sessionResults.filter(r => r.quality === 3).length;
+    const missed = sessionResults.filter(r => r.quality <= 2).length;
+
+    return (
+      <div className="w-full max-w-xl mx-auto text-center py-8">
+        <div className="text-4xl mb-4">✦</div>
+        <h2 className="font-display text-2xl font-semibold text-neutral mb-2">
+          Session complete
+        </h2>
+        <p className="text-neutral-light text-sm mb-8">
+          {sessionResults.length} cards reviewed
+        </p>
+
+        {/* Result summary */}
+        {sessionResults.length > 0 && (
+          <div className="flex justify-center gap-6 mb-8 text-sm">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{nailed}</div>
+              <div className="text-neutral-light">Nailed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-amber-600">{gotIt}</div>
+              <div className="text-neutral-light">Got it</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-500">{missed}</div>
+              <div className="text-neutral-light">Missed</div>
+            </div>
+          </div>
+        )}
+
+        {/* Card-by-card recap */}
+        {sessionResults.length > 0 && (
+          <div className="text-left bg-background-dark rounded-xl p-4 mb-6 space-y-1.5">
+            {sessionResults.map((r) => {
+              const style = QUALITY_LABELS[r.quality] ?? QUALITY_LABELS[1];
+              return (
+                <div key={r.mechanic_id} className="flex items-center gap-2 text-sm">
+                  <span className={`font-bold ${style.color}`}>{style.icon}</span>
+                  <span className="text-neutral truncate">{r.title}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <button
+          onClick={onNewSession}
+          className="px-6 py-3 bg-neutral text-white rounded-xl font-semibold text-sm hover:bg-neutral-dark transition-colors"
+        >
+          Load next session
+        </button>
+      </div>
+    );
+  }
+
+  if (!currentCard) return null;
+
+  return (
+    <MechanicCard
+      item={currentCard}
+      cardNumber={currentIndex + 1}
+      totalCards={queue.length}
+      onRate={onRate}
+    />
+  );
+}
