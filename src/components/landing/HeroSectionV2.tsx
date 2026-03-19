@@ -113,10 +113,9 @@ export default function HeroSectionV2() {
             visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: 'easeOut' } },
           }}
         >
-          The world is moving faster.<br />
-          Are you able to move with it?<br />
+          The state is ancient.<br />
           <span className="bg-clip-text text-transparent [text-shadow:none]" style={{ backgroundImage: GRADIENTS.textAccent }}>
-            FourFlowOS shows you how.
+            The reason it&apos;s urgent is not.
           </span>
         </motion.p>
 

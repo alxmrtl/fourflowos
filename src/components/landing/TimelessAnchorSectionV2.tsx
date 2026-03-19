@@ -490,11 +490,11 @@ export default function TimelessAnchorSectionV2() {
 
       <div className="max-w-6xl mx-auto px-6">
         <div className="max-w-2xl mx-auto mt-16 space-y-8">
-          <BridgeParagraph>That doesn't happen by accident.</BridgeParagraph>
-          <BridgeParagraph>The state is real, and it's not tied to any tradition — it's in the biology.</BridgeParagraph>
-          <BridgeParagraph>Most of what we used to orient by hasn't kept pace.</BridgeParagraph>
-          <BridgeParagraph>When the ground moves that fast, 200,000 years of evidence starts to mean something.</BridgeParagraph>
-          <BridgeParagraph>The conditions that unlock it are knowable.</BridgeParagraph>
+          <BridgeParagraph>Different centuries. Different continents. Different words.</BridgeParagraph>
+          <BridgeParagraph>Same state. Same biology.</BridgeParagraph>
+          <BridgeParagraph>That pattern — independent arrival at the same coordinates, across every tradition that looked closely at what humans are capable of — is the strongest evidence that this is real. Not reserved for monks or athletes. Built into the hardware.</BridgeParagraph>
+          <BridgeParagraph>What changes is the stakes. When execution was the hard part, alignment was a nice-to-have. When execution handles itself, alignment is the whole game.</BridgeParagraph>
+          <BridgeParagraph>The conditions are knowable. Your pattern across them is yours alone.</BridgeParagraph>
           <motion.p
             className="font-sans text-lg text-gray-300 leading-[1.8]"
             initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
