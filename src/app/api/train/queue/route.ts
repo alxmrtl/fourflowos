@@ -32,7 +32,7 @@ export async function GET() {
   // Fetch all mechanics (lightweight — no content_md)
   const { data: allMechanics, error: mechanicsErr } = await db
     .from('mechanics')
-    .select('id, title, pillar, flow_key, keywords, definition, content_md, enrichment_score, techniques_count, related_mechanics, updated_at')
+    .select('id, title, pillar, flow_key, keywords, definition, content_md, recall_md, enrichment_score, techniques_count, related_mechanics, updated_at')
     .order('pillar', { ascending: true })
     .order('enrichment_score', { ascending: false }); // richest first within pillar
 
