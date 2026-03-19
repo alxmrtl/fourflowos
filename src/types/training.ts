@@ -9,6 +9,7 @@ export interface Mechanic {
   keywords: string[];
   definition: string;
   content_md: string;
+  recall_md: string | null;
   enrichment_score: number;
   techniques_count: number;
   related_mechanics: string[];

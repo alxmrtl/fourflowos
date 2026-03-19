@@ -115,6 +115,11 @@ function estimateScore(body) {
   return 1;
 }
 
+function extractRecallMd(body) {
+  const match = body.match(/## Recall\n([\s\S]*?)(?=\n##|$)/);
+  return match ? match[1].trim() : null;
+}
+
 function extractRelatedMechanics(body) {
   const section = body.match(/## Related Mechanics\n([\s\S]*?)(?=\n##|$)/);
   if (!section) return [];
@@ -179,6 +184,7 @@ function getMechanicFiles() {
           keywords,
           definition,
           content_md: content,
+          recall_md: extractRecallMd(body),
           enrichment_score: estimateScore(body),
           techniques_count: countTechniques(body),
           related_mechanics: extractRelatedMechanics(body),
