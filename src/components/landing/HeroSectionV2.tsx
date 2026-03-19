@@ -115,7 +115,7 @@ export default function HeroSectionV2() {
         >
           The state is ancient.<br />
           <span className="bg-clip-text text-transparent [text-shadow:none]" style={{ backgroundImage: GRADIENTS.textAccent }}>
-            The reason it&apos;s urgent is not.
+            The moment calls for it.
           </span>
         </motion.p>
 
