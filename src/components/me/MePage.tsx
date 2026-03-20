@@ -68,6 +68,7 @@ interface CuriosityData {
 }
 
 interface AssessmentData {
+  id: string;
   status: string;
   created_at: string;
   view_token: string | null;
@@ -409,16 +410,50 @@ export default function MePage() {
       ]);
     }
 
-    function fetchAssessment() {
-      return supabase
+    async function fetchAssessment(): Promise<AssessmentData | null> {
+      const select = 'id, status, created_at, view_token, flow_profile_final, flow_profile_json';
+
+      // Primary: match by user_id (covers all properly-linked assessments)
+      const { data: byUserId } = await supabase
         .from('assessments')
-        .select('status, created_at, view_token, flow_profile_final, flow_profile_json')
+        .select(select)
         .eq('user_id', user!.id)
         .eq('status', 'delivered')
         .not('flow_profile_final', 'is', null)
         .order('created_at', { ascending: false })
-        .limit(1)
-        .then((r) => (r.data as AssessmentData[] | null)?.[0] ?? null);
+        .limit(1);
+
+      if ((byUserId as AssessmentData[] | null)?.[0]) {
+        return (byUserId as AssessmentData[])[0];
+      }
+
+      // Fallback: match by email — catches assessments submitted while already
+      // signed in (no SIGNED_IN event fires, so auto-link in AuthContext misses them)
+      // or submitted from a different device/session without auth.
+      if (!user!.email) return null;
+
+      const { data: byEmail } = await supabase
+        .from('assessments')
+        .select(select)
+        .eq('email', user!.email)
+        .eq('status', 'delivered')
+        .not('flow_profile_final', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const found = (byEmail as AssessmentData[] | null)?.[0] ?? null;
+
+      // Opportunistically link the row so future queries hit the primary path
+      if (found) {
+        supabase
+          .from('assessments')
+          .update({ user_id: user!.id })
+          .eq('id', found.id)
+          .is('user_id', null)
+          .then(() => {/* fire-and-forget */});
+      }
+
+      return found;
     }
 
     // Assessment fetches independently — signal queries can't block it.
