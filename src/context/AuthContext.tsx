@@ -8,6 +8,9 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   signIn: (email: string) => Promise<{ error: string | null }>;
+  signInWithGoogle: () => Promise<{ error: string | null }>;
+  signInWithPassword: (email: string, password: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -70,12 +73,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    const { error } = await getSupabaseBrowser().auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: typeof window !== 'undefined'
+          ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`
+          : undefined,
+      },
+    });
+    return { error: error?.message ?? null };
+  }, []);
+
+  const signInWithPassword = useCallback(async (email: string, password: string) => {
+    const { error } = await getSupabaseBrowser().auth.signInWithPassword({ email, password });
+    return { error: error?.message ?? null };
+  }, []);
+
+  const signUp = useCallback(async (email: string, password: string) => {
+    const { error } = await getSupabaseBrowser().auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: typeof window !== 'undefined'
+          ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`
+          : undefined,
+      },
+    });
+    return { error: error?.message ?? null };
+  }, []);
+
   const signOut = useCallback(async () => {
     await getSupabaseBrowser().auth.signOut();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signInWithGoogle, signInWithPassword, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
