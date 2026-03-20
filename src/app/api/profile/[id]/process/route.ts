@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import type { IntakeStructuredV2 } from '@/types/intake';
 import { buildNumerologyProfile } from '@/lib/numerology';
 import { formatNameSignature } from '@/lib/name-etymology';
+import { buildHumanDesignSignature } from '@/lib/human-design';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -281,6 +282,25 @@ export async function POST(
         chartContext = 'No natal chart data available.';
       }
 
+      // Phase 1b: Human Design (local calculation, no external call)
+      let hdSignature: string | null = null;
+      if (assessment.birth_time_known) {
+        await write({ type: 'status', message: 'Calculating Human Design...' });
+        hdSignature = await buildHumanDesignSignature(
+          assessment.birth_date,
+          assessment.birth_time,
+          assessment.birth_time_known,
+          assessment.birth_lat,
+          assessment.birth_lng
+        );
+        if (hdSignature) {
+          await supabase
+            .from('assessments')
+            .update({ human_design_data: { signature: hdSignature } })
+            .eq('id', id);
+        }
+      }
+
       await write({ type: 'status', message: 'Generating profile...' });
 
       // Heartbeat every 5s — prevents Vercel gateway 504
@@ -293,11 +313,13 @@ export async function POST(
       // Phase 2: Build final prompt — use custom text if provided, else template
       const intakeData = formatIntakeData(assessment);
       const deepSignatureData = formatDeepSignatureData(assessment);
+      const hdData = hdSignature ?? '';
       const basePromptText = body.custom_prompt_text || promptTemplate.prompt_text;
       const prompt = basePromptText
         .replace('{INTAKE_DATA}', intakeData)
         .replace('{CHART_DATA}', chartContext)
-        .replace('{DEEP_SIGNATURE_DATA}', deepSignatureData);
+        .replace('{DEEP_SIGNATURE_DATA}', deepSignatureData)
+        .replace('{HD_SIGNATURE_DATA}', hdData);
 
       let profileText = '';
 

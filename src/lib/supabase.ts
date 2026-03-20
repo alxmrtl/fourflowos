@@ -86,6 +86,7 @@ export interface Assessment {
 
   // AI outputs
   natal_chart_data: Record<string, unknown> | null;
+  human_design_data: Record<string, unknown> | null;
   facilitator_briefing: string | null;
   flow_profile_draft: string | null;
   flow_profile_final: string | null;
