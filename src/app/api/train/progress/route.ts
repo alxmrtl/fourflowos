@@ -28,8 +28,8 @@ export async function GET() {
   const db = getSupabase();
 
   const [{ data: mechanics }, { data: reviews }] = await Promise.all([
-    db.from('mechanics').select('id, title, pillar, flow_key, enrichment_score'),
-    db.from('mechanic_reviews').select('mechanic_id, repetitions, interval_days, next_review_at').eq('user_id', user.id),
+    db.from('mechanics').select('id, title, pillar, flow_key, enrichment_score').eq('card_type', 'mechanic'),
+    db.from('mechanic_reviews').select('mechanic_id, repetitions, interval_days, next_review_at, phase').eq('user_id', user.id),
   ]);
 
   const reviewMap = new Map((reviews ?? []).map(r => [r.mechanic_id, r]));
@@ -41,11 +41,13 @@ export async function GET() {
 
   const mechanicDetails: MasteryStats['mechanics'] = [];
   const counts = { unseen: 0, learning: 0, young: 0, mature: 0 };
+  let studyingCount = 0;
 
   for (const m of mechanics ?? []) {
     const review = reviewMap.get(m.id) ?? null;
     const level = getMasteryLevel(review);
     counts[level]++;
+    if (review?.phase === 'study') studyingCount++;
 
     by_pillar[m.pillar as Pillar].total++;
     if (review) by_pillar[m.pillar as Pillar].introduced++;
@@ -67,6 +69,7 @@ export async function GET() {
   const stats: MasteryStats = {
     total: mechanics?.length ?? 0,
     ...counts,
+    studying: studyingCount,
     by_pillar,
     mechanics: mechanicDetails,
   };

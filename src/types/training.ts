@@ -1,5 +1,7 @@
 export type Pillar = 'self' | 'space' | 'story' | 'spirit';
 export type Quality = 0 | 1 | 2 | 3 | 4 | 5;
+export type CardType = 'mechanic' | 'technique' | 'concept';
+export type CardPhase = 'study' | 'recall';
 
 export interface Mechanic {
   id: string;
@@ -13,6 +15,9 @@ export interface Mechanic {
   enrichment_score: number;
   techniques_count: number;
   related_mechanics: string[];
+  card_type: CardType;
+  parent_mechanic_id: string | null;
+  content_hash: string | null;
   updated_at: string;
 }
 
@@ -26,6 +31,7 @@ export interface MechanicReview {
   next_review_at: string;
   last_reviewed_at: string | null;
   last_quality: number | null;
+  phase: CardPhase;
   created_at: string;
 }
 
@@ -33,6 +39,9 @@ export interface QueueItem {
   mechanic: Mechanic;
   review: MechanicReview | null;
   is_new: boolean;
+  content_updated: boolean;
+  /** Linked technique/concept cards for study mode */
+  children?: Mechanic[];
 }
 
 export interface QueueStats {
@@ -54,6 +63,21 @@ export interface ReviewUpdate {
   interval_days: number;
   repetitions: number;
   next_review_at: string;
+  phase?: CardPhase;
+}
+
+export interface TrainingSession {
+  id: string;
+  user_id: string;
+  started_at: string;
+  completed_at: string | null;
+  cards_reviewed: number;
+  cards_studied: number;
+  cards_correct: number;
+  cards_missed: number;
+  session_type: string;
+  pillar_focus: string | null;
+  key_focus: string | null;
 }
 
 export interface MasteryStats {
@@ -62,6 +86,7 @@ export interface MasteryStats {
   learning: number;
   young: number;
   mature: number;
+  studying: number;
   by_pillar: Record<Pillar, { total: number; introduced: number; mature: number }>;
   mechanics: Array<{
     id: string;

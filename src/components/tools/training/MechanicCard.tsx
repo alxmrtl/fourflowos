@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { QueueItem, Quality } from '@/types/training';
+import type { QueueItem, Quality, Mechanic } from '@/types/training';
 import { RATING_BUTTONS } from '@/lib/sm2';
 
 const PILLAR_STYLES: Record<string, { bg: string; text: string; border: string; badge: string; recallBg: string }> = {
@@ -100,22 +100,61 @@ function renderRecall(md: string): string {
   return processed.join('\n');
 }
 
+/** Render a child card (technique/concept) as a collapsible section */
+function ChildCard({ child }: { child: Mechanic }) {
+  const [open, setOpen] = useState(false);
+  const typeLabel = child.card_type === 'technique' ? 'Technique' : 'Concept';
+
+  return (
+    <div className="border border-neutral/10 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-neutral/5 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-neutral/10 text-neutral-light">
+            {typeLabel}
+          </span>
+          <span className="text-sm font-medium text-neutral">{child.title}</span>
+        </div>
+        <span className="text-xs text-neutral-light">{open ? '−' : '+'}</span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 border-t border-neutral/5">
+          {child.definition && (
+            <p className="text-xs text-neutral-light italic mt-2 mb-2">{child.definition}</p>
+          )}
+          <div
+            className="prose prose-sm max-w-none text-xs"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(child.content_md) }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface MechanicCardProps {
   item: QueueItem;
   cardNumber: number;
   totalCards: number;
   onRate: (quality: Quality) => void;
+  onMarkStudied: () => void;
 }
 
-export default function MechanicCard({ item, cardNumber, totalCards, onRate }: MechanicCardProps) {
+export default function MechanicCard({ item, cardNumber, totalCards, onRate, onMarkStudied }: MechanicCardProps) {
   const [revealed, setReveal] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const { mechanic, is_new } = item;
+  const { mechanic, is_new, content_updated, children } = item;
   const styles = PILLAR_STYLES[mechanic.pillar] ?? PILLAR_STYLES.self;
   const flowKeyLabel = mechanic.flow_key
     .split('-')
     .map(w => w[0].toUpperCase() + w.slice(1))
     .join(' ');
+
+  // Determine card mode: study (new cards) vs recall (existing reviews)
+  const isStudyMode = is_new;
+  const isRecallMode = !isStudyMode;
 
   const handleReveal = () => setReveal(true);
   const handleRate = (quality: Quality) => {
@@ -123,10 +162,12 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate }: M
     setExpanded(false);
     onRate(quality);
   };
+  const handleStudied = () => {
+    onMarkStudied();
+  };
 
   const contentHtml = renderMarkdown(mechanic.content_md);
   const recallHtml = mechanic.recall_md ? renderRecall(mechanic.recall_md) : null;
-
   const hasFullContent = mechanic.enrichment_score >= 2;
 
   return (
@@ -134,9 +175,16 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate }: M
       {/* Progress */}
       <div className="flex items-center justify-between mb-4 text-xs text-neutral-light">
         <span>{cardNumber} of {totalCards}</span>
-        {is_new && (
-          <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">NEW</span>
-        )}
+        <div className="flex items-center gap-2">
+          {content_updated && (
+            <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">UPDATED</span>
+          )}
+          {is_new && (
+            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">
+              {isStudyMode ? 'STUDY' : 'NEW'}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Card */}
@@ -154,29 +202,12 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate }: M
           <h2 className={`font-display text-3xl font-semibold text-neutral leading-tight mb-2`}>
             {mechanic.title}
           </h2>
-
-          {!recallHtml && mechanic.enrichment_score <= 1 && !revealed && (
-            <p className="text-xs text-neutral-light mt-1 opacity-60">Definition-only card</p>
-          )}
         </div>
 
-        {/* Front: recall prompt */}
-        {!revealed && (
-          <div className="px-6 pb-6">
-            <p className="text-sm text-neutral-light mb-6 opacity-70">
-              Recall what you know — the hook, the mechanism, the anchor technique.
-            </p>
-            <button
-              onClick={handleReveal}
-              className={`w-full py-3 rounded-xl border-2 ${styles.border} ${styles.text} font-semibold text-sm transition-all hover:opacity-80 active:scale-95`}
-            >
-              Reveal Answer
-            </button>
-          </div>
-        )}
-
-        {/* Back: definition + recall + optional full content + rating */}
-        {revealed && (
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* STUDY MODE: full content shown immediately, "Mark as Studied" */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {isStudyMode && (
           <div className="px-6 pb-6 space-y-4">
             {/* Definition */}
             <blockquote className={`border-l-3 ${styles.border} pl-4 py-1`}>
@@ -185,29 +216,33 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate }: M
               </p>
             </blockquote>
 
-            {/* Recall section — primary answer target */}
-            {recallHtml && (
-              <div className={`rounded-xl px-4 py-3 ${styles.recallBg} border ${styles.border}`}>
-                <div dangerouslySetInnerHTML={{ __html: recallHtml }} />
+            {/* Full content */}
+            {hasFullContent && (
+              <div
+                className="prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: contentHtml }}
+              />
+            )}
+
+            {/* Linked techniques & concepts */}
+            {children && children.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-light mt-4">
+                  Related Techniques & Concepts
+                </h3>
+                {children.map(child => (
+                  <ChildCard key={child.id} child={child} />
+                ))}
               </div>
             )}
 
-            {/* Full handbook toggle */}
-            {hasFullContent && (
-              <div>
-                <button
-                  onClick={() => setExpanded(!expanded)}
-                  className={`text-xs ${styles.text} opacity-60 hover:opacity-90 transition-opacity flex items-center gap-1`}
-                >
-                  {expanded ? 'Hide handbook ↑' : 'Full handbook ↓'}
-                </button>
-
-                {expanded && (
-                  <div
-                    className="prose prose-sm max-w-none mt-4 border-t border-neutral/10 pt-4"
-                    dangerouslySetInnerHTML={{ __html: contentHtml }}
-                  />
-                )}
+            {/* "What to Remember" callout — primes the 3 recall targets */}
+            {recallHtml && (
+              <div className={`rounded-xl px-4 py-4 ${styles.recallBg} border-2 ${styles.border}`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${styles.text} mb-3`}>
+                  What to Remember
+                </p>
+                <div dangerouslySetInnerHTML={{ __html: recallHtml }} />
               </div>
             )}
 
@@ -217,9 +252,95 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate }: M
               </p>
             )}
 
+            {/* Mark as Studied */}
+            <div className="border-t border-neutral/10 pt-4 mt-4">
+              <button
+                onClick={handleStudied}
+                className={`w-full py-3 rounded-xl border-2 ${styles.border} ${styles.text} font-semibold text-sm transition-all hover:opacity-80 active:scale-95`}
+              >
+                Mark as Studied
+              </button>
+              <p className="text-xs text-neutral-light text-center mt-2 opacity-60">
+                This card will return for recall in ~12 hours
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* RECALL MODE: blank slots → reveal answer → rate               */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {isRecallMode && !revealed && (
+          <div className="px-6 pb-6">
+            {/* Three blank recall slots */}
+            <div className="space-y-3 mb-6">
+              <div className="flex items-start gap-3">
+                <span className="text-xs font-semibold text-neutral-light uppercase tracking-wider w-24 shrink-0 pt-0.5">Hook</span>
+                <div className="flex-1 border-b border-dashed border-neutral/20 pb-2 min-h-[1.5rem]" />
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-xs font-semibold text-neutral-light uppercase tracking-wider w-24 shrink-0 pt-0.5">Mechanism</span>
+                <div className="flex-1 border-b border-dashed border-neutral/20 pb-2 min-h-[1.5rem]" />
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-xs font-semibold text-neutral-light uppercase tracking-wider w-24 shrink-0 pt-0.5">Anchor</span>
+                <div className="flex-1 border-b border-dashed border-neutral/20 pb-2 min-h-[1.5rem]" />
+              </div>
+            </div>
+
+            <button
+              onClick={handleReveal}
+              className={`w-full py-3 rounded-xl border-2 ${styles.border} ${styles.text} font-semibold text-sm transition-all hover:opacity-80 active:scale-95`}
+            >
+              Reveal Answer
+            </button>
+          </div>
+        )}
+
+        {isRecallMode && revealed && (
+          <div className="px-6 pb-6 space-y-4">
+            {/* Definition */}
+            <blockquote className={`border-l-3 ${styles.border} pl-4 py-1`}>
+              <p className={`text-base font-medium ${styles.text} leading-relaxed`}>
+                {mechanic.definition}
+              </p>
+            </blockquote>
+
+            {/* Recall section — THE answer (Hook / Mechanism / Anchor) */}
+            {recallHtml && (
+              <div className={`rounded-xl px-4 py-3 ${styles.recallBg} border ${styles.border}`}>
+                <div dangerouslySetInnerHTML={{ __html: recallHtml }} />
+              </div>
+            )}
+
+            {!recallHtml && (
+              <p className="text-xs text-neutral-light opacity-50 italic">
+                No recall section yet — rate based on definition recall.
+              </p>
+            )}
+
+            {/* Full content — secondary, clearly separated */}
+            {hasFullContent && (
+              <div>
+                <button
+                  onClick={() => setExpanded(!expanded)}
+                  className="text-xs text-neutral-light opacity-40 hover:opacity-70 transition-opacity flex items-center gap-1"
+                >
+                  {expanded ? 'Hide full content' : 'Review full content'}
+                </button>
+
+                {expanded && (
+                  <div
+                    className="prose prose-sm max-w-none mt-4 border-t border-neutral/10 pt-4 opacity-70"
+                    dangerouslySetInnerHTML={{ __html: contentHtml }}
+                  />
+                )}
+              </div>
+            )}
+
             {/* Rating */}
             <div className="border-t border-neutral/10 pt-4 mt-4">
-              <p className="text-xs text-neutral-light mb-3 text-center">How well did you recall it?</p>
+              <p className="text-xs text-neutral-light mb-3 text-center">All three? Got it. Blank? Missed.</p>
               <div className="grid grid-cols-3 gap-2">
                 {RATING_BUTTONS.map((btn, i) => (
                   <button

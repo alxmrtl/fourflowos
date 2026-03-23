@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { mechanic_id, quality, ease_factor, interval_days, repetitions, next_review_at } = body;
+  const { mechanic_id, quality, ease_factor, interval_days, repetitions, next_review_at, phase } = body;
 
   if (!mechanic_id || quality === undefined) {
     return NextResponse.json({ error: 'mechanic_id and quality are required' }, { status: 400 });
@@ -39,21 +39,23 @@ export async function POST(request: NextRequest) {
 
   const db = getSupabase();
 
+  const upsertData: Record<string, unknown> = {
+    user_id: user.id,
+    mechanic_id,
+    ease_factor,
+    interval_days,
+    repetitions,
+    next_review_at,
+    last_reviewed_at: new Date().toISOString(),
+    last_quality: quality,
+  };
+  if (phase) {
+    upsertData.phase = phase;
+  }
+
   const { error } = await db
     .from('mechanic_reviews')
-    .upsert(
-      {
-        user_id: user.id,
-        mechanic_id,
-        ease_factor,
-        interval_days,
-        repetitions,
-        next_review_at,
-        last_reviewed_at: new Date().toISOString(),
-        last_quality: quality,
-      },
-      { onConflict: 'user_id,mechanic_id' }
-    );
+    .upsert(upsertData, { onConflict: 'user_id,mechanic_id' });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

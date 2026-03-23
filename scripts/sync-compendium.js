@@ -18,6 +18,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const yaml = require('js-yaml');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -133,6 +134,53 @@ function countTechniques(body) {
 
 // ─── Discovery ───────────────────────────────────────────────────────────────
 
+function computeContentHash(content) {
+  return crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
+}
+
+function extractParentMechanic(frontmatter) {
+  // Techniques have: mechanic: "[[slug]]"
+  const raw = frontmatter.mechanic;
+  if (!raw) return null;
+  const match = String(raw).match(/\[\[([^\]]+)\]\]/);
+  return match ? match[1] : null;
+}
+
+function processMarkdownFile({ filePath, content, pillar, flowKey }) {
+  const { frontmatter, body } = parseFrontmatter(content);
+  const tags = Array.isArray(frontmatter.tags) ? frontmatter.tags : [];
+  const isMechanic = tags.includes('type/mechanic');
+  const isTechnique = tags.includes('type/technique');
+  const isConcept = tags.includes('type/concept');
+  if (!isMechanic && !isTechnique && !isConcept) return null;
+
+  const cardType = isMechanic ? 'mechanic' : isTechnique ? 'technique' : 'concept';
+
+  const file = path.basename(filePath);
+  const id = file.replace('.md', '');
+  const title = String(frontmatter.title || id).replace(/^["']|["']$/g, '');
+  const definition = String(frontmatter.definition || '').replace(/^["']|["']$/g, '');
+  const keywords = Array.isArray(frontmatter.keywords) ? frontmatter.keywords.map(String) : [];
+
+  return {
+    id,
+    title,
+    pillar,
+    flow_key: flowKey,
+    keywords,
+    definition,
+    content_md: content,
+    recall_md: extractRecallMd(body),
+    enrichment_score: isMechanic ? estimateScore(body) : null,
+    techniques_count: isMechanic ? countTechniques(body) : null,
+    related_mechanics: extractRelatedMechanics(body),
+    card_type: cardType,
+    parent_mechanic_id: isTechnique ? extractParentMechanic(frontmatter) : null,
+    content_hash: computeContentHash(content),
+    updated_at: new Date().toISOString(),
+  };
+}
+
 function getMechanicFiles() {
   if (!fs.existsSync(COMPENDIUM_PATH)) {
     console.error(`\n❌ Compendium path not found: ${COMPENDIUM_PATH}`);
@@ -158,38 +206,40 @@ function getMechanicFiles() {
       const flowKey = keyDir.toLowerCase();
       const keyPath = path.join(pillarPath, keyDir);
 
-      const files = fs.readdirSync(keyPath).filter(
-        f => f.endsWith('.md') && f !== `${keyDir}.md` // skip key-level overview
+      // Mechanic files at key level (exclude key-level overview)
+      const keyFiles = fs.readdirSync(keyPath).filter(
+        f => f.endsWith('.md') && f !== `${keyDir}.md`
       );
 
-      for (const file of files) {
+      for (const file of keyFiles) {
         const filePath = path.join(keyPath, file);
         const content = fs.readFileSync(filePath, 'utf8');
-        const { frontmatter, body } = parseFrontmatter(content);
+        const row = processMarkdownFile({ filePath, content, pillar, flowKey });
+        if (row) mechanics.push(row);
+      }
 
-        // Only process mechanic files (tagged type/mechanic)
-        const tags = Array.isArray(frontmatter.tags) ? frontmatter.tags : [];
-        if (!tags.includes('type/mechanic')) continue;
+      // Atomic technique notes in _techniques/ subfolder
+      const techniquesDir = path.join(keyPath, '_techniques');
+      if (fs.existsSync(techniquesDir) && fs.statSync(techniquesDir).isDirectory()) {
+        const techFiles = fs.readdirSync(techniquesDir).filter(f => f.endsWith('.md'));
+        for (const file of techFiles) {
+          const filePath = path.join(techniquesDir, file);
+          const content = fs.readFileSync(filePath, 'utf8');
+          const row = processMarkdownFile({ filePath, content, pillar, flowKey });
+          if (row) mechanics.push(row);
+        }
+      }
 
-        const id = file.replace('.md', '');
-        const title = String(frontmatter.title || id).replace(/^["']|["']$/g, '');
-        const definition = String(frontmatter.definition || '').replace(/^["']|["']$/g, '');
-        const keywords = Array.isArray(frontmatter.keywords) ? frontmatter.keywords.map(String) : [];
-
-        mechanics.push({
-          id,
-          title,
-          pillar,
-          flow_key: flowKey,
-          keywords,
-          definition,
-          content_md: content,
-          recall_md: extractRecallMd(body),
-          enrichment_score: estimateScore(body),
-          techniques_count: countTechniques(body),
-          related_mechanics: extractRelatedMechanics(body),
-          updated_at: new Date().toISOString(),
-        });
+      // Concept notes in _concepts/ subfolder
+      const conceptsDir = path.join(keyPath, '_concepts');
+      if (fs.existsSync(conceptsDir) && fs.statSync(conceptsDir).isDirectory()) {
+        const conceptFiles = fs.readdirSync(conceptsDir).filter(f => f.endsWith('.md'));
+        for (const file of conceptFiles) {
+          const filePath = path.join(conceptsDir, file);
+          const content = fs.readFileSync(filePath, 'utf8');
+          const row = processMarkdownFile({ filePath, content, pillar, flowKey });
+          if (row) mechanics.push(row);
+        }
       }
     }
   }
@@ -212,16 +262,22 @@ async function sync() {
     process.exit(1);
   }
 
-  // Score summary
+  // Breakdown by type
+  const mechanicRows = mechanics.filter(m => m.card_type === 'mechanic');
+  const techniqueRows = mechanics.filter(m => m.card_type === 'technique');
+  const conceptRows = mechanics.filter(m => m.card_type === 'concept');
+  console.log(`  ${mechanicRows.length} mechanics, ${techniqueRows.length} techniques, ${conceptRows.length} concepts\n`);
+
+  // Score summary (mechanics only)
   const scores = {};
-  for (const m of mechanics) {
+  for (const m of mechanicRows) {
     scores[m.enrichment_score] = (scores[m.enrichment_score] || 0) + 1;
   }
   const scoreStr = Object.entries(scores)
     .sort(([a], [b]) => Number(b) - Number(a))
     .map(([s, c]) => `  score ${s}: ${c}`)
     .join('\n');
-  console.log(`Enrichment scores:\n${scoreStr}\n`);
+  console.log(`Enrichment scores (mechanics):\n${scoreStr}\n`);
 
   // Upsert in batches
   const BATCH = 20;
@@ -242,7 +298,8 @@ async function sync() {
     process.stdout.write(`Upserting... ${total}/${mechanics.length}\r`);
   }
 
-  console.log(`\n\n✅ Sync complete — ${mechanics.length} mechanics in Supabase\n`);
+  console.log(`\n\n✅ Sync complete — ${mechanics.length} cards in Supabase`);
+  console.log(`   (${mechanicRows.length} mechanics, ${techniqueRows.length} techniques, ${conceptRows.length} concepts)\n`);
 }
 
 sync().catch(err => {

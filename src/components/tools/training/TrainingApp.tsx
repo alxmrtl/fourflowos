@@ -15,6 +15,7 @@ export default function TrainingApp() {
     error,
     sessionComplete,
     rateCard,
+    markStudied,
     loadQueue,
   } = useTrainingStore();
 
@@ -66,7 +67,7 @@ export default function TrainingApp() {
           <div className="text-center py-16">
             <p className="text-sm text-red-500 mb-4">{error}</p>
             <button
-              onClick={loadQueue}
+              onClick={() => loadQueue()}
               className="px-4 py-2 rounded-lg bg-neutral/10 text-neutral text-sm font-medium hover:bg-neutral/20"
             >
               Try again
@@ -77,7 +78,7 @@ export default function TrainingApp() {
         {/* Empty queue — fully caught up */}
         {!isLoading && !error && queue.length === 0 && !sessionComplete && (
           <div className="text-center py-16">
-            <div className="text-4xl mb-4">✦</div>
+            <div className="text-4xl mb-4">&#10022;</div>
             <h2 className="font-display text-2xl font-semibold text-neutral mb-2">
               All caught up
             </h2>
@@ -95,7 +96,8 @@ export default function TrainingApp() {
             currentIndex={currentIndex}
             sessionResults={sessionResults}
             onRate={rateCard}
-            onNewSession={loadQueue}
+            onMarkStudied={markStudied}
+            onNewSession={() => loadQueue()}
           />
         )}
 
