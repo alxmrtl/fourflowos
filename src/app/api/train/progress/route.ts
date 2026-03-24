@@ -28,7 +28,7 @@ export async function GET() {
   const db = getSupabase();
 
   const [{ data: mechanics }, { data: reviews }] = await Promise.all([
-    db.from('mechanics').select('id, title, pillar, flow_key, enrichment_score').eq('card_type', 'mechanic'),
+    db.from('mechanics').select('id, title, pillar, flow_key, enrichment_score, definition, keywords, card_type, parent_mechanic_id, techniques_count'),
     db.from('mechanic_reviews').select('mechanic_id, repetitions, interval_days, next_review_at, phase').eq('user_id', user.id),
   ]);
 
@@ -62,7 +62,12 @@ export async function GET() {
       repetitions: review?.repetitions ?? 0,
       interval_days: review?.interval_days ?? 0,
       next_review_at: review?.next_review_at ?? null,
-      enrichment_score: m.enrichment_score,
+      enrichment_score: m.enrichment_score ?? 0,
+      definition: m.definition ?? '',
+      keywords: m.keywords ?? [],
+      card_type: m.card_type ?? 'mechanic',
+      parent_mechanic_id: m.parent_mechanic_id ?? null,
+      techniques_count: m.techniques_count ?? 0,
     });
   }
 

@@ -98,6 +98,11 @@ export interface MasteryStats {
     interval_days: number;
     next_review_at: string | null;
     enrichment_score: number;
+    definition: string;
+    keywords: string[];
+    card_type: CardType;
+    parent_mechanic_id: string | null;
+    techniques_count: number;
   }>;
 }
 
