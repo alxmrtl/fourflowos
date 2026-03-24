@@ -103,6 +103,8 @@ function isDue(nextReview: string | null): boolean {
   return new Date(nextReview) <= new Date();
 }
 
+
+
 // ── Component ────────────────────────────────────────────────────────
 
 export default function CompendiumNavigator() {
@@ -449,8 +451,8 @@ function DetailExpand({
         )}
       </div>
 
-      {/* Keywords */}
-      {item.keywords && item.keywords.length > 0 && (
+      {/* Keywords — only for mechanics */}
+      {item.card_type === 'mechanic' && item.keywords && item.keywords.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {item.keywords.slice(0, 8).map(kw => (
             <span
