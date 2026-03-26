@@ -138,9 +138,9 @@ function computeContentHash(content) {
   return crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
 }
 
-function extractParentMechanic(frontmatter) {
-  // Techniques have: mechanic: "[[slug]]"
-  const raw = frontmatter.mechanic;
+function extractParentQuality(frontmatter) {
+  // Techniques have: quality: "[[slug]]"  (also supports legacy mechanic: field)
+  const raw = frontmatter.quality || frontmatter.mechanic;
   if (!raw) return null;
   const match = String(raw).match(/\[\[([^\]]+)\]\]/);
   return match ? match[1] : null;
@@ -149,12 +149,13 @@ function extractParentMechanic(frontmatter) {
 function processMarkdownFile({ filePath, content, pillar, flowKey }) {
   const { frontmatter, body } = parseFrontmatter(content);
   const tags = Array.isArray(frontmatter.tags) ? frontmatter.tags : [];
-  const isMechanic = tags.includes('type/mechanic');
+  const isQuality = tags.includes('type/quality');
+  const isMechanic = tags.includes('type/mechanic') || isQuality;
   const isTechnique = tags.includes('type/technique');
   const isConcept = tags.includes('type/concept');
   if (!isMechanic && !isTechnique && !isConcept) return null;
 
-  const cardType = isMechanic ? 'mechanic' : isTechnique ? 'technique' : 'concept';
+  const cardType = isQuality ? 'quality' : isMechanic ? 'mechanic' : isTechnique ? 'technique' : 'concept';
 
   const file = path.basename(filePath);
   const id = file.replace('.md', '');
@@ -175,7 +176,7 @@ function processMarkdownFile({ filePath, content, pillar, flowKey }) {
     techniques_count: isMechanic ? countTechniques(body) : null,
     related_mechanics: extractRelatedMechanics(body),
     card_type: cardType,
-    parent_mechanic_id: isTechnique ? extractParentMechanic(frontmatter) : null,
+    parent_mechanic_id: isTechnique ? extractParentQuality(frontmatter) : null,
     content_hash: computeContentHash(content),
     updated_at: new Date().toISOString(),
   };
@@ -255,29 +256,31 @@ async function sync() {
   console.log(`Supabase:   ${SUPABASE_URL}\n`);
 
   const mechanics = getMechanicFiles();
-  console.log(`Found ${mechanics.length} mechanics\n`);
+  console.log(`Found ${mechanics.length} cards\n`);
 
   if (mechanics.length === 0) {
-    console.error('No mechanics found — check compendium path and file structure.');
+    console.error('No cards found — check compendium path and file structure.');
     process.exit(1);
   }
 
   // Breakdown by type
+  const qualityRows = mechanics.filter(m => m.card_type === 'quality');
   const mechanicRows = mechanics.filter(m => m.card_type === 'mechanic');
   const techniqueRows = mechanics.filter(m => m.card_type === 'technique');
   const conceptRows = mechanics.filter(m => m.card_type === 'concept');
-  console.log(`  ${mechanicRows.length} mechanics, ${techniqueRows.length} techniques, ${conceptRows.length} concepts\n`);
+  console.log(`  ${qualityRows.length} qualities, ${mechanicRows.length} legacy mechanics, ${techniqueRows.length} techniques, ${conceptRows.length} concepts\n`);
 
-  // Score summary (mechanics only)
+  // Score summary (qualities + legacy mechanics)
+  const scorableRows = [...qualityRows, ...mechanicRows];
   const scores = {};
-  for (const m of mechanicRows) {
+  for (const m of scorableRows) {
     scores[m.enrichment_score] = (scores[m.enrichment_score] || 0) + 1;
   }
   const scoreStr = Object.entries(scores)
     .sort(([a], [b]) => Number(b) - Number(a))
     .map(([s, c]) => `  score ${s}: ${c}`)
     .join('\n');
-  console.log(`Enrichment scores (mechanics):\n${scoreStr}\n`);
+  console.log(`Enrichment scores (qualities):\n${scoreStr}\n`);
 
   // Upsert in batches
   const BATCH = 20;
@@ -299,7 +302,7 @@ async function sync() {
   }
 
   console.log(`\n\n✅ Sync complete — ${mechanics.length} cards in Supabase`);
-  console.log(`   (${mechanicRows.length} mechanics, ${techniqueRows.length} techniques, ${conceptRows.length} concepts)\n`);
+  console.log(`   (${qualityRows.length} qualities, ${mechanicRows.length} legacy mechanics, ${techniqueRows.length} techniques, ${conceptRows.length} concepts)\n`);
 }
 
 sync().catch(err => {
