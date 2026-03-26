@@ -129,8 +129,8 @@ export default function CompendiumNavigator() {
 
     return pillars.map(pillar => {
       const pillarItems = allItems.filter(m => m.pillar === pillar);
-      const mechanics = pillarItems.filter(m => m.card_type === 'mechanic');
-      const children = pillarItems.filter(m => m.card_type !== 'mechanic');
+      const mechanics = pillarItems.filter(m => m.card_type === 'mechanic' || m.card_type === 'quality');
+      const children = pillarItems.filter(m => m.card_type === 'technique' || m.card_type === 'concept');
 
       // Build a map of parent → children
       const childMap = new Map<string, MechanicItem[]>();
@@ -427,7 +427,7 @@ function DetailExpand({
           {mastery.label}
         </span>
 
-        {item.card_type === 'mechanic' && item.enrichment_score > 0 && (
+        {(item.card_type === 'mechanic' || item.card_type === 'quality') && item.enrichment_score > 0 && (
           <span className="flex items-center gap-0.5" title={`Enrichment: ${item.enrichment_score}/5`}>
             {[1, 2, 3, 4, 5].map(i => (
               <span
@@ -444,7 +444,7 @@ function DetailExpand({
           </span>
         )}
 
-        {item.card_type === 'mechanic' && item.techniques_count > 0 && (
+        {(item.card_type === 'mechanic' || item.card_type === 'quality') && item.techniques_count > 0 && (
           <span className="text-[10px] text-neutral-light">
             {item.techniques_count} techniques
           </span>
@@ -452,7 +452,7 @@ function DetailExpand({
       </div>
 
       {/* Keywords — only for mechanics */}
-      {item.card_type === 'mechanic' && item.keywords && item.keywords.length > 0 && (
+      {(item.card_type === 'mechanic' || item.card_type === 'quality') && item.keywords && item.keywords.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {item.keywords.slice(0, 8).map(kw => (
             <span

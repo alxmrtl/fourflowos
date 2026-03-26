@@ -1,6 +1,6 @@
 export type Pillar = 'self' | 'space' | 'story' | 'spirit';
 export type Quality = 0 | 1 | 2 | 3 | 4 | 5;
-export type CardType = 'mechanic' | 'technique' | 'concept';
+export type CardType = 'mechanic' | 'quality' | 'technique' | 'concept';
 export type CardPhase = 'study' | 'recall';
 
 export interface Mechanic {
