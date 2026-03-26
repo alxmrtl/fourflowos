@@ -59,8 +59,8 @@ export async function GET(request: NextRequest) {
   }
 
   // Separate mechanics (SRS cards) from children (study material)
-  const allMechanics = (allCards ?? []).filter(m => m.card_type === 'mechanic');
-  const childCards = (allCards ?? []).filter(m => m.card_type !== 'mechanic');
+  const allMechanics = (allCards ?? []).filter(m => m.card_type === 'mechanic' || m.card_type === 'quality');
+  const childCards = (allCards ?? []).filter(m => m.card_type === 'technique' || m.card_type === 'concept');
 
   // Build parent → children map for study mode
   const childrenByParent = new Map<string, typeof childCards>();
