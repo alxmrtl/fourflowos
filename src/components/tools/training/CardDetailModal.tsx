@@ -65,53 +65,6 @@ const STATE_LOGO: Record<string, string> = {
   'visualized-vision': '/assets/LOGOS/VISUALIZED VISION.png',
 };
 
-// ── Markdown renderer (mirrors MechanicCard.tsx) ──────────────────────
-
-function renderMarkdown(md: string): string {
-  let content = md.replace(/^---[\s\S]*?---\n/, '');
-
-  content = content
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  content = content.replace(/^# .+\n\n?/, '');
-  content = content.replace(/^&gt; .+\n\n?/, '');
-  content = content.replace(/## Recall\n[\s\S]*?(?=\n##|$)/, '');
-
-  content = content.replace(/^### (.+)$/gm, '<h3 class="font-semibold text-sm text-neutral mt-4 mb-1">$1</h3>');
-  content = content.replace(/^## (.+)$/gm, '<h2 class="font-semibold text-sm text-neutral mt-5 mb-2 border-b border-neutral/10 pb-1 uppercase tracking-wider opacity-60">$1</h2>');
-
-  content = content.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>');
-  content = content.replace(/\*([^*]+?)\*/g, '<em>$1</em>');
-
-  content = content.replace(/\[\[([^\]]+)\]\]/g, '<span class="inline-block px-1.5 py-0.5 rounded text-xs font-mono bg-neutral/10 text-neutral-light mx-0.5">$1</span>');
-
-  content = content.replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-2 border-neutral/20 pl-3 text-neutral-light italic text-sm my-2">$1</blockquote>');
-
-  // Numbered lists
-  content = content.replace(/^\d+\. (.+)$/gm, '<li class="ml-4 list-decimal text-sm text-neutral-light leading-relaxed">$1</li>');
-  // Bullet lists
-  content = content.replace(/^- (.+)$/gm, '<li class="ml-4 list-disc text-sm text-neutral-light leading-relaxed">$1</li>');
-
-  content = content.replace(/(<li[^>]*>.*<\/li>\n?)+/g, match => `<ul class="my-2 space-y-1">${match}</ul>`);
-
-  const lines = content.split('\n');
-  const processed: string[] = [];
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) {
-      processed.push('<div class="h-2"></div>');
-    } else if (trimmed.startsWith('<')) {
-      processed.push(trimmed);
-    } else {
-      processed.push(`<p class="text-sm text-neutral-light leading-relaxed">${trimmed}</p>`);
-    }
-  }
-
-  return processed.join('\n');
-}
-
 function renderRecall(md: string): string {
   let content = md
     .replace(/&/g, '&amp;')
@@ -167,78 +120,34 @@ function CardDetail({ cardId }: { cardId: string }) {
   }
 
   const s = PILLAR_STYLES[card.pillar];
-  const typeLabel = card.card_type === 'technique' ? 'Technique'
-    : card.card_type === 'concept' ? 'Concept'
-    : card.card_type === 'quality' ? 'Quality'
-    : 'Quality';
-
-  const flowKeyLabel = card.flow_key.split('-').map((w: string) => w[0].toUpperCase() + w.slice(1)).join(' ');
-  const contentHtml = card.content_md ? renderMarkdown(card.content_md) : '';
   const recallHtml = card.recall_md ? renderRecall(card.recall_md) : null;
 
   return (
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <div className="flex items-center gap-2 mb-2">
-          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.badge}`}>
-            {card.pillar}
-          </span>
-          <span className="text-[10px] text-neutral-light opacity-60">{flowKeyLabel}</span>
-          <span className="text-[10px] text-neutral-light opacity-40">·</span>
-          <span className="text-[10px] text-neutral-light opacity-60">{typeLabel}</span>
-        </div>
-        <h2 className={`font-display text-2xl font-semibold text-neutral leading-tight`}>
+        <h2 className="font-display text-xl font-semibold text-neutral leading-tight">
           {card.title}
         </h2>
-      </div>
-
-      {/* Definition */}
-      {card.definition && (
-        <blockquote className={`border-l-2 ${s.border} pl-4 py-1`}>
-          <p className={`text-sm font-medium ${s.text} leading-relaxed`}>
+        {card.definition && (
+          <p className={`text-xs mt-1 ${s.text} opacity-70 leading-relaxed`}>
             {card.definition}
           </p>
-        </blockquote>
-      )}
-
-      {/* Full content */}
-      {contentHtml && (
-        <div
-          className="prose prose-sm max-w-none"
-          dangerouslySetInnerHTML={{ __html: contentHtml }}
-        />
-      )}
-
-      {!contentHtml && (
-        <p className="text-xs text-neutral-light opacity-40 italic">
-          Full content coming — this card is queued for enrichment.
-        </p>
-      )}
+        )}
+      </div>
 
       {/* Recall section */}
-      {recallHtml && (
+      {recallHtml ? (
         <div className={`rounded-xl px-4 py-4 ${s.recallBg} border ${s.border}`}>
           <p className={`text-[10px] font-semibold uppercase tracking-wider ${s.text} mb-3`}>
             What to Remember
           </p>
           <div dangerouslySetInnerHTML={{ __html: recallHtml }} />
         </div>
-      )}
-
-      {/* Enrichment indicator */}
-      {card.enrichment_score > 0 && (
-        <div className="flex items-center gap-1.5 pt-2 border-t border-neutral/8">
-          <span className="text-[10px] text-neutral-light opacity-40">Enrichment</span>
-          <span className="flex items-center gap-0.5">
-            {[1, 2, 3, 4, 5].map(i => (
-              <span
-                key={i}
-                className={`w-1.5 h-1.5 rounded-full ${i <= card.enrichment_score ? s.dot : 'bg-neutral/15'}`}
-              />
-            ))}
-          </span>
-        </div>
+      ) : (
+        <p className="text-xs text-neutral-light opacity-40 italic">
+          No recall notes yet — this card is queued for enrichment.
+        </p>
       )}
     </div>
   );
