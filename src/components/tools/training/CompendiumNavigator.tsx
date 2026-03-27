@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import type { MasteryStats, Pillar, CardType } from '@/types/training';
 
 // ── Color maps (aligned with ProgressGrid) ──────────────────────────
@@ -61,6 +62,30 @@ const MASTERY_BADGE: Record<string, { bg: string; label: string }> = {
   mature: { bg: 'bg-green-100 text-green-700', label: 'Mature' },
 };
 
+// ── Brand asset maps ─────────────────────────────────────────────────
+
+const PILLAR_LOGO: Record<Pillar, string> = {
+  self:   '/assets/LOGOS/SELF - Section Logo.png',
+  space:  '/assets/LOGOS/SPACE - Section Logo.png',
+  story:  '/assets/LOGOS/STORY - Section Logo.png',
+  spirit: '/assets/LOGOS/SPIRIT - Section Logo.png',
+};
+
+const STATE_LOGO: Record<string, string> = {
+  'tuned-emotions':    '/assets/LOGOS/TUNED EMOTIONS.png',
+  'focused-body':      '/assets/LOGOS/FOCUSED BODY.png',
+  'open-mind':         '/assets/LOGOS/OPEN MIND.png',
+  'intentional-space': '/assets/LOGOS/INTENTIONAL SPACE.png',
+  'optimized-tools':   '/assets/LOGOS/OPTIMIZED TOOLS.png',
+  'feedback-systems':  '/assets/LOGOS/FEEDBACK SYSTEMS.png',
+  'generative-story':  '/assets/LOGOS/GENERATIVE STORY.png',
+  'clear-mission':     '/assets/LOGOS/CLEAR MISSION.png',
+  'empowered-role':    '/assets/LOGOS/EMPOWERED ROLE.png',
+  'grounding-values':  '/assets/LOGOS/GROUNDING VALUES.png',
+  'ignited-curiosity': '/assets/LOGOS/IGNITED CURIOSITY.png',
+  'visualized-vision': '/assets/LOGOS/VISUALIZED VISION.png',
+};
+
 // ── Types ────────────────────────────────────────────────────────────
 
 type MechanicItem = MasteryStats['mechanics'][number];
@@ -110,7 +135,8 @@ function isDue(nextReview: string | null): boolean {
 export default function CompendiumNavigator() {
   const [stats, setStats] = useState<MasteryStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedQualityIds, setExpandedQualityIds] = useState<Set<string>>(new Set());
+  const [expandedChildId, setExpandedChildId] = useState<string | null>(null);
   const [collapsedPillars, setCollapsedPillars] = useState<Set<Pillar>>(new Set());
 
   useEffect(() => {
@@ -198,6 +224,14 @@ export default function CompendiumNavigator() {
     });
   };
 
+  const toggleQuality = (id: string) => {
+    setExpandedQualityIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
   if (loading) {
     return (
       <div className="text-center py-16 text-sm text-neutral-light">
@@ -240,12 +274,18 @@ export default function CompendiumNavigator() {
               {/* Pillar header */}
               <button
                 onClick={() => togglePillar(pillar)}
-                className="w-full text-left mb-3"
+                className="w-full text-left mb-4"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${c.dot}`} />
-                    <span className={`font-display text-lg font-semibold uppercase tracking-wider ${c.label}`}>
+                  <div className="flex items-center gap-2.5">
+                    <Image
+                      src={PILLAR_LOGO[pillar]}
+                      alt={pillar}
+                      width={32}
+                      height={32}
+                      className="rounded-sm opacity-90"
+                    />
+                    <span className={`font-display text-xl font-bold uppercase tracking-wider ${c.label}`}>
                       {pillar}
                     </span>
                   </div>
@@ -253,44 +293,58 @@ export default function CompendiumNavigator() {
                     {isCollapsed ? '▸' : '▾'}
                   </span>
                 </div>
-                <div className="text-[10px] text-neutral-light mt-0.5 ml-[18px]">
-                  {totalMechanics}m · {totalTechniques}t · {totalConcepts}c
+                <div className="text-[10px] text-neutral-light mt-1 ml-[44px]">
+                  {totalMechanics}q · {totalTechniques}t · {totalConcepts}c
                 </div>
               </button>
 
               {!isCollapsed && (
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {keys.map(({ key, label, mechanics }) => (
                     <div key={key}>
-                      {/* Flow Key label */}
-                      <div className={`text-[11px] font-semibold uppercase tracking-wider ${c.label} opacity-60 mb-1.5 ml-1`}>
-                        {label}
+                      {/* State label */}
+                      <div className="flex items-center gap-2 mb-2.5 ml-1">
+                        {STATE_LOGO[key] && (
+                          <Image
+                            src={STATE_LOGO[key]}
+                            alt={label}
+                            width={22}
+                            height={22}
+                            className="rounded-sm opacity-85 flex-shrink-0"
+                          />
+                        )}
+                        <span className={`text-[13px] font-semibold uppercase tracking-wider ${c.label}`}>
+                          {label}
+                        </span>
                       </div>
 
-                      {/* Mechanic bars + nested children */}
-                      <div className="space-y-1">
-                        {mechanics.map(mechanic => (
-                          <div key={mechanic.id}>
-                            <MechanicBar
-                              item={mechanic}
-                              pillar={pillar}
-                              isExpanded={expandedId === mechanic.id}
-                              onToggle={() => setExpandedId(expandedId === mechanic.id ? null : mechanic.id)}
-                            />
+                      {/* Quality bars + nested children */}
+                      <div className="space-y-1.5">
+                        {mechanics.map(mechanic => {
+                          const isChildrenExpanded = expandedQualityIds.has(mechanic.id);
+                          return (
+                            <div key={mechanic.id}>
+                              <QualityBar
+                                item={mechanic}
+                                pillar={pillar}
+                                isExpanded={isChildrenExpanded}
+                                onToggle={() => toggleQuality(mechanic.id)}
+                              />
 
-                            {/* Children: techniques + concepts */}
-                            {mechanic.children.map(child => (
-                              <div key={child.id} className="ml-4 mt-1">
-                                <ChildBar
-                                  item={child}
-                                  pillar={pillar}
-                                  isExpanded={expandedId === child.id}
-                                  onToggle={() => setExpandedId(expandedId === child.id ? null : child.id)}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        ))}
+                              {/* Children: techniques + concepts — only when expanded */}
+                              {isChildrenExpanded && mechanic.children.map(child => (
+                                <div key={child.id} className="ml-4 mt-1">
+                                  <ChildBar
+                                    item={child}
+                                    pillar={pillar}
+                                    isExpanded={expandedChildId === child.id}
+                                    onToggle={() => setExpandedChildId(expandedChildId === child.id ? null : child.id)}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   ))}
@@ -304,9 +358,9 @@ export default function CompendiumNavigator() {
   );
 }
 
-// ── Mechanic Bar ─────────────────────────────────────────────────────
+// ── Quality Bar ───────────────────────────────────────────────────────
 
-function MechanicBar({
+function QualityBar({
   item,
   pillar,
   isExpanded,
@@ -320,33 +374,60 @@ function MechanicBar({
   const c = PILLAR_COLORS[pillar];
   const bgClass = c.barBg(item.enrichment_score ?? 1);
   const due = isDue(item.next_review_at);
+  const hasChildren = item.children.length > 0;
 
   return (
-    <div>
-      <button
-        onClick={onToggle}
-        className={`
-          w-full h-8 rounded-lg flex items-center gap-2 px-2.5
-          border-l-[3px] ${c.border}
-          ${bgClass}
-          transition-all duration-150
-          hover:-translate-y-px hover:brightness-105
-          ${isExpanded ? 'ring-1 ring-neutral/10' : ''}
-        `}
-      >
+    <button
+      onClick={onToggle}
+      className={`
+        w-full rounded-lg flex flex-col gap-1 px-2.5 py-2.5
+        border-l-[3px] ${c.border}
+        ${bgClass}
+        transition-all duration-150
+        hover:-translate-y-px hover:brightness-105
+        ${isExpanded ? 'ring-1 ring-neutral/10' : ''}
+        text-left
+      `}
+    >
+      {/* Row 1: title + due dot + mastery dot */}
+      <div className="flex items-center gap-2 w-full">
         {due && (
           <span className={`w-1.5 h-1.5 rounded-full ${c.dot} animate-pulse flex-shrink-0`} />
         )}
-        <span className="text-xs font-medium text-neutral truncate flex-1 text-left">
+        <span className="text-xs font-medium text-neutral truncate flex-1">
           {item.title}
         </span>
         <span className={`w-2 h-2 rounded-full flex-shrink-0 ${MASTERY_DOT[item.mastery_level]}`} />
-      </button>
+      </div>
 
-      {isExpanded && (
-        <DetailExpand item={item} pillar={pillar} />
-      )}
-    </div>
+      {/* Row 2: definition + enrichment dots + chevron */}
+      <div className="flex items-center gap-2 w-full">
+        {item.definition ? (
+          <span className="text-[10px] text-neutral-light italic truncate flex-1 leading-snug">
+            {item.definition}
+          </span>
+        ) : (
+          <span className="flex-1" />
+        )}
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {item.enrichment_score > 0 && (
+            <span className="flex items-center gap-0.5" title={`Enrichment: ${item.enrichment_score}/5`}>
+              {[1, 2, 3, 4, 5].map(i => (
+                <span
+                  key={i}
+                  className={`w-1 h-1 rounded-full ${i <= item.enrichment_score ? c.dot : 'bg-neutral/15'}`}
+                />
+              ))}
+            </span>
+          )}
+          {hasChildren && (
+            <span className="text-[9px] text-neutral-light ml-1">
+              {isExpanded ? '▾' : '▸'}
+            </span>
+          )}
+        </div>
+      </div>
+    </button>
   );
 }
 
@@ -400,7 +481,7 @@ function ChildBar({
   );
 }
 
-// ── Detail Expand (Accordion Content) ────────────────────────────────
+// ── Detail Expand (Accordion Content — for Techniques & Concepts) ─────
 
 function DetailExpand({
   item,
@@ -427,48 +508,12 @@ function DetailExpand({
           {mastery.label}
         </span>
 
-        {(item.card_type === 'mechanic' || item.card_type === 'quality') && item.enrichment_score > 0 && (
-          <span className="flex items-center gap-0.5" title={`Enrichment: ${item.enrichment_score}/5`}>
-            {[1, 2, 3, 4, 5].map(i => (
-              <span
-                key={i}
-                className={`w-1.5 h-1.5 rounded-full ${i <= item.enrichment_score ? c.dot : 'bg-neutral/15'}`}
-              />
-            ))}
-          </span>
-        )}
-
         {item.repetitions > 0 && (
           <span className="text-[10px] text-neutral-light">
             {item.repetitions} reps · {item.interval_days}d
           </span>
         )}
-
-        {(item.card_type === 'mechanic' || item.card_type === 'quality') && item.techniques_count > 0 && (
-          <span className="text-[10px] text-neutral-light">
-            {item.techniques_count} techniques
-          </span>
-        )}
       </div>
-
-      {/* Keywords — only for mechanics */}
-      {(item.card_type === 'mechanic' || item.card_type === 'quality') && item.keywords && item.keywords.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {item.keywords.slice(0, 8).map(kw => (
-            <span
-              key={kw}
-              className="text-[10px] bg-neutral/8 text-neutral-light rounded px-1.5 py-0.5"
-            >
-              {kw}
-            </span>
-          ))}
-          {item.keywords.length > 8 && (
-            <span className="text-[10px] text-neutral-light opacity-50">
-              +{item.keywords.length - 8}
-            </span>
-          )}
-        </div>
-      )}
     </div>
   );
 }
