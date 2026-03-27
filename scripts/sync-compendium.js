@@ -301,7 +301,35 @@ async function sync() {
     process.stdout.write(`Upserting... ${total}/${mechanics.length}\r`);
   }
 
-  console.log(`\n\n✅ Sync complete — ${mechanics.length} cards in Supabase`);
+  // Prune orphaned rows (rows in DB that no longer have a corresponding file)
+  const scannedIds = new Set(mechanics.map(m => m.id));
+
+  const { data: allDbRows, error: fetchErr } = await supabase
+    .from('mechanics')
+    .select('id');
+
+  if (fetchErr) {
+    console.warn('  ⚠️  Could not fetch DB rows for pruning:', fetchErr.message);
+  } else {
+    const orphanIds = (allDbRows || []).map(r => r.id).filter(id => !scannedIds.has(id));
+
+    if (orphanIds.length > 0) {
+      const { error: deleteErr } = await supabase
+        .from('mechanics')
+        .delete()
+        .in('id', orphanIds);
+
+      if (deleteErr) {
+        console.warn('  ⚠️  Could not prune orphaned rows:', deleteErr.message);
+      } else {
+        console.log(`  🗑️  Pruned ${orphanIds.length} orphaned rows: ${orphanIds.join(', ')}\n`);
+      }
+    } else {
+      console.log('  ✓  No orphaned rows to prune\n');
+    }
+  }
+
+  console.log(`✅ Sync complete — ${mechanics.length} cards in Supabase`);
   console.log(`   (${qualityRows.length} qualities, ${mechanicRows.length} legacy mechanics, ${techniqueRows.length} techniques, ${conceptRows.length} concepts)\n`);
 }
 
