@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
-import type { MasteryStats, Pillar, CardType } from '@/types/training';
+import type { MasteryStats, Pillar } from '@/types/training';
+import CardDetailModal, { type StateData } from './CardDetailModal';
 
 // ── Color maps (aligned with ProgressGrid) ──────────────────────────
 
@@ -53,13 +54,6 @@ const MASTERY_DOT: Record<string, string> = {
   learning: 'bg-amber-400',
   young: 'bg-blue-400',
   mature: 'bg-green-500',
-};
-
-const MASTERY_BADGE: Record<string, { bg: string; label: string }> = {
-  unseen: { bg: 'bg-neutral/10 text-neutral-light', label: 'Unseen' },
-  learning: { bg: 'bg-amber-100 text-amber-700', label: 'Learning' },
-  young: { bg: 'bg-blue-100 text-blue-700', label: 'Young' },
-  mature: { bg: 'bg-green-100 text-green-700', label: 'Mature' },
 };
 
 // ── Brand asset maps ─────────────────────────────────────────────────
@@ -128,16 +122,21 @@ function isDue(nextReview: string | null): boolean {
   return new Date(nextReview) <= new Date();
 }
 
-
-
 // ── Component ────────────────────────────────────────────────────────
 
 export default function CompendiumNavigator() {
   const [stats, setStats] = useState<MasteryStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedQualityIds, setExpandedQualityIds] = useState<Set<string>>(new Set());
-  const [expandedChildId, setExpandedChildId] = useState<string | null>(null);
   const [collapsedPillars, setCollapsedPillars] = useState<Set<Pillar>>(new Set());
+
+  // Modal state
+  const [modalCardId, setModalCardId] = useState<string | null>(null);
+  const [modalStateData, setModalStateData] = useState<StateData | null>(null);
+  const closeModal = useCallback(() => {
+    setModalCardId(null);
+    setModalStateData(null);
+  }, []);
 
   useEffect(() => {
     fetch('/api/train/progress')
@@ -158,7 +157,6 @@ export default function CompendiumNavigator() {
       const mechanics = pillarItems.filter(m => m.card_type === 'mechanic' || m.card_type === 'quality');
       const children = pillarItems.filter(m => m.card_type === 'technique' || m.card_type === 'concept');
 
-      // Build a map of parent → children
       const childMap = new Map<string, MechanicItem[]>();
       for (const c of children) {
         if (c.parent_mechanic_id) {
@@ -168,7 +166,6 @@ export default function CompendiumNavigator() {
         }
       }
 
-      // Also collect orphan children (no parent_mechanic_id) — group by flow_key
       const orphansByKey = new Map<string, MechanicItem[]>();
       for (const c of children) {
         if (!c.parent_mechanic_id) {
@@ -187,23 +184,17 @@ export default function CompendiumNavigator() {
         const nested: NestedMechanic[] = keyMechanics.map(m => ({
           ...m,
           children: (childMap.get(m.id) ?? []).sort((a, b) => {
-            // Techniques first, then concepts
             if (a.card_type !== b.card_type) return a.card_type === 'technique' ? -1 : 1;
             return a.title.localeCompare(b.title);
           }),
         }));
 
-        // Append orphans as standalone items at end of key
         const orphans = orphansByKey.get(key) ?? [];
         for (const o of orphans) {
           nested.push({ ...o, children: [] });
         }
 
-        return {
-          key,
-          label: formatKeyLabel(key),
-          mechanics: nested,
-        };
+        return { key, label: formatKeyLabel(key), mechanics: nested };
       });
 
       return {
@@ -230,6 +221,22 @@ export default function CompendiumNavigator() {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+  };
+
+  const openStateModal = (pillar: Pillar, key: string, label: string, mechanics: NestedMechanic[]) => {
+    setModalStateData({
+      key,
+      label,
+      pillar,
+      qualities: mechanics.map(m => ({
+        id: m.id,
+        title: m.title,
+        definition: m.definition,
+        mastery_level: m.mastery_level,
+        enrichment_score: m.enrichment_score,
+      })),
+    });
+    setModalCardId(null);
   };
 
   if (loading) {
@@ -302,8 +309,11 @@ export default function CompendiumNavigator() {
                 <div className="space-y-5">
                   {keys.map(({ key, label, mechanics }) => (
                     <div key={key}>
-                      {/* State label */}
-                      <div className="flex items-center gap-2 mb-2.5 ml-1">
+                      {/* State label — clickable → state modal */}
+                      <button
+                        onClick={() => openStateModal(pillar, key, label, mechanics)}
+                        className="flex items-center gap-2 mb-2.5 ml-1 group w-full text-left"
+                      >
                         {STATE_LOGO[key] && (
                           <Image
                             src={STATE_LOGO[key]}
@@ -313,10 +323,13 @@ export default function CompendiumNavigator() {
                             className="rounded-sm opacity-85 flex-shrink-0"
                           />
                         )}
-                        <span className={`text-[13px] font-semibold uppercase tracking-wider ${c.label}`}>
+                        <span className={`text-[13px] font-semibold uppercase tracking-wider ${c.label} group-hover:opacity-80 transition-opacity`}>
                           {label}
                         </span>
-                      </div>
+                        <span className="text-[10px] text-neutral-light opacity-0 group-hover:opacity-40 transition-opacity ml-auto">
+                          ↗
+                        </span>
+                      </button>
 
                       {/* Quality bars + nested children */}
                       <div className="space-y-1.5">
@@ -329,16 +342,22 @@ export default function CompendiumNavigator() {
                                 pillar={pillar}
                                 isExpanded={isChildrenExpanded}
                                 onToggle={() => toggleQuality(mechanic.id)}
+                                onOpenDetail={() => {
+                                  setModalCardId(mechanic.id);
+                                  setModalStateData(null);
+                                }}
                               />
 
-                              {/* Children: techniques + concepts — only when expanded */}
+                              {/* Children — visible only when quality is expanded */}
                               {isChildrenExpanded && mechanic.children.map(child => (
                                 <div key={child.id} className="ml-4 mt-1">
                                   <ChildBar
                                     item={child}
                                     pillar={pillar}
-                                    isExpanded={expandedChildId === child.id}
-                                    onToggle={() => setExpandedChildId(expandedChildId === child.id ? null : child.id)}
+                                    onOpenDetail={() => {
+                                      setModalCardId(child.id);
+                                      setModalStateData(null);
+                                    }}
                                   />
                                 </div>
                               ))}
@@ -354,6 +373,13 @@ export default function CompendiumNavigator() {
           );
         })}
       </div>
+
+      {/* Detail modal */}
+      <CardDetailModal
+        cardId={modalCardId}
+        stateData={modalStateData}
+        onClose={closeModal}
+      />
     </div>
   );
 }
@@ -365,11 +391,13 @@ function QualityBar({
   pillar,
   isExpanded,
   onToggle,
+  onOpenDetail,
 }: {
   item: NestedMechanic;
   pillar: Pillar;
   isExpanded: boolean;
   onToggle: () => void;
+  onOpenDetail: () => void;
 }) {
   const c = PILLAR_COLORS[pillar];
   const bgClass = c.barBg(item.enrichment_score ?? 1);
@@ -377,57 +405,68 @@ function QualityBar({
   const hasChildren = item.children.length > 0;
 
   return (
-    <button
-      onClick={onToggle}
-      className={`
-        w-full rounded-lg flex flex-col gap-1 px-2.5 py-2.5
-        border-l-[3px] ${c.border}
-        ${bgClass}
-        transition-all duration-150
-        hover:-translate-y-px hover:brightness-105
-        ${isExpanded ? 'ring-1 ring-neutral/10' : ''}
-        text-left
-      `}
-    >
-      {/* Row 1: title + due dot + mastery dot */}
-      <div className="flex items-center gap-2 w-full">
-        {due && (
-          <span className={`w-1.5 h-1.5 rounded-full ${c.dot} animate-pulse flex-shrink-0`} />
-        )}
-        <span className="text-xs font-medium text-neutral truncate flex-1">
-          {item.title}
-        </span>
-        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${MASTERY_DOT[item.mastery_level]}`} />
-      </div>
-
-      {/* Row 2: definition + enrichment dots + chevron */}
-      <div className="flex items-center gap-2 w-full">
-        {item.definition ? (
-          <span className="text-[10px] text-neutral-light italic flex-1 leading-snug">
-            {item.definition}
+    <div className="relative group/quality">
+      <button
+        onClick={onToggle}
+        className={`
+          w-full rounded-lg flex flex-col gap-1 px-2.5 py-2.5
+          border-l-[3px] ${c.border}
+          ${bgClass}
+          transition-all duration-150
+          hover:-translate-y-px hover:brightness-105
+          ${isExpanded ? 'ring-1 ring-neutral/10' : ''}
+          text-left
+        `}
+      >
+        {/* Row 1: title + due dot + mastery dot + detail icon */}
+        <div className="flex items-center gap-2 w-full">
+          {due && (
+            <span className={`w-1.5 h-1.5 rounded-full ${c.dot} animate-pulse flex-shrink-0`} />
+          )}
+          <span className="text-xs font-medium text-neutral flex-1 pr-6">
+            {item.title}
           </span>
-        ) : (
-          <span className="flex-1" />
-        )}
-        <div className="flex items-center gap-1 flex-shrink-0">
-          {item.enrichment_score > 0 && (
-            <span className="flex items-center gap-0.5" title={`Enrichment: ${item.enrichment_score}/5`}>
-              {[1, 2, 3, 4, 5].map(i => (
-                <span
-                  key={i}
-                  className={`w-1 h-1 rounded-full ${i <= item.enrichment_score ? c.dot : 'bg-neutral/15'}`}
-                />
-              ))}
-            </span>
-          )}
-          {hasChildren && (
-            <span className="text-[9px] text-neutral-light ml-1">
-              {isExpanded ? '▾' : '▸'}
-            </span>
-          )}
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${MASTERY_DOT[item.mastery_level]}`} />
         </div>
-      </div>
-    </button>
+
+        {/* Row 2: definition + enrichment dots + chevron */}
+        <div className="flex items-start gap-2 w-full">
+          {item.definition ? (
+            <span className="text-[10px] text-neutral-light italic flex-1 leading-snug pr-6">
+              {item.definition}
+            </span>
+          ) : (
+            <span className="flex-1" />
+          )}
+          <div className="flex items-center gap-1 flex-shrink-0 self-end">
+            {item.enrichment_score > 0 && (
+              <span className="flex items-center gap-0.5" title={`Enrichment: ${item.enrichment_score}/5`}>
+                {[1, 2, 3, 4, 5].map(i => (
+                  <span
+                    key={i}
+                    className={`w-1 h-1 rounded-full ${i <= item.enrichment_score ? c.dot : 'bg-neutral/15'}`}
+                  />
+                ))}
+              </span>
+            )}
+            {hasChildren && (
+              <span className="text-[9px] text-neutral-light ml-1">
+                {isExpanded ? '▾' : '▸'}
+              </span>
+            )}
+          </div>
+        </div>
+      </button>
+
+      {/* Detail icon — top-right corner, appears on hover */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
+        className="absolute top-1.5 right-1.5 w-5 h-5 rounded flex items-center justify-center opacity-0 group-hover/quality:opacity-60 hover:!opacity-100 transition-opacity text-neutral-light hover:text-neutral bg-neutral/10 hover:bg-neutral/20"
+        title="View full entry"
+      >
+        <span className="text-[9px]">↗</span>
+      </button>
+    </div>
   );
 }
 
@@ -436,13 +475,11 @@ function QualityBar({
 function ChildBar({
   item,
   pillar,
-  isExpanded,
-  onToggle,
+  onOpenDetail,
 }: {
   item: MechanicItem;
   pillar: Pillar;
-  isExpanded: boolean;
-  onToggle: () => void;
+  onOpenDetail: () => void;
 }) {
   const c = PILLAR_COLORS[pillar];
   const typeLabel = item.card_type === 'technique' ? 'T' : 'C';
@@ -450,70 +487,26 @@ function ChildBar({
   const due = isDue(item.next_review_at);
 
   return (
-    <div>
-      <button
-        onClick={onToggle}
-        className={`
-          w-full h-6 rounded-md flex items-center gap-1.5 px-2
-          border-l-2 ${borderStyle} ${c.border}
-          bg-neutral/[0.02]
-          transition-all duration-150
-          hover:-translate-y-px hover:bg-neutral/5
-          ${isExpanded ? 'ring-1 ring-neutral/10' : ''}
-        `}
-      >
-        {due && (
-          <span className={`w-1 h-1 rounded-full ${c.dot} animate-pulse flex-shrink-0`} />
-        )}
-        <span className={`text-[10px] font-semibold rounded px-1 flex-shrink-0 ${c.badgeBg}`}>
-          {typeLabel}
-        </span>
-        <span className="text-[11px] text-neutral-light truncate flex-1 text-left">
-          {item.title}
-        </span>
-        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${MASTERY_DOT[item.mastery_level]}`} />
-      </button>
-
-      {isExpanded && (
-        <DetailExpand item={item} pillar={pillar} />
+    <button
+      onClick={onOpenDetail}
+      className={`
+        w-full h-6 rounded-md flex items-center gap-1.5 px-2
+        border-l-2 ${borderStyle} ${c.border}
+        bg-neutral/[0.02]
+        transition-all duration-150
+        hover:-translate-y-px hover:bg-neutral/5
+      `}
+    >
+      {due && (
+        <span className={`w-1 h-1 rounded-full ${c.dot} animate-pulse flex-shrink-0`} />
       )}
-    </div>
-  );
-}
-
-// ── Detail Expand (Accordion Content — for Techniques & Concepts) ─────
-
-function DetailExpand({
-  item,
-  pillar,
-}: {
-  item: MechanicItem;
-  pillar: Pillar;
-}) {
-  const c = PILLAR_COLORS[pillar];
-  const mastery = MASTERY_BADGE[item.mastery_level];
-
-  return (
-    <div className="mt-1 mb-2 ml-1 p-3 rounded-lg bg-neutral/[0.03] border border-neutral/8 space-y-2.5">
-      {/* Definition */}
-      {item.definition && (
-        <div className={`border-l-2 ${c.border} pl-3 text-xs text-neutral-light italic leading-relaxed`}>
-          {item.definition}
-        </div>
-      )}
-
-      {/* Stats row */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${mastery.bg}`}>
-          {mastery.label}
-        </span>
-
-        {item.repetitions > 0 && (
-          <span className="text-[10px] text-neutral-light">
-            {item.repetitions} reps · {item.interval_days}d
-          </span>
-        )}
-      </div>
-    </div>
+      <span className={`text-[10px] font-semibold rounded px-1 flex-shrink-0 ${c.badgeBg}`}>
+        {typeLabel}
+      </span>
+      <span className="text-[11px] text-neutral-light truncate flex-1 text-left">
+        {item.title}
+      </span>
+      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${MASTERY_DOT[item.mastery_level]}`} />
+    </button>
   );
 }
