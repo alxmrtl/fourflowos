@@ -176,7 +176,7 @@ function processMarkdownFile({ filePath, content, pillar, flowKey }) {
     techniques_count: isMechanic ? countTechniques(body) : null,
     related_mechanics: extractRelatedMechanics(body),
     card_type: cardType,
-    parent_mechanic_id: isTechnique ? extractParentQuality(frontmatter) : null,
+    parent_mechanic_id: (isTechnique || isConcept) ? extractParentQuality(frontmatter) : null,
     content_hash: computeContentHash(content),
     updated_at: new Date().toISOString(),
   };
