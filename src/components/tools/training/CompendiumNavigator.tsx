@@ -403,7 +403,7 @@ function QualityBar({
       {/* Row 2: definition + enrichment dots + chevron */}
       <div className="flex items-center gap-2 w-full">
         {item.definition ? (
-          <span className="text-[10px] text-neutral-light italic truncate flex-1 leading-snug">
+          <span className="text-[10px] text-neutral-light italic flex-1 leading-snug">
             {item.definition}
           </span>
         ) : (
