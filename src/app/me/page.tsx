@@ -1,20 +1,20 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import MePage from '@/components/me/MePage';
+import FlowLab from '@/components/lab/FlowLab';
 
 export const metadata: Metadata = {
-  title: 'Your Flow Profile — FourFlow',
-  description: 'Your consciousness alignment profile and live signal dashboard.',
+  title: 'FlowLab — FourFlow',
+  description: 'Your flow entry point. Breathe, choose, move.',
 };
 
 export default function Page() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="w-6 h-6 rounded-full border-2 border-white/20 border-t-white/70 animate-spin" />
+        <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white/60 animate-spin" />
       </div>
     }>
-      <MePage />
+      <FlowLab />
     </Suspense>
   );
 }
