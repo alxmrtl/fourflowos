@@ -11,14 +11,6 @@ import { KEYS, DIMENSIONS } from '@/data/framework';
 import type { FlowProfileJSON, DimensionData, KeyData } from '@/types/profile-json';
 import type { DimensionType, KeyType } from '@/types/framework';
 
-// ─── Activity Window wrapper ──────────────────────────────────────────────────
-function ActivityWindow({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="w-full max-w-2xl mx-auto border border-white/[0.07] rounded-2xl p-6">
-      {children}
-    </div>
-  );
-}
 
 // ─── Structured rendering (mirrors profile view page) ─────────────────────────
 
@@ -235,32 +227,30 @@ export default function ProfileSummary() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
     >
-      <ActivityWindow>
-        {assessment.flow_profile_json ? (
-          <StructuredProfile profile_json={assessment.flow_profile_json} />
-        ) : assessment.flow_profile_final ? (
-          <div
-            className="profile-text"
-            dangerouslySetInnerHTML={{ __html: markdownToHtml(assessment.flow_profile_final) }}
-          />
-        ) : null}
+      {assessment.flow_profile_json ? (
+        <StructuredProfile profile_json={assessment.flow_profile_json} />
+      ) : assessment.flow_profile_final ? (
+        <div
+          className="profile-text"
+          dangerouslySetInnerHTML={{ __html: markdownToHtml(assessment.flow_profile_final) }}
+        />
+      ) : null}
 
-        {/* Subtle share link at the bottom */}
-        {assessment.view_token && (
-          <div className="mt-10 pt-6 border-t border-white/[0.06]">
-            <Link
-              href={`/profile/view/${assessment.view_token}`}
-              target="_blank"
-              className="inline-flex items-center gap-1.5 text-xs text-white/25 hover:text-white/50 transition-colors"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              Shareable profile link
-            </Link>
-          </div>
-        )}
-      </ActivityWindow>
+      {/* Subtle share link at the bottom */}
+      {assessment.view_token && (
+        <div className="mt-10 pt-6 border-t border-white/[0.06]">
+          <Link
+            href={`/profile/view/${assessment.view_token}`}
+            target="_blank"
+            className="inline-flex items-center gap-1.5 text-xs text-white/25 hover:text-white/50 transition-colors"
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            Shareable profile link
+          </Link>
+        </div>
+      )}
 
       <style jsx global>{`
         .profile-text h1 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-top: 2rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.07); padding-bottom: 0.5rem; }

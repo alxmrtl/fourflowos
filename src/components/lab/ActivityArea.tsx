@@ -14,8 +14,9 @@ interface ActivityAreaProps {
   onBack: () => void;
 }
 
-// Tools that manage their own full-height layout — only get horizontal padding
-const FULL_HEIGHT_TOOLS: ToolId[] = ['flowzone', 'flowread', 'curiosity'];
+// Tools that manage their own internal padding — the activity window provides
+// only the outer shell (border + width). Content tools get extra inner padding.
+const PADDED_TOOLS: ToolId[] = ['profile', 'breathwork', 'compendium', 'training'];
 
 function ToolContent({ activeTool, onBack }: ActivityAreaProps) {
   switch (activeTool) {
@@ -35,10 +36,10 @@ function ToolContent({ activeTool, onBack }: ActivityAreaProps) {
 }
 
 export default function ActivityArea({ activeTool, onBack }: ActivityAreaProps) {
-  const isFullHeight = FULL_HEIGHT_TOOLS.includes(activeTool);
+  const isPadded = PADDED_TOOLS.includes(activeTool);
 
   return (
-    <div className="flex-1 overflow-auto min-h-0">
+    <div className="flex-1 overflow-auto min-h-0 py-6">
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTool}
@@ -46,9 +47,11 @@ export default function ActivityArea({ activeTool, onBack }: ActivityAreaProps) 
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
-          className={isFullHeight ? 'h-full' : 'px-6 py-7 max-w-3xl'}
+          className="w-[90%] md:w-4/5 max-w-4xl mx-auto border border-white/[0.07] rounded-2xl overflow-hidden"
         >
-          <ToolContent activeTool={activeTool} onBack={onBack} />
+          <div className={isPadded ? 'p-6 md:p-8' : ''}>
+            <ToolContent activeTool={activeTool} onBack={onBack} />
+          </div>
         </motion.div>
       </AnimatePresence>
     </div>
