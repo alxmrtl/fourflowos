@@ -187,13 +187,13 @@ export default function DimensionBentoCard({ dim, data }: Props) {
               <button
                 onClick={() => hasData && handleKeyClick(slug)}
                 disabled={!hasData}
-                className={`flex items-center w-full text-left relative z-10 px-4 h-[96px] gap-3 ${hasData ? 'cursor-pointer' : 'cursor-default'}`}
+                className={`flex w-full text-left relative z-10 px-4 gap-3 ${isActive ? 'items-start py-4 h-auto' : 'items-center h-[96px]'} ${hasData ? 'cursor-pointer' : 'cursor-default'}`}
                 style={{
                   background: isActive ? `rgba(${rgb}, 0.06)` : 'transparent',
                 }}
               >
                 {/* Col 1: key icon circle + name — narrower */}
-                <div className="flex items-center gap-2 flex-shrink-0 w-[88px]">
+                <div className={`flex items-center gap-2 flex-shrink-0 w-[88px] ${isActive ? 'pt-0.5' : ''}`}>
                   <div
                     className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center"
                     style={{ background: `${meta.color}22` }}
@@ -209,8 +209,8 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                   <span className="text-xs font-medium text-white leading-tight">{keyMeta.name}</span>
                 </div>
 
-                {/* Col 2+3: fixed height, both states swap in place via absolute */}
-                <div className="relative flex-1 min-w-0 self-stretch overflow-hidden">
+                {/* Col 2+3: fixed height in collapsed, auto in expanded */}
+                <div className={`flex-1 min-w-0 ${isActive ? '' : 'relative self-stretch overflow-hidden'}`}>
                   <AnimatePresence mode="wait">
                     {isActive ? (
                       <motion.div
@@ -219,11 +219,15 @@ export default function DimensionBentoCard({ dim, data }: Props) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2, delay: 0.1 }}
-                        className="absolute inset-0 flex items-center py-4"
+                        className="flex flex-col gap-1.5"
                       >
-                        {/* Insight only */}
+                        {/* Leading sentence (layupStem) */}
+                        <p className="text-[11px] font-semibold leading-snug" style={{ color: meta.color }}>
+                          {KEYS[slug].layupStem}
+                        </p>
+                        {/* Insight with ellipsis transition */}
                         <p className="text-[11px] italic text-gray-300 leading-relaxed">
-                          {keyData?.insight}
+                          …{keyData?.insight}
                         </p>
                       </motion.div>
                     ) : (

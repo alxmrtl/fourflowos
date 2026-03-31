@@ -518,46 +518,54 @@ export default function MePage() {
     return (
       <div className="min-h-screen bg-[#0a0a0a]">
         <LandingNav />
-        <div className="max-w-4xl mx-auto px-4 pt-24 pb-16">
-          {/* Page header */}
+        <div className="px-4 pt-24 pb-16">
+          {/* Activity Window */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
-            <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Flow Archetype</p>
-            <h1 className="text-3xl font-light text-white mb-3">Your Signal</h1>
-            <div
-              className="h-px"
-              style={{ background: `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})` }}
-            />
-          </motion.div>
-
-          {/* Dashboard card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            transition={{ duration: 0.6 }}
+            className="w-[92%] md:w-4/5 max-w-4xl mx-auto border border-white/[0.07] rounded-2xl p-5 md:p-8"
           >
-            <BentoGrid
-              profile={profile}
-              sessions={data.sessions}
-              curiosity={data.curiosity}
-              assessment={data.assessment!}
-            />
-          </motion.div>
+            {/* Page header */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mb-8"
+            >
+              <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Flow Archetype</p>
+              <h1 className="text-3xl font-light text-white mb-3">Your Signal</h1>
+              <div
+                className="h-px"
+                style={{ background: `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})` }}
+              />
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-          >
-            <RawProfileDrawer
-              assessment={data.assessment!}
-              sessions={data.sessions}
-              curiosity={data.curiosity}
-            />
+            {/* Dashboard card */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <BentoGrid
+                profile={profile}
+                sessions={data.sessions}
+                curiosity={data.curiosity}
+                assessment={data.assessment!}
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <RawProfileDrawer
+                assessment={data.assessment!}
+                sessions={data.sessions}
+                curiosity={data.curiosity}
+              />
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -567,7 +575,7 @@ export default function MePage() {
   // ── Legacy text-based layout ────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#0a0a0a] px-4 py-12 md:py-16">
-      <div className="max-w-3xl mx-auto">
+      <div className="w-[92%] md:w-4/5 max-w-3xl mx-auto border border-white/[0.07] rounded-2xl p-5 md:p-8">
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">
           <div>
