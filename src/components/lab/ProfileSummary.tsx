@@ -11,6 +11,15 @@ import { KEYS, DIMENSIONS } from '@/data/framework';
 import type { FlowProfileJSON, DimensionData, KeyData } from '@/types/profile-json';
 import type { DimensionType, KeyType } from '@/types/framework';
 
+// ─── Activity Window wrapper ──────────────────────────────────────────────────
+function ActivityWindow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="w-full max-w-2xl mx-auto border border-white/[0.07] rounded-2xl p-6">
+      {children}
+    </div>
+  );
+}
+
 // ─── Structured rendering (mirrors profile view page) ─────────────────────────
 
 const DIM_ORDER: DimensionType[] = ['self', 'space', 'story', 'spirit'];
@@ -33,13 +42,14 @@ function StructuredKey({ keySlug, data, accentColor, isLast }: {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-semibold tracking-widest uppercase mb-1.5" style={{ color: accentColor }}>
-            {keyMeta?.name ?? keySlug}
+          {/* Leading sentence — layupStem turned into the key title */}
+          <p className="text-[11px] font-semibold leading-snug mb-2" style={{ color: accentColor }}>
+            {KEYS[keySlug]?.layupStem ?? keyMeta?.name ?? keySlug}
           </p>
           {data.personal_key && (
             <p className="text-sm text-white font-medium leading-snug mb-2 italic">{data.personal_key}</p>
           )}
-          <p className="text-sm text-white/45 leading-relaxed">{data.insight}</p>
+          <p className="text-sm text-white/45 leading-relaxed">…{data.insight}</p>
         </div>
       </div>
       {!isLast && <div className="h-px ml-13" style={{ background: 'rgba(255,255,255,0.05)' }} />}
@@ -80,6 +90,8 @@ function StructuredDimension({ dimId, data }: { dimId: DimensionType; data: Dime
 
 function StructuredProfile({ profile_json }: { profile_json: FlowProfileJSON }) {
   const { archetype, dimensions } = profile_json;
+  const [framingOpen, setFramingOpen] = useState(false);
+
   return (
     <div>
       {/* Archetype */}
@@ -87,10 +99,20 @@ function StructuredProfile({ profile_json }: { profile_json: FlowProfileJSON }) 
         <p className="text-[10px] tracking-widest uppercase text-white/25 mb-1">Your Archetype</p>
         <h1 className="text-2xl font-bold text-white mb-1.5">{archetype.name}</h1>
         {archetype.tagline && (
-          <p className="text-sm text-white/40 italic mb-4 leading-relaxed">{archetype.tagline}</p>
+          <p className="text-sm text-white/40 italic mb-3 leading-relaxed">{archetype.tagline}</p>
         )}
         {archetype.framing && (
-          <p className="text-sm text-white/45 leading-relaxed">{archetype.framing}</p>
+          <div>
+            {framingOpen && (
+              <p className="text-sm text-white/45 leading-relaxed mb-2">{archetype.framing}</p>
+            )}
+            <button
+              onClick={() => setFramingOpen((v) => !v)}
+              className="text-[11px] text-white/25 hover:text-white/50 transition-colors"
+            >
+              {framingOpen ? 'Show less ↑' : 'More context ↓'}
+            </button>
+          </div>
         )}
       </div>
 
@@ -213,30 +235,32 @@ export default function ProfileSummary() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
     >
-      {assessment.flow_profile_json ? (
-        <StructuredProfile profile_json={assessment.flow_profile_json} />
-      ) : assessment.flow_profile_final ? (
-        <div
-          className="profile-text"
-          dangerouslySetInnerHTML={{ __html: markdownToHtml(assessment.flow_profile_final) }}
-        />
-      ) : null}
+      <ActivityWindow>
+        {assessment.flow_profile_json ? (
+          <StructuredProfile profile_json={assessment.flow_profile_json} />
+        ) : assessment.flow_profile_final ? (
+          <div
+            className="profile-text"
+            dangerouslySetInnerHTML={{ __html: markdownToHtml(assessment.flow_profile_final) }}
+          />
+        ) : null}
 
-      {/* Subtle share link at the bottom */}
-      {assessment.view_token && (
-        <div className="mt-10 pt-6 border-t border-white/[0.06]">
-          <Link
-            href={`/profile/view/${assessment.view_token}`}
-            target="_blank"
-            className="inline-flex items-center gap-1.5 text-xs text-white/25 hover:text-white/50 transition-colors"
-          >
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            Shareable profile link
-          </Link>
-        </div>
-      )}
+        {/* Subtle share link at the bottom */}
+        {assessment.view_token && (
+          <div className="mt-10 pt-6 border-t border-white/[0.06]">
+            <Link
+              href={`/profile/view/${assessment.view_token}`}
+              target="_blank"
+              className="inline-flex items-center gap-1.5 text-xs text-white/25 hover:text-white/50 transition-colors"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Shareable profile link
+            </Link>
+          </div>
+        )}
+      </ActivityWindow>
 
       <style jsx global>{`
         .profile-text h1 { font-size: 1.5rem; font-weight: 700; color: #fff; margin-top: 2rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.07); padding-bottom: 0.5rem; }
