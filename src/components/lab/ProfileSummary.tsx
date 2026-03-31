@@ -23,6 +23,8 @@ function StructuredKey({ keySlug, data, accentColor, isLast }: {
   isLast?: boolean;
 }) {
   const keyMeta = KEYS[keySlug];
+  const [insightOpen, setInsightOpen] = useState(false);
+
   return (
     <div>
       <div className="flex items-start gap-4 py-5">
@@ -34,14 +36,29 @@ function StructuredKey({ keySlug, data, accentColor, isLast }: {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          {/* Leading sentence — layupStem turned into the key title */}
+          {/* Leading sentence */}
           <p className="text-[11px] font-semibold leading-snug mb-2" style={{ color: accentColor }}>
             {KEYS[keySlug]?.layupStem ?? keyMeta?.name ?? keySlug}
           </p>
+          {/* personal_key — always visible, ellipsis prefix */}
           {data.personal_key && (
-            <p className="text-sm text-white font-medium leading-snug mb-2 italic">{data.personal_key}</p>
+            <p className="text-sm text-white font-medium leading-snug mb-2 italic">…{data.personal_key}</p>
           )}
-          <p className="text-sm text-white/45 leading-relaxed">…{data.insight}</p>
+          {/* insight — collapsible */}
+          {data.insight && (
+            <div>
+              {insightOpen && (
+                <p className="text-sm text-white/45 leading-relaxed mb-1.5">{data.insight}</p>
+              )}
+              <button
+                onClick={() => setInsightOpen((v) => !v)}
+                className="text-[11px] transition-colors"
+                style={{ color: insightOpen ? 'rgba(255,255,255,0.2)' : accentColor, opacity: insightOpen ? 1 : 0.6 }}
+              >
+                {insightOpen ? 'Less ↑' : 'More ↓'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
       {!isLast && <div className="h-px ml-13" style={{ background: 'rgba(255,255,255,0.05)' }} />}
@@ -82,7 +99,6 @@ function StructuredDimension({ dimId, data }: { dimId: DimensionType; data: Dime
 
 function StructuredProfile({ profile_json }: { profile_json: FlowProfileJSON }) {
   const { archetype, dimensions } = profile_json;
-  const [framingOpen, setFramingOpen] = useState(false);
 
   return (
     <div>
@@ -94,17 +110,7 @@ function StructuredProfile({ profile_json }: { profile_json: FlowProfileJSON }) 
           <p className="text-sm text-white/40 italic mb-3 leading-relaxed">{archetype.tagline}</p>
         )}
         {archetype.framing && (
-          <div>
-            {framingOpen && (
-              <p className="text-sm text-white/45 leading-relaxed mb-2">{archetype.framing}</p>
-            )}
-            <button
-              onClick={() => setFramingOpen((v) => !v)}
-              className="text-[11px] text-white/25 hover:text-white/50 transition-colors"
-            >
-              {framingOpen ? 'Show less ↑' : 'More context ↓'}
-            </button>
-          </div>
+          <p className="text-sm text-white/45 leading-relaxed">{archetype.framing}</p>
         )}
       </div>
 
