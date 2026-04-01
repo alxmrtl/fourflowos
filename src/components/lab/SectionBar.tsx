@@ -284,7 +284,7 @@ function SectionColumn({ section, activeTool, onSelectTool }: {
 export default function SectionBar({ activeTool, onSelectTool }: SectionBarProps) {
   return (
     <div className="border-b border-white/[0.07]">
-      <div className="mx-auto grid grid-cols-4 divide-x divide-white/[0.06]" style={{ width: '80%' }}>
+      <div className="mx-auto grid grid-cols-4 divide-x divide-white/[0.06]" style={{ width: '70%' }}>
         {SECTIONS.map((section) => (
           <SectionColumn
             key={section.id}

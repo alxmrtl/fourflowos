@@ -47,7 +47,7 @@ export default function ActivityArea({ activeTool, onBack }: ActivityAreaProps) 
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
-          className="w-[90%] md:w-4/5 max-w-4xl mx-auto border border-white/[0.07] rounded-2xl overflow-hidden"
+          className="w-[90%] md:w-[70%] mx-auto border border-white/[0.07] rounded-2xl overflow-hidden"
         >
           <div className={isPadded ? 'p-6 md:p-8' : ''}>
             <ToolContent activeTool={activeTool} onBack={onBack} />
