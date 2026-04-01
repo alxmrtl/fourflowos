@@ -129,17 +129,23 @@ export default function HeroSectionV2() {
         >
           <Link
             href="/me"
-            className="font-sans px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105"
+            className="font-sans inline-flex items-center gap-2 px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105"
             style={{ background: GRADIENTS.primaryCta }}
           >
-            Open FlowLab
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M8 1L9.5 6.5L15 8L9.5 9.5L8 15L6.5 9.5L1 8L6.5 6.5L8 1Z" fill="currentColor" />
+            </svg>
+            Begin your practice
           </Link>
           <a
             href="#honest-moment"
             onClick={scrollToNext}
-            className="font-sans px-7 py-3 text-sm font-medium rounded-full border border-white/20 text-white/60 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all duration-300"
+            className="font-sans inline-flex items-center gap-2 px-8 py-4 font-medium rounded-full border border-white/30 text-white/80 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-300"
           >
             Walk me through it
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M8 3v10M3 9l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </a>
         </motion.div>
       </motion.div>

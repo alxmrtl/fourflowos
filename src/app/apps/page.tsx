@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 // ─── Tool sections ─────────────────────────────────────────────────────────────
 
-/** Web tools that live inside FlowLab, in section order */
+/** Web tools that live inside the practice hub, in section order */
 const LAB_ORDER = ['flow-profile', 'flowread', 'flowcompendium', 'flowbreath', 'curiosity-explorer', 'flowzone'];
 /** iOS-native apps — live */
 const IOS_LIVE = ['flowrep'];
@@ -319,16 +319,16 @@ export default function PracticePage() {
         <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
-      {/* FlowLab tools */}
+      {/* Your practice tools */}
       <div className="max-w-3xl mx-auto px-6 mb-16">
         <div className="flex items-center gap-3 mb-5">
-          <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-widest">FlowLab</span>
+          <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-widest">Your practice</span>
           <div className="flex-1 h-px bg-white/6" />
           <Link
             href="/me"
             className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-600 hover:text-gray-300 transition-colors"
           >
-            Open FlowLab
+            Begin your practice
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>

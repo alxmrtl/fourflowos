@@ -18,7 +18,7 @@ export default function LandingNav() {
   const { user, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const isFlowLab = pathname === '/me';
+  const isYourPractice = pathname === '/me';
 
   const { scrollY } = useScroll();
   const backgroundOpacity = useTransform(scrollY, [0, 100], [0, 1]);
@@ -35,8 +35,8 @@ export default function LandingNav() {
     router.push('/');
   };
 
-  // FlowLab is the primary destination for all users
-  const signalLink = { href: '/me', label: 'FlowLab' };
+  // Your Practice is the primary destination for all users
+  const signalLink = { href: '/me', label: 'Your Practice' };
 
   const mainNavLinks = [
     { ...signalLink, featured: true },
@@ -88,7 +88,7 @@ export default function LandingNav() {
                   key={link.href}
                   href={link.href}
                   className={`relative px-4 py-1.5 text-white text-sm font-medium rounded-full border bg-gradient-to-r transition-all duration-300 ${
-                    isFlowLab
+                    isYourPractice
                       ? 'border-[#3E6FA3]/70 from-[#3E6FA3]/20 to-[#6330A0]/20 shadow-[0_0_22px_rgba(62,111,163,0.30)]'
                       : 'border-[#3E6FA3]/35 from-[#3E6FA3]/[0.08] to-[#6330A0]/[0.08] hover:from-[#3E6FA3]/15 hover:to-[#6330A0]/15 hover:border-[#3E6FA3]/55 shadow-[0_0_14px_rgba(62,111,163,0.10)] hover:shadow-[0_0_22px_rgba(62,111,163,0.25)]'
                   }`}
@@ -273,7 +273,7 @@ export default function LandingNav() {
                 style={{ background: 'linear-gradient(135deg, #3E6FA3, #6330A0)' }}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Open FlowLab
+                Begin your practice
               </Link>
             </div>
           </div>

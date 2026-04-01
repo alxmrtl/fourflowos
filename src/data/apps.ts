@@ -23,7 +23,7 @@ export interface App {
   releaseDate?: string;
   inDevelopment: boolean;
   what?: string;
-  /** ToolId this app maps to inside FlowLab — web-based lab tools only */
+  /** ToolId this app maps to inside the practice hub — web-based tools only */
   labToolId?: string;
 }
 
@@ -33,7 +33,7 @@ export const APPS: Record<string, App> = {
     name: 'Flow Profile',
     tagline: 'Know where flow is blocked.',
     summary: 'Your consciousness alignment map across the 12 Flow Keys',
-    description: 'A diagnostic across 12 conditions that determine whether flow is accessible. Your Flow Profile shows which keys are bottlenecks right now — and the specific cascade that will unlock access. Everything else in FlowLab is calibrated to what your profile reveals.',
+    description: 'A diagnostic across 12 conditions that determine whether flow is accessible. Your Flow Profile shows which keys are bottlenecks right now — and the specific cascade that will unlock access. Everything else in your practice is calibrated to what your profile reveals.',
     fullDescription: `The Flow Profile is a diagnostic across 12 Flow Keys organized into four pillars: SELF, SPACE, STORY, and SPIRIT.
 
 Each key names a condition that must be met for flow to be accessible. The profile surfaces which of these conditions are restricting access right now — and in what order to address them.

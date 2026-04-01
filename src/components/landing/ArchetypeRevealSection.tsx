@@ -146,7 +146,7 @@ function FlowLabPreview() {
               background: `${STEEL}18`,
             }}
           >
-            FlowLab
+            Your Practice
           </span>
         </div>
       </div>
@@ -206,13 +206,13 @@ export default function ArchetypeRevealSection() {
             transition={{ duration: 1.0, ease: 'easeOut' }}
           >
             <p className="font-sans text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-600 mb-4">
-              Your Flow Lab
+              Your practice space
             </p>
             <h2 className="font-display text-4xl md:text-5xl font-normal text-white mb-5 leading-[1.1]">
               Everything you need.<br />One place.
             </h2>
             <p className="font-sans text-lg text-gray-400 leading-relaxed mb-8">
-              FlowLab brings the framework to life — your Profile, your protocols, and your focus
+              FourFlow brings the framework to life — your Profile, your protocols, and your focus
               tools, all built around the same 12 conditions. Know your map. Use your tools. Build
               the reps.
             </p>
@@ -237,7 +237,7 @@ export default function ArchetypeRevealSection() {
                 className="font-sans px-7 py-3.5 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105 text-sm"
                 style={{ background: GRADIENTS.primaryCta }}
               >
-                Open FlowLab
+                Begin your practice
               </Link>
               <Link
                 href="/framework"

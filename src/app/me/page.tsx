@@ -3,8 +3,8 @@ import { Suspense } from 'react';
 import FlowLab from '@/components/lab/FlowLab';
 
 export const metadata: Metadata = {
-  title: 'FlowLab — FourFlow',
-  description: 'Your flow entry point. Breathe, choose, move.',
+  title: 'Your Practice — FourFlow',
+  description: 'Your practice space. Built on the 12 conditions of flow.',
 };
 
 export default function Page() {
