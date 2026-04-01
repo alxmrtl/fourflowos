@@ -11,9 +11,14 @@ import { DimensionType } from '@/types/framework';
 import LandingNav from '@/components/landing/LandingNav';
 import { useAuth } from '@/hooks/useAuth';
 
-// ─── Live tool display order ───────────────────────────────────────────────────
+// ─── Tool sections ─────────────────────────────────────────────────────────────
 
-const LIVE_ORDER = ['flowzone', 'flowread', 'curiosity-explorer', 'flowrep'];
+/** Web tools that live inside FlowLab, in section order */
+const LAB_ORDER = ['flow-profile', 'flowread', 'flowcompendium', 'flowbreath', 'curiosity-explorer', 'flowzone'];
+/** iOS-native apps — live */
+const IOS_LIVE = ['flowrep'];
+/** iOS-native apps — coming soon */
+const IOS_SOON = ['flowhabits'];
 
 // ─── Platform badge ────────────────────────────────────────────────────────────
 
@@ -253,8 +258,9 @@ export default function PracticePage() {
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
   const { user } = useAuth();
 
-  const liveTools = LIVE_ORDER.map((id) => APPS[id]).filter((a): a is App => Boolean(a) && !a.inDevelopment);
-  const comingSoon = Object.values(APPS).filter((a) => a.inDevelopment);
+  const labTools = LAB_ORDER.map((id) => APPS[id]).filter((a): a is App => Boolean(a));
+  const iosLive = IOS_LIVE.map((id) => APPS[id]).filter((a): a is App => Boolean(a));
+  const iosSoon = IOS_SOON.map((id) => APPS[id]).filter((a): a is App => Boolean(a));
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -313,11 +319,23 @@ export default function PracticePage() {
         <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
-      {/* Live tools */}
+      {/* FlowLab tools */}
       <div className="max-w-3xl mx-auto px-6 mb-16">
-        <SectionLabel label="Live" />
+        <div className="flex items-center gap-3 mb-5">
+          <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-widest">FlowLab</span>
+          <div className="flex-1 h-px bg-white/6" />
+          <Link
+            href="/me"
+            className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-600 hover:text-gray-300 transition-colors"
+          >
+            Open FlowLab
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
+        </div>
         <div className="flex flex-col gap-3">
-          {liveTools.map((app, i) => (
+          {labTools.map((app, i) => (
             <ToolRow
               key={app.id}
               app={app}
@@ -328,15 +346,27 @@ export default function PracticePage() {
         </div>
       </div>
 
-      {/* Coming soon */}
-      {comingSoon.length > 0 && (
+      {/* iOS Apps */}
+      {(iosLive.length > 0 || iosSoon.length > 0) && (
         <div className="max-w-3xl mx-auto px-6 mb-24">
-          <SectionLabel label="Coming Soon" />
-          <div className="grid sm:grid-cols-2 gap-3">
-            {comingSoon.map((app, i) => (
-              <ComingSoonCard key={app.id} app={app} index={i} />
+          <SectionLabel label="iOS Apps" />
+          <div className="flex flex-col gap-3 mb-3">
+            {iosLive.map((app, i) => (
+              <ToolRow
+                key={app.id}
+                app={app}
+                index={i}
+                onDetails={() => setSelectedApp(app)}
+              />
             ))}
           </div>
+          {iosSoon.length > 0 && (
+            <div className="grid sm:grid-cols-2 gap-3">
+              {iosSoon.map((app, i) => (
+                <ComingSoonCard key={app.id} app={app} index={i} />
+              ))}
+            </div>
+          )}
         </div>
       )}
 

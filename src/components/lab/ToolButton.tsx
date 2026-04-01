@@ -28,8 +28,8 @@ export default function ToolButton({ label, description, color, isActive, icon, 
     >
       {icon && (
         <span
-          className="mt-0.5 flex-shrink-0 opacity-60"
-          style={{ color: isActive ? color : 'rgba(255,255,255,0.5)' }}
+          className="mt-0.5 flex-shrink-0 transition-opacity duration-200"
+          style={{ opacity: isActive ? 0.9 : 0.45, color: isActive ? color : 'rgba(255,255,255,0.5)' }}
         >
           {icon}
         </span>

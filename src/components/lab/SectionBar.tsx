@@ -154,43 +154,11 @@ function CreateAnim() {
   );
 }
 
-// ─── SVG icons ────────────────────────────────────────────────────────────────
+// ─── App icons (match Practice page) ─────────────────────────────────────────
 
-const ProfileIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-  </svg>
-);
-
-const BookIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-  </svg>
-);
-
-const GridIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-  </svg>
-);
-
-const BreathIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M7 8.5C7 8.5 9 5.5 12 8.5s5 0 5 0M7 12c0 0 2-3 5 0s5 0 5 0M7 15.5c0 0 2-3 5 0s5 0 5 0" />
-  </svg>
-);
-
-const SparkIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-  </svg>
-);
-
-const TimerIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
+function AppIcon({ src, alt }: { src: string; alt: string }) {
+  return <Image src={src} alt={alt} width={20} height={20} className="object-contain" />;
+}
 
 // ─── Section definitions ──────────────────────────────────────────────────────
 
@@ -214,7 +182,7 @@ const SECTIONS: SectionDef[] = [
     sectionLogo: '/assets/LOGOS/SPIRIT - Section Logo.png',
     Animation: CoreAnim,
     tools: [
-      { id: 'profile', label: 'Flow Profile', description: 'Your consciousness alignment map', icon: <ProfileIcon /> },
+      { id: 'profile', label: 'Flow Profile', description: 'Your consciousness alignment map', icon: <AppIcon src="/assets/LOGOS/FOURFLOW - MAIN LOGO.png" alt="Flow Profile" /> },
     ],
   },
   {
@@ -225,8 +193,8 @@ const SECTIONS: SectionDef[] = [
     sectionLogo: '/assets/LOGOS/STORY - Section Logo.png',
     Animation: ConsumeAnim,
     tools: [
-      { id: 'flowread', label: 'FlowRead', description: 'Focus reading trainer', icon: <BookIcon /> },
-      { id: 'compendium', label: 'FlowCompendium', description: 'Browse 191 flow protocols', icon: <GridIcon /> },
+      { id: 'flowread', label: 'FlowRead', description: 'Focus reading trainer', icon: <AppIcon src="/assets/apps/flowread-icon.png" alt="FlowRead" /> },
+      { id: 'compendium', label: 'FlowCompendium', description: 'Browse 191 flow protocols', icon: <AppIcon src="/assets/LOGOS/OPEN MIND.png" alt="FlowCompendium" /> },
     ],
   },
   {
@@ -237,8 +205,8 @@ const SECTIONS: SectionDef[] = [
     sectionLogo: '/assets/LOGOS/SELF - Section Logo.png',
     Animation: CatalyzeAnim,
     tools: [
-      { id: 'breathwork', label: 'FlowBreath', description: 'Shift state — body first', icon: <BreathIcon /> },
-      { id: 'curiosity', label: 'FlowSpark', description: 'Map what pulls you', icon: <SparkIcon /> },
+      { id: 'breathwork', label: 'FlowBreath', description: 'Shift state — body first', icon: <AppIcon src="/assets/LOGOS/FOCUSED BODY.png" alt="FlowBreath" /> },
+      { id: 'curiosity', label: 'FlowSpark', description: 'Map what pulls you', icon: <AppIcon src="/assets/LOGOS/IGNITED CURIOSITY.png" alt="FlowSpark" /> },
     ],
   },
   {
@@ -249,7 +217,7 @@ const SECTIONS: SectionDef[] = [
     sectionLogo: '/assets/LOGOS/SPACE - Section Logo.png',
     Animation: CreateAnim,
     tools: [
-      { id: 'flowzone', label: 'FlowZone', description: 'Focus timer + reps', icon: <TimerIcon /> },
+      { id: 'flowzone', label: 'FlowZone', description: 'Focus timer + reps', icon: <AppIcon src="/assets/apps/flowzone-icon.png" alt="FlowZone" /> },
     ],
   },
 ];
