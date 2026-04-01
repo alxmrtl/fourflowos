@@ -7,11 +7,10 @@ import type { MasteryStats, Pillar } from '@/types/training';
 
 export const dynamic = 'force-dynamic';
 
-/** Returns true if content_md has a meaningful body beyond the frontmatter */
+/** Returns true if content_md contains a ## Recall section (drives the "What to Remember" card) */
 function hasSubstantiveContent(contentMd: string | null): boolean {
   if (!contentMd) return false;
-  const body = contentMd.replace(/^---[\s\S]*?---\n?/, '').trim();
-  return body.length > 80;
+  return /^## Recall\b/m.test(contentMd);
 }
 
 /** Extract blockquote definition from markdown content when frontmatter definition is empty */
