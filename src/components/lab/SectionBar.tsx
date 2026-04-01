@@ -7,8 +7,78 @@ import { CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
 import ToolButton from './ToolButton';
 import type { ToolId } from './useLabState';
 
-// ─── Mini animations (adapted from FrequencyField) ────────────────────────────
+// ─── Mini animations ──────────────────────────────────────────────────────────
 
+// CORE: gradient condenses to a bright point, then breathes back out
+function CoreAnim() {
+  return (
+    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+      {/* Outer field — large and faint, collapses inward */}
+      <motion.div
+        className="absolute rounded-full"
+        style={{ width: 110, height: 110, background: `radial-gradient(circle, transparent 25%, ${AMETHYST}28 55%, transparent 75%)` }}
+        animate={{ scale: [1, 0.4, 1], opacity: [0.9, 0.1, 0.9] }}
+        transition={{ duration: 5.0, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
+      />
+      {/* Mid layer — brightens as it condenses */}
+      <motion.div
+        className="absolute rounded-full"
+        style={{ width: 58, height: 58, background: `radial-gradient(circle, ${AMETHYST}55 0%, ${AMETHYST}20 60%, transparent 80%)` }}
+        animate={{ scale: [0.7, 1.5, 0.7], opacity: [0.35, 0.85, 0.35] }}
+        transition={{ duration: 5.0, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
+      />
+      {/* Core point — ignites at peak compression */}
+      <motion.div
+        className="absolute rounded-full"
+        style={{ width: 10, height: 10, background: `radial-gradient(circle, white 0%, ${AMETHYST} 60%, transparent 85%)`, boxShadow: `0 0 10px ${AMETHYST}` }}
+        animate={{ scale: [0.2, 1.4, 0.2], opacity: [0.1, 1, 0.1] }}
+        transition={{ duration: 5.0, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
+      />
+    </div>
+  );
+}
+
+// CONSUME: colored dots spiral/drain into a central white light
+const CONSUME_DOTS = Array.from({ length: 8 }, (_, i) => {
+  const angle = (i / 8) * Math.PI * 2;
+  const r = 34;
+  return {
+    x: Math.cos(angle) * r,
+    y: Math.sin(angle) * r,
+    color: [CORAL, SAGE, STEEL, AMETHYST, CORAL, SAGE, STEEL, AMETHYST][i],
+    delay: i * (3.2 / 8),
+  };
+});
+
+function ConsumeAnim() {
+  return (
+    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+      {/* Central drain — white glow that pulses */}
+      <motion.div
+        className="absolute rounded-full z-10"
+        style={{ width: 10, height: 10, background: 'white', boxShadow: '0 0 16px 6px rgba(255,255,255,0.45)' }}
+        animate={{ scale: [0.8, 1.3, 0.8] }}
+        transition={{ duration: 2.0, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {CONSUME_DOTS.map((dot, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{ width: 5, height: 5, background: dot.color }}
+          animate={{
+            x: [dot.x, dot.x * 0.55, dot.x * 0.1, 0],
+            y: [dot.y, dot.y * 0.55, dot.y * 0.1, 0],
+            scale: [1, 0.75, 0.35, 0],
+            opacity: [0.9, 0.65, 0.35, 0],
+          }}
+          transition={{ duration: 3.2, repeat: Infinity, ease: 'easeIn', delay: dot.delay, times: [0, 0.35, 0.7, 1] }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// CATALYZE: 3 breath cycles (bright/dim) → quick scatter burst → reset
 const CATALYZE_DOTS = [
   { x: 14, y: 22, dx: 13, dy: 9 }, { x: 74, y: 13, dx: -11, dy: 17 },
   { x: 38, y: 58, dx: 9, dy: -13 }, { x: 84, y: 68, dx: -16, dy: -9 },
@@ -18,42 +88,6 @@ const CATALYZE_DOTS = [
   { x: 68, y: 83, dx: -9, dy: -17 }, { x: 53, y: 53, dx: 15, dy: -7 },
 ];
 
-function ConsumeAnim() {
-  const colors = [CORAL, SAGE, STEEL, AMETHYST];
-  return (
-    <div className="flex items-center justify-center gap-2 w-full h-full px-2">
-      {Array.from({ length: 9 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="rounded-full flex-shrink-0"
-          style={{ width: 5, height: 5, background: colors[i % 4], opacity: 0.5 }}
-          animate={{ y: [0, -10, 0, 10, 0] }}
-          transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: i * 0.22 }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function CreateAnim() {
-  return (
-    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-      <motion.div
-        className="absolute rounded-full"
-        style={{ width: 70, height: 70, background: `radial-gradient(circle, ${SAGE}50 0%, transparent 70%)` }}
-        animate={{ x: [-16, 16, -16], y: [8, -8, 8] }}
-        transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute rounded-full"
-        style={{ width: 55, height: 55, background: `radial-gradient(circle, ${STEEL}50 0%, transparent 70%)` }}
-        animate={{ x: [16, -16, 16], y: [-8, 8, -8] }}
-        transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut', delay: 2.6 }}
-      />
-    </div>
-  );
-}
-
 function CatalyzeAnim() {
   return (
     <div className="relative w-full h-full overflow-hidden">
@@ -62,29 +96,60 @@ function CatalyzeAnim() {
           key={i}
           className="absolute rounded-full"
           style={{ width: 4, height: 4, background: CORAL, left: `${dot.x}%`, top: `${dot.y}%` }}
-          animate={{ x: [0, dot.dx * 0.6, 0], y: [0, dot.dy * 0.6, 0], opacity: [0.2, 0.6, 0.2] }}
-          transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: i * 0.18 }}
+          animate={{
+            opacity:  [0.15, 0.85, 0.15, 0.85, 0.15, 0.85, 0.15, 0.95, 0.15, 0.15],
+            scale:    [0.8,  1.4,  0.8,  1.4,  0.8,  1.4,  0.8,  1.8,  0.8,  0.8],
+            x:        [0,    0,    0,    0,    0,    0,    0,    dot.dx * 1.3, 0,  0],
+            y:        [0,    0,    0,    0,    0,    0,    0,    dot.dy * 1.3, 0,  0],
+          }}
+          transition={{
+            duration: 6.0,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: i * 0.1,
+            times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.72, 0.86, 1.0],
+          }}
         />
       ))}
     </div>
   );
 }
 
-function CoreAnim() {
+// CREATE: scattered dots converge methodically into a golden ratio spiral
+const PHI_ANGLE = 2.3999; // golden angle in radians
+const CREATE_TARGETS = Array.from({ length: 12 }, (_, i) => ({
+  x: Math.cos(i * PHI_ANGLE) * Math.sqrt(i + 1) * 7,
+  y: Math.sin(i * PHI_ANGLE) * Math.sqrt(i + 1) * 7,
+}));
+const CREATE_SCATTER = [
+  { x: -38, y: -22 }, { x: 32, y: -30 }, { x: -15, y: 28 }, { x: 40, y: 18 },
+  { x: -30, y: 8  }, { x: 22, y: 35  }, { x: -42, y: -5 }, { x: 10, y: -35 },
+  { x: 35, y: -12 }, { x: -20, y: -32 }, { x: 28, y: 25 }, { x: -8, y: 38 },
+];
+
+function CreateAnim() {
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-      <motion.div
-        className="absolute rounded-full"
-        style={{ width: 90, height: 90, background: `radial-gradient(circle, ${AMETHYST}30 0%, transparent 70%)` }}
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 6.0, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute rounded-full"
-        style={{ width: 48, height: 48, background: `radial-gradient(circle, ${AMETHYST}45 0%, transparent 70%)` }}
-        animate={{ scale: [1, 1.18, 1] }}
-        transition={{ duration: 6.0, repeat: Infinity, ease: 'easeInOut', delay: 3.0 }}
-      />
+      {CREATE_TARGETS.map((target, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{ width: 4, height: 4, background: SAGE, boxShadow: `0 0 4px ${SAGE}80` }}
+          animate={{
+            x: [CREATE_SCATTER[i].x, CREATE_SCATTER[i].x, target.x, target.x, CREATE_SCATTER[i].x],
+            y: [CREATE_SCATTER[i].y, CREATE_SCATTER[i].y, target.y, target.y, CREATE_SCATTER[i].y],
+            opacity: [0.25, 0.35, 0.95, 0.95, 0.25],
+            scale:   [0.7,  0.7,  1.3,  1.0,  0.7],
+          }}
+          transition={{
+            duration: 6.0,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: i * 0.06,
+            times: [0, 0.3, 0.62, 0.84, 1.0],
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -92,37 +157,37 @@ function CoreAnim() {
 // ─── SVG icons ────────────────────────────────────────────────────────────────
 
 const ProfileIcon = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
   </svg>
 );
 
 const BookIcon = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
   </svg>
 );
 
 const GridIcon = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
   </svg>
 );
 
 const BreathIcon = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M7 8.5C7 8.5 9 5.5 12 8.5s5 0 5 0M7 12c0 0 2-3 5 0s5 0 5 0M7 15.5c0 0 2-3 5 0s5 0 5 0" />
   </svg>
 );
 
 const SparkIcon = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
   </svg>
 );
 
 const TimerIcon = () => (
-  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
 );
@@ -221,10 +286,10 @@ function SectionColumn({ section, activeTool, onSelectTool }: {
           <Image src={section.sectionLogo} alt={section.label} fill className="object-contain" />
         </div>
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] leading-none" style={{ color: section.color }}>
+          <p className="text-[13px] font-bold uppercase tracking-[0.22em] leading-none" style={{ color: section.color }}>
             {section.label}
           </p>
-          <p className="text-[10px] text-white/28 mt-0.5 leading-tight hidden sm:block">
+          <p className="text-[11px] text-white/28 mt-0.5 leading-tight hidden sm:block">
             {section.description}
           </p>
         </div>
@@ -250,15 +315,17 @@ function SectionColumn({ section, activeTool, onSelectTool }: {
 
 export default function SectionBar({ activeTool, onSelectTool }: SectionBarProps) {
   return (
-    <div className="border-b border-white/[0.07] grid grid-cols-4 divide-x divide-white/[0.06]">
-      {SECTIONS.map((section) => (
-        <SectionColumn
-          key={section.id}
-          section={section}
-          activeTool={activeTool}
-          onSelectTool={onSelectTool}
-        />
-      ))}
+    <div className="border-b border-white/[0.07]">
+      <div className="mx-auto grid grid-cols-4 divide-x divide-white/[0.06]" style={{ width: '80%' }}>
+        {SECTIONS.map((section) => (
+          <SectionColumn
+            key={section.id}
+            section={section}
+            activeTool={activeTool}
+            onSelectTool={onSelectTool}
+          />
+        ))}
+      </div>
     </div>
   );
 }
