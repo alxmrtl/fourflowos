@@ -3,98 +3,184 @@
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { useRef } from 'react';
+import { GRADIENTS, CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
 
 const featureLines = [
-  { color: '#E84535', text: 'Your natural entry point into flow — the condition that opens everything else' },
-  { color: '#3E6FA3', text: 'How your four dimensions interact — where they lift you, where they create drag' },
-  { color: '#6330A0', text: 'The specific conditions that have always worked for you, named and mapped' },
+  { color: AMETHYST, text: 'Your Flow Profile — the alignment map that makes everything else make sense' },
+  { color: STEEL,    text: 'CONSUME + CATALYZE — tools for taking in and breaking inertia' },
+  { color: SAGE,     text: 'FlowZone — a focus timer that counts the invisible work of staying present' },
 ];
 
-const dimensions = [
-  { label: 'SELF', color: '#E84535', keys: ['Tuned Emotions', 'Focused Body', 'Open Mind'] },
-  { label: 'SPACE', color: '#4E8C73', keys: ['Intentional Space', 'Optimized Tools', 'Feedback Systems'] },
-  { label: 'STORY', color: '#3E6FA3', keys: ['Generative Story', 'Clear Mission', 'Empowered Role'] },
-  { label: 'SPIRIT', color: '#6330A0', keys: ['Grounding Values', 'Ignited Curiosity', 'Visualized Vision'] },
+const SECTIONS = [
+  {
+    id: 'core',
+    label: 'CORE',
+    desc: 'Know yourself',
+    color: AMETHYST,
+    tools: [{ name: 'Flow Profile', sub: 'Your alignment map' }],
+    active: true,
+  },
+  {
+    id: 'consume',
+    label: 'CONSUME',
+    desc: 'Take something in',
+    color: STEEL,
+    tools: [
+      { name: 'FlowRead', sub: 'Focus reading trainer' },
+      { name: 'FlowCompendium', sub: '191 flow protocols' },
+    ],
+    active: false,
+  },
+  {
+    id: 'catalyze',
+    label: 'CATALYZE',
+    desc: 'Break inertia',
+    color: CORAL,
+    tools: [
+      { name: 'FlowBreath', sub: 'Shift state — body first' },
+      { name: 'FlowSpark', sub: 'Map what pulls you' },
+    ],
+    active: false,
+  },
+  {
+    id: 'create',
+    label: 'CREATE',
+    desc: 'Enter deep work',
+    color: SAGE,
+    tools: [{ name: 'FlowZone', sub: 'Focus timer + reps' }],
+    active: false,
+  },
 ];
 
-const dimensionSummaries: Record<string, string> = {
-  SELF: 'Your inner signal is strong when you let emotion inform rather than drive. The body holds steadiness your mind often overrides.',
-  SPACE: 'Your environment either amplifies or absorbs. The right constraints become launchpads — clutter is a hidden cost.',
-  STORY: 'You orient by meaning. When the arc is clear, execution becomes obvious. Disconnected tasks drain more than they build.',
-  SPIRIT: 'Curiosity is your compass. Values don\'t limit you — they\'re the ground you push off from.',
-};
-
-function BentoPreview() {
+function SectionColPreview({
+  section,
+  index,
+}: {
+  section: (typeof SECTIONS)[0];
+  index: number;
+}) {
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden bg-[#0d0d0d] border border-white/10 p-4 md:p-5">
-      {/* Archetype header */}
-      <div className="mb-4 pb-4 border-b border-white/[0.08]">
-        <p className="font-sans text-[9px] tracking-[0.2em] uppercase text-gray-600 mb-1">
-          Your Flow Archetype
-        </p>
-        <p className="font-sans text-base font-light text-white/80 leading-tight">
-          The Resonant Architect
-        </p>
-        {/* 4-color hairline */}
-        <div className="flex h-[2px] mt-2 mb-2 rounded-full overflow-hidden">
-          <div className="flex-1" style={{ background: '#E84535' }} />
-          <div className="flex-1" style={{ background: '#4E8C73' }} />
-          <div className="flex-1" style={{ background: '#3E6FA3' }} />
-          <div className="flex-1" style={{ background: '#6330A0' }} />
-        </div>
-        <p className="font-sans text-[10px] italic text-gray-500">
-          You build with signal. Structure is how you transmit meaning.
-        </p>
+    <div
+      className="flex flex-col"
+      style={{ borderRight: index < 3 ? '1px solid rgba(255,255,255,0.06)' : undefined }}
+    >
+      {/* Mini animation blob */}
+      <div className="h-[48px] flex items-center justify-center overflow-hidden">
+        <motion.div
+          className="rounded-full"
+          style={{
+            width: 40,
+            height: 40,
+            background: `radial-gradient(circle, ${section.color}50 0%, transparent 70%)`,
+          }}
+          animate={{ scale: [1, 1.18, 1] }}
+          transition={{
+            duration: 4.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: index * 0.9,
+          }}
+        />
       </div>
 
-      {/* 2×2 dimension grid */}
-      <div className="grid grid-cols-2 gap-2.5">
-        {dimensions.map((dim) => (
+      {/* Section header */}
+      <div className="px-2.5 pb-2 border-b border-white/[0.05]">
+        <p
+          className="text-[7.5px] font-bold uppercase tracking-[0.18em] leading-none"
+          style={{ color: section.color }}
+        >
+          {section.label}
+        </p>
+        <p className="text-[6.5px] text-white/25 mt-0.5">{section.desc}</p>
+      </div>
+
+      {/* Tool buttons */}
+      <div className="flex flex-col gap-1.5 px-2 py-2">
+        {section.tools.map((tool, i) => (
           <div
-            key={dim.label}
-            className="rounded-xl overflow-hidden"
-            style={{ border: `1px solid ${dim.color}22` }}
+            key={tool.name}
+            className="rounded-md px-2 py-1.5"
+            style={{
+              backgroundColor: `${section.color}${section.active && i === 0 ? '22' : '0f'}`,
+              border: `1px solid ${section.color}${section.active && i === 0 ? '40' : '1a'}`,
+            }}
           >
-            {/* Top color bar */}
-            <div className="h-[3px]" style={{ background: dim.color }} />
-            <div className="p-2.5 flex gap-2">
-              {/* Left col */}
-              <div className="w-[72px] flex-shrink-0">
-                <p
-                  className="font-sans text-[7px] font-semibold tracking-widest uppercase mb-2"
-                  style={{ color: dim.color }}
-                >
-                  {dim.label}
-                </p>
-                <div className="flex flex-col gap-1">
-                  {dim.keys.map((key) => (
-                    <div
-                      key={key}
-                      className="rounded flex items-center gap-1 px-1 py-0.5"
-                      style={{ backgroundColor: `${dim.color}14` }}
-                    >
-                      <div
-                        className="w-1 h-1 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: dim.color }}
-                      />
-                      <span className="font-sans text-[6.5px] text-white/40 leading-tight truncate">{key}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {/* Right col — summary text */}
-              <div className="flex-1 min-w-0">
-                <p className="font-sans text-[7px] text-gray-500 leading-[1.55]">
-                  {dimensionSummaries[dim.label]}
-                </p>
-              </div>
-            </div>
+            <p
+              className="text-[7px] font-medium leading-tight"
+              style={{
+                color:
+                  section.active && i === 0
+                    ? 'rgba(255,255,255,0.80)'
+                    : 'rgba(255,255,255,0.45)',
+              }}
+            >
+              {tool.name}
+            </p>
+            <p className="text-[6px] text-white/25 leading-tight mt-0.5">{tool.sub}</p>
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function FlowLabPreview() {
+  return (
+    <div className="relative w-full rounded-2xl overflow-hidden bg-[#0d0d0d] border border-white/10">
+      {/* Simulated nav bar */}
+      <div className="flex items-center justify-between px-4 h-9 bg-[#0a0a0a]/95 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2">
+          <div className="w-3.5 h-3.5 rounded-full bg-white/15" />
+          <span className="text-[9px] font-bold text-white/35 tracking-wide">
+            FourFlow<span className="text-white/15">OS</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="hidden sm:block text-[8px] text-white/20">How It Works</span>
+          <span className="hidden sm:block text-[8px] text-white/20">Practice</span>
+          <span
+            className="text-[8px] px-2 py-0.5 rounded-full border"
+            style={{
+              color: STEEL,
+              borderColor: `${STEEL}70`,
+              background: `${STEEL}18`,
+            }}
+          >
+            FlowLab
+          </span>
+        </div>
+      </div>
+
+      {/* Section bar — 4 columns */}
+      <div className="grid grid-cols-4">
+        {SECTIONS.map((section, i) => (
+          <SectionColPreview key={section.id} section={section} index={i} />
+        ))}
+      </div>
+
+      {/* Activity area */}
+      <div className="border-t border-white/[0.07] px-5 py-5 flex flex-col items-center justify-center gap-3 min-h-[88px]">
+        <div className="flex items-center gap-1.5">
+          <div
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ background: AMETHYST }}
+          />
+          <span
+            className="text-[8px] font-semibold tracking-[0.15em] uppercase"
+            style={{ color: AMETHYST }}
+          >
+            Flow Profile
+          </span>
+        </div>
+        <div className="w-full max-w-[180px] space-y-1.5">
+          <div className="h-1.5 rounded-full bg-white/[0.06] w-full" />
+          <div className="h-1.5 rounded-full bg-white/[0.06] w-4/5" />
+          <div className="h-1.5 rounded-full bg-white/[0.06] w-3/5" />
+        </div>
+      </div>
 
       {/* Bottom gradient mask */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none" />
     </div>
   );
 }
@@ -120,15 +206,15 @@ export default function ArchetypeRevealSection() {
             transition={{ duration: 1.0, ease: 'easeOut' }}
           >
             <p className="font-sans text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-600 mb-4">
-              Your Flow Archetype
+              Your Flow Lab
             </p>
             <h2 className="font-display text-4xl md:text-5xl font-normal text-white mb-5 leading-[1.1]">
-              Here&apos;s how you work.
+              Everything you need.<br />One place.
             </h2>
             <p className="font-sans text-lg text-gray-400 leading-relaxed mb-8">
-              The Archetype draws on ancient wisdom traditions, personality science, and behavioral patterns, read
-              through the lens of the twelve keys. What comes back is a blueprint: how you run, where you catch,
-              what opens the state and what gets in the way.
+              FlowLab brings the framework to life — your Profile, your protocols, and your focus
+              tools, all built around the same 12 conditions. Know your map. Use your tools. Build
+              the reps.
             </p>
 
             {/* Feature lines */}
@@ -147,11 +233,11 @@ export default function ArchetypeRevealSection() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-start gap-4">
               <Link
-                href="/map"
+                href="/me"
                 className="font-sans px-7 py-3.5 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105 text-sm"
-                style={{ background: 'linear-gradient(135deg, #3E6FA3, #6330A0)' }}
+                style={{ background: GRADIENTS.primaryCta }}
               >
-                Map your signal
+                Open FlowLab
               </Link>
               <Link
                 href="/framework"
@@ -162,7 +248,7 @@ export default function ArchetypeRevealSection() {
             </div>
           </motion.div>
 
-          {/* Right — BentoGrid preview */}
+          {/* Right — FlowLab UI preview */}
           <motion.div
             ref={previewRef}
             className="relative"
@@ -171,7 +257,7 @@ export default function ArchetypeRevealSection() {
             transition={{ duration: 1.0, ease: 'easeOut', delay: 0.12 }}
           >
             <div className="opacity-70 rotate-1 md:rotate-2 transition-transform duration-500 hover:rotate-0">
-              <BentoPreview />
+              <FlowLabPreview />
             </div>
           </motion.div>
 

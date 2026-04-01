@@ -128,11 +128,11 @@ export default function HeroSectionV2() {
           }}
         >
           <Link
-            href="/map"
+            href="/me"
             className="font-sans px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105"
             style={{ background: GRADIENTS.primaryCta }}
           >
-            Discover your archetype
+            Open FlowLab
           </Link>
           <a
             href="#honest-moment"

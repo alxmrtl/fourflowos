@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import TopBarUserButton from '@/components/navigation/TopBarUserButton';
 import { useAuth } from '@/hooks/useAuth';
 import { PILLAR_COLORS } from '@/styles/brand-colors';
@@ -17,6 +17,8 @@ export default function LandingNav() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { user, signOut } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const isFlowLab = pathname === '/me';
 
   const { scrollY } = useScroll();
   const backgroundOpacity = useTransform(scrollY, [0, 100], [0, 1]);
@@ -33,10 +35,8 @@ export default function LandingNav() {
     router.push('/');
   };
 
-  // Signal link: signed-in users go to their profile hub; others go to intake
-  const signalLink = user
-    ? { href: '/me', label: 'Your Archetype' }
-    : { href: '/map', label: 'Discover Your Archetype' };
+  // FlowLab is the primary destination for all users
+  const signalLink = { href: '/me', label: 'FlowLab' };
 
   const mainNavLinks = [
     { ...signalLink, featured: true },
@@ -87,7 +87,11 @@ export default function LandingNav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="relative px-4 py-1.5 text-white text-sm font-medium rounded-full border border-[#3E6FA3]/35 bg-gradient-to-r from-[#3E6FA3]/[0.08] to-[#6330A0]/[0.08] hover:from-[#3E6FA3]/15 hover:to-[#6330A0]/15 hover:border-[#3E6FA3]/55 transition-all duration-300 shadow-[0_0_14px_rgba(62,111,163,0.10)] hover:shadow-[0_0_22px_rgba(62,111,163,0.25)]"
+                  className={`relative px-4 py-1.5 text-white text-sm font-medium rounded-full border bg-gradient-to-r transition-all duration-300 ${
+                    isFlowLab
+                      ? 'border-[#3E6FA3]/70 from-[#3E6FA3]/20 to-[#6330A0]/20 shadow-[0_0_22px_rgba(62,111,163,0.30)]'
+                      : 'border-[#3E6FA3]/35 from-[#3E6FA3]/[0.08] to-[#6330A0]/[0.08] hover:from-[#3E6FA3]/15 hover:to-[#6330A0]/15 hover:border-[#3E6FA3]/55 shadow-[0_0_14px_rgba(62,111,163,0.10)] hover:shadow-[0_0_22px_rgba(62,111,163,0.25)]'
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -261,19 +265,17 @@ export default function LandingNav() {
               )}
             </div>
 
-            {/* CTA Button — only for signed-out users */}
-            {!user && (
-              <div className="mt-2">
-                <Link
-                  href="/map"
-                  className="block w-full text-center px-5 py-3 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300"
-                  style={{ background: 'linear-gradient(135deg, #3E6FA3, #6330A0)' }}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Discover Your Archetype
-                </Link>
-              </div>
-            )}
+            {/* CTA Button */}
+            <div className="mt-2">
+              <Link
+                href="/me"
+                className="block w-full text-center px-5 py-3 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300"
+                style={{ background: 'linear-gradient(135deg, #3E6FA3, #6330A0)' }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Open FlowLab
+              </Link>
+            </div>
           </div>
         </motion.div>
       </motion.div>
