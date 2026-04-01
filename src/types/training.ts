@@ -103,6 +103,7 @@ export interface MasteryStats {
     card_type: CardType;
     parent_mechanic_id: string | null;
     techniques_count: number;
+    has_content: boolean;
   }>;
 }
 

@@ -466,7 +466,7 @@ function ChildBar({
   const isTechnique = item.card_type === 'technique';
   const borderStyle = isTechnique ? 'border-solid' : 'border-dashed';
   const due = isDue(item.next_review_at);
-  const hasContent = (item.enrichment_score ?? 0) > 0;
+  const hasContent = item.has_content;
 
   if (!hasContent) {
     return (

@@ -7,6 +7,13 @@ import type { MasteryStats, Pillar } from '@/types/training';
 
 export const dynamic = 'force-dynamic';
 
+/** Returns true if content_md has a meaningful body beyond the frontmatter */
+function hasSubstantiveContent(contentMd: string | null): boolean {
+  if (!contentMd) return false;
+  const body = contentMd.replace(/^---[\s\S]*?---\n?/, '').trim();
+  return body.length > 80;
+}
+
 /** Extract blockquote definition from markdown content when frontmatter definition is empty */
 function extractBlockquoteDefinition(contentMd: string | null): string {
   if (!contentMd) return '';
@@ -85,6 +92,7 @@ export async function GET() {
       card_type: m.card_type ?? 'mechanic',
       parent_mechanic_id: m.parent_mechanic_id ?? null,
       techniques_count: m.techniques_count ?? 0,
+      has_content: hasSubstantiveContent(m.content_md),
     });
   }
 
