@@ -279,7 +279,7 @@ export default function CompendiumNavigator() {
 
       {/* Grid — 4 columns on desktop, 2 on tablet, 1 on mobile */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {pillarGroups.map(({ pillar, keys, totalMechanics, totalTechniques, totalConcepts }) => {
+        {pillarGroups.map(({ pillar, keys }) => {
           const c = PILLAR_COLORS[pillar];
 
           return (
@@ -297,9 +297,6 @@ export default function CompendiumNavigator() {
                   <span className={`font-display text-xl font-bold uppercase tracking-wider ${c.label}`}>
                     {pillar}
                   </span>
-                </div>
-                <div className="text-[10px] text-neutral-light mt-1 ml-[44px]">
-                  {totalMechanics}q · {totalTechniques}t · {totalConcepts}c
                 </div>
               </div>
 
@@ -443,23 +440,11 @@ function QualityBar({
           ) : (
             <span className="flex-1" />
           )}
-          <div className="flex items-center gap-1 flex-shrink-0 self-end">
-            {item.enrichment_score > 0 && (
-              <span className="flex items-center gap-0.5" title={`Enrichment: ${item.enrichment_score}/5`}>
-                {[1, 2, 3, 4, 5].map(i => (
-                  <span
-                    key={i}
-                    className={`w-1 h-1 rounded-full ${i <= item.enrichment_score ? c.dot : 'bg-neutral/15'}`}
-                  />
-                ))}
-              </span>
-            )}
-            {hasChildren && (
-              <span className="text-[9px] text-neutral-light ml-1">
-                {isExpanded ? '▾' : '▸'}
-              </span>
-            )}
-          </div>
+          {hasChildren && (
+            <span className="text-[9px] text-neutral-light flex-shrink-0 self-end">
+              {isExpanded ? '▾' : '▸'}
+            </span>
+          )}
         </div>
       </button>
     </div>
@@ -481,6 +466,26 @@ function ChildBar({
   const isTechnique = item.card_type === 'technique';
   const borderStyle = isTechnique ? 'border-solid' : 'border-dashed';
   const due = isDue(item.next_review_at);
+  const hasContent = (item.enrichment_score ?? 0) > 0;
+
+  if (!hasContent) {
+    return (
+      <div
+        className={`
+          w-full h-8 rounded-md flex items-center gap-2 px-2.5
+          border-l-2 border-dashed border-neutral/20
+          bg-neutral/[0.02]
+        `}
+      >
+        <span className="flex-shrink-0 text-neutral/25">
+          {isTechnique ? <TechniqueIcon /> : <ConceptIcon />}
+        </span>
+        <span className="text-xs text-neutral/25 truncate flex-1 text-left">
+          {item.title}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <button
