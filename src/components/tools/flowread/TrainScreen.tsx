@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrainingMode, FontType, TextInput } from './types';
 import { SAGE, MIN_WPM, MAX_WPM, WPM_STEP, MIN_FONT_SIZE, MAX_FONT_SIZE } from './constants';
@@ -37,7 +37,6 @@ export default function TrainScreen({
   setFontSize,
   fontType,
   textInput,
-  setInputTitle,
   setInputContent,
   clearTextInput,
   inputWordCount,
@@ -53,6 +52,8 @@ export default function TrainScreen({
   // Countdown state for smooth transition
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [urlFetchStatus, setUrlFetchStatus] = useState<null | 'loading' | 'error'>(null);
+  const fetchAbortRef = useRef<AbortController | null>(null);
 
   const handleProgressUpdate = useCallback(
     (progress: number, index: number) => {
@@ -89,6 +90,43 @@ export default function TrainScreen({
 
     return () => clearTimeout(timer);
   }, [countdown, startTraining]);
+
+  const handleContentChange = useCallback((value: string) => {
+    const trimmed = value.trim();
+    if (/^https?:\/\/\S+$/.test(trimmed)) {
+      // Cancel any in-flight fetch
+      fetchAbortRef.current?.abort();
+      const controller = new AbortController();
+      fetchAbortRef.current = controller;
+
+      setUrlFetchStatus('loading');
+      setInputContent('');
+
+      fetch(`https://r.jina.ai/${trimmed}`, {
+        headers: { Accept: 'text/plain', 'X-Return-Format': 'text' },
+        signal: controller.signal,
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.text();
+        })
+        .then((text) => {
+          // Strip Jina Reader metadata headers
+          const clean = text.replace(/^(Title|URL|Published|Author|Description):.*\n/gm, '').trim();
+          if (!clean || clean.length < 10) throw new Error('No readable content found');
+          setInputContent(clean);
+          setUrlFetchStatus(null);
+        })
+        .catch((err) => {
+          if (err.name !== 'AbortError') setUrlFetchStatus('error');
+        });
+    } else {
+      fetchAbortRef.current?.abort();
+      fetchAbortRef.current = null;
+      setUrlFetchStatus(null);
+      setInputContent(value);
+    }
+  }, [setInputContent]);
 
   const canStart = inputWordCount > 0;
   const estimatedMinutes = Math.ceil(inputWordCount / wpm);
@@ -195,32 +233,93 @@ export default function TrainScreen({
 
   // Input mode - show the text input canvas
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col gap-4">
+
+      {/* Intro copy */}
+      <p className="text-center text-sm text-gray-500">
+        Trains your focus by pacing you through content you want to read. Paste any text — or drop in a YouTube or article link.
+      </p>
+
+      {/* Control Bar — at top */}
+      <div
+        className="rounded-2xl p-4"
+        style={{
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.06)',
+        }}
+      >
+        <div className="flex items-center gap-4">
+          {/* Start button */}
+          <button
+            onClick={handleBegin}
+            disabled={!canStart}
+            className="px-6 py-2.5 rounded-xl text-white font-medium transition-all hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+            style={{ background: canStart ? SAGE : 'rgba(255,255,255,0.1)' }}
+          >
+            Begin
+          </button>
+
+          {/* Speed slider */}
+          <div className="flex-1 flex items-center gap-3">
+            <input
+              type="range"
+              min={MIN_WPM}
+              max={MAX_WPM}
+              step={WPM_STEP}
+              value={wpm}
+              onChange={(e) => setWpm(parseInt(e.target.value))}
+              className="flex-1 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+              style={{ accentColor: SAGE }}
+            />
+            <span className="text-sm text-white font-medium min-w-[70px] text-right">
+              {wpm} <span className="text-gray-500 font-normal">wpm</span>
+            </span>
+          </div>
+
+          {/* Font size control - compact */}
+          <div className="flex items-center gap-2 pl-3 border-l border-white/10">
+            <span className="text-xs text-gray-500">Aa</span>
+            <input
+              type="range"
+              min={MIN_FONT_SIZE}
+              max={MAX_FONT_SIZE}
+              value={fontSize}
+              onChange={(e) => setFontSize(parseInt(e.target.value))}
+              className="w-16 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/60"
+            />
+            <span className="text-xs text-gray-500 min-w-[28px]">{fontSize}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Text Input Canvas */}
       <div className="flex-1 flex flex-col">
         <div
-          className="flex-1 flex flex-col rounded-2xl p-6 min-h-[400px]"
+          className="flex-1 flex flex-col rounded-2xl p-6"
           style={{
             background: 'rgba(255,255,255,0.02)',
             border: '1px solid rgba(255,255,255,0.06)',
           }}
         >
-          {/* Title input - minimal */}
-          <input
-            type="text"
-            value={textInput.title}
-            onChange={(e) => setInputTitle(e.target.value)}
-            placeholder="Title (optional)"
-            className="w-full bg-transparent text-white/60 text-sm placeholder-gray-600 focus:outline-none focus:text-white/80 transition-colors mb-4 pb-3 border-b border-white/5"
-          />
+          {/* URL fetch status */}
+          {urlFetchStatus === 'loading' && (
+            <p className="text-xs mb-3 px-3 py-2 rounded-lg" style={{ color: SAGE, background: 'rgba(107,162,146,0.1)' }}>
+              Fetching content...
+            </p>
+          )}
+          {urlFetchStatus === 'error' && (
+            <p className="text-xs mb-3 px-3 py-2 rounded-lg text-red-400" style={{ background: 'rgba(255,100,100,0.08)' }}>
+              Couldn&apos;t fetch content — paste your text directly instead.
+            </p>
+          )}
 
           {/* Content textarea - the hero */}
           <textarea
             value={textInput.content}
-            onChange={(e) => setInputContent(e.target.value)}
-            placeholder="Paste your text here to begin..."
+            onChange={(e) => handleContentChange(e.target.value)}
+            placeholder="Paste your text here — or drop in a YouTube or article link"
             className="flex-1 w-full bg-transparent text-white placeholder-gray-600 focus:outline-none resize-none text-base leading-relaxed scrollbar-dark"
-            style={{ minHeight: '280px' }}
+            style={{ minHeight: '220px' }}
           />
 
           {/* Word count and clear - subtle footer */}
@@ -245,60 +344,6 @@ export default function TrainScreen({
                 Clear
               </button>
             )}
-          </div>
-        </div>
-      </div>
-
-      {/* Floating Control Bar */}
-      <div className="mt-6">
-        <div
-          className="rounded-2xl p-4"
-          style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.06)',
-          }}
-        >
-          <div className="flex items-center gap-4">
-            {/* Start button */}
-            <button
-              onClick={handleBegin}
-              disabled={!canStart}
-              className="px-6 py-2.5 rounded-xl text-white font-medium transition-all hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
-              style={{ background: canStart ? SAGE : 'rgba(255,255,255,0.1)' }}
-            >
-              Begin
-            </button>
-
-            {/* Speed slider */}
-            <div className="flex-1 flex items-center gap-3">
-              <input
-                type="range"
-                min={MIN_WPM}
-                max={MAX_WPM}
-                step={WPM_STEP}
-                value={wpm}
-                onChange={(e) => setWpm(parseInt(e.target.value))}
-                className="flex-1 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
-                style={{ accentColor: SAGE }}
-              />
-              <span className="text-sm text-white font-medium min-w-[70px] text-right">
-                {wpm} <span className="text-gray-500 font-normal">wpm</span>
-              </span>
-            </div>
-
-            {/* Font size control - compact */}
-            <div className="flex items-center gap-2 pl-3 border-l border-white/10">
-              <span className="text-xs text-gray-500">Aa</span>
-              <input
-                type="range"
-                min={MIN_FONT_SIZE}
-                max={MAX_FONT_SIZE}
-                value={fontSize}
-                onChange={(e) => setFontSize(parseInt(e.target.value))}
-                className="w-16 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/60"
-              />
-              <span className="text-xs text-gray-500 min-w-[28px]">{fontSize}</span>
-            </div>
           </div>
         </div>
       </div>
