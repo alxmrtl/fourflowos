@@ -5,7 +5,7 @@ import Image from 'next/image';
 import type { MasteryStats, Pillar } from '@/types/training';
 import CardDetailModal, { type StateData } from './CardDetailModal';
 
-// ── Color maps (aligned with ProgressGrid) ──────────────────────────
+// ── Color maps ───────────────────────────────────────────────────────
 
 const PILLAR_COLORS: Record<Pillar, {
   label: string;
@@ -47,13 +47,6 @@ const PILLAR_COLORS: Record<Pillar, {
     barBg: (s) => ['bg-spirit/5', 'bg-spirit/8', 'bg-spirit/12', 'bg-spirit/18', 'bg-spirit/25'][Math.max(0, Math.min(4, s - 1))],
     badgeBg: 'bg-spirit/10 text-spirit',
   },
-};
-
-const MASTERY_DOT: Record<string, string> = {
-  unseen: 'bg-neutral/30',
-  learning: 'bg-amber-400',
-  young: 'bg-blue-400',
-  mature: 'bg-green-500',
 };
 
 // ── Brand asset maps ─────────────────────────────────────────────────
@@ -102,7 +95,7 @@ interface PillarGroup {
   totalConcepts: number;
 }
 
-// ── Key ordering (matches pillar flow) ───────────────────────────────
+// ── Key ordering ─────────────────────────────────────────────────────
 
 const KEY_ORDER: Record<Pillar, string[]> = {
   self: ['tuned-emotions', 'focused-body', 'open-mind'],
@@ -122,13 +115,41 @@ function isDue(nextReview: string | null): boolean {
   return new Date(nextReview) <= new Date();
 }
 
+// ── SVG Icons ────────────────────────────────────────────────────────
+
+function TechniqueIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="flex-shrink-0">
+      <path d="M7 1L3 7h3.5L5 11l4-6H5.5L7 1z" fill="currentColor" />
+    </svg>
+  );
+}
+
+function ConceptIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="flex-shrink-0">
+      <circle cx="6" cy="6" r="1.5" fill="currentColor" />
+      <ellipse cx="6" cy="6" rx="5" ry="2.2" stroke="currentColor" strokeWidth="1" fill="none" />
+      <ellipse cx="6" cy="6" rx="5" ry="2.2" stroke="currentColor" strokeWidth="1" fill="none" transform="rotate(60 6 6)" />
+      <ellipse cx="6" cy="6" rx="5" ry="2.2" stroke="currentColor" strokeWidth="1" fill="none" transform="rotate(120 6 6)" />
+    </svg>
+  );
+}
+
+function ExpandIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`flex-shrink-0 ${className}`}>
+      <path d="M1 9L9 1M9 1H5M9 1V5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 // ── Component ────────────────────────────────────────────────────────
 
 export default function CompendiumNavigator() {
   const [stats, setStats] = useState<MasteryStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedQualityIds, setExpandedQualityIds] = useState<Set<string>>(new Set());
-  const [collapsedPillars, setCollapsedPillars] = useState<Set<Pillar>>(new Set());
 
   // Modal state
   const [modalCardId, setModalCardId] = useState<string | null>(null);
@@ -207,14 +228,6 @@ export default function CompendiumNavigator() {
     });
   }, [stats]);
 
-  const togglePillar = (p: Pillar) => {
-    setCollapsedPillars(prev => {
-      const next = new Set(prev);
-      next.has(p) ? next.delete(p) : next.add(p);
-      return next;
-    });
-  };
-
   const toggleQuality = (id: string) => {
     setExpandedQualityIds(prev => {
       const next = new Set(prev);
@@ -252,123 +265,109 @@ export default function CompendiumNavigator() {
   return (
     <div className="w-full">
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-center gap-4 mb-6 text-xs text-neutral-light">
-        {Object.entries(MASTERY_DOT).map(([level, color]) => (
-          <div key={level} className="flex items-center gap-1.5">
-            <span className={`w-2 h-2 rounded-full ${color}`} />
-            <span className="capitalize">{level}</span>
-          </div>
-        ))}
-        <span className="text-neutral/20">|</span>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-semibold bg-neutral/10 rounded px-1">T</span>
+      <div className="flex items-center justify-center gap-6 mb-8 text-xs text-neutral-light">
+        <div className="flex items-center gap-2">
+          <span className="text-white/40"><TechniqueIcon /></span>
           <span>Technique</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] font-semibold bg-neutral/10 rounded px-1">C</span>
+        <div className="w-px h-3 bg-neutral/20" />
+        <div className="flex items-center gap-2">
+          <span className="text-white/40"><ConceptIcon /></span>
           <span>Concept</span>
         </div>
       </div>
 
       {/* Grid — 4 columns on desktop, 2 on tablet, 1 on mobile */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {pillarGroups.map(({ pillar, keys, totalMechanics, totalTechniques, totalConcepts }) => {
           const c = PILLAR_COLORS[pillar];
-          const isCollapsed = collapsedPillars.has(pillar);
 
           return (
             <div key={pillar} className="min-w-0">
-              {/* Pillar header */}
-              <button
-                onClick={() => togglePillar(pillar)}
-                className="w-full text-left mb-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <Image
-                      src={PILLAR_LOGO[pillar]}
-                      alt={pillar}
-                      width={32}
-                      height={32}
-                      className="rounded-sm opacity-90"
-                    />
-                    <span className={`font-display text-xl font-bold uppercase tracking-wider ${c.label}`}>
-                      {pillar}
-                    </span>
-                  </div>
-                  <span className="text-xs text-neutral-light">
-                    {isCollapsed ? '▸' : '▾'}
+              {/* Pillar header — branded, non-interactive */}
+              <div className={`mb-5 pb-3 border-b-2 ${c.border} opacity-100`}>
+                <div className="flex items-center gap-2.5">
+                  <Image
+                    src={PILLAR_LOGO[pillar]}
+                    alt={pillar}
+                    width={32}
+                    height={32}
+                    className="rounded-sm opacity-90"
+                  />
+                  <span className={`font-display text-xl font-bold uppercase tracking-wider ${c.label}`}>
+                    {pillar}
                   </span>
                 </div>
                 <div className="text-[10px] text-neutral-light mt-1 ml-[44px]">
                   {totalMechanics}q · {totalTechniques}t · {totalConcepts}c
                 </div>
-              </button>
+              </div>
 
-              {!isCollapsed && (
-                <div className="space-y-5">
-                  {keys.map(({ key, label, mechanics }) => (
-                    <div key={key}>
-                      {/* State label — clickable → state modal */}
-                      <button
-                        onClick={() => openStateModal(pillar, key, label, mechanics)}
-                        className="flex items-center gap-2 mb-2.5 ml-1 group w-full text-left"
-                      >
-                        {STATE_LOGO[key] && (
-                          <Image
-                            src={STATE_LOGO[key]}
-                            alt={label}
-                            width={22}
-                            height={22}
-                            className="rounded-sm opacity-85 flex-shrink-0"
-                          />
-                        )}
-                        <span className={`text-[13px] font-semibold uppercase tracking-wider ${c.label} group-hover:opacity-80 transition-opacity`}>
-                          {label}
-                        </span>
-                        <span className="text-[10px] text-neutral-light opacity-0 group-hover:opacity-40 transition-opacity ml-auto">
-                          ↗
-                        </span>
-                      </button>
+              <div className="space-y-6">
+                {keys.map(({ key, label, mechanics }, keyIndex) => (
+                  <div
+                    key={key}
+                    className={keyIndex < keys.length - 1 ? 'border-b border-neutral/[0.07] pb-6' : ''}
+                  >
+                    {/* State label — clickable → state modal */}
+                    <button
+                      onClick={() => openStateModal(pillar, key, label, mechanics)}
+                      className="flex items-center gap-2 mb-3 ml-1 group w-full text-left"
+                    >
+                      {STATE_LOGO[key] && (
+                        <Image
+                          src={STATE_LOGO[key]}
+                          alt={label}
+                          width={22}
+                          height={22}
+                          className="rounded-sm opacity-85 flex-shrink-0"
+                        />
+                      )}
+                      <span className={`text-sm font-semibold uppercase tracking-wider ${c.label} group-hover:opacity-80 transition-opacity`}>
+                        {label}
+                      </span>
+                      <span className="ml-auto opacity-25 group-hover:opacity-70 transition-opacity text-neutral-light">
+                        <ExpandIcon />
+                      </span>
+                    </button>
 
-                      {/* Quality bars + nested children */}
-                      <div className="space-y-1.5">
-                        {mechanics.map(mechanic => {
-                          const isChildrenExpanded = expandedQualityIds.has(mechanic.id);
-                          return (
-                            <div key={mechanic.id}>
-                              <QualityBar
-                                item={mechanic}
-                                pillar={pillar}
-                                isExpanded={isChildrenExpanded}
-                                onToggle={() => toggleQuality(mechanic.id)}
-                                onOpenDetail={() => {
-                                  setModalCardId(mechanic.id);
-                                  setModalStateData(null);
-                                }}
-                              />
+                    {/* Quality bars + nested children */}
+                    <div className="space-y-2">
+                      {mechanics.map(mechanic => {
+                        const isChildrenExpanded = expandedQualityIds.has(mechanic.id);
+                        return (
+                          <div key={mechanic.id}>
+                            <QualityBar
+                              item={mechanic}
+                              pillar={pillar}
+                              isExpanded={isChildrenExpanded}
+                              onToggle={() => toggleQuality(mechanic.id)}
+                              onOpenDetail={() => {
+                                setModalCardId(mechanic.id);
+                                setModalStateData(null);
+                              }}
+                            />
 
-                              {/* Children — visible only when quality is expanded */}
-                              {isChildrenExpanded && mechanic.children.map(child => (
-                                <div key={child.id} className="ml-4 mt-1">
-                                  <ChildBar
-                                    item={child}
-                                    pillar={pillar}
-                                    onOpenDetail={() => {
-                                      setModalCardId(child.id);
-                                      setModalStateData(null);
-                                    }}
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                          );
-                        })}
-                      </div>
+                            {/* Children — visible only when quality is expanded */}
+                            {isChildrenExpanded && mechanic.children.map(child => (
+                              <div key={child.id} className="ml-4 mt-1.5">
+                                <ChildBar
+                                  item={child}
+                                  pillar={pillar}
+                                  onOpenDetail={() => {
+                                    setModalCardId(child.id);
+                                    setModalStateData(null);
+                                  }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                ))}
+              </div>
             </div>
           );
         })}
@@ -405,11 +404,11 @@ function QualityBar({
   const hasChildren = item.children.length > 0;
 
   return (
-    <div className="relative group/quality">
+    <div className="group/quality">
       <button
         onClick={onToggle}
         className={`
-          w-full rounded-lg flex flex-col gap-1 px-2.5 py-2.5
+          w-full rounded-lg flex flex-col gap-1.5 px-3 py-3
           border-l-[3px] ${c.border}
           ${bgClass}
           transition-all duration-150
@@ -418,21 +417,27 @@ function QualityBar({
           text-left
         `}
       >
-        {/* Row 1: title + due dot + mastery dot + detail icon */}
+        {/* Row 1: due dot + title + expand icon */}
         <div className="flex items-center gap-2 w-full">
           {due && (
             <span className={`w-1.5 h-1.5 rounded-full ${c.dot} animate-pulse flex-shrink-0`} />
           )}
-          <span className="text-xs font-medium text-neutral flex-1 pr-6">
+          <span className="text-sm font-medium text-white flex-1 leading-snug">
             {item.title}
           </span>
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${MASTERY_DOT[item.mastery_level]}`} />
+          <button
+            onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
+            className="opacity-25 group-hover/quality:opacity-70 transition-opacity text-neutral-light hover:text-white flex-shrink-0 p-0.5"
+            title="View full entry"
+          >
+            <ExpandIcon />
+          </button>
         </div>
 
         {/* Row 2: definition + enrichment dots + chevron */}
         <div className="flex items-start gap-2 w-full">
           {item.definition ? (
-            <span className="text-[10px] text-neutral-light italic flex-1 leading-snug pr-6">
+            <span className="text-xs text-neutral-light flex-1 leading-snug">
               {item.definition}
             </span>
           ) : (
@@ -457,15 +462,6 @@ function QualityBar({
           </div>
         </div>
       </button>
-
-      {/* Detail icon — top-right corner, appears on hover */}
-      <button
-        onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
-        className="absolute top-1.5 right-1.5 w-5 h-5 rounded flex items-center justify-center opacity-0 group-hover/quality:opacity-60 hover:!opacity-100 transition-opacity text-neutral-light hover:text-neutral bg-neutral/10 hover:bg-neutral/20"
-        title="View full entry"
-      >
-        <span className="text-[9px]">↗</span>
-      </button>
     </div>
   );
 }
@@ -482,31 +478,34 @@ function ChildBar({
   onOpenDetail: () => void;
 }) {
   const c = PILLAR_COLORS[pillar];
-  const typeLabel = item.card_type === 'technique' ? 'T' : 'C';
-  const borderStyle = item.card_type === 'technique' ? 'border-dashed' : 'border-dotted';
+  const isTechnique = item.card_type === 'technique';
+  const borderStyle = isTechnique ? 'border-solid' : 'border-dashed';
   const due = isDue(item.next_review_at);
 
   return (
     <button
       onClick={onOpenDetail}
       className={`
-        w-full h-6 rounded-md flex items-center gap-1.5 px-2
+        w-full h-8 rounded-md flex items-center gap-2 px-2.5
         border-l-2 ${borderStyle} ${c.border}
         bg-neutral/[0.02]
         transition-all duration-150
         hover:-translate-y-px hover:bg-neutral/5
+        group/child
       `}
     >
       {due && (
         <span className={`w-1 h-1 rounded-full ${c.dot} animate-pulse flex-shrink-0`} />
       )}
-      <span className={`text-[10px] font-semibold rounded px-1 flex-shrink-0 ${c.badgeBg}`}>
-        {typeLabel}
+      <span className={`flex-shrink-0 ${c.label} ${isTechnique ? '' : 'opacity-60'}`}>
+        {isTechnique ? <TechniqueIcon /> : <ConceptIcon />}
       </span>
-      <span className="text-[11px] text-neutral-light truncate flex-1 text-left">
+      <span className="text-xs text-neutral-light truncate flex-1 text-left">
         {item.title}
       </span>
-      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${MASTERY_DOT[item.mastery_level]}`} />
+      <span className="opacity-20 group-hover/child:opacity-60 transition-opacity text-neutral-light flex-shrink-0">
+        <ExpandIcon />
+      </span>
     </button>
   );
 }

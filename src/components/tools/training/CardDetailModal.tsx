@@ -126,7 +126,7 @@ function CardDetail({ cardId }: { cardId: string }) {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h2 className="font-display text-xl font-semibold text-neutral leading-tight">
+        <h2 className="font-display text-xl font-semibold text-white leading-tight">
           {card.title}
         </h2>
         {card.definition && (
@@ -170,7 +170,7 @@ function StateDetail({ stateData }: { stateData: StateData }) {
           <p className={`text-[10px] font-semibold uppercase tracking-wider ${s.text} opacity-60`}>
             {stateData.pillar}
           </p>
-          <h2 className={`font-display text-2xl font-semibold text-neutral`}>
+          <h2 className="font-display text-2xl font-semibold text-white">
             {stateData.label}
           </h2>
         </div>
@@ -191,10 +191,10 @@ function StateDetail({ stateData }: { stateData: StateData }) {
             >
               <div className="flex items-start justify-between gap-2 mb-1.5">
                 <div>
-                  <span className={`text-[9px] font-semibold uppercase tracking-widest ${s.text} opacity-50`}>
+                  <span className={`text-[9px] font-semibold uppercase tracking-widest ${s.text} opacity-70`}>
                     {qualityType}
                   </span>
-                  <h3 className="text-sm font-semibold text-neutral">{q.title}</h3>
+                  <h3 className="text-sm font-semibold text-white">{q.title}</h3>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0 mt-1">
                   <span className={`w-2 h-2 rounded-full ${MASTERY_DOT[q.mastery_level]}`} />
@@ -211,7 +211,7 @@ function StateDetail({ stateData }: { stateData: StateData }) {
                 </div>
               </div>
               {q.definition && (
-                <p className="text-xs text-neutral-light leading-relaxed">{q.definition}</p>
+                <p className="text-xs text-white/60 leading-relaxed">{q.definition}</p>
               )}
             </div>
           );
