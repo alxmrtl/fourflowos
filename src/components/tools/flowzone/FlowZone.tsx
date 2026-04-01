@@ -107,7 +107,7 @@ function YTBadge() {
   );
 }
 
-export default function FlowZone() {
+export default function FlowZone({ hideHeader }: { hideHeader?: boolean } = {}) {
   const store = useFlowStore();
   const { user } = useAuth();
   const [newPriority, setNewPriority] = useState('');
@@ -233,23 +233,25 @@ export default function FlowZone() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 pl-[68px]">
-        <h1
-          className="text-lg font-bold tracking-tight"
-          style={{
-            background: `linear-gradient(135deg, ${SAGE}, ${AMETHYST})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          FlowZone
-        </h1>
-        <div />
-      </header>
-
-      {/* Four-pillar gradient line */}
-      <div className="h-px mx-6" style={{ background: FOUR_PILLAR_GRADIENT, opacity: 0.4 }} />
+      {/* Header — hidden when embedded in ActivityArea (which renders its own ToolHeader) */}
+      {!hideHeader && (
+        <>
+          <header className="flex items-center justify-between px-6 py-4 pl-[68px]">
+            <h1
+              className="text-lg font-bold tracking-tight"
+              style={{
+                background: `linear-gradient(135deg, ${SAGE}, ${AMETHYST})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              FlowZone
+            </h1>
+            <div />
+          </header>
+          <div className="h-px mx-6" style={{ background: FOUR_PILLAR_GRADIENT, opacity: 0.4 }} />
+        </>
+      )}
 
       {/* Main dashboard */}
       <main className="flex-1 px-6 pb-6 pt-6 max-w-5xl mx-auto w-full">
