@@ -8,6 +8,7 @@ import TrainingDisplay from './TrainingDisplay';
 
 interface TrainScreenProps {
   trainingMode: TrainingMode;
+  setTrainingMode: (mode: TrainingMode) => void;
   wpm: number;
   setWpm: (wpm: number) => void;
   fontSize: number;
@@ -27,10 +28,12 @@ interface TrainScreenProps {
   pauseTraining: () => void;
   resumeTraining: () => void;
   stopTraining: () => void;
+  onShowMore: () => void;
 }
 
 export default function TrainScreen({
   trainingMode,
+  setTrainingMode,
   wpm,
   setWpm,
   fontSize,
@@ -48,7 +51,9 @@ export default function TrainScreen({
   stopTraining,
   setTrainingProgress,
   setCurrentIndex,
+  onShowMore,
 }: TrainScreenProps) {
+  const [explainerOpen, setExplainerOpen] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [localCurrentIndex, setLocalCurrentIndex] = useState(0);
@@ -127,6 +132,63 @@ export default function TrainScreen({
 
   return (
     <div className="flex flex-col gap-4">
+
+      {/* === Distilled Explainer === */}
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{
+          background: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.06)',
+        }}
+      >
+        <button
+          onClick={() => setExplainerOpen(o => !o)}
+          className="w-full flex items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/[0.02]"
+        >
+          <span className="text-xs text-white/40">
+            This trains undivided attention — not reading speed.
+          </span>
+          <span className={`text-white/20 text-xs ml-3 flex-shrink-0 transform transition-transform ${explainerOpen ? 'rotate-180' : ''}`}>
+            ▼
+          </span>
+        </button>
+
+        <AnimatePresence>
+          {explainerOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="px-4 pb-4 border-t border-white/[0.04]">
+                <ul className="mt-3 space-y-2">
+                  {[
+                    'Set speed just past where you can confirm each word — that\'s the challenge-skill edge.',
+                    'Release the urge to verify each word. Trust pattern recognition to carry the meaning.',
+                    'Watch for the moment effortful tracking dissolves into absorption — that\'s the signal.',
+                  ].map((item, i) => (
+                    <li key={i} className="flex gap-2 text-xs text-white/35 leading-relaxed">
+                      <span className="flex-shrink-0 mt-0.5" style={{ color: SAGE }}>—</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={onShowMore}
+                  className="mt-3 text-xs transition-colors"
+                  style={{ color: `${SAGE}99` }}
+                  onMouseEnter={e => (e.currentTarget.style.color = SAGE)}
+                  onMouseLeave={e => (e.currentTarget.style.color = `${SAGE}99`)}
+                >
+                  Show more →
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* === Control Bar === */}
       <div
@@ -222,7 +284,28 @@ export default function TrainScreen({
           </div>
         </div>
 
-        {/* Row 2: Timeline scrubber — only when session is active */}
+        {/* Row 2: Mode toggle — only when session is idle */}
+        {!isActive && (
+          <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-1">
+            <span className="text-xs text-white/25 mr-2">Mode</span>
+            {(['word', 'phrases'] as TrainingMode[]).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setTrainingMode(mode)}
+                className="px-3 py-1 rounded-lg text-xs transition-all"
+                style={
+                  trainingMode === mode
+                    ? { color: '#fff', background: `${SAGE}25` }
+                    : { color: 'rgba(255,255,255,0.3)' }
+                }
+              >
+                {mode === 'word' ? 'Word' : 'Phrases'}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Row 3: Timeline scrubber — only when session is active */}
         {isActive && totalUnits > 0 && (
           <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-3">
             <input

@@ -65,69 +65,6 @@ const faqSections: FAQSection[] = [
       },
     ],
   },
-  {
-    title: 'Training Modes',
-    icon: '🎯',
-    items: [
-      {
-        question: "What's the difference between the training modes?",
-        answer:
-          'Word-by-Word: Displays one word at a time. The most demanding — eliminates the ability to re-read and forces single-point focus. Best for training the release into absorption.\n\nPhrases: Shows 6 words at once. Trains chunked perception — seeing meaning units rather than individual words. Bridges focused practice to natural reading.\n\nLine-by-Line: Highlights complete lines sequentially. The most natural feel. Best for applying trained focus to real material at controlled speed.',
-      },
-      {
-        question: 'Which training mode should I start with?',
-        answer:
-          "Start with Word-by-Word. It's the purest attention training — there's nothing to fall back on, no peripheral context, just the stream. The discomfort of this is part of it.\n\nAfter 1–2 weeks, add Phrases to build chunked perception.\n\nLine-by-Line is best once you want to bring the trained focus into normal reading sessions.",
-      },
-      {
-        question: 'Can I use my own texts for training?',
-        answer:
-          'Yes. Click "Choose Text" in the Train tab, then "New Text" to add your own content. Training with material you actually need to absorb — an article, brief, or book chapter — makes the practice double as real work. The focused attention transfers.',
-      },
-    ],
-  },
-  {
-    title: 'Progress & Results',
-    icon: '📈',
-    items: [
-      {
-        question: 'How quickly will I see results?',
-        answer:
-          'The first result is the absorption feeling — usually accessible by session 3–5. You\'ll notice a point in the session where the effort of tracking dissolves and the content just flows. That transition is what you\'re building.\n\nWPM improvements follow if you train consistently:\n• Week 1: 10–25% speed increase with maintained comprehension\n• Week 2–4: 30–50% as the habits become automatic\n• Month 2+: 50–100%+ for dedicated practice\n\nBut WPM is the side effect. The core result is faster access to single-channel absorption.',
-      },
-      {
-        question: 'What should I do if I hit a plateau?',
-        answer:
-          "Plateaus usually mean the challenge-skill gap has closed — the speed is no longer demanding enough to suppress analytical processing. Try:\n\n• Bump speed up 10–15% past comfort\n• Switch modes (Word-by-Word → Phrases shocks the pattern)\n• Use more complex material (denser content raises intrinsic load)\n• Take 2–3 days off — consolidation happens during rest\n• Return to the question: are you releasing the comprehension check, or still trying to confirm each word?",
-      },
-      {
-        question: "How do I know if I'm maintaining comprehension?",
-        answer:
-          'Good absorption indicators:\n\n• You can reconstruct the main thread after finishing\n• Key ideas surface without searching for them\n• The session felt smooth — not rushed or anxious\n• You can pick up the content and continue naturally\n\nIf comprehension collapses: drop speed 10–15% and focus on the release feeling before pushing again. Speed and absorption increase together — forcing one without the other breaks the mechanism.',
-      },
-    ],
-  },
-  {
-    title: 'Tips & Best Practices',
-    icon: '💡',
-    items: [
-      {
-        question: 'What are the most important things to practice?',
-        answer:
-          '1. Release the word-by-word confirmation habit. The urge to "check" each word is the analytical layer staying in control. The training is in letting that go.\n\n2. Don\'t re-read. Forward momentum is the whole point. Regression breaks the absorption loop.\n\n3. Find the edge. Just past comfortable comprehension — not so fast it collapses.\n\n4. Watch for the transition. There\'s usually a moment when effortful tracking dissolves into absorption. That\'s the signal. Train toward it getting faster.\n\n5. Use it before real work. The focused state transfers. FlowRead as warm-up, then switch to your actual task.',
-      },
-      {
-        question: 'What environment is best for training?',
-        answer:
-          'The environment matters more for focus training than speed training:\n\n• No notifications — each interruption resets the attentional state\n• Consistent setup — the brain associates environment with mode\n• Upright posture, screen at eye level — body state shapes mental state\n• Good lighting — visual fatigue competes with focus\n• Use the 20-20-20 rule for longer sessions (every 20 min, look 20 feet away for 20 seconds)',
-      },
-      {
-        question: 'Should I adjust the font size or style?',
-        answer:
-          'Yes. Optimize for effortless visual recognition — the display should require no extra cognitive load. Larger font reduces eye strain. Serif vs. sans is personal preference (sans often scans faster on screen). The right settings disappear — you stop noticing them.',
-      },
-    ],
-  },
 ];
 
 function ScienceAccordion() {
