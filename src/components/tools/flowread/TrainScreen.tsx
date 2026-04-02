@@ -146,7 +146,7 @@ export default function TrainScreen({
           className="w-full flex items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/[0.02]"
         >
           <span className="text-xs text-white/40">
-            This trains undivided attention — not reading speed.
+            Builds undivided attention and information absorption.
           </span>
           <span className={`text-white/20 text-xs ml-3 flex-shrink-0 transform transition-transform ${explainerOpen ? 'rotate-180' : ''}`}>
             ▼
@@ -163,13 +163,17 @@ export default function TrainScreen({
               className="overflow-hidden"
             >
               <div className="px-4 pb-4 border-t border-white/[0.04]">
+                <p className="mt-3 text-xs text-white/40 leading-relaxed">
+                  Reading at speed forces the analytical mind to step back — you can't confirm each word, so pattern recognition takes over. That shift from effortful processing to absorbed flow is the training.
+                </p>
                 <ul className="mt-3 space-y-2">
                   {[
-                    'Set speed just past where you can confirm each word — that\'s the challenge-skill edge.',
-                    'Release the urge to verify each word. Trust pattern recognition to carry the meaning.',
-                    'Watch for the moment effortful tracking dissolves into absorption — that\'s the signal.',
+                    'Set speed just past where you can analytically confirm each word.',
+                    'Let go of the comprehension check — trust the pattern to carry the meaning.',
+                    'Watch for when effortful tracking dissolves into absorption — that\'s the signal.',
+                    'Use it as a 5–10 min warm-up before deep work.',
                   ].map((item, i) => (
-                    <li key={i} className="flex gap-2 text-xs text-white/35 leading-relaxed">
+                    <li key={i} className="flex gap-2 text-xs text-white/30 leading-relaxed">
                       <span className="flex-shrink-0 mt-0.5" style={{ color: SAGE }}>—</span>
                       <span>{item}</span>
                     </li>
