@@ -15,6 +15,8 @@ interface TrainingDisplayProps {
   isPaused: boolean;
   onProgressUpdate: (progress: number, index: number) => void;
   onComplete: () => void;
+  seekIndex?: number;
+  seekVersion?: number;
 }
 
 /**
@@ -138,6 +140,8 @@ export default function TrainingDisplay({
   isPaused,
   onProgressUpdate,
   onComplete,
+  seekIndex,
+  seekVersion,
 }: TrainingDisplayProps) {
   const [currentWord, setCurrentWord] = useState('');
   const [currentPhrase, setCurrentPhrase] = useState('');
@@ -146,6 +150,7 @@ export default function TrainingDisplay({
   const [totalUnits, setTotalUnits] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const indexRef = useRef(0);
+  const lastSeekVersionRef = useRef(0);
 
   const wpmRef = useRef(wpm);
   const onCompleteRef = useRef(onComplete);
@@ -179,11 +184,31 @@ export default function TrainingDisplay({
   }, [mode, words.length, phrases.length]);
 
   useEffect(() => {
-    if (!isTraining || isPaused) {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
+    // Apply seek if a new seek signal arrived
+    const incomingSeekVersion = seekVersion ?? 0;
+    if (incomingSeekVersion > 0 && incomingSeekVersion !== lastSeekVersionRef.current) {
+      lastSeekVersionRef.current = incomingSeekVersion;
+      const targetIdx = seekIndex ?? 0;
+      indexRef.current = targetIdx;
+      // Update display immediately so paused state reflects the seek position
+      if (mode === 'word') {
+        setCurrentWord(words[targetIdx] || '');
+      } else {
+        setCurrentPhrase(phrases[targetIdx] || '');
       }
+      const total = mode === 'word' ? words.length : phrases.length;
+      const newProg = total > 0 ? targetIdx / total : 0;
+      setProgress(newProg);
+      setCurrentIndex(targetIdx);
+      onProgressUpdateRef.current(newProg, targetIdx);
+    }
+
+    if (!isTraining || isPaused) {
       return;
     }
 
@@ -194,10 +219,8 @@ export default function TrainingDisplay({
     const getDelay = (currentIdx: number) => {
       const targetWpm = wpmRef.current;
 
-      // Calculate ramp-up multiplier (1.0 = full speed, higher = slower)
       let speedMultiplier = 1.0;
       if (currentIdx < RAMP_UP_UNITS) {
-        // Ease from RAMP_START_RATIO to 1.0 using smooth easing
         const progress = currentIdx / RAMP_UP_UNITS;
         const eased = 1 - Math.pow(1 - progress, 2); // ease-out quad
         speedMultiplier = 1 / (RAMP_START_RATIO + (1 - RAMP_START_RATIO) * eased);
@@ -245,7 +268,7 @@ export default function TrainingDisplay({
         timerRef.current = null;
       }
     };
-  }, [isTraining, isPaused, mode, words, phrases]);
+  }, [isTraining, isPaused, mode, words, phrases, seekVersion, seekIndex]);
 
   useEffect(() => {
     if (!isTraining) {
@@ -284,7 +307,7 @@ export default function TrainingDisplay({
         </motion.div>
 
         {/* Progress */}
-        <div className="mt-16 w-full max-w-xs">
+        <div className="mt-8 w-full max-w-xs">
           <div className="h-[2px] bg-white/5 rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-75"
@@ -321,7 +344,7 @@ export default function TrainingDisplay({
       </motion.div>
 
       {/* Progress */}
-      <div className="mt-12 w-full max-w-xs">
+      <div className="mt-6 w-full max-w-xs">
         <div className="h-[2px] bg-white/5 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-100"
