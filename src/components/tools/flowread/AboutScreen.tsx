@@ -15,6 +15,29 @@ interface FAQSection {
   items: FAQItem[];
 }
 
+const scienceItems = [
+  {
+    term: 'Default Mode Network (DMN) suppression',
+    definition:
+      'The brain has a background network that activates during rest — generating mind-wandering, self-referential thought, and inner monologue. Sustained focused reading suppresses it. This is the same mechanism responsible for deep flow states.',
+  },
+  {
+    term: 'Transient hypofrontality',
+    definition:
+      'During intense engagement, blood flow and metabolic activity shift away from the prefrontal cortex — the brain\'s analytical, self-monitoring layer. At reading speeds above ~400 WPM, this shift becomes necessary. The inner critic simply can\'t keep up.',
+  },
+  {
+    term: 'Attentional bottleneck',
+    definition:
+      'Conscious information processing has a single channel. Only one stream can pass through fully at a time. FlowRead trains the brain to hold that channel locked on one task without it wandering to other streams.',
+  },
+  {
+    term: 'Challenge-skill ratio (Csikszentmihalyi)',
+    definition:
+      'Flow is only accessible when the task difficulty and your current skill are closely matched — roughly 4% above your current edge. Too easy and the mind wanders. Too hard and anxiety collapses focus. Variable speed lets you tune this in real time.',
+  },
+];
+
 const faqSections: FAQSection[] = [
   {
     title: 'Getting Started',
@@ -23,22 +46,22 @@ const faqSections: FAQSection[] = [
       {
         question: 'What is FlowRead and how does it work?',
         answer:
-          'FlowRead is a speed reading trainer designed to improve your reading speed through scientifically-backed techniques. It combines rapid serial visual presentation (RSVP), chunked reading, and guided pacing to help you read faster while maintaining comprehension. The app works by training your eyes to move more efficiently across text, reducing subvocalization (inner speech), and helping you process larger chunks of information at once.',
+          "FlowRead is a focus training tool that uses reading at speed as its mechanism. The goal isn't to read faster — it's to train the feeling of undivided absorption. It combines rapid serial visual presentation (RSVP), chunked reading, and guided pacing to eliminate the habits that fragment attention: subvocalization, regression, and word-by-word confirmation. Over time, the transition from effortful focus to absorbed flow becomes faster and more accessible.",
       },
       {
         question: 'How do I get started with FlowRead?',
         answer:
-          'Step 1: Take a speed test in the Test tab to establish your baseline reading speed.\n\nStep 2: Go to the Train tab and select a training mode (Word-by-Word, Phrases, or Line-by-Line).\n\nStep 3: Choose your text and adjust the speed to match your current ability.\n\nStep 4: Practice regularly with progressively faster speeds as you improve.',
+          'Step 1: Go to the Train tab and choose a training mode (Word-by-Word is recommended to start).\n\nStep 2: Set speed to slightly above your comfortable reading pace — just past where you can analytically confirm each word.\n\nStep 3: Let go of the comprehension check. Follow the meaning without verifying each word. Let pattern recognition take over.\n\nStep 4: Practice for 10–15 minutes, ideally before a deep work session.',
       },
       {
         question: "What's a good starting speed for training?",
         answer:
-          'Start with a speed slightly faster than your baseline reading speed from the test. For example:\n\n• If you tested at 200 WPM, start training at 220-250 WPM\n• If you tested at 300 WPM, start training at 320-350 WPM\n• If you tested at 400+ WPM, start training at 420-450 WPM\n\nThe key is to challenge yourself without creating frustration.',
+          'Start slightly faster than your natural reading pace — just past where it feels comfortable.\n\n• If you read naturally around 200 WPM, start at 220–250 WPM\n• If around 300 WPM, start at 320–350 WPM\n• If around 400+ WPM, start at 420–450 WPM\n\nThe target zone: you can follow the meaning, but you can\'t analytically confirm each word. That tension is the training stimulus.',
       },
       {
         question: 'How often should I practice?',
         answer:
-          'For best results, practice 15-30 minutes daily. Consistency is more important than long sessions.\n\n• Beginners: 10-15 minutes daily, focusing on one training mode\n• Intermediate: 20-25 minutes daily, mixing different modes\n• Advanced: 30+ minutes daily, with regular speed increases',
+          'For focus training, consistency matters more than volume.\n\n• Beginners: 10–15 minutes daily, one mode, same time of day\n• Intermediate: 15–20 minutes, vary content type\n• Advanced: 20–30 minutes, including occasional sessions at challenging speeds\n\nUsing it as a pre-work warm-up (5–10 min before a deep work session) is one of the most effective patterns.',
       },
     ],
   },
@@ -49,17 +72,17 @@ const faqSections: FAQSection[] = [
       {
         question: "What's the difference between the training modes?",
         answer:
-          'Word-by-Word: Displays one word at a time at your set speed. Great for eliminating subvocalization and improving focus.\n\nPhrases: Shows 6 words at once, helping you learn to process larger chunks of information. Improves comprehension at higher speeds.\n\nLine-by-Line: Highlights complete lines sequentially, simulating natural reading while maintaining pace control. Best for transitioning to normal reading.',
+          'Word-by-Word: Displays one word at a time. The most demanding — eliminates the ability to re-read and forces single-point focus. Best for training the release into absorption.\n\nPhrases: Shows 6 words at once. Trains chunked perception — seeing meaning units rather than individual words. Bridges focused practice to natural reading.\n\nLine-by-Line: Highlights complete lines sequentially. The most natural feel. Best for applying trained focus to real material at controlled speed.',
       },
       {
         question: 'Which training mode should I start with?',
         answer:
-          "Start with Word-by-Word if you're new to speed reading. It's the most focused approach and helps break bad reading habits quickly.\n\nOnce comfortable (after 1-2 weeks), try Phrases to improve your ability to process multiple words as units.\n\nUse Line-by-Line when you want to practice with a more natural reading experience at controlled speeds.",
+          "Start with Word-by-Word. It's the purest attention training — there's nothing to fall back on, no peripheral context, just the stream. The discomfort of this is part of it.\n\nAfter 1–2 weeks, add Phrases to build chunked perception.\n\nLine-by-Line is best once you want to bring the trained focus into normal reading sessions.",
       },
       {
         question: 'Can I use my own texts for training?',
         answer:
-          'Yes! Click "Choose Text" in the Train tab, then "New Text" to add your own content. You can paste articles, books, or documents you want to read, save multiple texts for different types of training, and use material relevant to your work or interests. Training with familiar content types can improve your real-world reading speed more effectively.',
+          'Yes. Click "Choose Text" in the Train tab, then "New Text" to add your own content. Training with material you actually need to absorb — an article, brief, or book chapter — makes the practice double as real work. The focused attention transfers.',
       },
     ],
   },
@@ -70,17 +93,17 @@ const faqSections: FAQSection[] = [
       {
         question: 'How quickly will I see results?',
         answer:
-          'Most users see improvements within the first week of regular practice:\n\n• Days 1-3: Adjustment period, getting comfortable with the interface\n• Week 1: 10-25% speed increase with maintained comprehension\n• Week 2-4: 30-50% improvement as techniques become natural\n• Month 2+: 50-100%+ improvement for dedicated users\n\nResults vary based on starting speed, practice frequency, and individual learning pace.',
+          'The first result is the absorption feeling — usually accessible by session 3–5. You\'ll notice a point in the session where the effort of tracking dissolves and the content just flows. That transition is what you\'re building.\n\nWPM improvements follow if you train consistently:\n• Week 1: 10–25% speed increase with maintained comprehension\n• Week 2–4: 30–50% as the habits become automatic\n• Month 2+: 50–100%+ for dedicated practice\n\nBut WPM is the side effect. The core result is faster access to single-channel absorption.',
       },
       {
         question: 'What should I do if I hit a plateau?',
         answer:
-          'Plateaus are normal. Try these strategies:\n\n• Switch training modes: If using Word-by-Word, try Phrases mode\n• Vary your content: Use different text types (news, fiction, technical)\n• Take a break: Sometimes 2-3 days off helps consolidate gains\n• Focus on comprehension: Ensure you\'re understanding what you read\n• Increase challenge gradually: Push speed up in smaller increments',
+          "Plateaus usually mean the challenge-skill gap has closed — the speed is no longer demanding enough to suppress analytical processing. Try:\n\n• Bump speed up 10–15% past comfort\n• Switch modes (Word-by-Word → Phrases shocks the pattern)\n• Use more complex material (denser content raises intrinsic load)\n• Take 2–3 days off — consolidation happens during rest\n• Return to the question: are you releasing the comprehension check, or still trying to confirm each word?",
       },
       {
-        question: 'How do I know if I\'m maintaining comprehension?',
+        question: "How do I know if I'm maintaining comprehension?",
         answer:
-          'Good comprehension indicators include:\n\n• You can summarize what you\'ve read\n• You remember key details and main ideas\n• You can answer questions about the content\n• The reading feels smooth, not rushed or confused\n\nIf comprehension drops, reduce speed by 10-15% and focus on understanding before pushing speed again.',
+          'Good absorption indicators:\n\n• You can reconstruct the main thread after finishing\n• Key ideas surface without searching for them\n• The session felt smooth — not rushed or anxious\n• You can pick up the content and continue naturally\n\nIf comprehension collapses: drop speed 10–15% and focus on the release feeling before pushing again. Speed and absorption increase together — forcing one without the other breaks the mechanism.',
       },
     ],
   },
@@ -89,23 +112,87 @@ const faqSections: FAQSection[] = [
     icon: '💡',
     items: [
       {
-        question: 'What are the most important speed reading techniques?',
+        question: 'What are the most important things to practice?',
         answer:
-          '1. Eliminate subvocalization: Stop "hearing" words in your head. FlowRead\'s pacing helps break this habit.\n\n2. Reduce fixations: Train your eyes to take in more words per glance instead of reading word-by-word.\n\n3. Use peripheral vision: Learn to see groups of words rather than individual words.\n\n4. Minimize regression: Avoid going back to re-read. Trust your first pass through the text.\n\n5. Practice chunking: Group words into meaningful phrases rather than processing each word separately.',
+          '1. Release the word-by-word confirmation habit. The urge to "check" each word is the analytical layer staying in control. The training is in letting that go.\n\n2. Don\'t re-read. Forward momentum is the whole point. Regression breaks the absorption loop.\n\n3. Find the edge. Just past comfortable comprehension — not so fast it collapses.\n\n4. Watch for the transition. There\'s usually a moment when effortful tracking dissolves into absorption. That\'s the signal. Train toward it getting faster.\n\n5. Use it before real work. The focused state transfers. FlowRead as warm-up, then switch to your actual task.',
       },
       {
         question: 'What environment is best for training?',
         answer:
-          'Optimize your training environment:\n\n• Good lighting: Avoid eye strain with proper lighting\n• Minimal distractions: Turn off notifications, find a quiet space\n• Comfortable posture: Sit upright, screen at eye level\n• Proper distance: Keep device 18-24 inches from your eyes\n• Regular breaks: Follow the 20-20-20 rule (every 20 min, look at something 20 feet away for 20 seconds)',
+          'The environment matters more for focus training than speed training:\n\n• No notifications — each interruption resets the attentional state\n• Consistent setup — the brain associates environment with mode\n• Upright posture, screen at eye level — body state shapes mental state\n• Good lighting — visual fatigue competes with focus\n• Use the 20-20-20 rule for longer sessions (every 20 min, look 20 feet away for 20 seconds)',
       },
       {
         question: 'Should I adjust the font size or style?',
         answer:
-          'Yes! Customize the display for optimal comfort:\n\n• Font size: Use the slider to find a size that\'s easy to read without straining\n• Font style: Choose Serif for traditional reading or Sans for screen reading\n\nThe right settings reduce eye fatigue and help you maintain focus during longer sessions.',
+          'Yes. Optimize for effortless visual recognition — the display should require no extra cognitive load. Larger font reduces eye strain. Serif vs. sans is personal preference (sans often scans faster on screen). The right settings disappear — you stop noticing them.',
       },
     ],
   },
 ];
+
+function ScienceAccordion() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  return (
+    <div className="mt-4 border-t border-white/[0.06] pt-4">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between text-left text-xs text-white/30 hover:text-white/50 transition-colors"
+      >
+        <span>The science behind this</span>
+        <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>▼</span>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="pt-3 space-y-1">
+              {scienceItems.map((item, index) => (
+                <div key={index}>
+                  <button
+                    onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                    className="w-full flex items-center justify-between py-2 text-left text-xs text-white/50 hover:text-white/70 transition-colors"
+                  >
+                    <span className="font-medium">{item.term}</span>
+                    <span
+                      className={`transform transition-transform text-white/20 flex-shrink-0 ml-2 ${
+                        expandedIndex === index ? 'rotate-180' : ''
+                      }`}
+                    >
+                      ▼
+                    </span>
+                  </button>
+                  <AnimatePresence>
+                    {expandedIndex === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="pb-2 text-xs text-white/25 leading-relaxed">
+                          {item.definition}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 function FAQAccordion({ section }: { section: FAQSection }) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -170,8 +257,10 @@ function FAQAccordion({ section }: { section: FAQSection }) {
 export default function AboutScreen() {
   return (
     <div className="space-y-4">
+
+      {/* What you're training */}
       <div
-        className="relative rounded-2xl p-6 text-center"
+        className="relative rounded-2xl p-6"
         style={{
           background: '#0a0a0a',
           border: '1px solid rgba(255,255,255,0.06)',
@@ -182,8 +271,97 @@ export default function AboutScreen() {
           style={{ background: `linear-gradient(90deg, transparent, ${SAGE}60, transparent)` }}
         />
 
-        <h2 className="text-xl font-bold text-white mb-2">About FlowRead</h2>
-        <p className="text-gray-500 text-sm">Your comprehensive speed reading training companion</p>
+        <h2 className="text-base font-semibold text-white mb-1">This isn't speed reading training.</h2>
+        <p className="text-sm text-white/45 mb-5 leading-relaxed">
+          FlowRead trains undivided attention and the ability to absorb information without consciously processing every word. Reading at speed is the mechanism — absorption is the goal.
+        </p>
+
+        <div className="space-y-3">
+          <div className="flex gap-3">
+            <span className="text-white/20 mt-0.5 flex-shrink-0 text-xs">—</span>
+            <p className="text-sm text-white/55 leading-relaxed">
+              At higher speeds, your analytical mind can't keep up word-by-word. It has to step back and let pattern recognition take over. That shift — from effortful processing to absorption — is what you're training toward.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <span className="text-white/20 mt-0.5 flex-shrink-0 text-xs">—</span>
+            <p className="text-sm text-white/55 leading-relaxed">
+              Sustained reading quiets mental noise. The background layer that generates wandering thoughts and inner monologue can't compete with a visually demanding task. This is the same mechanism that deepens flow.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <span className="text-white/20 mt-0.5 flex-shrink-0 text-xs">—</span>
+            <p className="text-sm text-white/55 leading-relaxed">
+              Variable speed keeps you in the zone — challenged enough to stay locked in, not so fast that comprehension collapses. That edge is where focused absorption becomes trainable.
+            </p>
+          </div>
+        </div>
+
+        <p className="mt-5 text-xs text-white/25 italic">WPM is a proxy. The signal is absorption.</p>
+
+        <ScienceAccordion />
+      </div>
+
+      {/* How to use it */}
+      <div
+        className="relative rounded-2xl p-6"
+        style={{
+          background: '#0a0a0a',
+          border: '1px solid rgba(255,255,255,0.06)',
+        }}
+      >
+        <div
+          className="absolute top-0 left-4 right-4 h-px"
+          style={{ background: `linear-gradient(90deg, transparent, ${SAGE}40, transparent)` }}
+        />
+
+        <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
+          <span>🧭</span>
+          How to use it
+        </h3>
+
+        <div className="space-y-4">
+          {[
+            {
+              n: '1',
+              title: 'Set speed at the edge of comprehension',
+              body: 'Find where you can follow the meaning but can\'t analytically confirm each word. That tension is the challenge-skill sweet spot — where focused absorption becomes available.',
+            },
+            {
+              n: '2',
+              title: 'Let go of the comprehension check',
+              body: 'The urge to verify understanding word-by-word is the analytical layer staying in control. The training is in releasing it. Trust that meaning is being absorbed even without conscious confirmation.',
+            },
+            {
+              n: '3',
+              title: 'Notice the release moment',
+              body: 'Somewhere in most sessions, effortful tracking dissolves into absorption. That transition is the training signal. Each session, try to get there faster.',
+            },
+            {
+              n: '4',
+              title: 'Use it as a pre-work warm-up',
+              body: '5–10 minutes of FlowRead before a deep work session suppresses mental chatter and primes single-channel focus. The state carries over when you switch to your real task.',
+            },
+            {
+              n: '5',
+              title: 'WPM gains are a side effect',
+              body: 'If you read faster over time, that\'s fine. But if you stay at the same WPM and the absorption feeling becomes easier and faster to access — that\'s the actual win.',
+            },
+          ].map((item) => (
+            <div key={item.n} className="flex gap-4">
+              <span
+                className="text-xs font-semibold mt-0.5 flex-shrink-0 w-4 text-right"
+                style={{ color: SAGE }}
+              >
+                {item.n}
+              </span>
+              <div>
+                <p className="text-sm font-medium text-white/80 mb-1">{item.title}</p>
+                <p className="text-sm text-white/40 leading-relaxed">{item.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {faqSections.map((section) => (

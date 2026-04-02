@@ -23,7 +23,7 @@ const PADDED_TOOLS: ToolId[] = ['profile', 'breathwork', 'compendium', 'training
 // Metadata for the consistent tool header bar
 const TOOL_META: Partial<Record<ToolId, { icon: string; label: string; description: string }>> = {
   profile:    { icon: '/assets/LOGOS/FOURFLOW - MAIN LOGO.png', label: 'Flow Profile',   description: 'Your consciousness alignment map' },
-  flowread:   { icon: '/assets/apps/flowread-icon.png',          label: 'FlowRead',        description: 'Focus reading trainer'            },
+  flowread:   { icon: '/assets/apps/flowread-icon.png',          label: 'FlowRead',        description: 'Undivided attention + absorption training' },
   compendium: { icon: '/assets/LOGOS/OPEN MIND.png',             label: 'FlowCompendium',  description: 'Browse 191 flow protocols'         },
   breathwork: { icon: '/assets/LOGOS/FOCUSED BODY.png',          label: 'FlowBreath',      description: 'Shift state — body first'          },
   curiosity:  { icon: '/assets/LOGOS/IGNITED CURIOSITY.png',     label: 'FlowSpark',       description: 'Map what pulls you'               },
