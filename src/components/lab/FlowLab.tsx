@@ -39,13 +39,15 @@ export default function FlowLab() {
         <SectionBar activeTool={activeTool} onSelectTool={setActiveTool} />
       </div>
 
-      {/* Tool content — takes remaining space */}
-      <ActivityArea
-        activeTool={activeTool}
-        onBack={() => setActiveTool('profile')}
-      />
+      {/* Tool content — takes remaining space; pb-14 on mobile keeps content above fixed bottom nav */}
+      <div className="flex-1 min-h-0 pb-14 md:pb-0">
+        <ActivityArea
+          activeTool={activeTool}
+          onBack={() => setActiveTool('profile')}
+        />
+      </div>
 
-      {/* Mobile: bottom nav + slide-up sheet */}
+      {/* Mobile: fixed bottom nav + slide-up sheet — outside document flow */}
       <div className="md:hidden">
         <MobileNav activeTool={activeTool} onSelectTool={setActiveTool} />
       </div>

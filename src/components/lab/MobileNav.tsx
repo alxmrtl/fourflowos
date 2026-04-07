@@ -29,8 +29,8 @@ function MobileSheet({
   const { Animation } = section;
 
   return (
-    // Fixed height — same regardless of tool count
-    <div className="absolute bottom-14 inset-x-0 h-[196px] overflow-hidden rounded-t-[20px] border-t border-white/[0.1]"
+    <div
+      className="w-full h-full overflow-hidden rounded-t-[20px] border-t border-white/[0.1]"
       style={{ background: 'rgba(10,10,10,0.82)' }}
     >
       {/* Animation — full-bleed background */}
@@ -38,7 +38,7 @@ function MobileSheet({
         {mounted && <Animation />}
       </div>
 
-      {/* Gradient veil — keeps text legible */}
+      {/* Gradient veil */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -119,7 +119,7 @@ function BottomNavBar({
 }) {
   return (
     <div
-      className="absolute bottom-0 inset-x-0 h-14 grid grid-cols-4 border-t border-white/[0.08]"
+      className="fixed bottom-0 inset-x-0 z-50 h-14 grid grid-cols-4 border-t border-white/[0.08]"
       style={{
         background: 'rgba(8,8,8,0.97)',
         backdropFilter: 'blur(16px)',
@@ -132,7 +132,7 @@ function BottomNavBar({
           <button
             key={section.id}
             onClick={() => onSelectSection(idx)}
-            className="flex flex-col items-center justify-center gap-1 transition-opacity"
+            className="flex flex-col items-center justify-center gap-1"
           >
             <div
               className="relative w-5 h-5 flex-shrink-0 transition-opacity duration-200"
@@ -162,7 +162,6 @@ export default function MobileNav({ activeTool, onSelectTool }: MobileNavProps) 
   const [activeSection, setActiveSection] = useState(() => sectionFromTool(activeTool));
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  // Sync section highlight when activeTool changes externally (e.g. localStorage restore)
   useEffect(() => {
     setActiveSection(sectionFromTool(activeTool));
   }, [activeTool]);
@@ -177,18 +176,18 @@ export default function MobileNav({ activeTool, onSelectTool }: MobileNavProps) 
   }
 
   return (
-    // Positioned relative to the phone-inner flex container
-    <div className="relative flex-shrink-0" style={{ height: sheetOpen ? '210px' : '56px', transition: 'height 0.35s cubic-bezier(0.32, 0.72, 0, 1)' }}>
+    <>
+      {/* Sheet — fixed, floats above bottom nav, never in document flow */}
       <AnimatePresence>
         {sheetOpen && (
           <motion.div
             key="sheet"
+            className="fixed inset-x-0 z-40"
+            style={{ bottom: '56px', height: '196px' }}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
-            transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-            className="absolute inset-x-0 bottom-14"
-            style={{ height: '196px' }}
+            transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
           >
             <MobileSheet
               sectionIdx={activeSection}
@@ -201,6 +200,6 @@ export default function MobileNav({ activeTool, onSelectTool }: MobileNavProps) 
       </AnimatePresence>
 
       <BottomNavBar activeSection={activeSection} onSelectSection={handleNavTap} />
-    </div>
+    </>
   );
 }
