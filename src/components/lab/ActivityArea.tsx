@@ -70,7 +70,7 @@ export default function ActivityArea({ activeTool, onBack }: ActivityAreaProps) 
   const isPadded = PADDED_TOOLS.includes(activeTool);
 
   return (
-    <div className="flex-1 overflow-auto min-h-0 py-6">
+    <div className="flex-1 overflow-auto min-h-0 py-6 pb-6 md:pb-6" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTool}

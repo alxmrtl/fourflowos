@@ -6,6 +6,7 @@ import { useLabState } from './useLabState';
 import LandingNav from '@/components/landing/LandingNav';
 import SectionBar from './SectionBar';
 import ActivityArea from './ActivityArea';
+import MobileNav from './MobileNav';
 
 export default function FlowLab() {
   const { user, loading } = useAuth();
@@ -30,13 +31,24 @@ export default function FlowLab() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
       <LandingNav />
-      {/* Spacer for fixed nav — matches py-5 + logo height */}
+      {/* Spacer for fixed nav */}
       <div className="h-20 flex-shrink-0" />
-      <SectionBar activeTool={activeTool} onSelectTool={setActiveTool} />
+
+      {/* Desktop: horizontal section bar */}
+      <div className="hidden md:block">
+        <SectionBar activeTool={activeTool} onSelectTool={setActiveTool} />
+      </div>
+
+      {/* Tool content — takes remaining space */}
       <ActivityArea
         activeTool={activeTool}
         onBack={() => setActiveTool('profile')}
       />
+
+      {/* Mobile: bottom nav + slide-up sheet */}
+      <div className="md:hidden">
+        <MobileNav activeTool={activeTool} onSelectTool={setActiveTool} />
+      </div>
     </div>
   );
 }
