@@ -199,10 +199,136 @@ export function CreateAnim() {
   );
 }
 
-// ─── Shared icon component ────────────────────────────────────────────────────
+// ─── Shared icon component (tool buttons) ────────────────────────────────────
 
 export function AppIcon({ src, alt }: { src: string; alt: string }) {
   return <Image src={src} alt={alt} width={20} height={20} className="object-contain" />;
+}
+
+// ─── Section SVG icons ────────────────────────────────────────────────────────
+// Each icon animates when active: pulse / flow / burst / ripple.
+
+export interface SectionIconProps { color: string; size?: number; active?: boolean }
+
+// CORE — concentric rings (sonar pulse when active)
+export function CoreIcon({ color, size = 20, active = false }: SectionIconProps) {
+  const pulse = { duration: 2.8, repeat: Infinity, ease: 'easeInOut' as const };
+  return (
+    <motion.svg width={size} height={size} viewBox="0 0 20 20" fill="none"
+      animate={{ filter: active ? `drop-shadow(0 0 5px ${color}88)` : 'drop-shadow(0 0 0px transparent)' }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.circle cx="10" cy="10" r="9" stroke={color} strokeWidth="1"
+        animate={{ opacity: active ? [0.25, 0.55, 0.25] : 0.3 }}
+        transition={active ? { ...pulse, delay: 0.6 } : { duration: 0.4 }}
+      />
+      <motion.circle cx="10" cy="10" r="6" stroke={color} strokeWidth="1.2"
+        animate={{ opacity: active ? [0.5, 0.85, 0.5] : 0.55 }}
+        transition={active ? { ...pulse, delay: 0.3 } : { duration: 0.4 }}
+      />
+      <motion.circle cx="10" cy="10" r="3" stroke={color} strokeWidth="1.4"
+        animate={{ opacity: active ? [0.75, 1, 0.75] : 0.8 }}
+        transition={active ? pulse : { duration: 0.4 }}
+      />
+      <motion.circle cx="10" cy="10" r="1.2" fill={color}
+        animate={{ opacity: active ? [0.8, 1, 0.8] : 0.9 }}
+        transition={active ? { ...pulse, duration: 1.4 } : { duration: 0.4 }}
+      />
+    </motion.svg>
+  );
+}
+
+// CONSUME — three waves (sequential opacity flow when active)
+export function ConsumeIcon({ color, size = 20, active = false }: SectionIconProps) {
+  const wave = (delay: number, baseOpacity: number) => ({
+    animate: { opacity: active ? [baseOpacity * 0.5, baseOpacity, baseOpacity * 0.5] : baseOpacity },
+    transition: active
+      ? { duration: 2.2, repeat: Infinity, ease: 'easeInOut' as const, delay }
+      : { duration: 0.4 },
+  });
+  return (
+    <motion.svg width={size} height={size * 0.8} viewBox="0 0 20 16" fill="none"
+      animate={{ filter: active ? `drop-shadow(0 0 5px ${color}88)` : 'drop-shadow(0 0 0px transparent)' }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.path d="M1 3 Q5.5 0 10 3 Q14.5 6 19 3"
+        stroke={color} strokeWidth="1.3" fill="none" strokeLinecap="round"
+        {...wave(0.55, 0.38)}
+      />
+      <motion.path d="M1 8 Q5.5 5 10 8 Q14.5 11 19 8"
+        stroke={color} strokeWidth="1.3" fill="none" strokeLinecap="round"
+        {...wave(0.28, 0.65)}
+      />
+      <motion.path d="M1 13 Q5.5 10 10 13 Q14.5 16 19 13"
+        stroke={color} strokeWidth="1.3" fill="none" strokeLinecap="round"
+        {...wave(0, 0.9)}
+      />
+    </motion.svg>
+  );
+}
+
+// CATALYZE — radial burst (alternating rays pulse when active)
+const BURST_LINES = [
+  { x1: 10, y1: 1,  x2: 10, y2: 5  },  // N
+  { x1: 10, y1: 15, x2: 10, y2: 19 },  // S
+  { x1: 1,  y1: 10, x2: 5,  y2: 10 },  // W
+  { x1: 15, y1: 10, x2: 19, y2: 10 },  // E
+  { x1: 3.6,  y1: 3.6,  x2: 6.5,  y2: 6.5  }, // NW
+  { x1: 13.5, y1: 13.5, x2: 16.4, y2: 16.4 }, // SE
+  { x1: 16.4, y1: 3.6,  x2: 13.5, y2: 6.5  }, // NE
+  { x1: 6.5,  y1: 13.5, x2: 3.6,  y2: 16.4 }, // SW
+];
+
+export function CatalyzeIcon({ color, size = 20, active = false }: SectionIconProps) {
+  const burst = { duration: 1.6, repeat: Infinity, ease: 'easeInOut' as const };
+  return (
+    <motion.svg width={size} height={size} viewBox="0 0 20 20" fill="none"
+      animate={{ filter: active ? `drop-shadow(0 0 5px ${color}88)` : 'drop-shadow(0 0 0px transparent)' }}
+      transition={{ duration: 0.4 }}
+    >
+      {BURST_LINES.map((l, i) => (
+        <motion.line key={i}
+          x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
+          stroke={color} strokeWidth="1.4" strokeLinecap="round"
+          animate={{ opacity: active ? [0.4, 1, 0.4] : 0.7 }}
+          transition={active ? { ...burst, delay: (i % 2) * 0.5 } : { duration: 0.4 }}
+        />
+      ))}
+      <motion.circle cx="10" cy="10" r="2.5" fill={color}
+        animate={{ opacity: active ? [0.7, 1, 0.7] : 0.85 }}
+        transition={active ? { ...burst, duration: 0.8 } : { duration: 0.4 }}
+      />
+    </motion.svg>
+  );
+}
+
+// CREATE — 3×3 grid dots (ripple from centre outward when active)
+const GRID_DOTS = [
+  { cx: 3,  cy: 3,  ring: 2 }, { cx: 9,  cy: 3,  ring: 1 }, { cx: 15, cy: 3,  ring: 2 },
+  { cx: 3,  cy: 9,  ring: 1 }, { cx: 9,  cy: 9,  ring: 0 }, { cx: 15, cy: 9,  ring: 1 },
+  { cx: 3,  cy: 15, ring: 2 }, { cx: 9,  cy: 15, ring: 1 }, { cx: 15, cy: 15, ring: 2 },
+];
+const RING_BASE_OPACITY = [0.9, 0.6, 0.32] as const;
+
+export function CreateIcon({ color, size = 20, active = false }: SectionIconProps) {
+  const ripple = { duration: 2.4, repeat: Infinity, ease: 'easeInOut' as const };
+  return (
+    <motion.svg width={size} height={size} viewBox="0 0 18 18" fill="none"
+      animate={{ filter: active ? `drop-shadow(0 0 5px ${color}88)` : 'drop-shadow(0 0 0px transparent)' }}
+      transition={{ duration: 0.4 }}
+    >
+      {GRID_DOTS.map((d, i) => {
+        const base = RING_BASE_OPACITY[d.ring];
+        const delay = d.ring * 0.35;
+        return (
+          <motion.circle key={i} cx={d.cx} cy={d.cy} r="1.8" fill={color}
+            animate={{ opacity: active ? [base * 0.45, base, base * 0.45] : base }}
+            transition={active ? { ...ripple, delay } : { duration: 0.4 }}
+          />
+        );
+      })}
+    </motion.svg>
+  );
 }
 
 // ─── Section + tool definitions ───────────────────────────────────────────────
@@ -213,7 +339,7 @@ export interface SectionDef {
   label: string;
   description: string;
   color: string;
-  sectionLogo: string;
+  Icon: React.ComponentType<SectionIconProps>;
   Animation: React.ComponentType;
   tools: ToolDef[];
 }
@@ -224,7 +350,7 @@ export const SECTIONS: SectionDef[] = [
     label: 'CORE',
     description: 'Know yourself',
     color: AMETHYST,
-    sectionLogo: '/assets/LOGOS/SPIRIT - Section Logo.png',
+    Icon: CoreIcon,
     Animation: CoreAnim,
     tools: [
       { id: 'profile', label: 'Flow Profile', description: 'Your consciousness alignment map', icon: <AppIcon src="/assets/LOGOS/FOURFLOW - MAIN LOGO.png" alt="Flow Profile" /> },
@@ -235,7 +361,7 @@ export const SECTIONS: SectionDef[] = [
     label: 'CONSUME',
     description: 'Take something in',
     color: STEEL,
-    sectionLogo: '/assets/LOGOS/STORY - Section Logo.png',
+    Icon: ConsumeIcon,
     Animation: ConsumeAnim,
     tools: [
       { id: 'flowread', label: 'FlowRead', description: 'Focus reading trainer', icon: <AppIcon src="/assets/apps/flowread-icon.png" alt="FlowRead" /> },
@@ -247,7 +373,7 @@ export const SECTIONS: SectionDef[] = [
     label: 'CATALYZE',
     description: 'Break inertia',
     color: CORAL,
-    sectionLogo: '/assets/LOGOS/SELF - Section Logo.png',
+    Icon: CatalyzeIcon,
     Animation: CatalyzeAnim,
     tools: [
       { id: 'breathwork', label: 'FlowBreath', description: 'Shift state — body first', icon: <AppIcon src="/assets/LOGOS/FOCUSED BODY.png" alt="FlowBreath" /> },
@@ -259,7 +385,7 @@ export const SECTIONS: SectionDef[] = [
     label: 'CREATE',
     description: 'Enter deep work',
     color: SAGE,
-    sectionLogo: '/assets/LOGOS/SPACE - Section Logo.png',
+    Icon: CreateIcon,
     Animation: CreateAnim,
     tools: [
       { id: 'flowzone', label: 'FlowZone', description: 'Focus timer + reps', icon: <AppIcon src="/assets/apps/flowzone-icon.png" alt="FlowZone" /> },

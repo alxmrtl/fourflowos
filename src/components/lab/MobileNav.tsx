@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SECTIONS, sectionFromTool, useMounted } from './sections-data';
 import type { ToolId } from './useLabState';
@@ -135,10 +134,10 @@ function BottomNavBar({
             className="flex flex-col items-center justify-center gap-1"
           >
             <div
-              className="relative w-5 h-5 flex-shrink-0 transition-opacity duration-200"
-              style={{ opacity: isActive ? 0.9 : 0.35 }}
+              className="flex-shrink-0 transition-opacity duration-200"
+              style={{ opacity: isActive ? 1 : 0.35 }}
             >
-              <Image src={section.sectionLogo} alt={section.label} fill className="object-contain" />
+              <section.Icon color={section.color} size={20} active={isActive} />
             </div>
             <span
               className="text-[8px] font-bold uppercase tracking-[0.16em] transition-colors duration-200"

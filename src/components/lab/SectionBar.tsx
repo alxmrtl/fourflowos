@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { useMounted, SECTIONS } from './sections-data';
 import ToolButton from './ToolButton';
 import type { ToolId } from './useLabState';
@@ -14,7 +13,8 @@ function SectionColumn({ section, activeTool, onSelectTool }: {
 }) {
   const [hovered, setHovered] = useState(false);
   const mounted = useMounted();
-  const { Animation } = section;
+  const { Animation, Icon } = section;
+  const isActive = section.tools.some(t => t.id === activeTool);
 
   return (
     <div
@@ -29,8 +29,8 @@ function SectionColumn({ section, activeTool, onSelectTool }: {
 
       {/* Section header */}
       <div className="px-4 pt-1 pb-3 flex items-center gap-2.5 border-b border-white/[0.05]">
-        <div className="relative w-5 h-5 flex-shrink-0 opacity-60">
-          <Image src={section.sectionLogo} alt={section.label} fill className="object-contain" />
+        <div className="flex-shrink-0" style={{ opacity: isActive || hovered ? 1 : 0.5, transition: 'opacity 0.25s' }}>
+          <Icon color={section.color} size={20} active={isActive} />
         </div>
         <div>
           <p className="text-[13px] font-bold uppercase tracking-[0.22em] leading-none" style={{ color: section.color }}>
