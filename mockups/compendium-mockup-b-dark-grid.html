@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup B — Dark Grid (FlowStation Inspired)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --self:    #FF6F61;
+  --space:   #6BA292;
+  --story:   #5B84B1;
+  --spirit:  #7A4DA4;
+  --bg:      #0a0a0a;
+  --surface: #111111;
+  --text:    #f0f0f0;
+  --muted:   rgba(255,255,255,0.38);
+  --dim:     rgba(255,255,255,0.12);
+  --border:  rgba(255,255,255,0.08);
+}
+
+html, body { width: 100%; background: #1a1a1a; font-family: 'Inter', system-ui, sans-serif; }
+
+.mockup-label {
+  text-align: center; padding: 20px 0 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ── Phone shell ── */
+.phone-shell {
+  width: 390px; height: 844px;
+  margin: 0 auto 40px;
+  background: var(--bg);
+  border-radius: 48px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Status bar ── */
+.status-bar {
+  height: 44px; padding: 14px 28px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; font-weight: 600; color: var(--text);
+  position: relative; z-index: 10;
+}
+.status-icons { display: flex; gap: 5px; align-items: center; }
+
+/* ── Screen track ── */
+#screen-track {
+  display: flex;
+  width: 300%;
+  height: calc(844px - 44px);
+  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.screen {
+  width: 390px; height: 100%;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ══ SCREEN 1: Dimension Grid ══ */
+.s1-header {
+  padding: 14px 20px 18px;
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+.s1-title { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+.s1-count { font-size: 12px; color: var(--muted); }
+
+.dim-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; padding: 0 16px 20px;
+}
+.dim-card {
+  border-radius: 22px; padding: 20px 18px 16px;
+  cursor: pointer;
+  display: flex; flex-direction: column; gap: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  position: relative; overflow: hidden; min-height: 160px;
+}
+.dim-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.07), transparent);
+  pointer-events: none; border-radius: 22px 22px 0 0;
+}
+.dim-card:active { transform: scale(0.97); }
+
+.dc-top { display: flex; align-items: center; justify-content: space-between; }
+.dc-emoji { font-size: 28px; }
+.dc-count { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; opacity: 0.45; }
+.dc-name {
+  font-size: 20px; font-weight: 900;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  color: rgba(255,255,255,0.95);
+}
+.dc-sub { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; opacity: 0.45; text-transform: uppercase; }
+.dc-dots { display: flex; gap: 4px; margin-top: auto; }
+.dc-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ══ SCREEN 2: State Tiles ══ */
+.s2-topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px 16px;
+  flex-shrink: 0;
+}
+.back-btn {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: rgba(255,255,255,0.07); border: none;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text); font-size: 16px; cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.back-btn:active { background: rgba(255,255,255,0.12); }
+.s2-pillar-name {
+  font-size: 18px; font-weight: 900; letter-spacing: 0.08em;
+  text-transform: uppercase; font-family: 'Inter', sans-serif;
+}
+
+.state-tiles { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 24px; }
+.state-tile {
+  border-radius: 22px; padding: 0;
+  cursor: pointer; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: transform 0.20s ease, box-shadow 0.20s ease;
+  position: relative;
+}
+.state-tile:active { transform: scale(0.98); }
+
+.st-main {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px 12px;
+}
+.st-emoji { font-size: 36px; flex-shrink: 0; }
+.st-info { flex: 1; }
+.st-name {
+  font-size: 15px; font-weight: 800; letter-spacing: 0.06em;
+  text-transform: uppercase; color: rgba(255,255,255,0.95);
+  line-height: 1.2; margin-bottom: 3px;
+}
+.st-sub { font-size: 10px; color: var(--muted); font-weight: 500; }
+.st-arrow { font-size: 14px; color: var(--muted); }
+
+/* Quality strip at bottom of tile */
+.st-qual-strip {
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.stq-col {
+  flex: 1; padding: 9px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.stq-col + .stq-col { border-left: 1px solid rgba(255,255,255,0.06); }
+.stq-type-row { display: flex; align-items: center; gap: 3px; }
+.stq-icon { width: 10px; height: 10px; display: flex; align-items: center; justify-content: center; opacity: 0.55; }
+.stq-icon svg { width: 10px; height: 10px; }
+.stq-type-label { font-size: 7px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+.stq-name { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.85); text-align: center; line-height: 1.2; }
+
+/* ══ SCREEN 3: Quality View ══ */
+.s3-topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px 10px; flex-shrink: 0;
+}
+.s3-breadcrumb { font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+.s3-state-name { font-size: 17px; font-weight: 800; flex: 1; }
+
+/* Quality filter tabs */
+.q-filter-bar {
+  display: flex; gap: 8px;
+  padding: 0 16px 14px; flex-shrink: 0;
+}
+.q-tab {
+  flex: 1; border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  padding: 12px 10px;
+  display: flex; flex-direction: column; gap: 5px;
+  cursor: pointer;
+  transition: all 0.20s ease;
+}
+.q-tab.active {
+  border-width: 1.5px;
+}
+.q-tab-type { display: flex; align-items: center; gap: 4px; }
+.q-tab-icon { width: 13px; height: 13px; display: flex; align-items: center; justify-content: center; }
+.q-tab-icon svg { width: 13px; height: 13px; }
+.q-tab-type-label { font-size: 8px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; color: rgba(255,255,255,0.38); }
+.q-tab.active .q-tab-type-label { color: rgba(255,255,255,0.65); }
+.q-tab-name { font-size: 13px; font-weight: 800; color: rgba(255,255,255,0.45); line-height: 1.1; }
+.q-tab.active .q-tab-name { color: rgba(255,255,255,0.95); }
+.q-tab-def { font-size: 10px; color: rgba(255,255,255,0.28); line-height: 1.3; display: none; }
+.q-tab.active .q-tab-def { display: block; color: rgba(255,255,255,0.42); }
+
+/* Item list */
+.item-list { padding: 2px 16px 24px; }
+.item-section-label {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 0 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+}
+.item-section-label svg { width: 10px; height: 10px; }
+.item-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+  margin-bottom: 2px;
+  background: none; border: none; width: 100%; text-align: left;
+  color: var(--text);
+}
+.item-row:hover { background: rgba(255,255,255,0.05); }
+.item-row:active { background: rgba(255,255,255,0.08); }
+.item-row-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.item-row-icon svg { width: 13px; height: 13px; }
+.item-row-text { flex: 1; }
+.item-row-name { font-size: 13px; font-weight: 600; }
+.item-row-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.item-row-arrow { font-size: 12px; color: rgba(255,255,255,0.2); }
+
+/* ── Detail bottom sheet ── */
+.sheet-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 100; display: none; align-items: flex-end;
+  backdrop-filter: blur(4px);
+}
+.sheet-overlay.open { display: flex; }
+.bottom-sheet {
+  width: 100%; max-height: 70%;
+  background: #161616;
+  border-radius: 24px 24px 0 0;
+  border-top: 1px solid rgba(255,255,255,0.10);
+  overflow: hidden; display: flex; flex-direction: column;
+  animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.sheet-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+  margin: 10px auto 0; flex-shrink: 0;
+}
+.sheet-inner { padding: 14px 20px 32px; overflow-y: auto; flex: 1; }
+.sheet-back { font-size: 11px; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 3px; margin-bottom: 12px; background: none; border: none; padding: 0; color: rgba(255,255,255,0.38); }
+.sheet-type-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 8px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.sheet-title { font-size: 20px; font-weight: 800; line-height: 1.2; margin-bottom: 18px; }
+.sheet-section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.sheet-content { font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.65); margin-bottom: 20px; }
+.sheet-steps { list-style: none; }
+.sheet-step { display: flex; gap: 10px; margin-bottom: 10px; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.7); }
+.step-num { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px; color: rgba(255,255,255,0.55); }
+</style>
+</head>
+<body>
+
+<div class="mockup-label">Mockup B — Dark Grid (FlowStation-Inspired · Screen-by-Screen Navigation)</div>
+
+<div class="phone-shell">
+  <div class="status-bar">
+    <span style="font-variant-numeric:tabular-nums">9:41</span>
+    <div class="status-icons">
+      <svg width="16" height="12" fill="rgba(255,255,255,0.8)"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="1" width="2.5" height="11" rx="1" opacity=".3"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="rgba(255,255,255,0.8)"><rect x="0" y="1" width="22" height="10" rx="3" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.2"/><rect x="22.5" y="3.5" width="2" height="5" rx="1"/><rect x="1.5" y="2.5" width="16" height="7" rx="2"/></svg>
+    </div>
+  </div>
+
+  <div id="screen-track">
+    <!-- Screen 1: Dimension grid -->
+    <div class="screen" id="s1">
+      <div class="s1-header">
+        <span class="s1-title">Compendium</span>
+        <span class="s1-count">191 cards</span>
+      </div>
+      <div class="dim-grid" id="dim-grid"></div>
+    </div>
+
+    <!-- Screen 2: State tiles -->
+    <div class="screen" id="s2">
+      <div class="s2-topbar">
+        <button class="back-btn" onclick="goBack(1)">‹</button>
+        <span class="s2-pillar-name" id="s2-pillar-name"></span>
+      </div>
+      <div class="state-tiles" id="state-tiles"></div>
+    </div>
+
+    <!-- Screen 3: Quality view -->
+    <div class="screen" id="s3">
+      <div class="s3-topbar">
+        <button class="back-btn" onclick="goBack(2)">‹</button>
+        <div style="flex:1">
+          <div class="s3-breadcrumb" id="s3-breadcrumb"></div>
+          <div class="s3-state-name" id="s3-state-name"></div>
+        </div>
+      </div>
+      <div class="q-filter-bar" id="q-filter-bar"></div>
+      <div class="item-list" id="item-list"></div>
+    </div>
+  </div>
+
+  <!-- Detail sheet -->
+  <div class="sheet-overlay" id="detail-overlay" onclick="closeDetail(event)">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-inner" id="detail-inner"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ICONS = {
+  restore: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
+  maintain: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`,
+  concentrate: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>`,
+  technique: `<svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M7 1L3 7h3.5L5 11l4-6H5.5L7 1z"/></svg>`,
+  concept: `<svg width="13" height="13" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="1.5" fill="currentColor"/><ellipse cx="6" cy="6" rx="5" ry="2.2" stroke="currentColor" stroke-width="1"/><ellipse cx="6" cy="6" rx="5" ry="2.2" stroke="currentColor" stroke-width="1" transform="rotate(60 6 6)"/><ellipse cx="6" cy="6" rx="5" ry="2.2" stroke="currentColor" stroke-width="1" transform="rotate(120 6 6)"/></svg>`,
+};
+
+const COLORS = { self: '#FF6F61', space: '#6BA292', story: '#5B84B1', spirit: '#7A4DA4' };
+const DIM_EMOJIS = { self: '🔥', space: '🏛️', story: '📖', spirit: '✨' };
+const STATE_EMOJIS = { 'tuned-emotions':'🌊','focused-body':'⚡','open-mind':'🔮','intentional-space':'🏛️','optimized-tools':'⚙️','feedback-systems':'📡','generative-story':'✨','clear-mission':'🎯','empowered-role':'🦁','grounding-values':'🌳','ignited-curiosity':'🔥','visualized-vision':'🌅' };
+
+function rgba(p, a) {
+  const h = COLORS[p]; const r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+const DATA = {
+  self: { color: '#FF6F61', states: [
+    { id: 'tuned-emotions', name: 'Tuned Emotions', qualities: [
+      { type: 'restore', name: 'Quiet', def: 'Emotional noise cleared; baseline calm restored.', techniques: ['Pre-Session Clearance','Somatic Release Protocol','Resistance-Desire Clearing'], concepts: ['Window of Tolerance','Polyvagal Theory'] },
+      { type: 'maintain', name: 'Fueled', def: 'Emotional energy sustains without overwhelming.', techniques: ['Flow Channel Formula','Abandon Spectrum Practice'], concepts: ['Challenge-Skill Ratio'] },
+      { type: 'concentrate', name: 'Calibrated', def: 'Emotional signal precisely tuned to the task.', techniques: ['Detachment Protocol','Pre-Session Clearance'], concepts: ['Optimal Arousal Theory'] },
+    ]},
+    { id: 'focused-body', name: 'Focused Body', qualities: [
+      { type: 'restore', name: 'Released', def: 'Physical tension dissolved; body returns to neutral.', techniques: ['Action-Awareness Merging','Subconscious Surrender Protocol'], concepts: ['Transient Hypofrontality'] },
+      { type: 'maintain', name: 'Grounded', def: 'Stable physical anchor holds attention through distraction.', techniques: ['Progressive Attention Training','Attention Mode Toggle'], concepts: ['Embodied Cognition'] },
+      { type: 'concentrate', name: 'Activated', def: 'Body fully engaged; movement and focus merge.', techniques: ['Aperture Absorption','Action-Awareness Merging'], concepts: ['Motor-Cognitive Coupling'] },
+    ]},
+    { id: 'open-mind', name: 'Open Mind', qualities: [
+      { type: 'restore', name: 'Cleared', def: 'Mental chatter stilled; conceptual space reopened.', techniques: ['No-Mind Practice','Beginner Lens Reset'], concepts: ['Default Mode Network'] },
+      { type: 'maintain', name: 'Receptive', def: 'Mind stays open as the work unfolds.', techniques: ['Beginner Lens Reset','Beauty Immersion'], concepts: ["Beginner's Mind"] },
+      { type: 'concentrate', name: 'Expansive', def: 'Mind stretches to hold complex emergent patterns.', techniques: ['Beauty Immersion','Cognitive Widening Protocol'], concepts: ['Cognitive Flexibility'] },
+    ]},
+  ]},
+  space: { color: '#6BA292', states: [
+    { id: 'intentional-space', name: 'Intentional Space', qualities: [
+      { type: 'restore', name: 'Cleared', def: 'Environmental friction removed; space reset.', techniques: ['Space Reset Protocol','Threshold Ritual'], concepts: ['Affordance Theory'] },
+      { type: 'maintain', name: 'Held', def: 'Space continuously curated for signal flow.', techniques: ['Environment Anchoring','Context Switching Guard'], concepts: ['Context-Dependent Memory'] },
+      { type: 'concentrate', name: 'Optimized', def: 'Every element actively amplifies focus.', techniques: ['Deep Work Architecture','Sensory Tuning'], concepts: ['Environmental Design'] },
+    ]},
+    { id: 'optimized-tools', name: 'Optimized Tools', qualities: [
+      { type: 'restore', name: 'Reset', def: 'Tools returned to frictionless baseline.', techniques: ['Tool Audit Sprint','Friction Mapping'], concepts: ['Cognitive Load Theory'] },
+      { type: 'maintain', name: 'Reliable', def: 'Tools perform without demanding attention.', techniques: ['Workflow Maintenance Loop','Tool Sharpening Session'], concepts: ['Automation Leverage'] },
+      { type: 'concentrate', name: 'Sharp', def: 'Tools extend capability precisely where needed.', techniques: ['Deep Tool Mastery','Shortcut Saturation'], concepts: ['Extended Mind Theory'] },
+    ]},
+    { id: 'feedback-systems', name: 'Feedback Systems', qualities: [
+      { type: 'restore', name: 'Quiet', def: 'Feedback noise silenced; SNR reset.', techniques: ['Feedback Silence Period','Metric Cleanse'], concepts: ['Signal-to-Noise Ratio'] },
+      { type: 'maintain', name: 'Running', def: 'Feedback loops active and returning data.', techniques: ['Progress Pulse Check','Loop Calibration'], concepts: ['Cybernetics'] },
+      { type: 'concentrate', name: 'Tuned', def: 'Feedback calibrated to exact task frequency.', techniques: ['Real-Time Signal Reading','Micro-Feedback Loop'], concepts: ['Tight Feedback Loops'] },
+    ]},
+  ]},
+  story: { color: '#5B84B1', states: [
+    { id: 'generative-story', name: 'Generative Story', qualities: [
+      { type: 'restore', name: 'Neutralized', def: 'Limiting narrative dissolved; canvas cleared.', techniques: ['Story Reframe Protocol','Narrative Detox'], concepts: ['Narrative Identity'] },
+      { type: 'maintain', name: 'Flowing', def: 'Story generates momentum and meaning.', techniques: ['Daily Story Pulse','Momentum Narration'], concepts: ['Self-Authoring Mind'] },
+      { type: 'concentrate', name: 'Compelling', def: 'Story pulls behavior forward automatically.', techniques: ['Vivid Story Imprinting','Hero Arc Mapping'], concepts: ['Story-Driven Motivation'] },
+    ]},
+    { id: 'clear-mission', name: 'Clear Mission', qualities: [
+      { type: 'restore', name: 'Simplified', def: 'Complexity stripped; mission returns to clarity.', techniques: ['Mission Distillation','One-Sentence Protocol'], concepts: ['Purposeful Simplicity'] },
+      { type: 'maintain', name: 'Held', def: 'Mission active in working memory.', techniques: ['Mission Anchor Ritual','Daily Mission Read'], concepts: ['Working Memory'] },
+      { type: 'concentrate', name: 'Focused', def: 'All action aligned to a single mission vector.', techniques: ['Mission-Task Alignment Check','Elimination Sprint'], concepts: ['Strategic Coherence'] },
+    ]},
+    { id: 'empowered-role', name: 'Empowered Role', qualities: [
+      { type: 'restore', name: 'Grounded', def: 'Role stripped of evaluation; identity re-centered.', techniques: ['Responsibility Without Evaluation Pressure','Unconditional Self-Worth Meditation'], concepts: ['Self-Determination Theory'] },
+      { type: 'maintain', name: 'Committed', def: 'Role ownership maintained through obstacles.', techniques: ['Role Commitment Renewal','Accountability Anchor'], concepts: ['Identity-Based Habits'] },
+      { type: 'concentrate', name: 'Owned', def: 'Full authorship; zero victim orientation.', techniques: ['Creator vs Reactor Practice','Agency Affirmation'], concepts: ['Locus of Control'] },
+    ]},
+  ]},
+  spirit: { color: '#7A4DA4', states: [
+    { id: 'grounding-values', name: 'Grounding Values', qualities: [
+      { type: 'restore', name: 'Returned', def: 'Values re-contacted; compass reset.', techniques: ['Meaning Anchor Practice','Values Reconnection'], concepts: ['Eudaimonia'] },
+      { type: 'maintain', name: 'Honored', def: 'Values expressed in daily action.', techniques: ['Values-Action Alignment','Integrity Check-In'], concepts: ['Values Clarification'] },
+      { type: 'concentrate', name: 'Embodied', def: 'Values fully integrated; action flows from them.', techniques: ['Living Values Protocol','Value Compression'], concepts: ['Character Virtues'] },
+    ]},
+    { id: 'ignited-curiosity', name: 'Ignited Curiosity', qualities: [
+      { type: 'restore', name: 'Reopened', def: 'Curiosity reignited after closure or fatigue.', techniques: ['Beginner Lens Reset','Wonder Injection'], concepts: ['Intrinsic Motivation'] },
+      { type: 'maintain', name: 'Fed', def: 'Curiosity nourished through diverse inputs.', techniques: ['Beauty Immersion','Curiosity Queue'], concepts: ['Information Gap Theory'] },
+      { type: 'concentrate', name: 'Ignited', def: 'Curiosity generates autonomous pull.', techniques: ['Deep Question Drilling','Obsession Protocol'], concepts: ['Flow Trigger: Rich Environment'] },
+    ]},
+    { id: 'visualized-vision', name: 'Visualized Vision', qualities: [
+      { type: 'restore', name: 'Reconnected', def: 'Vision re-accessed after noise.', techniques: ['Vision Reconnection','Future Self Bridge'], concepts: ['Prospection'] },
+      { type: 'maintain', name: 'Tended', def: 'Vision evolved and kept current.', techniques: ['Vision Review Ritual','Evolution Mapping'], concepts: ['Dynamic Systems Thinking'] },
+      { type: 'concentrate', name: 'Crystallized', def: 'Vision sharp enough to navigate by.', techniques: ['Vision Crystallization','Precision Future-Self Protocol'], concepts: ['Mental Contrasting'] },
+    ]},
+  ]},
+};
+
+const TECHNIQUE_CONTENT = {
+  'Pre-Session Clearance': { steps: ['Sit still 60 seconds. No input.','Write the 3 biggest emotional pulls on your attention.','For each: name it, accept it, set it aside deliberately.','Take 3 slow breaths; scan for residual tension.','State your session intention out loud.'], why: 'Clears the emotional queue so attention can fully allocate to the work. Based on Window of Tolerance research — entering at the edges degrades downstream performance.' },
+  'Beginner Lens Reset': { steps: ["Say 'I know nothing about this' and mean it.",'List 3 things you take for granted about this domain.','For one: ask why it is true. Follow for 5 minutes.','Begin your session with fresh eyes.'], why: "Beginner's Mind (Shoshin) clears expert bias and reopens perceptual aperture. Counteracts cognitive narrowing from high familiarity." },
+  'Meaning Anchor Practice': { steps: ['Write: What does this work serve beyond you?','Connect to a specific person or group who benefits.','Visualize that person for 30 seconds.','Begin your session with that image present.'], why: 'External meaning anchors activate transcendent motivation — shown to double persistence on difficult tasks compared to self-interest alone.' },
+};
+
+let currentPillar = null;
+let currentStateId = null;
+let activeQualityIndex = 0;
+let currentScreen = 1;
+
+function goToScreen(n) {
+  currentScreen = n;
+  document.getElementById('screen-track').style.transform = `translateX(${-(n-1) * 390}px)`;
+}
+
+function goBack(n) { goToScreen(n); }
+
+// Build dimension grid
+function renderDimGrid() {
+  const grid = document.getElementById('dim-grid');
+  grid.innerHTML = Object.entries(DATA).map(([pillar, d]) => {
+    const totalItems = d.states.reduce((s,st) => s + st.qualities.length + st.qualities.reduce((a,q)=>a+q.techniques.length+q.concepts.length,0), 0);
+    const dots = d.states.map(st => `<div class="dc-dot" style="background:${rgba(pillar,0.65)}"></div>`).join('');
+    return `
+      <div class="dim-card" style="background:${rgba(pillar,0.12)}"
+           onclick="enterDimension('${pillar}')">
+        <div class="dc-top">
+          <span class="dc-emoji">${DIM_EMOJIS[pillar]}</span>
+          <span class="dc-count" style="color:${d.color}">${totalItems} items</span>
+        </div>
+        <div class="dc-name" style="color:${d.color}">${pillar}</div>
+        <div class="dc-sub" style="color:${d.color}">3 states · 9 qualities</div>
+        <div class="dc-dots">${dots}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function enterDimension(pillar) {
+  currentPillar = pillar;
+  const d = DATA[pillar];
+  document.getElementById('s2-pillar-name').textContent = pillar.toUpperCase();
+  document.getElementById('s2-pillar-name').style.color = d.color;
+
+  document.getElementById('state-tiles').innerHTML = d.states.map(state => {
+    const qualStrip = state.qualities.map(q => `
+      <div class="stq-col">
+        <div class="stq-type-row">
+          <span class="stq-icon" style="color:${rgba(pillar,0.7)}">${ICONS[q.type]}</span>
+          <span class="stq-type-label">${q.type}</span>
+        </div>
+        <div class="stq-name">${q.name}</div>
+      </div>
+    `).join('');
+    return `
+      <div class="state-tile" style="background:${rgba(pillar,0.10)};border-color:${rgba(pillar,0.12)}"
+           onclick="enterState('${state.id}')">
+        <div class="st-main">
+          <span class="st-emoji">${STATE_EMOJIS[state.id] || '●'}</span>
+          <div class="st-info">
+            <div class="st-name">${state.name}</div>
+            <div class="st-sub">${state.qualities.length} qualities · ${state.qualities.reduce((s,q)=>s+q.techniques.length,0)} techniques</div>
+          </div>
+          <span class="st-arrow">›</span>
+        </div>
+        <div class="st-qual-strip">${qualStrip}</div>
+      </div>
+    `;
+  }).join('');
+
+  goToScreen(2);
+}
+
+function enterState(stateId) {
+  currentStateId = stateId;
+  activeQualityIndex = 0;
+  const d = DATA[currentPillar];
+  const state = d.states.find(s => s.id === stateId);
+
+  document.getElementById('s3-breadcrumb').textContent = currentPillar.toUpperCase();
+  document.getElementById('s3-breadcrumb').style.color = d.color;
+  document.getElementById('s3-state-name').textContent = state.name;
+
+  renderQualityBar(state);
+  renderItemList(state, 0);
+  goToScreen(3);
+}
+
+function renderQualityBar(state) {
+  const d = DATA[currentPillar];
+  document.getElementById('q-filter-bar').innerHTML = state.qualities.map((q, i) => `
+    <div class="q-tab ${i === activeQualityIndex ? 'active' : ''}"
+         style="${i === activeQualityIndex ? `border-color:${rgba(currentPillar,0.4)};background:${rgba(currentPillar,0.08)};box-shadow:0 0 24px ${rgba(currentPillar,0.15)}` : ''}"
+         onclick="selectQuality(${i})">
+      <div class="q-tab-type">
+        <span class="q-tab-icon" style="color:${i === activeQualityIndex ? d.color : 'rgba(255,255,255,0.28)'}">${ICONS[q.type]}</span>
+        <span class="q-tab-type-label">${q.type}</span>
+      </div>
+      <div class="q-tab-name">${q.name}</div>
+      <div class="q-tab-def">${q.def}</div>
+    </div>
+  `).join('');
+}
+
+function selectQuality(index) {
+  activeQualityIndex = index;
+  const state = DATA[currentPillar].states.find(s => s.id === currentStateId);
+  renderQualityBar(state);
+  renderItemList(state, index);
+}
+
+function renderItemList(state, qIndex) {
+  const q = state.qualities[qIndex];
+  const d = DATA[currentPillar];
+  document.getElementById('item-list').innerHTML = `
+    <div class="item-section-label">${ICONS.technique} Techniques</div>
+    ${q.techniques.map(t => `
+      <button class="item-row" onclick="showDetail('technique','${t}')">
+        <div class="item-row-icon" style="background:${rgba(currentPillar,0.12)};color:${d.color}">${ICONS.technique}</div>
+        <div class="item-row-text">
+          <div class="item-row-name">${t}</div>
+          <div class="item-row-sub">Technique</div>
+        </div>
+        <span class="item-row-arrow">›</span>
+      </button>
+    `).join('')}
+    <div class="item-section-label" style="margin-top:4px">${ICONS.concept} Concepts</div>
+    ${q.concepts.map(c => `
+      <button class="item-row" onclick="showDetail('concept','${c}')">
+        <div class="item-row-icon" style="background:${rgba(currentPillar,0.12)};color:${d.color}">${ICONS.concept}</div>
+        <div class="item-row-text">
+          <div class="item-row-name">${c}</div>
+          <div class="item-row-sub">Concept</div>
+        </div>
+        <span class="item-row-arrow">›</span>
+      </button>
+    `).join('')}
+  `;
+}
+
+function showDetail(type, name) {
+  const d = DATA[currentPillar];
+  const content = TECHNIQUE_CONTENT[name];
+  document.getElementById('detail-inner').innerHTML = `
+    <button class="sheet-back" onclick="closeDetail()">‹ Back</button>
+    <div class="sheet-type-badge" style="background:${rgba(currentPillar,0.15)};color:${d.color}">
+      ${type === 'technique' ? ICONS.technique : ICONS.concept} ${type.toUpperCase()}
+    </div>
+    <div class="sheet-title">${name}</div>
+    ${content ? `
+      <div class="sheet-section-label">Why this works</div>
+      <div class="sheet-content">${content.why}</div>
+      <div class="sheet-section-label">Steps</div>
+      <ol class="sheet-steps">
+        ${content.steps.map((s,i) => `<li class="sheet-step"><span class="step-num">${i+1}</span><span>${s}</span></li>`).join('')}
+      </ol>
+    ` : `<div class="sheet-content">Full content coming soon. This ${type} is part of the ${DATA[currentPillar].states.find(s=>s.id===currentStateId)?.name} state.</div>`}
+  `;
+  document.getElementById('detail-overlay').classList.add('open');
+}
+
+function closeDetail(e) {
+  if (!e || e.target === document.getElementById('detail-overlay')) {
+    document.getElementById('detail-overlay').classList.remove('open');
+  }
+}
+
+renderDimGrid();
+</script>
+</body>
+</html>
