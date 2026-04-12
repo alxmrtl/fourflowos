@@ -162,6 +162,7 @@ function processMarkdownFile({ filePath, content, pillar, flowKey }) {
   const title = String(frontmatter.title || id).replace(/^["']|["']$/g, '');
   const definition = String(frontmatter.definition || '').replace(/^["']|["']$/g, '');
   const keywords = Array.isArray(frontmatter.keywords) ? frontmatter.keywords.map(String) : [];
+  const qualityType = frontmatter.quality_type ? String(frontmatter.quality_type) : null;
 
   return {
     id,
@@ -176,6 +177,7 @@ function processMarkdownFile({ filePath, content, pillar, flowKey }) {
     techniques_count: isMechanic ? countTechniques(body) : null,
     related_mechanics: extractRelatedMechanics(body),
     card_type: cardType,
+    quality_type: qualityType,
     parent_mechanic_id: (isTechnique || isConcept) ? extractParentQuality(frontmatter) : null,
     content_hash: computeContentHash(content),
     updated_at: new Date().toISOString(),

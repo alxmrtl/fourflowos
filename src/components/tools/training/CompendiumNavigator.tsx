@@ -354,9 +354,10 @@ export default function CompendiumNavigator() {
 
       const keyOrder = KEY_ORDER[pillar] ?? [];
       const keys: FlowKeyGroup[] = keyOrder.map(key => {
+        const QUAL_ORDER: Record<string, number> = { restore: 0, maintain: 1, concentrate: 2 };
         const keyMechanics = mechanics
           .filter(m => m.flow_key === key)
-          .sort((a, b) => (b.enrichment_score ?? 0) - (a.enrichment_score ?? 0));
+          .sort((a, b) => (QUAL_ORDER[a.quality_type ?? ''] ?? 99) - (QUAL_ORDER[b.quality_type ?? ''] ?? 99));
 
         const nested: NestedMechanic[] = keyMechanics.map(m => ({
           ...m,
@@ -491,7 +492,7 @@ export default function CompendiumNavigator() {
   if (!stats) return null;
 
   const c = PILLAR_COLORS[activePillar];
-  const activeQualType: QualityType = QUALITY_TYPES[activeQualIndex] ?? 'restore';
+  const activeQualType: QualityType = (activeQualMechanic?.quality_type as QualityType) ?? QUALITY_TYPES[activeQualIndex] ?? 'restore';
   const currentItem = mobileItems[clampedMobileItemIndex] ?? null;
   return (
     <>
@@ -564,7 +565,7 @@ export default function CompendiumNavigator() {
           {/* Row 3: Quality pills */}
           <div className="flex gap-1.5">
             {(activeStateGroup?.mechanics ?? []).map((mechanic, i) => {
-              const qualType = QUALITY_TYPES[i] ?? 'restore';
+              const qualType = (mechanic.quality_type as QualityType) ?? QUALITY_TYPES[i] ?? 'restore';
               const isActive = i === activeQualIndex;
               return (
                 <button
@@ -683,11 +684,9 @@ export default function CompendiumNavigator() {
                           {currentItem.definition}
                         </p>
                       )}
-                      {currentItem.has_content && (
-                        <div className="mt-4">
-                          <InlineCardContent cardId={currentItem.id} dark={false} />
-                        </div>
-                      )}
+                      <div className="mt-4">
+                        <InlineCardContent cardId={currentItem.id} dark={false} />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -906,7 +905,7 @@ export default function CompendiumNavigator() {
                 {/* Quality row — horizontal */}
                 <div className="flex gap-2 pb-3 flex-shrink-0">
                   {(desktopStateGroup.mechanics ?? []).map((mechanic, qi) => {
-                    const qt = QUALITY_TYPES[qi] ?? 'restore';
+                    const qt = (mechanic.quality_type as QualityType) ?? QUALITY_TYPES[qi] ?? 'restore';
                     const isActive = qi === desktopQualIdx;
                     return (
                       <button
@@ -922,9 +921,14 @@ export default function CompendiumNavigator() {
                         <div style={isActive ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.45))' } : undefined}>
                           <QualityTypeIcon type={qt} className="w-3 h-3 flex-shrink-0" />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="text-[10px] font-black uppercase tracking-wide leading-tight truncate">{mechanic.title}</p>
                           <p className={`text-[8px] uppercase tracking-widest mt-0.5 ${isActive ? 'opacity-60' : 'opacity-35'}`}>{qt}</p>
+                          {mechanic.definition && (
+                            <p className={`text-[9px] leading-snug mt-1 transition-opacity duration-200 ${isActive ? 'opacity-75' : 'opacity-0'}`}>
+                              {mechanic.definition}
+                            </p>
+                          )}
                         </div>
                       </button>
                     );
@@ -999,9 +1003,7 @@ export default function CompendiumNavigator() {
                             {desktopCurrentItem.definition}
                           </p>
                         )}
-                        {desktopCurrentItem.has_content && (
-                          <InlineCardContent cardId={desktopCurrentItem.id} dark={true} />
-                        )}
+                        <InlineCardContent cardId={desktopCurrentItem.id} dark={true} />
                       </div>
                     ) : desktopDqm ? (
                       <div>

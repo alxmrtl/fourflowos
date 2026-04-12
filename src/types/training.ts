@@ -101,6 +101,7 @@ export interface MasteryStats {
     definition: string;
     keywords: string[];
     card_type: CardType;
+    quality_type: string | null;
     parent_mechanic_id: string | null;
     techniques_count: number;
     has_content: boolean;
