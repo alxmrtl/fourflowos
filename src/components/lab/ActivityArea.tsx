@@ -68,9 +68,10 @@ function ToolContent({ activeTool, onBack }: ActivityAreaProps) {
 
 export default function ActivityArea({ activeTool, onBack }: ActivityAreaProps) {
   const isPadded = PADDED_TOOLS.includes(activeTool);
+  const isCompendium = activeTool === 'compendium';
 
   return (
-    <div className="flex-1 overflow-auto min-h-0 py-6">
+    <div className={`flex-1 overflow-auto min-h-0 ${isCompendium ? 'py-3 lg:py-4' : 'py-6'}`}>
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTool}
@@ -78,10 +79,10 @@ export default function ActivityArea({ activeTool, onBack }: ActivityAreaProps) 
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
-          className="w-[90%] md:w-[70%] mx-auto border border-white/[0.07] rounded-2xl overflow-hidden"
+          className={`mx-auto border border-white/[0.07] rounded-2xl overflow-hidden ${isCompendium ? 'w-[96%] lg:w-[94%]' : 'w-[90%] md:w-[70%]'}`}
         >
           <ToolHeader activeTool={activeTool} />
-          <div className={isPadded ? 'p-6 md:p-8' : ''}>
+          <div className={isPadded ? (isCompendium ? 'p-4 lg:p-5' : 'p-6 md:p-8') : ''}>
             <ToolContent activeTool={activeTool} onBack={onBack} />
           </div>
         </motion.div>

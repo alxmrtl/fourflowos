@@ -670,7 +670,7 @@ export default function CompendiumNavigator() {
       {/* ══════════════════════════════════════════════════════════
           DESKTOP UI  (hidden below lg) — FlowStation-style navigation
       ══════════════════════════════════════════════════════════ */}
-      <div className="hidden lg:block w-full relative overflow-hidden rounded-xl" style={{ height: 560 }}>
+      <div className="hidden lg:block w-full relative overflow-hidden rounded-xl" style={{ height: 'calc(100vh - 285px)', minHeight: 420 }}>
 
         {/* ─── GRID VIEW ────────────────────────────────────────── */}
         <div
@@ -699,7 +699,7 @@ export default function CompendiumNavigator() {
                       className="mix-blend-screen flex-shrink-0"
                       style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))' }}
                     />
-                    <span className={`text-[13px] font-black tracking-[0.20em] uppercase ${pc.label}`}>{pillar}</span>
+                    <span className={`text-[11px] xl:text-[13px] font-black tracking-[0.15em] xl:tracking-[0.20em] uppercase ${pc.label}`}>{pillar}</span>
                   </div>
                   {/* State cards */}
                   <div className="flex flex-col gap-2.5 flex-1 min-h-0">
@@ -716,7 +716,7 @@ export default function CompendiumNavigator() {
                           style={{ height: '40%', background: 'linear-gradient(to bottom, rgba(255,255,255,0.10), transparent)' }}
                         />
                         {/* State name top */}
-                        <p className="text-[13px] font-black tracking-[0.14em] uppercase leading-tight text-white/95 relative z-10 flex-shrink-0">
+                        <p className="text-[11px] xl:text-[13px] font-black tracking-[0.10em] xl:tracking-[0.14em] uppercase leading-tight text-white/95 relative z-10 flex-shrink-0 line-clamp-2">
                           {label}
                         </p>
                         {/* Icon center */}
@@ -739,13 +739,13 @@ export default function CompendiumNavigator() {
                           {mechanics.map((m, qi) => {
                             const qt = QUALITY_TYPES[qi] ?? 'restore';
                             return (
-                              <div key={m.id} className="flex flex-col items-center gap-1 flex-1 min-w-0">
-                                <span className="text-[10px] font-black tracking-[0.06em] uppercase text-white/90 leading-tight truncate w-full text-center">
+                              <div key={m.id} className="flex flex-col items-center gap-1 flex-1 min-w-0 overflow-hidden">
+                                <span className="text-[9px] xl:text-[10px] font-black tracking-[0.04em] xl:tracking-[0.06em] uppercase text-white/90 leading-tight truncate w-full text-center">
                                   {m.title}
                                 </span>
                                 <div className="flex items-center gap-0.5">
-                                  <QualityTypeIcon type={qt} className="w-[11px] h-[11px] opacity-45" />
-                                  <span className="text-[8px] font-bold tracking-[0.10em] uppercase text-white/45">
+                                  <QualityTypeIcon type={qt} className="w-[10px] h-[10px] opacity-45 flex-shrink-0" />
+                                  <span className="text-[7px] xl:text-[8px] font-bold tracking-[0.08em] uppercase text-white/45 hidden xl:inline">
                                     {qt}
                                   </span>
                                 </div>
