@@ -71,6 +71,13 @@ const PILLAR_COLORS: Record<Pillar, {
 
 // ── Brand asset maps ─────────────────────────────────────────────────
 
+const PILLAR_RGB: Record<Pillar, string> = {
+  self:   '255,111,97',
+  space:  '107,162,146',
+  story:  '91,132,177',
+  spirit: '122,77,164',
+};
+
 const PILLAR_LOGO: Record<Pillar, string> = {
   self:   '/assets/LOGOS/SELF - Section Logo.png',
   space:  '/assets/LOGOS/SPACE - Section Logo.png',
@@ -667,63 +674,85 @@ export default function CompendiumNavigator() {
 
         {/* ─── GRID VIEW ────────────────────────────────────────── */}
         <div
-          className="absolute inset-0 overflow-y-auto p-1"
+          className="absolute inset-0 p-4"
           style={{
             transform: desktopMode === 'grid' ? 'translateX(0)' : 'translateX(-100%)',
             transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
           }}
         >
-          <div className="grid grid-cols-4 gap-5">
+          <div className="grid grid-cols-4 gap-4 h-full">
             {pillarGroups.map(({ pillar, keys }) => {
               const pc = PILLAR_COLORS[pillar];
+              const rgb = PILLAR_RGB[pillar];
               return (
-                <div key={pillar}>
-                  {/* Pillar header */}
-                  <div className={`mb-3 pb-2.5 border-b-2 ${pc.border}`}>
-                    <div className="flex items-center gap-2">
-                      <Image
-                        src={PILLAR_LOGO[pillar]}
-                        alt={pillar}
-                        width={26}
-                        height={26}
-                        className="rounded-sm mix-blend-screen"
-                        style={{ filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.5))' }}
-                      />
-                      <span className={`text-sm font-black uppercase tracking-widest ${pc.label}`}>{pillar}</span>
-                    </div>
+                <div
+                  key={pillar}
+                  className="flex flex-col opacity-55 hover:opacity-100 transition-opacity duration-300 rounded-3xl"
+                  style={{ padding: '20px 14px 16px' }}
+                >
+                  {/* Column header */}
+                  <div className={`flex items-center gap-2.5 pb-4 mb-3.5 border-b-2 ${pc.border} flex-shrink-0`}>
+                    <Image
+                      src={PILLAR_LOGO[pillar]}
+                      alt={pillar}
+                      width={28} height={28}
+                      className="mix-blend-screen flex-shrink-0"
+                      style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))' }}
+                    />
+                    <span className={`text-[13px] font-black tracking-[0.20em] uppercase ${pc.label}`}>{pillar}</span>
                   </div>
-                  {/* State rows */}
-                  <div className="space-y-2">
-                    {keys.map(({ key, label }) => (
+                  {/* State cards */}
+                  <div className="flex flex-col gap-2.5 flex-1 min-h-0">
+                    {keys.map(({ key, label, mechanics }) => (
                       <button
                         key={key}
                         onClick={() => desktopEnterState(key)}
-                        className="w-full rounded-xl p-3 flex items-center gap-3 text-left
-                          bg-white/[0.03] hover:bg-white/[0.08]
-                          border border-white/[0.05] hover:border-white/[0.12]
-                          transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl
-                          opacity-55 hover:opacity-100 group relative overflow-hidden"
+                        className="flex-1 min-h-0 rounded-[20px] flex flex-col items-center justify-between text-center relative overflow-hidden group/card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl cursor-pointer"
+                        style={{ padding: '14px 12px 12px', background: `rgba(${rgb},0.14)` }}
                       >
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded-xl" />
-                        {STATE_LOGO[key] && (
-                          <Image
-                            src={STATE_LOGO[key]}
-                            alt={label}
-                            width={34}
-                            height={34}
-                            className="rounded-sm flex-shrink-0 mix-blend-screen"
-                            style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.55))' }}
-                          />
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <p className={`text-[11px] font-bold leading-tight mb-1.5 ${pc.label}`}>{label}</p>
-                          <div className="flex gap-2">
-                            {QUALITY_TYPES.map(qt => (
-                              <QualityTypeIcon key={qt} type={qt} className="w-2.5 h-2.5 opacity-25" />
-                            ))}
-                          </div>
+                        {/* Shimmer overlay on hover */}
+                        <div
+                          className="absolute top-0 left-0 right-0 pointer-events-none rounded-[20px] opacity-0 group-hover/card:opacity-100 transition-opacity duration-200"
+                          style={{ height: '40%', background: 'linear-gradient(to bottom, rgba(255,255,255,0.10), transparent)' }}
+                        />
+                        {/* State name top */}
+                        <p className="text-[13px] font-black tracking-[0.14em] uppercase leading-tight text-white/95 relative z-10 flex-shrink-0">
+                          {label}
+                        </p>
+                        {/* Icon center */}
+                        <div className="flex-1 flex items-center justify-center py-2 relative z-10">
+                          {STATE_LOGO[key] && (
+                            <Image
+                              src={STATE_LOGO[key]}
+                              alt={label}
+                              width={64} height={64}
+                              className="mix-blend-screen transition-all duration-200 group-hover/card:scale-110"
+                              style={{ filter: 'drop-shadow(0 3px 10px rgba(0,0,0,0.50))' }}
+                            />
+                          )}
                         </div>
-                        <span className="text-white/20 group-hover:text-white/50 transition-colors text-sm flex-shrink-0">›</span>
+                        {/* Quality names bottom */}
+                        <div
+                          className="flex justify-around w-full pt-2.5 relative z-10 flex-shrink-0"
+                          style={{ borderTop: '1px solid rgba(255,255,255,0.15)', gap: '4px' }}
+                        >
+                          {mechanics.map((m, qi) => {
+                            const qt = QUALITY_TYPES[qi] ?? 'restore';
+                            return (
+                              <div key={m.id} className="flex flex-col items-center gap-1 flex-1 min-w-0">
+                                <span className="text-[10px] font-black tracking-[0.06em] uppercase text-white/90 leading-tight truncate w-full text-center">
+                                  {m.title}
+                                </span>
+                                <div className="flex items-center gap-0.5">
+                                  <QualityTypeIcon type={qt} className="w-[11px] h-[11px] opacity-45" />
+                                  <span className="text-[8px] font-bold tracking-[0.10em] uppercase text-white/45">
+                                    {qt}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </button>
                     ))}
                   </div>
