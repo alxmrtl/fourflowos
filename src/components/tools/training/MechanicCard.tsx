@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { QueueItem, Quality, Mechanic } from '@/types/training';
 import { RATING_BUTTONS } from '@/lib/sm2';
+import { renderMarkdown as sharedRenderMarkdown, renderRecallMd } from '@/lib/renderMarkdown';
 
 const PILLAR_STYLES: Record<string, { bg: string; text: string; border: string; badge: string; recallBg: string }> = {
   self:   { bg: 'bg-self/5',    text: 'text-self',    border: 'border-self/20',   badge: 'bg-self text-white',   recallBg: 'bg-self/8' },
@@ -17,87 +18,14 @@ const RATING_STYLES = [
   'border-neutral/20 hover:border-green-400 hover:bg-green-50 hover:text-green-700',
 ];
 
-/** Converts mechanic markdown to displayable HTML (safe — content is from our own compendium). */
+/** Converts mechanic markdown to displayable HTML — delegates to shared renderer. */
 function renderMarkdown(md: string): string {
-  // Strip YAML frontmatter
-  let content = md.replace(/^---[\s\S]*?---\n/, '');
-
-  // Escape HTML entities first
-  content = content
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  // Skip the top-level # Title heading (shown separately as card title)
-  content = content.replace(/^# .+\n\n?/, '');
-
-  // Skip the blockquote definition at top (shown separately)
-  content = content.replace(/^&gt; .+\n\n?/, '');
-
-  // Skip the ## Recall section (shown separately in the card)
-  content = content.replace(/## Recall\n[\s\S]*?(?=\n##|$)/, '');
-
-  // Convert headings
-  content = content.replace(/^### (.+)$/gm, '<h3 class="font-semibold text-sm text-neutral mt-4 mb-1">$1</h3>');
-  content = content.replace(/^## (.+)$/gm, '<h2 class="font-semibold text-base text-neutral mt-6 mb-2 border-b border-neutral/10 pb-1">$1</h2>');
-
-  // Convert bold / italic
-  content = content.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>');
-  content = content.replace(/\*([^*]+?)\*/g, '<em>$1</em>');
-
-  // Convert [[wiki links]] to inline badges
-  content = content.replace(/\[\[([^\]]+)\]\]/g, '<span class="inline-block px-1.5 py-0.5 rounded text-xs font-mono bg-neutral/10 text-neutral-light mx-0.5">$1</span>');
-
-  // Convert blockquotes
-  content = content.replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-2 border-neutral/20 pl-3 text-neutral-light italic text-sm my-2">$1</blockquote>');
-
-  // Convert list items
-  content = content.replace(/^- (.+)$/gm, '<li class="ml-4 list-disc text-sm text-neutral-light leading-relaxed">$1</li>');
-
-  // Wrap consecutive <li> tags in <ul>
-  content = content.replace(/(<li[^>]*>.*<\/li>\n?)+/g, match => `<ul class="my-2 space-y-0.5">${match}</ul>`);
-
-  // Convert remaining lines to paragraphs
-  const lines = content.split('\n');
-  const processed: string[] = [];
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) {
-      processed.push('<div class="h-2"></div>');
-    } else if (trimmed.startsWith('<')) {
-      processed.push(trimmed);
-    } else {
-      processed.push(`<p class="text-sm text-neutral-light leading-relaxed">${trimmed}</p>`);
-    }
-  }
-
-  return processed.join('\n');
+  return sharedRenderMarkdown(md, { dark: false, skipRecall: true });
 }
 
-/** Renders the compact recall section (bold labels + wiki links). */
+/** Renders the recall section (bold labels + wiki links). */
 function renderRecall(md: string): string {
-  let content = md
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  // Bold
-  content = content.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-neutral">$1</strong>');
-
-  // [[wiki links]]
-  content = content.replace(/\[\[([^\]]+)\]\]/g, '<span class="inline-block px-1.5 py-0.5 rounded text-xs font-mono bg-neutral/10 text-neutral-light mx-0.5">$1</span>');
-
-  // Each non-empty line becomes a paragraph
-  const lines = content.split('\n');
-  const processed: string[] = [];
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed) {
-      processed.push(`<p class="text-sm text-neutral-light leading-relaxed mb-2">${trimmed}</p>`);
-    }
-  }
-
-  return processed.join('\n');
+  return renderRecallMd(md, { dark: false });
 }
 
 /** Render a child card (technique/concept) as a collapsible section */
@@ -125,7 +53,6 @@ function ChildCard({ child }: { child: Mechanic }) {
             <p className="text-xs text-neutral-light italic mt-2 mb-2">{child.definition}</p>
           )}
           <div
-            className="prose prose-sm max-w-none text-xs"
             dangerouslySetInnerHTML={{ __html: renderMarkdown(child.content_md) }}
           />
         </div>
@@ -218,10 +145,7 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate, onM
 
             {/* Full content */}
             {hasFullContent && (
-              <div
-                className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: contentHtml }}
-              />
+              <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
             )}
 
             {/* Linked techniques & concepts */}
@@ -331,7 +255,7 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate, onM
 
                 {expanded && (
                   <div
-                    className="prose prose-sm max-w-none mt-4 border-t border-neutral/10 pt-4 opacity-70"
+                    className="mt-4 border-t border-neutral/10 pt-4 opacity-70"
                     dangerouslySetInnerHTML={{ __html: contentHtml }}
                   />
                 )}

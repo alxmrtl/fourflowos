@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import type { MasteryStats, Pillar } from '@/types/training';
 import CardDetailModal, { type StateData } from './CardDetailModal';
+import { renderMarkdown as sharedRenderMarkdown } from '@/lib/renderMarkdown';
 
 // ── Color maps ───────────────────────────────────────────────────────
 
@@ -203,57 +204,7 @@ function ConceptIcon() {
 // ── Inline card content renderer ────────────────────────────────────
 
 function renderContentMd(md: string, dark = true): string {
-  const escapeHtml = (s: string) =>
-    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const applyInline = (s: string) =>
-    s
-      .replace(/\*\*(.+?)\*\*/g, `<strong class="font-semibold ${dark ? 'text-white/88' : 'text-neutral/88'}">$1</strong>`)
-      .replace(/\*([^*]+)\*/g, '<em class="italic">$1</em>');
-
-  const textColor   = dark ? 'text-white/65'  : 'text-neutral/65';
-  const headColor   = dark ? 'text-white/40'  : 'text-neutral/40';
-  const h1Color     = dark ? 'text-white/70'  : 'text-neutral/70';
-  const numBg       = dark ? 'bg-white/[0.08] text-white/40'  : 'bg-black/[0.06] text-neutral/40';
-  const quoteStyle  = dark ? 'border-white/15 text-white/40'  : 'border-black/15 text-neutral/40';
-
-  const lines = md.split('\n');
-  const out: string[] = [];
-  let inOl = false;
-  let olCounter = 0;
-
-  const closeOl = () => { if (inOl) { out.push('</ol>'); inOl = false; olCounter = 0; } };
-
-  for (const raw of lines) {
-    const t = raw.trim();
-    if (!t) { closeOl(); continue; }
-
-    if (t.startsWith('### ')) {
-      closeOl();
-      out.push(`<h4 class="text-[10px] font-black uppercase tracking-[0.16em] mt-5 mb-1.5 ${headColor}">${applyInline(escapeHtml(t.slice(4)))}</h4>`);
-    } else if (t.startsWith('## ')) {
-      closeOl();
-      out.push(`<h3 class="text-xs font-black uppercase tracking-wider mt-4 mb-1.5 ${headColor}">${applyInline(escapeHtml(t.slice(3)))}</h3>`);
-    } else if (t.startsWith('# ')) {
-      closeOl();
-      out.push(`<h2 class="text-sm font-bold mt-5 mb-2 ${h1Color}">${applyInline(escapeHtml(t.slice(2)))}</h2>`);
-    } else if (/^\d+\.\s/.test(t)) {
-      const text = t.replace(/^\d+\.\s+/, '');
-      if (!inOl) { out.push('<ol class="space-y-2 mt-2 mb-2">'); inOl = true; olCounter = 0; }
-      olCounter++;
-      out.push(`<li class="flex gap-2.5 ${textColor} text-sm leading-relaxed"><span class="flex-shrink-0 w-5 h-5 rounded-full ${numBg} flex items-center justify-center text-[10px] font-bold mt-0.5">${olCounter}</span><span>${applyInline(escapeHtml(text))}</span></li>`);
-    } else if (t.startsWith('> ')) {
-      closeOl();
-      out.push(`<blockquote class="border-l-2 ${quoteStyle} pl-3 my-2 text-sm italic">${applyInline(escapeHtml(t.slice(2)))}</blockquote>`);
-    } else if (t.startsWith('- ') || t.startsWith('* ')) {
-      closeOl();
-      out.push(`<li class="text-sm ${textColor} leading-relaxed ml-3 list-disc">${applyInline(escapeHtml(t.slice(2)))}</li>`);
-    } else {
-      closeOl();
-      out.push(`<p class="text-sm ${textColor} leading-relaxed">${applyInline(escapeHtml(t))}</p>`);
-    }
-  }
-  closeOl();
-  return out.join('\n');
+  return sharedRenderMarkdown(md, { dark, skipRecall: true });
 }
 
 function InlineCardContent({ cardId, dark = true }: { cardId: string; dark?: boolean }) {
