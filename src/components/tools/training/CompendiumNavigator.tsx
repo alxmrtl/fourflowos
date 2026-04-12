@@ -207,8 +207,12 @@ export default function CompendiumNavigator() {
   const [stats, setStats] = useState<MasteryStats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Desktop expand state
-  const [expandedQualityIds, setExpandedQualityIds] = useState<Set<string>>(new Set());
+  // Desktop FlowStation navigation state
+  const [desktopMode, setDesktopMode] = useState<'grid' | 'state'>('grid');
+  const [desktopActiveStateIdx, setDesktopActiveStateIdx] = useState(0);
+  const [desktopQualIdx, setDesktopQualIdx] = useState(0);
+  const [desktopTab, setDesktopTab] = useState<'techniques' | 'concepts'>('techniques');
+  const [desktopItemIdx, setDesktopItemIdx] = useState(0);
 
   // Mobile navigation state
   const [activePillar, setActivePillar] = useState<Pillar>('self');
@@ -291,6 +295,11 @@ export default function CompendiumNavigator() {
     });
   }, [stats]);
 
+  // ── Flat state list (for desktop key cycling) ────────────────────
+  const allStates = useMemo(() =>
+    pillarGroups.flatMap(pg => pg.keys.map(k => ({ pillar: pg.pillar, ...k }))),
+  [pillarGroups]);
+
   // ── Mobile derived data ──────────────────────────────────────────
   const activePillarGroup = useMemo(
     () => pillarGroups.find(g => g.pillar === activePillar) ?? null,
@@ -316,24 +325,45 @@ export default function CompendiumNavigator() {
 
   const clampedMobileItemIndex = Math.min(mobileItemIndex, Math.max(0, mobileItems.length - 1));
 
+  // ── Desktop derived data ─────────────────────────────────────────
+  const desktopStateGroup = allStates[desktopActiveStateIdx] ?? null;
+  const desktopPillar: Pillar = desktopStateGroup?.pillar ?? 'self';
+  const desktopDqm = desktopStateGroup?.mechanics[desktopQualIdx] ?? null;
+  const desktopItems = useMemo(() => {
+    const qm = allStates[desktopActiveStateIdx]?.mechanics[desktopQualIdx];
+    if (!qm) return [];
+    return qm.children.filter(c =>
+      desktopTab === 'techniques' ? c.card_type === 'technique' : c.card_type === 'concept'
+    );
+  }, [allStates, desktopActiveStateIdx, desktopQualIdx, desktopTab]);
+  const clampedDesktopItemIdx = Math.min(desktopItemIdx, Math.max(0, desktopItems.length - 1));
+  const desktopCurrentItem = desktopItems[clampedDesktopItemIdx] ?? null;
+  const desktopPrevLabel = allStates.length > 0
+    ? allStates[(desktopActiveStateIdx - 1 + allStates.length) % allStates.length]?.label ?? ''
+    : '';
+  const desktopNextLabel = allStates.length > 0
+    ? allStates[(desktopActiveStateIdx + 1) % allStates.length]?.label ?? ''
+    : '';
+
   // ── Desktop handlers ─────────────────────────────────────────────
-  const toggleQuality = (id: string) => {
-    setExpandedQualityIds(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
+  const desktopEnterState = (stateKey: string) => {
+    const idx = allStates.findIndex(s => s.key === stateKey);
+    setDesktopActiveStateIdx(idx >= 0 ? idx : 0);
+    setDesktopQualIdx(0);
+    setDesktopTab('techniques');
+    setDesktopItemIdx(0);
+    setDesktopMode('state');
   };
 
-  const openStateModal = (pillar: Pillar, key: string, label: string, mechanics: NestedMechanic[]) => {
-    setModalStateData({
-      key, label, pillar,
-      qualities: mechanics.map(m => ({
-        id: m.id, title: m.title, definition: m.definition,
-        mastery_level: m.mastery_level, enrichment_score: m.enrichment_score,
-      })),
-    });
-    setModalCardId(null);
+  const desktopBackToGrid = () => setDesktopMode('grid');
+
+  const desktopCycleState = (dir: 1 | -1) => {
+    if (allStates.length === 0) return;
+    const nextIdx = (desktopActiveStateIdx + dir + allStates.length) % allStates.length;
+    setDesktopActiveStateIdx(nextIdx);
+    setDesktopQualIdx(0);
+    setDesktopTab('techniques');
+    setDesktopItemIdx(0);
   };
 
   // ── Mobile handlers ──────────────────────────────────────────────
@@ -376,9 +406,6 @@ export default function CompendiumNavigator() {
   const c = PILLAR_COLORS[activePillar];
   const activeQualType: QualityType = QUALITY_TYPES[activeQualIndex] ?? 'restore';
   const currentItem = mobileItems[clampedMobileItemIndex] ?? null;
-  const techniqueCount = activeQualMechanic?.children.filter(ch => ch.card_type === 'technique').length ?? 0;
-  const conceptCount = activeQualMechanic?.children.filter(ch => ch.card_type === 'concept').length ?? 0;
-
   return (
     <>
       {/* ══════════════════════════════════════════════════════════
@@ -396,7 +423,7 @@ export default function CompendiumNavigator() {
                 key={p}
                 onClick={() => selectPillar(p)}
                 className={`
-                  flex-1 h-10 rounded-full text-[10px] font-black tracking-[0.13em] uppercase
+                  relative overflow-hidden flex-1 h-10 rounded-full text-[10px] font-black tracking-[0.13em] uppercase
                   transition-all duration-200
                   ${p === activePillar
                     ? `${PILLAR_COLORS[p].activePill} shadow-lg`
@@ -404,6 +431,9 @@ export default function CompendiumNavigator() {
                   }
                 `}
               >
+                {p === activePillar && (
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/[0.10] to-transparent pointer-events-none rounded-full" />
+                )}
                 {p}
               </button>
             ))}
@@ -416,7 +446,7 @@ export default function CompendiumNavigator() {
                 key={stateGroup.key}
                 onClick={() => selectState(i)}
                 className={`
-                  flex-1 rounded-[14px] py-2 px-1.5 flex flex-col items-center gap-1.5
+                  relative overflow-hidden flex-1 rounded-[14px] py-2 px-1.5 flex flex-col items-center gap-1.5
                   transition-all duration-200
                   ${i === activeStateIndex
                     ? `${c.activeStatePill} shadow-md`
@@ -424,6 +454,9 @@ export default function CompendiumNavigator() {
                   }
                 `}
               >
+                {i === activeStateIndex && (
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/[0.10] to-transparent pointer-events-none rounded-[14px]" />
+                )}
                 {STATE_LOGO[stateGroup.key] && (
                   <Image
                     src={STATE_LOGO[stateGroup.key]}
@@ -431,6 +464,7 @@ export default function CompendiumNavigator() {
                     width={26}
                     height={26}
                     className={`object-contain mix-blend-screen transition-opacity duration-200 ${i === activeStateIndex ? 'opacity-95' : 'opacity-30'}`}
+                    style={i === activeStateIndex ? { filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.45))' } : undefined}
                   />
                 )}
                 <span className="text-[9px] font-700 leading-tight text-center max-w-full truncate">
@@ -450,7 +484,7 @@ export default function CompendiumNavigator() {
                   key={mechanic.id}
                   onClick={() => selectQual(i)}
                   className={`
-                    flex-1 rounded-[14px] py-2 px-1.5 flex flex-col items-center gap-1
+                    relative overflow-hidden flex-1 rounded-[14px] py-1.5 px-1.5 flex flex-col items-center gap-1
                     transition-all duration-200
                     ${isActive
                       ? `${c.activeQualPill} shadow-md`
@@ -458,15 +492,17 @@ export default function CompendiumNavigator() {
                     }
                   `}
                 >
-                  <QualityTypeIcon
-                    type={qualType}
-                    className={`w-4 h-4 transition-opacity duration-200 ${isActive ? 'opacity-100' : 'opacity-40'}`}
-                  />
+                  {isActive && (
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.10] to-transparent pointer-events-none rounded-[14px]" />
+                  )}
+                  <div style={isActive ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.45))' } : undefined}>
+                    <QualityTypeIcon
+                      type={qualType}
+                      className={`w-4 h-4 transition-opacity duration-200 ${isActive ? 'opacity-100' : 'opacity-40'}`}
+                    />
+                  </div>
                   <span className="text-[9px] font-black tracking-[0.10em] uppercase">
                     {mechanic.title}
-                  </span>
-                  <span className={`text-[7px] font-semibold tracking-widest uppercase ${isActive ? 'opacity-60' : 'opacity-35'}`}>
-                    {qualType}
                   </span>
                 </button>
               );
@@ -625,108 +661,275 @@ export default function CompendiumNavigator() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-          DESKTOP UI  (hidden below lg)
+          DESKTOP UI  (hidden below lg) — FlowStation-style navigation
       ══════════════════════════════════════════════════════════ */}
-      <div className="hidden lg:block w-full">
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-6 mb-8 text-xs text-neutral-light">
-          <div className="flex items-center gap-2">
-            <span className="text-white/40"><TechniqueIcon /></span>
-            <span>Technique</span>
-          </div>
-          <div className="w-px h-3 bg-neutral/20" />
-          <div className="flex items-center gap-2">
-            <span className="text-white/40"><ConceptIcon /></span>
-            <span>Concept</span>
-          </div>
-        </div>
+      <div className="hidden lg:block w-full relative overflow-hidden rounded-xl" style={{ height: 560 }}>
 
-        {/* 4-column grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {pillarGroups.map(({ pillar, keys }) => {
-            const pc = PILLAR_COLORS[pillar];
-
-            return (
-              <div key={pillar} className="min-w-0">
-                {/* Pillar header */}
-                <div className={`mb-5 pb-3 border-b-2 ${pc.border}`}>
-                  <div className="flex items-center gap-2.5">
-                    <Image
-                      src={PILLAR_LOGO[pillar]}
-                      alt={pillar}
-                      width={32}
-                      height={32}
-                      className="rounded-sm opacity-90"
-                    />
-                    <span className={`font-sans text-xl font-black uppercase tracking-wider ${pc.label}`}>
-                      {pillar}
-                    </span>
+        {/* ─── GRID VIEW ────────────────────────────────────────── */}
+        <div
+          className="absolute inset-0 overflow-y-auto p-1"
+          style={{
+            transform: desktopMode === 'grid' ? 'translateX(0)' : 'translateX(-100%)',
+            transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
+          }}
+        >
+          <div className="grid grid-cols-4 gap-5">
+            {pillarGroups.map(({ pillar, keys }) => {
+              const pc = PILLAR_COLORS[pillar];
+              return (
+                <div key={pillar}>
+                  {/* Pillar header */}
+                  <div className={`mb-3 pb-2.5 border-b-2 ${pc.border}`}>
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src={PILLAR_LOGO[pillar]}
+                        alt={pillar}
+                        width={26}
+                        height={26}
+                        className="rounded-sm mix-blend-screen"
+                        style={{ filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.5))' }}
+                      />
+                      <span className={`text-sm font-black uppercase tracking-widest ${pc.label}`}>{pillar}</span>
+                    </div>
                   </div>
-                </div>
-
-                <div className="space-y-6">
-                  {keys.map(({ key, label, mechanics }, keyIndex) => (
-                    <div
-                      key={key}
-                      className={keyIndex < keys.length - 1 ? 'border-b border-neutral/[0.07] pb-6' : ''}
-                    >
-                      {/* State label */}
+                  {/* State rows */}
+                  <div className="space-y-2">
+                    {keys.map(({ key, label }) => (
                       <button
-                        onClick={() => openStateModal(pillar, key, label, mechanics)}
-                        className="flex items-center gap-2 mb-3 ml-1 group w-full text-left"
+                        key={key}
+                        onClick={() => desktopEnterState(key)}
+                        className="w-full rounded-xl p-3 flex items-center gap-3 text-left
+                          bg-white/[0.03] hover:bg-white/[0.08]
+                          border border-white/[0.05] hover:border-white/[0.12]
+                          transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl
+                          opacity-55 hover:opacity-100 group relative overflow-hidden"
                       >
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded-xl" />
                         {STATE_LOGO[key] && (
                           <Image
                             src={STATE_LOGO[key]}
                             alt={label}
-                            width={22}
-                            height={22}
-                            className="rounded-sm opacity-85 flex-shrink-0"
+                            width={34}
+                            height={34}
+                            className="rounded-sm flex-shrink-0 mix-blend-screen"
+                            style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.55))' }}
                           />
                         )}
-                        <span className={`text-sm font-semibold uppercase tracking-wider ${pc.label} group-hover:opacity-80 transition-opacity`}>
-                          {label}
-                        </span>
-                        <span className="ml-auto opacity-25 group-hover:opacity-70 transition-opacity text-neutral-light">
-                          <ExpandIcon />
-                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className={`text-[11px] font-bold leading-tight mb-1.5 ${pc.label}`}>{label}</p>
+                          <div className="flex gap-2">
+                            {QUALITY_TYPES.map(qt => (
+                              <QualityTypeIcon key={qt} type={qt} className="w-2.5 h-2.5 opacity-25" />
+                            ))}
+                          </div>
+                        </div>
+                        <span className="text-white/20 group-hover:text-white/50 transition-colors text-sm flex-shrink-0">›</span>
                       </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-                      {/* Quality bars */}
-                      <div className="space-y-2">
-                        {mechanics.map((mechanic, qualIdx) => {
-                          const isExpanded = expandedQualityIds.has(mechanic.id);
-                          const qualType = QUALITY_TYPES[qualIdx] ?? 'restore';
-                          return (
-                            <div key={mechanic.id}>
-                              <QualityBar
-                                item={mechanic}
-                                pillar={pillar}
-                                qualType={qualType}
-                                isExpanded={isExpanded}
-                                onToggle={() => toggleQuality(mechanic.id)}
-                                onOpenDetail={() => { setModalCardId(mechanic.id); setModalStateData(null); }}
-                              />
-                              {isExpanded && mechanic.children.map(child => (
-                                <div key={child.id} className="ml-4 mt-1.5">
-                                  <ChildBar
-                                    item={child}
-                                    pillar={pillar}
-                                    onOpenDetail={() => { setModalCardId(child.id); setModalStateData(null); }}
-                                  />
-                                </div>
-                              ))}
+        {/* ─── STATE VIEW ───────────────────────────────────────── */}
+        <div
+          className="absolute inset-0 flex flex-col p-1"
+          style={{
+            transform: desktopMode === 'state' ? 'translateX(0)' : 'translateX(100%)',
+            transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
+          }}
+        >
+          {desktopStateGroup && (() => {
+            const dc = PILLAR_COLORS[desktopPillar];
+            return (
+              <>
+                {/* Header bar */}
+                <div className="flex items-center gap-3 pb-4 flex-shrink-0">
+                  <button
+                    onClick={desktopBackToGrid}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.10] text-white/50 hover:text-white/90 transition-all"
+                  >
+                    <span className="text-base leading-none">←</span>
+                    <span className="text-[9px] font-black uppercase tracking-wider">All States</span>
+                  </button>
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    {STATE_LOGO[desktopStateGroup.key] && (
+                      <Image
+                        src={STATE_LOGO[desktopStateGroup.key]}
+                        alt={desktopStateGroup.label}
+                        width={20} height={20}
+                        className="rounded-sm mix-blend-screen opacity-90 flex-shrink-0"
+                        style={{ filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.5))' }}
+                      />
+                    )}
+                    <span className={`text-sm font-black uppercase tracking-wide ${dc.label} truncate`}>
+                      {desktopStateGroup.label}
+                    </span>
+                    <span className={`text-[9px] font-semibold uppercase tracking-wider opacity-40 ${dc.label} flex-shrink-0`}>
+                      {desktopPillar}
+                    </span>
+                  </div>
+                  {/* Key cycling */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => desktopCycleState(-1)}
+                      title={desktopPrevLabel}
+                      className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-white/30 hover:text-white/70 transition-all"
+                    >
+                      <span className="text-base leading-none">‹</span>
+                      <span className="text-[9px] font-semibold uppercase tracking-wider max-w-0 overflow-hidden group-hover:max-w-[80px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200">
+                        {desktopPrevLabel}
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => desktopCycleState(1)}
+                      title={desktopNextLabel}
+                      className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-white/30 hover:text-white/70 transition-all"
+                    >
+                      <span className="text-[9px] font-semibold uppercase tracking-wider max-w-0 overflow-hidden group-hover:max-w-[80px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200">
+                        {desktopNextLabel}
+                      </span>
+                      <span className="text-base leading-none">›</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Body: left panel + right panel */}
+                <div className="flex gap-5 flex-1 min-h-0">
+
+                  {/* Left panel — quality pills + item list */}
+                  <div className="w-[260px] flex-shrink-0 flex flex-col gap-3">
+                    {/* Quality pills */}
+                    <div className="space-y-1.5">
+                      {(desktopStateGroup.mechanics ?? []).map((mechanic, qi) => {
+                        const qt = QUALITY_TYPES[qi] ?? 'restore';
+                        const isActive = qi === desktopQualIdx;
+                        return (
+                          <button
+                            key={mechanic.id}
+                            onClick={() => { setDesktopQualIdx(qi); setDesktopItemIdx(0); setDesktopTab('techniques'); }}
+                            className={`relative overflow-hidden w-full rounded-xl px-3 py-2.5 flex items-center gap-2.5 text-left transition-all duration-200
+                              ${isActive
+                                ? `${dc.activeQualPill} shadow-md`
+                                : 'bg-white/[0.04] text-white/40 hover:text-white/70 hover:bg-white/[0.07]'
+                              }`}
+                          >
+                            {isActive && <div className="absolute inset-0 bg-gradient-to-b from-white/[0.10] to-transparent pointer-events-none rounded-xl" />}
+                            <div style={isActive ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.45))' } : undefined}>
+                              <QualityTypeIcon type={qt} className="w-3.5 h-3.5 flex-shrink-0" />
                             </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[11px] font-black uppercase tracking-wide leading-tight">{mechanic.title}</p>
+                              <p className={`text-[9px] uppercase tracking-widest mt-0.5 ${isActive ? 'opacity-60' : 'opacity-35'}`}>{qt}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Tab + item list */}
+                    <div className="flex-1 flex flex-col min-h-0">
+                      <div className="flex bg-black/[0.12] rounded-xl p-[3px] gap-[2px] mb-2 flex-shrink-0">
+                        {(['techniques', 'concepts'] as const).map(tab => (
+                          <button
+                            key={tab}
+                            onClick={() => { setDesktopTab(tab); setDesktopItemIdx(0); }}
+                            className={`flex-1 h-7 rounded-[9px] text-[9px] font-black tracking-[0.12em] uppercase transition-all duration-200
+                              ${desktopTab === tab
+                                ? 'bg-neutral-dark text-white shadow-md'
+                                : 'text-white/25 hover:text-white/50'
+                              }`}
+                          >
+                            {tab}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex-1 overflow-y-auto space-y-1 pr-0.5 min-h-0">
+                        {desktopItems.length === 0 ? (
+                          <p className="text-[11px] text-white/25 text-center py-6">No {desktopTab} yet</p>
+                        ) : desktopItems.map((item, ii) => {
+                          const isItemActive = ii === clampedDesktopItemIdx;
+                          return (
+                            <button
+                              key={item.id}
+                              onClick={() => setDesktopItemIdx(ii)}
+                              className={`w-full rounded-lg px-2.5 py-2 flex items-center gap-2 text-left transition-all duration-150 border-l-2
+                                ${isItemActive
+                                  ? `${dc.bg} ${dc.border}`
+                                  : 'hover:bg-white/[0.04] border-transparent'
+                                }`}
+                            >
+                              <span className={`flex-shrink-0 ${isItemActive ? dc.label : 'text-white/30'}`}>
+                                {item.card_type === 'technique' ? <TechniqueIcon /> : <ConceptIcon />}
+                              </span>
+                              <span className={`text-[11px] font-medium leading-snug flex-1 truncate ${isItemActive ? 'text-white/90' : 'text-white/40'}`}>
+                                {item.title}
+                              </span>
+                            </button>
                           );
                         })}
                       </div>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Right panel — item / quality detail */}
+                  <div className="flex-1 min-w-0 overflow-y-auto">
+                    {desktopCurrentItem ? (
+                      <div>
+                        <p className={`text-[9px] font-black tracking-[0.18em] uppercase mb-1.5 flex items-center gap-1.5 ${dc.label}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${dc.dot} inline-block`} />
+                          {desktopCurrentItem.card_type.toUpperCase()}
+                        </p>
+                        <h3
+                          className={`text-2xl font-black leading-tight tracking-tight mb-3 ${dc.label}`}
+                          style={{ letterSpacing: '-0.02em' }}
+                        >
+                          {desktopCurrentItem.title}
+                        </h3>
+                        {desktopCurrentItem.definition && (
+                          <p className="text-sm leading-relaxed text-white/65 mb-4">
+                            {desktopCurrentItem.definition}
+                          </p>
+                        )}
+                        {desktopCurrentItem.has_content && (
+                          <button
+                            onClick={() => { setModalCardId(desktopCurrentItem.id); setModalStateData(null); }}
+                            className={`text-[10px] font-black tracking-[0.14em] uppercase ${dc.label} flex items-center gap-1.5 hover:opacity-70 transition-opacity`}
+                          >
+                            Read full entry <ExpandIcon />
+                          </button>
+                        )}
+                      </div>
+                    ) : desktopDqm ? (
+                      <div>
+                        <p className={`text-[9px] font-black tracking-[0.18em] uppercase mb-2 ${dc.label} opacity-50`}>
+                          {(QUALITY_TYPES[desktopQualIdx] ?? 'quality').toUpperCase()} QUALITY
+                        </p>
+                        <h3
+                          className={`text-2xl font-black leading-tight tracking-tight mb-3 ${dc.label}`}
+                          style={{ letterSpacing: '-0.02em' }}
+                        >
+                          {desktopDqm.title}
+                        </h3>
+                        {desktopDqm.definition && (
+                          <p className="text-sm leading-relaxed text-white/65 mb-4">
+                            {desktopDqm.definition}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-white/25">
+                          Select a {desktopTab === 'techniques' ? 'technique' : 'concept'} from the list to explore
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
+              </>
             );
-          })}
+          })()}
         </div>
+
       </div>
 
       {/* Detail modal (shared) */}
@@ -739,114 +942,3 @@ export default function CompendiumNavigator() {
   );
 }
 
-// ── Quality Bar (desktop) ─────────────────────────────────────────────
-
-function QualityBar({
-  item, pillar, qualType, isExpanded, onToggle, onOpenDetail,
-}: {
-  item: NestedMechanic;
-  pillar: Pillar;
-  qualType: QualityType;
-  isExpanded: boolean;
-  onToggle: () => void;
-  onOpenDetail: () => void;
-}) {
-  const c = PILLAR_COLORS[pillar];
-  const bgClass = c.barBg(item.enrichment_score ?? 1);
-  const due = isDue(item.next_review_at);
-  const hasChildren = item.children.length > 0;
-
-  return (
-    <div className="group/quality">
-      <button
-        onClick={onToggle}
-        className={`
-          w-full rounded-lg flex flex-col gap-1.5 px-3 py-3
-          border-l-[3px] ${c.border}
-          ${bgClass}
-          transition-all duration-150
-          hover:-translate-y-px hover:brightness-105
-          ${isExpanded ? 'ring-1 ring-neutral/10' : ''}
-          text-left
-        `}
-      >
-        <div className="flex items-center gap-2 w-full">
-          {due && <span className={`w-1.5 h-1.5 rounded-full ${c.dot} animate-pulse flex-shrink-0`} />}
-          <span className="text-sm font-medium text-white flex-1 leading-snug">{item.title}</span>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <QualityTypeIcon type={qualType} className="w-3 h-3 opacity-40" />
-            <button
-              onClick={(e) => { e.stopPropagation(); onOpenDetail(); }}
-              className="opacity-25 group-hover/quality:opacity-70 transition-opacity text-neutral-light hover:text-white p-0.5"
-              title="View full entry"
-            >
-              <ExpandIcon />
-            </button>
-          </div>
-        </div>
-        <div className="flex items-start gap-2 w-full">
-          {item.definition ? (
-            <span className="text-xs text-neutral-light flex-1 leading-snug">{item.definition}</span>
-          ) : (
-            <span className="flex-1" />
-          )}
-          {hasChildren && (
-            <span className="text-[9px] text-neutral-light flex-shrink-0 self-end">
-              {isExpanded ? '▾' : '▸'}
-            </span>
-          )}
-        </div>
-      </button>
-    </div>
-  );
-}
-
-// ── Child Bar — Technique / Concept (desktop) ─────────────────────────
-
-function ChildBar({
-  item, pillar, onOpenDetail,
-}: {
-  item: MechanicItem;
-  pillar: Pillar;
-  onOpenDetail: () => void;
-}) {
-  const c = PILLAR_COLORS[pillar];
-  const isTechnique = item.card_type === 'technique';
-  const borderStyle = isTechnique ? 'border-solid' : 'border-dashed';
-  const due = isDue(item.next_review_at);
-  const hasContent = item.has_content;
-
-  if (!hasContent) {
-    return (
-      <div className="w-full h-8 rounded-md flex items-center gap-2 px-2.5 border-l-2 border-dashed border-neutral/20 bg-neutral/[0.02]">
-        <span className="flex-shrink-0 text-neutral/25">
-          {isTechnique ? <TechniqueIcon /> : <ConceptIcon />}
-        </span>
-        <span className="text-xs text-neutral/25 truncate flex-1 text-left">{item.title}</span>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      onClick={onOpenDetail}
-      className={`
-        w-full h-8 rounded-md flex items-center gap-2 px-2.5
-        border-l-2 ${borderStyle} ${c.border}
-        bg-neutral/[0.02]
-        transition-all duration-150
-        hover:-translate-y-px hover:bg-neutral/5
-        group/child
-      `}
-    >
-      {due && <span className={`w-1 h-1 rounded-full ${c.dot} animate-pulse flex-shrink-0`} />}
-      <span className={`flex-shrink-0 ${c.label} ${isTechnique ? '' : 'opacity-60'}`}>
-        {isTechnique ? <TechniqueIcon /> : <ConceptIcon />}
-      </span>
-      <span className="text-xs text-neutral-light truncate flex-1 text-left">{item.title}</span>
-      <span className="opacity-20 group-hover/child:opacity-60 transition-opacity text-neutral-light flex-shrink-0">
-        <ExpandIcon />
-      </span>
-    </button>
-  );
-}
