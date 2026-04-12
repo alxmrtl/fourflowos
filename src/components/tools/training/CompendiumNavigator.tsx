@@ -200,11 +200,91 @@ function ConceptIcon() {
   );
 }
 
-function ExpandIcon({ className = '' }: { className?: string }) {
+// ── Inline card content renderer ────────────────────────────────────
+
+function renderContentMd(md: string, dark = true): string {
+  const escapeHtml = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const applyInline = (s: string) =>
+    s
+      .replace(/\*\*(.+?)\*\*/g, `<strong class="font-semibold ${dark ? 'text-white/88' : 'text-neutral/88'}">$1</strong>`)
+      .replace(/\*([^*]+)\*/g, '<em class="italic">$1</em>');
+
+  const textColor   = dark ? 'text-white/65'  : 'text-neutral/65';
+  const headColor   = dark ? 'text-white/40'  : 'text-neutral/40';
+  const h1Color     = dark ? 'text-white/70'  : 'text-neutral/70';
+  const numBg       = dark ? 'bg-white/[0.08] text-white/40'  : 'bg-black/[0.06] text-neutral/40';
+  const quoteStyle  = dark ? 'border-white/15 text-white/40'  : 'border-black/15 text-neutral/40';
+
+  const lines = md.split('\n');
+  const out: string[] = [];
+  let inOl = false;
+  let olCounter = 0;
+
+  const closeOl = () => { if (inOl) { out.push('</ol>'); inOl = false; olCounter = 0; } };
+
+  for (const raw of lines) {
+    const t = raw.trim();
+    if (!t) { closeOl(); continue; }
+
+    if (t.startsWith('### ')) {
+      closeOl();
+      out.push(`<h4 class="text-[10px] font-black uppercase tracking-[0.16em] mt-5 mb-1.5 ${headColor}">${applyInline(escapeHtml(t.slice(4)))}</h4>`);
+    } else if (t.startsWith('## ')) {
+      closeOl();
+      out.push(`<h3 class="text-xs font-black uppercase tracking-wider mt-4 mb-1.5 ${headColor}">${applyInline(escapeHtml(t.slice(3)))}</h3>`);
+    } else if (t.startsWith('# ')) {
+      closeOl();
+      out.push(`<h2 class="text-sm font-bold mt-5 mb-2 ${h1Color}">${applyInline(escapeHtml(t.slice(2)))}</h2>`);
+    } else if (/^\d+\.\s/.test(t)) {
+      const text = t.replace(/^\d+\.\s+/, '');
+      if (!inOl) { out.push('<ol class="space-y-2 mt-2 mb-2">'); inOl = true; olCounter = 0; }
+      olCounter++;
+      out.push(`<li class="flex gap-2.5 ${textColor} text-sm leading-relaxed"><span class="flex-shrink-0 w-5 h-5 rounded-full ${numBg} flex items-center justify-center text-[10px] font-bold mt-0.5">${olCounter}</span><span>${applyInline(escapeHtml(text))}</span></li>`);
+    } else if (t.startsWith('> ')) {
+      closeOl();
+      out.push(`<blockquote class="border-l-2 ${quoteStyle} pl-3 my-2 text-sm italic">${applyInline(escapeHtml(t.slice(2)))}</blockquote>`);
+    } else if (t.startsWith('- ') || t.startsWith('* ')) {
+      closeOl();
+      out.push(`<li class="text-sm ${textColor} leading-relaxed ml-3 list-disc">${applyInline(escapeHtml(t.slice(2)))}</li>`);
+    } else {
+      closeOl();
+      out.push(`<p class="text-sm ${textColor} leading-relaxed">${applyInline(escapeHtml(t))}</p>`);
+    }
+  }
+  closeOl();
+  return out.join('\n');
+}
+
+function InlineCardContent({ cardId, dark = true }: { cardId: string; dark?: boolean }) {
+  const [content, setContent] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    setContent(null);
+    fetch(`/api/train/card/${encodeURIComponent(cardId)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.content_md) setContent(d.content_md); })
+      .finally(() => setLoading(false));
+  }, [cardId]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 py-4">
+        <div className={`w-3.5 h-3.5 rounded-full border-2 ${dark ? 'border-white/15 border-t-white/50' : 'border-black/10 border-t-black/35'} animate-spin`} />
+        <span className={`text-[11px] ${dark ? 'text-white/30' : 'text-neutral/35'}`}>Loading…</span>
+      </div>
+    );
+  }
+
+  if (!content) return null;
+
   return (
-    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`flex-shrink-0 ${className}`}>
-      <path d="M1 9L9 1M9 1H5M9 1V5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
+    <div
+      className="space-y-0.5 mt-1"
+      dangerouslySetInnerHTML={{ __html: renderContentMd(content, dark) }}
+    />
   );
 }
 
@@ -604,12 +684,9 @@ export default function CompendiumNavigator() {
                         </p>
                       )}
                       {currentItem.has_content && (
-                        <button
-                          onClick={() => { setModalCardId(currentItem.id); setModalStateData(null); }}
-                          className={`mt-4 text-[10px] font-black tracking-[0.14em] uppercase ${c.label} flex items-center gap-1.5 hover:opacity-70 transition-opacity`}
-                        >
-                          Read full entry <ExpandIcon />
-                        </button>
+                        <div className="mt-4">
+                          <InlineCardContent cardId={currentItem.id} dark={false} />
+                        </div>
                       )}
                     </div>
                   )}
@@ -800,110 +877,110 @@ export default function CompendiumNavigator() {
                       {desktopPillar}
                     </span>
                   </div>
-                  {/* Key cycling */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
-                      onClick={() => desktopCycleState(-1)}
-                      title={desktopPrevLabel}
-                      className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-white/30 hover:text-white/70 transition-all"
-                    >
-                      <span className="text-base leading-none">‹</span>
-                      <span className="text-[9px] font-semibold uppercase tracking-wider max-w-0 overflow-hidden group-hover:max-w-[80px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200">
-                        {desktopPrevLabel}
-                      </span>
-                    </button>
-                    <button
-                      onClick={() => desktopCycleState(1)}
-                      title={desktopNextLabel}
-                      className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-white/30 hover:text-white/70 transition-all"
-                    >
-                      <span className="text-[9px] font-semibold uppercase tracking-wider max-w-0 overflow-hidden group-hover:max-w-[80px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200">
-                        {desktopNextLabel}
-                      </span>
-                      <span className="text-base leading-none">›</span>
-                    </button>
+                  {/* Key icon selector — all 12 states */}
+                  <div className="flex items-center gap-0.5 ml-auto">
+                    {allStates.map((state, idx) => (
+                      <button
+                        key={state.key}
+                        onClick={() => { setDesktopActiveStateIdx(idx); setDesktopQualIdx(0); setDesktopTab('techniques'); setDesktopItemIdx(0); }}
+                        title={state.label}
+                        className={`group w-[22px] h-[22px] rounded flex items-center justify-center transition-all duration-150
+                          ${idx > 0 && idx % 3 === 0 ? 'ml-1.5' : ''}
+                          ${idx === desktopActiveStateIdx ? 'bg-white/15' : 'hover:bg-white/[0.06]'}
+                        `}
+                      >
+                        {STATE_LOGO[state.key] && (
+                          <Image
+                            src={STATE_LOGO[state.key]}
+                            alt={state.label}
+                            width={16} height={16}
+                            className={`mix-blend-screen transition-opacity duration-150 ${idx === desktopActiveStateIdx ? 'opacity-95' : 'opacity-20 group-hover:opacity-55'}`}
+                            style={idx === desktopActiveStateIdx ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))' } : undefined}
+                          />
+                        )}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                {/* Body: left panel + right panel */}
-                <div className="flex gap-5 flex-1 min-h-0">
+                {/* Quality row — horizontal */}
+                <div className="flex gap-2 pb-3 flex-shrink-0">
+                  {(desktopStateGroup.mechanics ?? []).map((mechanic, qi) => {
+                    const qt = QUALITY_TYPES[qi] ?? 'restore';
+                    const isActive = qi === desktopQualIdx;
+                    return (
+                      <button
+                        key={mechanic.id}
+                        onClick={() => { setDesktopQualIdx(qi); setDesktopItemIdx(0); setDesktopTab('techniques'); }}
+                        className={`relative overflow-hidden flex-1 rounded-xl px-3 py-2 flex items-center gap-2 text-left transition-all duration-200
+                          ${isActive
+                            ? `${dc.activeQualPill} shadow-md`
+                            : 'bg-white/[0.04] text-white/40 hover:text-white/70 hover:bg-white/[0.07]'
+                          }`}
+                      >
+                        {isActive && <div className="absolute inset-0 bg-gradient-to-b from-white/[0.10] to-transparent pointer-events-none rounded-xl" />}
+                        <div style={isActive ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.45))' } : undefined}>
+                          <QualityTypeIcon type={qt} className="w-3 h-3 flex-shrink-0" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-black uppercase tracking-wide leading-tight truncate">{mechanic.title}</p>
+                          <p className={`text-[8px] uppercase tracking-widest mt-0.5 ${isActive ? 'opacity-60' : 'opacity-35'}`}>{qt}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
 
-                  {/* Left panel — quality pills + item list */}
-                  <div className="w-[260px] flex-shrink-0 flex flex-col gap-3">
-                    {/* Quality pills */}
-                    <div className="space-y-1.5">
-                      {(desktopStateGroup.mechanics ?? []).map((mechanic, qi) => {
-                        const qt = QUALITY_TYPES[qi] ?? 'restore';
-                        const isActive = qi === desktopQualIdx;
+                {/* Body: left panel + right panel */}
+                <div className="flex gap-4 flex-1 min-h-0">
+
+                  {/* Left panel — item list */}
+                  <div className="w-[220px] flex-shrink-0 flex flex-col gap-2 min-h-0">
+                    {/* Tab */}
+                    <div className="flex bg-black/[0.12] rounded-xl p-[3px] gap-[2px] flex-shrink-0">
+                      {(['techniques', 'concepts'] as const).map(tab => (
+                        <button
+                          key={tab}
+                          onClick={() => { setDesktopTab(tab); setDesktopItemIdx(0); }}
+                          className={`flex-1 h-7 rounded-[9px] text-[9px] font-black tracking-[0.12em] uppercase transition-all duration-200
+                            ${desktopTab === tab
+                              ? 'bg-neutral-dark text-white shadow-md'
+                              : 'text-white/25 hover:text-white/50'
+                            }`}
+                        >
+                          {tab}
+                        </button>
+                      ))}
+                    </div>
+                    {/* Item list */}
+                    <div className="flex-1 overflow-y-auto space-y-1 pr-0.5 min-h-0">
+                      {desktopItems.length === 0 ? (
+                        <p className="text-[11px] text-white/25 text-center py-6">No {desktopTab} yet</p>
+                      ) : desktopItems.map((item, ii) => {
+                        const isItemActive = ii === clampedDesktopItemIdx;
                         return (
                           <button
-                            key={mechanic.id}
-                            onClick={() => { setDesktopQualIdx(qi); setDesktopItemIdx(0); setDesktopTab('techniques'); }}
-                            className={`relative overflow-hidden w-full rounded-xl px-3 py-2.5 flex items-center gap-2.5 text-left transition-all duration-200
-                              ${isActive
-                                ? `${dc.activeQualPill} shadow-md`
-                                : 'bg-white/[0.04] text-white/40 hover:text-white/70 hover:bg-white/[0.07]'
+                            key={item.id}
+                            onClick={() => setDesktopItemIdx(ii)}
+                            className={`w-full rounded-lg px-2.5 py-2 flex items-center gap-2 text-left transition-all duration-150 border-l-2
+                              ${isItemActive
+                                ? `${dc.bg} ${dc.border}`
+                                : 'hover:bg-white/[0.04] border-transparent'
                               }`}
                           >
-                            {isActive && <div className="absolute inset-0 bg-gradient-to-b from-white/[0.10] to-transparent pointer-events-none rounded-xl" />}
-                            <div style={isActive ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.45))' } : undefined}>
-                              <QualityTypeIcon type={qt} className="w-3.5 h-3.5 flex-shrink-0" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-[11px] font-black uppercase tracking-wide leading-tight">{mechanic.title}</p>
-                              <p className={`text-[9px] uppercase tracking-widest mt-0.5 ${isActive ? 'opacity-60' : 'opacity-35'}`}>{qt}</p>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Tab + item list */}
-                    <div className="flex-1 flex flex-col min-h-0">
-                      <div className="flex bg-black/[0.12] rounded-xl p-[3px] gap-[2px] mb-2 flex-shrink-0">
-                        {(['techniques', 'concepts'] as const).map(tab => (
-                          <button
-                            key={tab}
-                            onClick={() => { setDesktopTab(tab); setDesktopItemIdx(0); }}
-                            className={`flex-1 h-7 rounded-[9px] text-[9px] font-black tracking-[0.12em] uppercase transition-all duration-200
-                              ${desktopTab === tab
-                                ? 'bg-neutral-dark text-white shadow-md'
-                                : 'text-white/25 hover:text-white/50'
-                              }`}
-                          >
-                            {tab}
-                          </button>
-                        ))}
-                      </div>
-                      <div className="flex-1 overflow-y-auto space-y-1 pr-0.5 min-h-0">
-                        {desktopItems.length === 0 ? (
-                          <p className="text-[11px] text-white/25 text-center py-6">No {desktopTab} yet</p>
-                        ) : desktopItems.map((item, ii) => {
-                          const isItemActive = ii === clampedDesktopItemIdx;
-                          return (
-                            <button
-                              key={item.id}
-                              onClick={() => setDesktopItemIdx(ii)}
-                              className={`w-full rounded-lg px-2.5 py-2 flex items-center gap-2 text-left transition-all duration-150 border-l-2
-                                ${isItemActive
-                                  ? `${dc.bg} ${dc.border}`
-                                  : 'hover:bg-white/[0.04] border-transparent'
-                                }`}
-                            >
-                              <span className={`flex-shrink-0 ${isItemActive ? dc.label : 'text-white/30'}`}>
-                                {item.card_type === 'technique' ? <TechniqueIcon /> : <ConceptIcon />}
-                              </span>
-                              <span className={`text-[11px] font-medium leading-snug flex-1 truncate ${isItemActive ? 'text-white/90' : 'text-white/40'}`}>
-                                {item.title}
+                            <span className={`flex-shrink-0 ${isItemActive ? dc.label : 'text-white/30'}`}>
+                              {item.card_type === 'technique' ? <TechniqueIcon /> : <ConceptIcon />}
+                            </span>
+                            <span className={`text-[11px] font-medium leading-snug flex-1 truncate ${isItemActive ? 'text-white/90' : 'text-white/40'}`}>
+                              {item.title}
                               </span>
                             </button>
                           );
                         })}
                       </div>
-                    </div>
                   </div>
 
-                  {/* Right panel — item / quality detail */}
+                  {/* Right panel — full card content inline */}
                   <div className="flex-1 min-w-0 overflow-y-auto">
                     {desktopCurrentItem ? (
                       <div>
@@ -923,12 +1000,7 @@ export default function CompendiumNavigator() {
                           </p>
                         )}
                         {desktopCurrentItem.has_content && (
-                          <button
-                            onClick={() => { setModalCardId(desktopCurrentItem.id); setModalStateData(null); }}
-                            className={`text-[10px] font-black tracking-[0.14em] uppercase ${dc.label} flex items-center gap-1.5 hover:opacity-70 transition-opacity`}
-                          >
-                            Read full entry <ExpandIcon />
-                          </button>
+                          <InlineCardContent cardId={desktopCurrentItem.id} dark={true} />
                         )}
                       </div>
                     ) : desktopDqm ? (
