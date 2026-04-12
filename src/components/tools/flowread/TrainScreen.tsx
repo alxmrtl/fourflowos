@@ -202,7 +202,7 @@ export default function TrainScreen({
           border: '1px solid rgba(255,255,255,0.06)',
         }}
       >
-        {/* Row 1: left controls + sliders */}
+        {/* Row 1: left controls + WPM slider */}
         <div className="flex items-center gap-4">
 
           {/* Left slot: Begin OR Play/Pause + Stop */}
@@ -268,24 +268,24 @@ export default function TrainScreen({
               className="flex-1 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
               style={{ accentColor: SAGE }}
             />
-            <span className="text-sm text-white font-medium min-w-[70px] text-right shrink-0">
-              {wpm} <span className="text-gray-500 font-normal">wpm</span>
+            <span className="text-sm text-white font-medium shrink-0 tabular-nums">
+              {wpm} <span className="text-gray-500 font-normal text-xs">wpm</span>
             </span>
           </div>
+        </div>
 
-          {/* Font size slider */}
-          <div className="flex items-center gap-2 pl-3 border-l border-white/10 shrink-0">
-            <span className="text-xs text-gray-500">Aa</span>
-            <input
-              type="range"
-              min={MIN_FONT_SIZE}
-              max={MAX_FONT_SIZE}
-              value={fontSize}
-              onChange={(e) => setFontSize(parseInt(e.target.value))}
-              className="w-16 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/60"
-            />
-            <span className="text-xs text-gray-500 min-w-[28px]">{fontSize}</span>
-          </div>
+        {/* Row 1b: Font size */}
+        <div className="mt-2.5 flex items-center gap-3">
+          <span className="text-xs text-gray-500 shrink-0">Aa</span>
+          <input
+            type="range"
+            min={MIN_FONT_SIZE}
+            max={MAX_FONT_SIZE}
+            value={fontSize}
+            onChange={(e) => setFontSize(parseInt(e.target.value))}
+            className="flex-1 h-1 appearance-none bg-white/10 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/60"
+          />
+          <span className="text-xs text-gray-500 min-w-[28px] tabular-nums">{fontSize}</span>
         </div>
 
         {/* Row 2: Mode toggle — only when session is idle */}

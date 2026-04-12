@@ -47,18 +47,26 @@ function MobileSheet({
 
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* Handle */}
-        <div className="w-9 h-[3px] rounded-full bg-white/20 mx-auto mt-2.5 flex-shrink-0" />
-
-        {/* Section label */}
-        <div className="flex items-center gap-2 px-4 pt-2 pb-2 flex-shrink-0">
-          <span
-            className="text-[10px] font-bold uppercase tracking-[0.22em]"
-            style={{ color: section.color }}
+          {/* Header row: label + close button */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-1 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <span
+              className="text-[10px] font-bold uppercase tracking-[0.22em]"
+              style={{ color: section.color }}
+            >
+              {section.label}
+            </span>
+            <span className="text-[10px] text-white/30 font-light">{section.description}</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-6 h-6 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors flex-shrink-0"
+            aria-label="Close"
           >
-            {section.label}
-          </span>
-          <span className="text-[10px] text-white/30 font-light">{section.description}</span>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M1 1l8 8M9 1L1 9" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </button>
         </div>
 
         {/* Tool buttons */}
@@ -131,19 +139,24 @@ function BottomNavBar({
           <button
             key={section.id}
             onClick={() => onSelectSection(idx)}
-            className="flex flex-col items-center justify-center gap-1"
+            className="flex flex-col items-center justify-center gap-1 relative"
           >
+            {/* Active indicator — colored line at top of button */}
             <div
-              className="flex-shrink-0 transition-opacity duration-200"
-              style={{ opacity: isActive ? 1 : 0.35 }}
-            >
+              className="absolute top-0 inset-x-3 h-[2px] rounded-b-full transition-opacity duration-200"
+              style={{
+                background: section.color,
+                opacity: isActive ? 1 : 0,
+              }}
+            />
+            <div className="flex-shrink-0 transition-opacity duration-200" style={{ opacity: 1 }}>
               <section.Icon color={section.color} size={20} active={isActive} />
             </div>
             <span
               className="text-[8px] font-bold uppercase tracking-[0.16em] transition-colors duration-200"
               style={{
                 fontFamily: 'var(--font-mono, monospace)',
-                color: isActive ? section.color : 'rgba(255,255,255,0.28)',
+                color: isActive ? section.color : 'rgba(255,255,255,0.65)',
               }}
             >
               {section.label}
