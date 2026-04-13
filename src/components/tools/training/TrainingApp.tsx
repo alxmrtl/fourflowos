@@ -89,7 +89,7 @@ export default function TrainingApp() {
                 </div>
                 <div className="text-center">
                   <span className="text-xl font-bold text-neutral">{stats.total_introduced}</span>
-                  <div className="text-xs">of {stats.total_mechanics} introduced</div>
+                  <div className="text-xs">of {stats.total_qualities} introduced</div>
                 </div>
               </div>
             )}

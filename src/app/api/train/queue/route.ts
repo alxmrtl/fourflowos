@@ -38,34 +38,34 @@ export async function GET(request: NextRequest) {
 
   const sessionCap = mode === 'deep-dive' ? MAX_DEEP_DIVE : MAX_SESSION;
 
-  // Fetch all cards (mechanics + techniques + concepts)
-  let mechanicsQuery = db
+  // Fetch all cards (qualities + techniques + concepts)
+  let qualitiesQuery = db
     .from('mechanics')
-    .select('id, title, pillar, flow_key, keywords, definition, content_md, recall_md, enrichment_score, techniques_count, related_mechanics, card_type, parent_mechanic_id, content_hash, updated_at')
+    .select('id, title, pillar, flow_key, keywords, definition, content_md, recall_md, enrichment_score, techniques_count, related_qualities, card_type, parent_quality_id, content_hash, updated_at')
     .order('pillar', { ascending: true })
     .order('enrichment_score', { ascending: false });
 
   if (pillarFilter) {
-    mechanicsQuery = mechanicsQuery.eq('pillar', pillarFilter);
+    qualitiesQuery = qualitiesQuery.eq('pillar', pillarFilter);
   }
   if (keyFilter) {
-    mechanicsQuery = mechanicsQuery.eq('flow_key', keyFilter);
+    qualitiesQuery = qualitiesQuery.eq('flow_key', keyFilter);
   }
 
-  const { data: allCards, error: mechanicsErr } = await mechanicsQuery;
+  const { data: allCards, error: qualitiesErr } = await qualitiesQuery;
 
-  if (mechanicsErr) {
-    return NextResponse.json({ error: mechanicsErr.message }, { status: 500 });
+  if (qualitiesErr) {
+    return NextResponse.json({ error: qualitiesErr.message }, { status: 500 });
   }
 
-  // Separate mechanics (SRS cards) from children (study material)
-  const allMechanics = (allCards ?? []).filter(m => m.card_type === 'mechanic' || m.card_type === 'quality');
+  // Separate quality SRS cards from child cards (techniques/concepts)
+  const allQualities = (allCards ?? []).filter(m => m.card_type === 'quality');
   const childCards = (allCards ?? []).filter(m => m.card_type === 'technique' || m.card_type === 'concept');
 
   // Build parent → children map for study mode
   const childrenByParent = new Map<string, typeof childCards>();
   for (const child of childCards) {
-    const parentId = child.parent_mechanic_id;
+    const parentId = child.parent_quality_id;
     if (parentId) {
       if (!childrenByParent.has(parentId)) childrenByParent.set(parentId, []);
       childrenByParent.get(parentId)!.push(child);
@@ -82,19 +82,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: reviewsErr.message }, { status: 500 });
   }
 
-  const reviewMap = new Map((allReviews ?? []).map(r => [r.mechanic_id, r]));
+  const reviewMap = new Map((allReviews ?? []).map(r => [r.quality_id, r]));
   const now = new Date().toISOString();
 
   // Due reviews: have a review record with phase='recall' AND next_review_at <= now
-  // Also include study cards that are due (phase='study', next_review_at <= now → transition to recall)
   const dueReviews = (allReviews ?? [])
     .filter(r => r.next_review_at <= now)
     .sort((a, b) => a.next_review_at.localeCompare(b.next_review_at));
 
-  // New mechanics: no review record yet, ordered by pillar priority + enrichment score
+  // New qualities: no review record yet, ordered by pillar priority + enrichment score
   const seenIds = new Set(reviewMap.keys());
 
-  const newMechanics = allMechanics
+  const newQualities = allQualities
     .filter(m => !seenIds.has(m.id))
     .sort((a, b) => {
       const pillarDiff = PILLAR_ORDER.indexOf(a.pillar) - PILLAR_ORDER.indexOf(b.pillar);
@@ -103,29 +102,29 @@ export async function GET(request: NextRequest) {
     });
 
   // Build queue: due reviews first (recall), then new cards (study), cap at session limit
-  const mechanicMap = new Map(allMechanics.map(m => [m.id, m]));
+  const qualityMap = new Map(allQualities.map(m => [m.id, m]));
 
-  // Filter due reviews to only mechanics (not technique/concept reviews if any exist)
+  // Filter due reviews to only quality cards (not technique/concept reviews if any exist)
   const dueQueue: QueueItem[] = dueReviews
-    .filter(r => mechanicMap.has(r.mechanic_id))
+    .filter(r => qualityMap.has(r.quality_id))
     .map(r => {
-      const mechanic = mechanicMap.get(r.mechanic_id)!;
-      // Detect content updates: mechanic updated after last review
+      const quality = qualityMap.get(r.quality_id)!;
+      // Detect content updates: quality updated after last review
       const contentUpdated = r.last_reviewed_at
-        ? mechanic.updated_at > r.last_reviewed_at
+        ? quality.updated_at > r.last_reviewed_at
         : false;
       return {
-        mechanic,
+        card: quality,
         review: r,
         is_new: false,
         content_updated: contentUpdated,
-        children: childrenByParent.get(mechanic.id),
+        children: childrenByParent.get(quality.id),
       };
     });
 
   const remaining = Math.max(0, sessionCap - dueQueue.length);
-  const newQueue: QueueItem[] = newMechanics.slice(0, remaining).map(m => ({
-    mechanic: m,
+  const newQueue: QueueItem[] = newQualities.slice(0, remaining).map(m => ({
+    card: m,
     review: null,
     is_new: true,
     content_updated: false,
@@ -137,10 +136,10 @@ export async function GET(request: NextRequest) {
   const response: QueueResponse = {
     queue,
     stats: {
-      due_count: dueReviews.filter(r => mechanicMap.has(r.mechanic_id)).length,
-      new_count: newMechanics.length,
-      total_introduced: [...seenIds].filter(id => mechanicMap.has(id)).length,
-      total_mechanics: allMechanics.length,
+      due_count: dueReviews.filter(r => qualityMap.has(r.quality_id)).length,
+      new_count: newQualities.length,
+      total_introduced: [...seenIds].filter(id => qualityMap.has(id)).length,
+      total_qualities: allQualities.length,
     },
   };
 

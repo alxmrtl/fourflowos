@@ -2,10 +2,10 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { sm2Update } from '@/lib/sm2';
-import type { QueueItem, QueueStats, Quality, ReviewUpdate, MechanicReview } from '@/types/training';
+import type { QueueItem, QueueStats, Quality, ReviewUpdate, QualityReview } from '@/types/training';
 
 interface SessionResult {
-  mechanic_id: string;
+  quality_id: string;
   quality: Quality | 'studied';
   title: string;
 }
@@ -21,7 +21,7 @@ interface TrainingState {
   sessionId: string | null;
 }
 
-const INITIAL_REVIEW: Pick<MechanicReview, 'ease_factor' | 'interval_days' | 'repetitions'> = {
+const INITIAL_REVIEW: Pick<QualityReview, 'ease_factor' | 'interval_days' | 'repetitions'> = {
   ease_factor: 2.5,
   interval_days: 1,
   repetitions: 0,
@@ -113,7 +113,7 @@ export function useTrainingStore() {
     const updates = sm2Update(baseReview, quality);
 
     const reviewUpdate: ReviewUpdate = {
-      mechanic_id: item.mechanic.id,
+      quality_id: item.card.id,
       quality,
       ease_factor: updates.ease_factor,
       interval_days: updates.interval_days,
@@ -132,7 +132,7 @@ export function useTrainingStore() {
       sessionComplete: isLast,
       sessionResults: [
         ...s.sessionResults,
-        { mechanic_id: item.mechanic.id, quality, title: item.mechanic.title },
+        { quality_id: item.card.id, quality, title: item.card.title },
       ],
     }));
 
@@ -157,7 +157,7 @@ export function useTrainingStore() {
     const nextReviewAt = new Date(Date.now() + TWELVE_HOURS_MS).toISOString();
 
     const reviewUpdate: ReviewUpdate = {
-      mechanic_id: item.mechanic.id,
+      quality_id: item.card.id,
       quality: 0 as Quality, // No quality rating for study — just marks as seen
       ease_factor: 2.5,
       interval_days: 0,
@@ -176,7 +176,7 @@ export function useTrainingStore() {
       sessionComplete: isLast,
       sessionResults: [
         ...s.sessionResults,
-        { mechanic_id: item.mechanic.id, quality: 'studied', title: item.mechanic.title },
+        { quality_id: item.card.id, quality: 'studied', title: item.card.title },
       ],
     }));
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { QueueItem, Quality, Mechanic } from '@/types/training';
+import type { QueueItem, Quality, CompendiumCard } from '@/types/training';
 import { RATING_BUTTONS } from '@/lib/sm2';
 import { renderMarkdown as sharedRenderMarkdown, renderRecallMd } from '@/lib/renderMarkdown';
 
@@ -18,7 +18,7 @@ const RATING_STYLES = [
   'border-neutral/20 hover:border-green-400 hover:bg-green-50 hover:text-green-700',
 ];
 
-/** Converts mechanic markdown to displayable HTML — delegates to shared renderer. */
+/** Converts quality markdown to displayable HTML — delegates to shared renderer. */
 function renderMarkdown(md: string): string {
   return sharedRenderMarkdown(md, { dark: false, skipRecall: true });
 }
@@ -29,7 +29,7 @@ function renderRecall(md: string): string {
 }
 
 /** Render a child card (technique/concept) as a collapsible section */
-function ChildCard({ child }: { child: Mechanic }) {
+function ChildCard({ child }: { child: CompendiumCard }) {
   const [open, setOpen] = useState(false);
   const typeLabel = child.card_type === 'technique' ? 'Technique' : 'Concept';
 
@@ -61,7 +61,7 @@ function ChildCard({ child }: { child: Mechanic }) {
   );
 }
 
-interface MechanicCardProps {
+interface QualityCardProps {
   item: QueueItem;
   cardNumber: number;
   totalCards: number;
@@ -69,12 +69,12 @@ interface MechanicCardProps {
   onMarkStudied: () => void;
 }
 
-export default function MechanicCard({ item, cardNumber, totalCards, onRate, onMarkStudied }: MechanicCardProps) {
+export default function QualityCard({ item, cardNumber, totalCards, onRate, onMarkStudied }: QualityCardProps) {
   const [revealed, setReveal] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const { mechanic, is_new, content_updated, children } = item;
-  const styles = PILLAR_STYLES[mechanic.pillar] ?? PILLAR_STYLES.self;
-  const flowKeyLabel = mechanic.flow_key
+  const { card, is_new, content_updated, children } = item;
+  const styles = PILLAR_STYLES[card.pillar] ?? PILLAR_STYLES.self;
+  const flowKeyLabel = card.flow_key
     .split('-')
     .map(w => w[0].toUpperCase() + w.slice(1))
     .join(' ');
@@ -93,9 +93,9 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate, onM
     onMarkStudied();
   };
 
-  const contentHtml = renderMarkdown(mechanic.content_md);
-  const recallHtml = mechanic.recall_md ? renderRecall(mechanic.recall_md) : null;
-  const hasFullContent = mechanic.enrichment_score >= 2;
+  const contentHtml = renderMarkdown(card.content_md);
+  const recallHtml = card.recall_md ? renderRecall(card.recall_md) : null;
+  const hasFullContent = card.enrichment_score >= 2;
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -121,13 +121,13 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate, onM
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-center gap-2 mb-4">
             <span className={`text-xs font-semibold uppercase tracking-wider px-2 py-1 rounded-full ${styles.badge}`}>
-              {mechanic.pillar}
+              {card.pillar}
             </span>
             <span className={`text-xs ${styles.text} opacity-70`}>{flowKeyLabel}</span>
           </div>
 
           <h2 className={`font-display text-3xl font-semibold text-neutral leading-tight mb-2`}>
-            {mechanic.title}
+            {card.title}
           </h2>
         </div>
 
@@ -139,7 +139,7 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate, onM
             {/* Definition */}
             <blockquote className={`border-l-3 ${styles.border} pl-4 py-1`}>
               <p className={`text-base font-medium ${styles.text} leading-relaxed`}>
-                {mechanic.definition}
+                {card.definition}
               </p>
             </blockquote>
 
@@ -172,7 +172,7 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate, onM
 
             {!recallHtml && !hasFullContent && (
               <p className="text-xs text-neutral-light opacity-50 italic">
-                Full content coming — this mechanic is queued for enrichment.
+                Full content coming — this quality is queued for enrichment.
               </p>
             )}
 
@@ -226,7 +226,7 @@ export default function MechanicCard({ item, cardNumber, totalCards, onRate, onM
             {/* Definition */}
             <blockquote className={`border-l-3 ${styles.border} pl-4 py-1`}>
               <p className={`text-base font-medium ${styles.text} leading-relaxed`}>
-                {mechanic.definition}
+                {card.definition}
               </p>
             </blockquote>
 

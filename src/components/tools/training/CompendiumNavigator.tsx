@@ -103,22 +103,22 @@ const STATE_LOGO: Record<string, string> = {
 
 // ── Types ────────────────────────────────────────────────────────────
 
-type MechanicItem = MasteryStats['mechanics'][number];
+type CompendiumItem = MasteryStats['qualities'][number];
 
-interface NestedMechanic extends MechanicItem {
-  children: MechanicItem[];
+interface NestedQuality extends CompendiumItem {
+  children: CompendiumItem[];
 }
 
 interface FlowKeyGroup {
   key: string;
   label: string;
-  mechanics: NestedMechanic[];
+  qualities: NestedQuality[];
 }
 
 interface PillarGroup {
   pillar: Pillar;
   keys: FlowKeyGroup[];
-  totalMechanics: number;
+  totalQualities: number;
   totalTechniques: number;
   totalConcepts: number;
 }
@@ -277,26 +277,26 @@ export default function CompendiumNavigator() {
   // ── Nested hierarchy (shared) ────────────────────────────────────
   const pillarGroups: PillarGroup[] = useMemo(() => {
     if (!stats) return [];
-    const allItems = stats.mechanics;
+    const allItems = stats.qualities;
     const pillars: Pillar[] = ['self', 'space', 'story', 'spirit'];
 
     return pillars.map(pillar => {
       const pillarItems = allItems.filter(m => m.pillar === pillar);
-      const mechanics = pillarItems.filter(m => m.card_type === 'mechanic' || m.card_type === 'quality');
+      const qualityCards = pillarItems.filter(m => m.card_type === 'quality');
       const children = pillarItems.filter(m => m.card_type === 'technique' || m.card_type === 'concept');
 
-      const childMap = new Map<string, MechanicItem[]>();
+      const childMap = new Map<string, CompendiumItem[]>();
       for (const c of children) {
-        if (c.parent_mechanic_id) {
-          const existing = childMap.get(c.parent_mechanic_id) ?? [];
+        if (c.parent_quality_id) {
+          const existing = childMap.get(c.parent_quality_id) ?? [];
           existing.push(c);
-          childMap.set(c.parent_mechanic_id, existing);
+          childMap.set(c.parent_quality_id, existing);
         }
       }
 
-      const orphansByKey = new Map<string, MechanicItem[]>();
+      const orphansByKey = new Map<string, CompendiumItem[]>();
       for (const c of children) {
-        if (!c.parent_mechanic_id) {
+        if (!c.parent_quality_id) {
           const existing = orphansByKey.get(c.flow_key) ?? [];
           existing.push(c);
           orphansByKey.set(c.flow_key, existing);
@@ -306,11 +306,11 @@ export default function CompendiumNavigator() {
       const keyOrder = KEY_ORDER[pillar] ?? [];
       const keys: FlowKeyGroup[] = keyOrder.map(key => {
         const QUAL_ORDER: Record<string, number> = { restore: 0, maintain: 1, concentrate: 2 };
-        const keyMechanics = mechanics
+        const keyQualities = qualityCards
           .filter(m => m.flow_key === key)
           .sort((a, b) => (QUAL_ORDER[a.quality_type ?? ''] ?? 99) - (QUAL_ORDER[b.quality_type ?? ''] ?? 99));
 
-        const nested: NestedMechanic[] = keyMechanics.map(m => ({
+        const nested: NestedQuality[] = keyQualities.map(m => ({
           ...m,
           children: (childMap.get(m.id) ?? []).sort((a, b) => {
             if (a.card_type !== b.card_type) return a.card_type === 'technique' ? -1 : 1;
@@ -321,13 +321,13 @@ export default function CompendiumNavigator() {
         const orphans = orphansByKey.get(key) ?? [];
         for (const o of orphans) nested.push({ ...o, children: [] });
 
-        return { key, label: formatKeyLabel(key), mechanics: nested };
+        return { key, label: formatKeyLabel(key), qualities: nested };
       });
 
       return {
         pillar,
         keys,
-        totalMechanics: mechanics.length,
+        totalQualities: qualityCards.length,
         totalTechniques: pillarItems.filter(m => m.card_type === 'technique').length,
         totalConcepts: pillarItems.filter(m => m.card_type === 'concept').length,
       };
@@ -350,26 +350,26 @@ export default function CompendiumNavigator() {
     [activePillarGroup, activeStateIndex]
   );
 
-  const activeQualMechanic = useMemo(
-    () => activeStateGroup?.mechanics[activeQualIndex] ?? null,
+  const activeQualCard = useMemo(
+    () => activeStateGroup?.qualities[activeQualIndex] ?? null,
     [activeStateGroup, activeQualIndex]
   );
 
   const mobileItems = useMemo(() => {
-    if (!activeQualMechanic) return [];
-    return activeQualMechanic.children.filter(c =>
+    if (!activeQualCard) return [];
+    return activeQualCard.children.filter(c =>
       mobileTab === 'techniques' ? c.card_type === 'technique' : c.card_type === 'concept'
     );
-  }, [activeQualMechanic, mobileTab]);
+  }, [activeQualCard, mobileTab]);
 
   const clampedMobileItemIndex = Math.min(mobileItemIndex, Math.max(0, mobileItems.length - 1));
 
   // ── Desktop derived data ─────────────────────────────────────────
   const desktopStateGroup = allStates[desktopActiveStateIdx] ?? null;
   const desktopPillar: Pillar = desktopStateGroup?.pillar ?? 'self';
-  const desktopDqm = desktopStateGroup?.mechanics[desktopQualIdx] ?? null;
+  const desktopDqm = desktopStateGroup?.qualities[desktopQualIdx] ?? null;
   const desktopItems = useMemo(() => {
-    const qm = allStates[desktopActiveStateIdx]?.mechanics[desktopQualIdx];
+    const qm = allStates[desktopActiveStateIdx]?.qualities[desktopQualIdx];
     if (!qm) return [];
     return qm.children.filter(c =>
       desktopTab === 'techniques' ? c.card_type === 'technique' : c.card_type === 'concept'
@@ -443,7 +443,7 @@ export default function CompendiumNavigator() {
   if (!stats) return null;
 
   const c = PILLAR_COLORS[activePillar];
-  const activeQualType: QualityType = (activeQualMechanic?.quality_type as QualityType) ?? QUALITY_TYPES[activeQualIndex] ?? 'restore';
+  const activeQualType: QualityType = (activeQualCard?.quality_type as QualityType) ?? QUALITY_TYPES[activeQualIndex] ?? 'restore';
   const currentItem = mobileItems[clampedMobileItemIndex] ?? null;
   return (
     <>
@@ -515,12 +515,12 @@ export default function CompendiumNavigator() {
 
           {/* Row 3: Quality pills */}
           <div className="flex gap-1.5">
-            {(activeStateGroup?.mechanics ?? []).map((mechanic, i) => {
-              const qualType = (mechanic.quality_type as QualityType) ?? QUALITY_TYPES[i] ?? 'restore';
+            {(activeStateGroup?.qualities ?? []).map((quality, i) => {
+              const qualType = (quality.quality_type as QualityType) ?? QUALITY_TYPES[i] ?? 'restore';
               const isActive = i === activeQualIndex;
               return (
                 <button
-                  key={mechanic.id}
+                  key={quality.id}
                   onClick={() => selectQual(i)}
                   className={`
                     relative overflow-hidden flex-1 rounded-[14px] py-1.5 px-1.5 flex flex-col items-center gap-1
@@ -541,7 +541,7 @@ export default function CompendiumNavigator() {
                     />
                   </div>
                   <span className="text-[9px] font-black tracking-[0.10em] uppercase">
-                    {mechanic.title}
+                    {quality.title}
                   </span>
                 </button>
               );
@@ -549,17 +549,17 @@ export default function CompendiumNavigator() {
           </div>
 
           {/* Row 4: Quality description bar */}
-          {activeQualMechanic?.definition && (
+          {activeQualCard?.definition && (
             <div className={`rounded-[14px] px-4 py-2.5 ${c.descBar} flex items-start gap-3`}>
               <div className="w-6 h-6 rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0 mt-px">
                 <QualityTypeIcon type={activeQualType} className="w-3.5 h-3.5 text-white" />
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] font-black tracking-[0.14em] uppercase text-white/60 mb-0.5">
-                  {activeQualMechanic.title} · {activeQualType}
+                  {activeQualCard.title} · {activeQualType}
                 </p>
                 <p className="text-[12px] font-semibold leading-snug text-white/90">
-                  {activeQualMechanic.definition}
+                  {activeQualCard.definition}
                 </p>
               </div>
             </div>
@@ -730,7 +730,7 @@ export default function CompendiumNavigator() {
                   </div>
                   {/* State cards */}
                   <div className="flex flex-col gap-2.5 flex-1 min-h-0">
-                    {keys.map(({ key, label, mechanics }) => (
+                    {keys.map(({ key, label, qualities }) => (
                       <button
                         key={key}
                         onClick={() => desktopEnterState(key)}
@@ -763,7 +763,7 @@ export default function CompendiumNavigator() {
                           className="flex justify-around w-full pt-2.5 relative z-10 flex-shrink-0"
                           style={{ borderTop: '1px solid rgba(255,255,255,0.15)', gap: '4px' }}
                         >
-                          {mechanics.map((m, qi) => {
+                          {qualities.map((m, qi) => {
                             const qt = QUALITY_TYPES[qi] ?? 'restore';
                             return (
                               <div key={m.id} className="flex flex-col items-center gap-1 flex-1 min-w-0 overflow-hidden">
@@ -855,12 +855,12 @@ export default function CompendiumNavigator() {
 
                 {/* Quality row — taller stacked cards */}
                 <div className="flex gap-2 pb-3 flex-shrink-0">
-                  {(desktopStateGroup.mechanics ?? []).map((mechanic, qi) => {
-                    const qt = (mechanic.quality_type as QualityType) ?? QUALITY_TYPES[qi] ?? 'restore';
+                  {(desktopStateGroup.qualities ?? []).map((quality, qi) => {
+                    const qt = (quality.quality_type as QualityType) ?? QUALITY_TYPES[qi] ?? 'restore';
                     const isActive = qi === desktopQualIdx;
                     return (
                       <button
-                        key={mechanic.id}
+                        key={quality.id}
                         onClick={() => { setDesktopQualIdx(qi); setDesktopItemIdx(0); setDesktopTab('techniques'); }}
                         className={`relative overflow-hidden flex-1 rounded-xl px-3 py-4 flex flex-col items-center gap-1.5 text-center transition-all duration-200
                           ${isActive
@@ -872,11 +872,11 @@ export default function CompendiumNavigator() {
                         <div style={isActive ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.45))' } : undefined}>
                           <QualityTypeIcon type={qt} className="w-4 h-4 flex-shrink-0" />
                         </div>
-                        <p className="text-[12px] font-black uppercase tracking-wide leading-tight">{mechanic.title}</p>
+                        <p className="text-[12px] font-black uppercase tracking-wide leading-tight">{quality.title}</p>
                         <p className={`text-[9px] uppercase tracking-widest ${isActive ? 'opacity-65' : 'opacity-35'}`}>{qt}</p>
-                        {mechanic.definition && (
+                        {quality.definition && (
                           <p className={`text-[10px] leading-snug mt-1 ${isActive ? 'opacity-80' : 'opacity-50'}`}>
-                            {mechanic.definition}
+                            {quality.definition}
                           </p>
                         )}
                       </button>

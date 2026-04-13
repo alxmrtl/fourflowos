@@ -1,10 +1,10 @@
 'use client';
 
-import MechanicCard from './MechanicCard';
+import QualityCard from './QualityCard';
 import type { QueueItem, Quality } from '@/types/training';
 
 interface SessionResult {
-  mechanic_id: string;
+  quality_id: string;
   quality: Quality | 'studied';
   title: string;
 }
@@ -90,7 +90,7 @@ export default function CardSession({
               const key = String(r.quality);
               const style = QUALITY_LABELS[key] ?? QUALITY_LABELS['1'];
               return (
-                <div key={r.mechanic_id} className="flex items-center gap-2 text-sm">
+                <div key={r.quality_id} className="flex items-center gap-2 text-sm">
                   <span className={`font-bold ${style.color}`}>{style.icon}</span>
                   <span className="text-neutral truncate">{r.title}</span>
                 </div>
@@ -112,7 +112,7 @@ export default function CardSession({
   if (!currentCard) return null;
 
   return (
-    <MechanicCard
+    <QualityCard
       item={currentCard}
       cardNumber={currentIndex + 1}
       totalCards={queue.length}

@@ -1,4 +1,4 @@
-import type { Quality, MechanicReview } from '@/types/training';
+import type { Quality, QualityReview } from '@/types/training';
 
 /**
  * SM-2 spaced repetition algorithm.
@@ -14,9 +14,9 @@ import type { Quality, MechanicReview } from '@/types/training';
  * UI mapping: Missed → 1 | Got it → 3 | Nailed it → 5
  */
 export function sm2Update(
-  card: Pick<MechanicReview, 'ease_factor' | 'interval_days' | 'repetitions'>,
+  card: Pick<QualityReview, 'ease_factor' | 'interval_days' | 'repetitions'>,
   quality: Quality
-): Pick<MechanicReview, 'ease_factor' | 'interval_days' | 'repetitions' | 'next_review_at' | 'last_quality'> {
+): Pick<QualityReview, 'ease_factor' | 'interval_days' | 'repetitions' | 'next_review_at' | 'last_quality'> {
   let { ease_factor, interval_days, repetitions } = card;
 
   if (quality >= 3) {

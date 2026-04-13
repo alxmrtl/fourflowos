@@ -1,6 +1,6 @@
 /**
  * Shared markdown renderer for FourFlow compendium content.
- * Used across: Your Practice (CompendiumNavigator), Train (MechanicCard), and synced to FlowStation.
+ * Used across: Your Practice (CompendiumNavigator), Train (QualityCard), and synced to FlowStation.
  *
  * Canonical note format supported:
  *   Techniques: opening blockquote → ## Mechanism → ## Protocol → ## When to Use → ## Key Insight → ## Related → ## Recall

@@ -108,12 +108,12 @@ export default function ProgressGrid({ initialStats }: ProgressGridProps) {
       {expanded && (
         <div className="space-y-6 mt-4">
           {pillars.map(pillar => {
-            const mechanicsForPillar = stats.mechanics.filter(m => m.pillar === pillar);
+            const qualitiesForPillar = stats.qualities.filter(m => m.pillar === pillar);
             const c = PILLAR_COLORS[pillar];
 
             // Group by flow_key
-            const byKey: Record<string, typeof mechanicsForPillar> = {};
-            for (const m of mechanicsForPillar) {
+            const byKey: Record<string, typeof qualitiesForPillar> = {};
+            for (const m of qualitiesForPillar) {
               if (!byKey[m.flow_key]) byKey[m.flow_key] = [];
               byKey[m.flow_key].push(m);
             }
@@ -128,13 +128,13 @@ export default function ProgressGrid({ initialStats }: ProgressGridProps) {
                 </div>
 
                 <div className="space-y-3">
-                  {Object.entries(byKey).map(([key, mechanics]) => {
+                  {Object.entries(byKey).map(([key, qualities]) => {
                     const keyLabel = key.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
                     return (
                       <div key={key}>
                         <div className="text-xs text-neutral-light mb-1.5">{keyLabel}</div>
                         <div className="flex flex-wrap gap-1.5">
-                          {mechanics.map(m => (
+                          {qualities.map(m => (
                             <div
                               key={m.id}
                               title={`${m.title}\n${m.mastery_level} · ${m.repetitions} reps · ${m.interval_days}d interval`}

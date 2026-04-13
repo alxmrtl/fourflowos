@@ -1,9 +1,9 @@
 export type Pillar = 'self' | 'space' | 'story' | 'spirit';
 export type Quality = 0 | 1 | 2 | 3 | 4 | 5;
-export type CardType = 'mechanic' | 'quality' | 'technique' | 'concept';
+export type CardType = 'quality' | 'technique' | 'concept';
 export type CardPhase = 'study' | 'recall';
 
-export interface Mechanic {
+export interface CompendiumCard {
   id: string;
   title: string;
   pillar: Pillar;
@@ -14,17 +14,17 @@ export interface Mechanic {
   recall_md: string | null;
   enrichment_score: number;
   techniques_count: number;
-  related_mechanics: string[];
+  related_qualities: string[];
   card_type: CardType;
-  parent_mechanic_id: string | null;
+  parent_quality_id: string | null;
   content_hash: string | null;
   updated_at: string;
 }
 
-export interface MechanicReview {
+export interface QualityReview {
   id: string;
   user_id: string;
-  mechanic_id: string;
+  quality_id: string;
   ease_factor: number;
   interval_days: number;
   repetitions: number;
@@ -36,19 +36,19 @@ export interface MechanicReview {
 }
 
 export interface QueueItem {
-  mechanic: Mechanic;
-  review: MechanicReview | null;
+  card: CompendiumCard;
+  review: QualityReview | null;
   is_new: boolean;
   content_updated: boolean;
   /** Linked technique/concept cards for study mode */
-  children?: Mechanic[];
+  children?: CompendiumCard[];
 }
 
 export interface QueueStats {
   due_count: number;
   new_count: number;
   total_introduced: number;
-  total_mechanics: number;
+  total_qualities: number;
 }
 
 export interface QueueResponse {
@@ -57,7 +57,7 @@ export interface QueueResponse {
 }
 
 export interface ReviewUpdate {
-  mechanic_id: string;
+  quality_id: string;
   quality: Quality;
   ease_factor: number;
   interval_days: number;
@@ -88,7 +88,7 @@ export interface MasteryStats {
   mature: number;
   studying: number;
   by_pillar: Record<Pillar, { total: number; introduced: number; mature: number }>;
-  mechanics: Array<{
+  qualities: Array<{
     id: string;
     title: string;
     pillar: Pillar;
@@ -102,7 +102,7 @@ export interface MasteryStats {
     keywords: string[];
     card_type: CardType;
     quality_type: string | null;
-    parent_mechanic_id: string | null;
+    parent_quality_id: string | null;
     techniques_count: number;
     has_content: boolean;
   }>;
@@ -110,7 +110,7 @@ export interface MasteryStats {
 
 /** SM-2 mastery classification */
 export function getMasteryLevel(
-  review: Pick<MechanicReview, 'repetitions' | 'interval_days'> | null
+  review: Pick<QualityReview, 'repetitions' | 'interval_days'> | null
 ): 'unseen' | 'learning' | 'young' | 'mature' {
   if (!review) return 'unseen';
   if (review.repetitions < 3 || review.interval_days <= 6) return 'learning';

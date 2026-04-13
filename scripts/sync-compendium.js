@@ -2,7 +2,7 @@
 /**
  * sync-compendium.js
  *
- * Reads all mechanic markdown files from compendium/framework/,
+ * Reads all quality/technique/concept markdown files from compendium/framework/,
  * parses YAML frontmatter + body, and upserts into the Supabase `mechanics` table.
  *
  * Run from the website directory:
@@ -95,24 +95,24 @@ function parseFrontmatter(content) {
 }
 
 function estimateScore(body) {
-  // Count named H3 headings (actual technique entries, not empty lines)
-  const h3Count = (body.match(/^### \S/gm) || []).length;
+  // New template: ## What it is · ## Science · ## Techniques · ## Recall
+  const hasScience = /^## Science\b/m.test(body);
+  const hasRecall = /^## Recall\b/m.test(body);
+  const hasTechniquesSection = /^## Techniques\b/m.test(body);
 
-  // Has real book sources: a table row with an actual book slug (not just | [[]] | placeholder)
-  const bookSection = body.match(/## Book Sources\n([\s\S]*?)(?=\n##|$)/);
-  const hasBookSources = bookSection
-    ? /\|\s*\[\[\s*[^\]]{2,}\s*\]\]/.test(bookSection[1])
-    : false;
+  // Science section has real content (not just a placeholder)
+  const scienceSection = body.match(/## Science\n\n?([\s\S]*?)(?=\n##|$)/);
+  const scienceContent = scienceSection ? scienceSection[1].replace(/<!--[\s\S]*?-->/g, '').trim() : '';
+  const hasRichScience = scienceContent.length > 120;
 
-  // Has real "How It Enables Flow" content (not just HTML comment placeholder)
-  const flowSection = body.match(/## How It Enables Flow\n\n?([\s\S]*?)(?=\n##|$)/);
-  const flowContent = flowSection ? flowSection[1].replace(/<!--[\s\S]*?-->/g, '').trim() : '';
-  const hasFlowContent = flowContent.length > 80;
+  // Techniques section links out (wikilinks to technique files)
+  const techSection = body.match(/## Techniques\n\n?([\s\S]*?)(?=\n##|$)/);
+  const techLinks = techSection ? (techSection[1].match(/\[\[/g) || []).length : 0;
 
-  if (h3Count >= 3 && hasBookSources) return 5;
-  if (h3Count >= 1 && hasBookSources) return 4;
-  if (h3Count >= 1) return 3;
-  if (hasFlowContent) return 2;
+  if (hasRichScience && hasRecall && techLinks >= 3) return 5;
+  if (hasRichScience && hasRecall) return 4;
+  if (hasScience && hasTechniquesSection && hasRecall) return 3;
+  if (hasScience || hasTechniquesSection) return 2;
   return 1;
 }
 
@@ -121,8 +121,8 @@ function extractRecallMd(body) {
   return match ? match[1].trim() : null;
 }
 
-function extractRelatedMechanics(body) {
-  const section = body.match(/## Related Mechanics\n([\s\S]*?)(?=\n##|$)/);
+function extractRelatedQualities(body) {
+  const section = body.match(/## Related Qualities\n([\s\S]*?)(?=\n##|$)/);
   if (!section) return [];
   const matches = [...section[1].matchAll(/\[\[([^\]]+)\]\]/g)];
   return matches.map(m => m[1]);
@@ -139,8 +139,8 @@ function computeContentHash(content) {
 }
 
 function extractParentQuality(frontmatter) {
-  // Techniques have: quality: "[[slug]]"  (also supports legacy mechanic: field)
-  const raw = frontmatter.quality || frontmatter.mechanic;
+  // Techniques have: quality: "[[slug]]"
+  const raw = frontmatter.quality;
   if (!raw) return null;
   const match = String(raw).match(/\[\[([^\]]+)\]\]/);
   return match ? match[1] : null;
@@ -150,12 +150,11 @@ function processMarkdownFile({ filePath, content, pillar, flowKey }) {
   const { frontmatter, body } = parseFrontmatter(content);
   const tags = Array.isArray(frontmatter.tags) ? frontmatter.tags : [];
   const isQuality = tags.includes('type/quality');
-  const isMechanic = tags.includes('type/mechanic') || isQuality;
   const isTechnique = tags.includes('type/technique');
   const isConcept = tags.includes('type/concept');
-  if (!isMechanic && !isTechnique && !isConcept) return null;
+  if (!isQuality && !isTechnique && !isConcept) return null;
 
-  const cardType = isQuality ? 'quality' : isMechanic ? 'mechanic' : isTechnique ? 'technique' : 'concept';
+  const cardType = isQuality ? 'quality' : isTechnique ? 'technique' : 'concept';
 
   const file = path.basename(filePath);
   const id = file.replace('.md', '');
@@ -173,25 +172,25 @@ function processMarkdownFile({ filePath, content, pillar, flowKey }) {
     definition,
     content_md: content,
     recall_md: extractRecallMd(body),
-    enrichment_score: isMechanic ? estimateScore(body) : null,
-    techniques_count: isMechanic ? countTechniques(body) : null,
-    related_mechanics: extractRelatedMechanics(body),
+    enrichment_score: isQuality ? estimateScore(body) : null,
+    techniques_count: isQuality ? countTechniques(body) : null,
+    related_qualities: extractRelatedQualities(body),
     card_type: cardType,
     quality_type: qualityType,
-    parent_mechanic_id: (isTechnique || isConcept) ? extractParentQuality(frontmatter) : null,
+    parent_quality_id: (isTechnique || isConcept) ? extractParentQuality(frontmatter) : null,
     content_hash: computeContentHash(content),
     updated_at: new Date().toISOString(),
   };
 }
 
-function getMechanicFiles() {
+function getQualityFiles() {
   if (!fs.existsSync(COMPENDIUM_PATH)) {
     console.error(`\n❌ Compendium path not found: ${COMPENDIUM_PATH}`);
     console.error('   Run this script from within the FourFlowOS repo.\n');
     process.exit(1);
   }
 
-  const mechanics = [];
+  const cards = [];
 
   const pillarDirs = fs.readdirSync(COMPENDIUM_PATH).filter(
     d => PILLAR_MAP[d] && fs.statSync(path.join(COMPENDIUM_PATH, d)).isDirectory()
@@ -209,7 +208,7 @@ function getMechanicFiles() {
       const flowKey = keyDir.toLowerCase();
       const keyPath = path.join(pillarPath, keyDir);
 
-      // Mechanic files at key level (exclude key-level overview)
+      // Quality files at key level (exclude key-level overview)
       const keyFiles = fs.readdirSync(keyPath).filter(
         f => f.endsWith('.md') && f !== `${keyDir}.md`
       );
@@ -218,7 +217,7 @@ function getMechanicFiles() {
         const filePath = path.join(keyPath, file);
         const content = fs.readFileSync(filePath, 'utf8');
         const row = processMarkdownFile({ filePath, content, pillar, flowKey });
-        if (row) mechanics.push(row);
+        if (row) cards.push(row);
       }
 
       // Atomic technique notes in _techniques/ subfolder
@@ -229,7 +228,7 @@ function getMechanicFiles() {
           const filePath = path.join(techniquesDir, file);
           const content = fs.readFileSync(filePath, 'utf8');
           const row = processMarkdownFile({ filePath, content, pillar, flowKey });
-          if (row) mechanics.push(row);
+          if (row) cards.push(row);
         }
       }
 
@@ -241,13 +240,13 @@ function getMechanicFiles() {
           const filePath = path.join(conceptsDir, file);
           const content = fs.readFileSync(filePath, 'utf8');
           const row = processMarkdownFile({ filePath, content, pillar, flowKey });
-          if (row) mechanics.push(row);
+          if (row) cards.push(row);
         }
       }
     }
   }
 
-  return mechanics;
+  return cards;
 }
 
 // ─── Sync ────────────────────────────────────────────────────────────────────
@@ -257,25 +256,23 @@ async function sync() {
   console.log(`Compendium: ${COMPENDIUM_PATH}`);
   console.log(`Supabase:   ${SUPABASE_URL}\n`);
 
-  const mechanics = getMechanicFiles();
-  console.log(`Found ${mechanics.length} cards\n`);
+  const cards = getQualityFiles();
+  console.log(`Found ${cards.length} cards\n`);
 
-  if (mechanics.length === 0) {
+  if (cards.length === 0) {
     console.error('No cards found — check compendium path and file structure.');
     process.exit(1);
   }
 
   // Breakdown by type
-  const qualityRows = mechanics.filter(m => m.card_type === 'quality');
-  const mechanicRows = mechanics.filter(m => m.card_type === 'mechanic');
-  const techniqueRows = mechanics.filter(m => m.card_type === 'technique');
-  const conceptRows = mechanics.filter(m => m.card_type === 'concept');
-  console.log(`  ${qualityRows.length} qualities, ${mechanicRows.length} legacy mechanics, ${techniqueRows.length} techniques, ${conceptRows.length} concepts\n`);
+  const qualityRows = cards.filter(m => m.card_type === 'quality');
+  const techniqueRows = cards.filter(m => m.card_type === 'technique');
+  const conceptRows = cards.filter(m => m.card_type === 'concept');
+  console.log(`  ${qualityRows.length} qualities, ${techniqueRows.length} techniques, ${conceptRows.length} concepts\n`);
 
-  // Score summary (qualities + legacy mechanics)
-  const scorableRows = [...qualityRows, ...mechanicRows];
+  // Score summary (qualities only)
   const scores = {};
-  for (const m of scorableRows) {
+  for (const m of qualityRows) {
     scores[m.enrichment_score] = (scores[m.enrichment_score] || 0) + 1;
   }
   const scoreStr = Object.entries(scores)
@@ -288,8 +285,8 @@ async function sync() {
   const BATCH = 20;
   let total = 0;
 
-  for (let i = 0; i < mechanics.length; i += BATCH) {
-    const batch = mechanics.slice(i, i + BATCH);
+  for (let i = 0; i < cards.length; i += BATCH) {
+    const batch = cards.slice(i, i + BATCH);
     const { error } = await supabase
       .from('mechanics')
       .upsert(batch, { onConflict: 'id' });
@@ -300,11 +297,11 @@ async function sync() {
     }
 
     total += batch.length;
-    process.stdout.write(`Upserting... ${total}/${mechanics.length}\r`);
+    process.stdout.write(`Upserting... ${total}/${cards.length}\r`);
   }
 
   // Prune orphaned rows (rows in DB that no longer have a corresponding file)
-  const scannedIds = new Set(mechanics.map(m => m.id));
+  const scannedIds = new Set(cards.map(m => m.id));
 
   const { data: allDbRows, error: fetchErr } = await supabase
     .from('mechanics')
@@ -331,8 +328,8 @@ async function sync() {
     }
   }
 
-  console.log(`✅ Sync complete — ${mechanics.length} cards in Supabase`);
-  console.log(`   (${qualityRows.length} qualities, ${mechanicRows.length} legacy mechanics, ${techniqueRows.length} techniques, ${conceptRows.length} concepts)\n`);
+  console.log(`✅ Sync complete — ${cards.length} cards in Supabase`);
+  console.log(`   (${qualityRows.length} qualities, ${techniqueRows.length} techniques, ${conceptRows.length} concepts)\n`);
 }
 
 sync().catch(err => {

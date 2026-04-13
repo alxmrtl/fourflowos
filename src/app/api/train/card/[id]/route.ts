@@ -23,7 +23,7 @@ export async function GET(
   );
   const { data: { user } } = await authClient.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 404 });
   }
 
   const { id } = await params;
@@ -31,7 +31,7 @@ export async function GET(
 
   const { data, error } = await db
     .from('mechanics')
-    .select('id, title, pillar, flow_key, keywords, definition, content_md, recall_md, enrichment_score, techniques_count, related_mechanics, card_type, parent_mechanic_id, updated_at')
+    .select('id, title, pillar, flow_key, keywords, definition, content_md, recall_md, enrichment_score, techniques_count, related_qualities, card_type, parent_quality_id, updated_at')
     .eq('id', id)
     .single();
 

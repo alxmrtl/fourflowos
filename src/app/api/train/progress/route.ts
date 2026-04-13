@@ -50,23 +50,23 @@ export async function GET() {
 
   const db = getSupabase();
 
-  const [{ data: mechanics }, { data: reviews }] = await Promise.all([
-    db.from('mechanics').select('id, title, pillar, flow_key, enrichment_score, definition, keywords, card_type, quality_type, parent_mechanic_id, techniques_count, content_md'),
-    db.from('mechanic_reviews').select('mechanic_id, repetitions, interval_days, next_review_at, phase').eq('user_id', user.id),
+  const [{ data: cards }, { data: reviews }] = await Promise.all([
+    db.from('mechanics').select('id, title, pillar, flow_key, enrichment_score, definition, keywords, card_type, quality_type, parent_quality_id, techniques_count, content_md'),
+    db.from('mechanic_reviews').select('quality_id, repetitions, interval_days, next_review_at, phase').eq('user_id', user.id),
   ]);
 
-  const reviewMap = new Map((reviews ?? []).map(r => [r.mechanic_id, r]));
+  const reviewMap = new Map((reviews ?? []).map(r => [r.quality_id, r]));
 
   const pillars: Pillar[] = ['self', 'space', 'story', 'spirit'];
   const by_pillar = Object.fromEntries(
     pillars.map(p => [p, { total: 0, introduced: 0, mature: 0 }])
   ) as Record<Pillar, { total: number; introduced: number; mature: number }>;
 
-  const mechanicDetails: MasteryStats['mechanics'] = [];
+  const qualityDetails: MasteryStats['qualities'] = [];
   const counts = { unseen: 0, learning: 0, young: 0, mature: 0 };
   let studyingCount = 0;
 
-  for (const m of mechanics ?? []) {
+  for (const m of cards ?? []) {
     const review = reviewMap.get(m.id) ?? null;
     const level = getMasteryLevel(review);
     counts[level]++;
@@ -76,7 +76,7 @@ export async function GET() {
     if (review) by_pillar[m.pillar as Pillar].introduced++;
     if (level === 'mature') by_pillar[m.pillar as Pillar].mature++;
 
-    mechanicDetails.push({
+    qualityDetails.push({
       id: m.id,
       title: m.title,
       pillar: m.pillar as Pillar,
@@ -88,20 +88,20 @@ export async function GET() {
       enrichment_score: m.enrichment_score ?? 0,
       definition: m.definition || extractBlockquoteDefinition(m.content_md),
       keywords: m.keywords ?? [],
-      card_type: m.card_type ?? 'mechanic',
+      card_type: m.card_type ?? 'quality',
       quality_type: m.quality_type ?? null,
-      parent_mechanic_id: m.parent_mechanic_id ?? null,
+      parent_quality_id: m.parent_quality_id ?? null,
       techniques_count: m.techniques_count ?? 0,
       has_content: hasSubstantiveContent(m.content_md),
     });
   }
 
   const stats: MasteryStats = {
-    total: mechanics?.length ?? 0,
+    total: cards?.length ?? 0,
     ...counts,
     studying: studyingCount,
     by_pillar,
-    mechanics: mechanicDetails,
+    qualities: qualityDetails,
   };
 
   return NextResponse.json(stats);

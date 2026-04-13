@@ -59,16 +59,16 @@ The output isn't a score. It's a map: here's where the signal is breaking down, 
   'flowcompendium': {
     id: 'flowcompendium',
     name: 'FlowCompendium',
-    tagline: 'Browse 191 flow protocols.',
-    summary: 'The full library of flow techniques, concepts, and mechanics',
-    description: 'Every technique, concept, and quality in the FourFlow framework — organized, searchable, and linkable to your profile. 62 quality mechanics, 85 actionable techniques, 44 scientific concepts. The Compendium is the reference layer behind everything else.',
-    fullDescription: `The complete FourFlow knowledge base — 191 cards across three types:
+    tagline: 'Browse the full flow library.',
+    summary: 'The full library of flow qualities, techniques, and concepts',
+    description: 'Every quality, technique, and concept in the FourFlow framework — organized, searchable, and linkable to your profile. 36 qualities, 117 actionable techniques, 108 scientific concepts. The Compendium is the reference layer behind everything else.',
+    fullDescription: `The complete FourFlow knowledge base — three card types:
 
-**Qualities** (62) — the named conditions that compose each Flow Key. Each one has a Restore, Maintain, and Concentrate mode.
+**Qualities** (36) — the named conditions that compose each Flow State. Each one has a Restore, Maintain, and Concentrate mode.
 
-**Techniques** (85) — atomic, numbered protocols. Concrete enough to follow without reading the source. Each technique activates a specific quality.
+**Techniques** (117) — atomic, numbered protocols. Concrete enough to follow without reading the source. Each technique activates a specific quality.
 
-**Concepts** (44) — the science and philosophy behind why each quality matters. Challenge-Skill Ratio, Window of Tolerance, Transient Hypofrontality, and more.
+**Concepts** (108) — the science and philosophy behind why each quality matters. Challenge-Skill Ratio, Window of Tolerance, Transient Hypofrontality, and more.
 
 Use spaced repetition to build fluency, or browse the Signal Grid to see your mastery at a glance.`,
     icon: '/assets/LOGOS/OPEN MIND.png',
@@ -77,7 +77,7 @@ Use spaced repetition to build fluency, or browse the Signal Grid to see your ma
     webUrl: '/me?tool=compendium',
     labToolId: 'compendium',
     features: [
-      { title: 'Signal Grid', description: 'Visual map of all 191 cards with mastery dots and enrichment intensity.' },
+      { title: 'Signal Grid', description: 'Visual map of all 261 cards with mastery dots and enrichment intensity.' },
       { title: 'Spaced Repetition', description: 'SM-2 algorithm surfaces the right cards at the right time.' },
       { title: 'Three Card Types', description: 'Qualities, Techniques, and Concepts — each with a distinct role.' },
       { title: 'Pillar Filtering', description: 'Browse by SELF, SPACE, STORY, or SPIRIT to target specific areas.' },
@@ -86,7 +86,7 @@ Use spaced repetition to build fluency, or browse the Signal Grid to see your ma
     accentColor: '#5B84B1',
     relatedPillars: ['self', 'space', 'story', 'spirit'],
     inDevelopment: false,
-    what: 'The full FourFlow knowledge library — 191 techniques, concepts, and quality mechanics with spaced repetition.',
+    what: 'The full FourFlow knowledge library — 261 qualities, techniques, and concepts with spaced repetition.',
   },
   'flowbreath': {
     id: 'flowbreath',
