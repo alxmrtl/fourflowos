@@ -203,11 +203,11 @@ function ConceptIcon() {
 
 // ── Inline card content renderer ────────────────────────────────────
 
-function renderContentMd(md: string, dark = true): string {
-  return sharedRenderMarkdown(md, { dark, skipRecall: true });
+function renderContentMd(md: string, dark = true, headingClass?: string): string {
+  return sharedRenderMarkdown(md, { dark, skipRecall: true, skipFirstQuote: true, headingClass });
 }
 
-function InlineCardContent({ cardId, dark = true }: { cardId: string; dark?: boolean }) {
+function InlineCardContent({ cardId, dark = true, headingClass }: { cardId: string; dark?: boolean; headingClass?: string }) {
   const [content, setContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -234,7 +234,7 @@ function InlineCardContent({ cardId, dark = true }: { cardId: string; dark?: boo
   return (
     <div
       className="space-y-0.5 mt-1"
-      dangerouslySetInnerHTML={{ __html: renderContentMd(content, dark) }}
+      dangerouslySetInnerHTML={{ __html: renderContentMd(content, dark, headingClass) }}
     />
   );
 }
@@ -636,7 +636,7 @@ export default function CompendiumNavigator() {
                         </p>
                       )}
                       <div className="mt-4">
-                        <InlineCardContent cardId={currentItem.id} dark={false} />
+                        <InlineCardContent cardId={currentItem.id} dark={false} headingClass={c.label} />
                       </div>
                     </div>
                   )}
@@ -853,7 +853,7 @@ export default function CompendiumNavigator() {
                   </div>
                 </div>
 
-                {/* Quality row — horizontal */}
+                {/* Quality row — taller stacked cards */}
                 <div className="flex gap-2 pb-3 flex-shrink-0">
                   {(desktopStateGroup.mechanics ?? []).map((mechanic, qi) => {
                     const qt = (mechanic.quality_type as QualityType) ?? QUALITY_TYPES[qi] ?? 'restore';
@@ -862,7 +862,7 @@ export default function CompendiumNavigator() {
                       <button
                         key={mechanic.id}
                         onClick={() => { setDesktopQualIdx(qi); setDesktopItemIdx(0); setDesktopTab('techniques'); }}
-                        className={`relative overflow-hidden flex-1 rounded-xl px-3 py-2 flex items-center gap-2 text-left transition-all duration-200
+                        className={`relative overflow-hidden flex-1 rounded-xl px-3 py-4 flex flex-col items-center gap-1.5 text-center transition-all duration-200
                           ${isActive
                             ? `${dc.activeQualPill} shadow-md`
                             : 'bg-white/[0.04] text-white/40 hover:text-white/70 hover:bg-white/[0.07]'
@@ -870,17 +870,15 @@ export default function CompendiumNavigator() {
                       >
                         {isActive && <div className="absolute inset-0 bg-gradient-to-b from-white/[0.10] to-transparent pointer-events-none rounded-xl" />}
                         <div style={isActive ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.45))' } : undefined}>
-                          <QualityTypeIcon type={qt} className="w-3 h-3 flex-shrink-0" />
+                          <QualityTypeIcon type={qt} className="w-4 h-4 flex-shrink-0" />
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-black uppercase tracking-wide leading-tight truncate">{mechanic.title}</p>
-                          <p className={`text-[8px] uppercase tracking-widest mt-0.5 ${isActive ? 'opacity-60' : 'opacity-35'}`}>{qt}</p>
-                          {mechanic.definition && (
-                            <p className={`text-[9px] leading-snug mt-1 transition-opacity duration-200 ${isActive ? 'opacity-75' : 'opacity-0'}`}>
-                              {mechanic.definition}
-                            </p>
-                          )}
-                        </div>
+                        <p className="text-[12px] font-black uppercase tracking-wide leading-tight">{mechanic.title}</p>
+                        <p className={`text-[9px] uppercase tracking-widest ${isActive ? 'opacity-65' : 'opacity-35'}`}>{qt}</p>
+                        {mechanic.definition && (
+                          <p className={`text-[10px] leading-snug mt-1 ${isActive ? 'opacity-80' : 'opacity-50'}`}>
+                            {mechanic.definition}
+                          </p>
+                        )}
                       </button>
                     );
                   })}
@@ -954,7 +952,7 @@ export default function CompendiumNavigator() {
                             {desktopCurrentItem.definition}
                           </p>
                         )}
-                        <InlineCardContent cardId={desktopCurrentItem.id} dark={true} />
+                        <InlineCardContent cardId={desktopCurrentItem.id} dark={true} headingClass={dc.label} />
                       </div>
                     ) : desktopDqm ? (
                       <div>

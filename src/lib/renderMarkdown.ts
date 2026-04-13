@@ -22,6 +22,10 @@ export interface RenderOptions {
   dark?: boolean;
   /** Strip the ## Recall section (shown separately in training reps). Default: true. */
   skipRecall?: boolean;
+  /** Skip the opening hero blockquote (already shown as definition/subtitle). Default: false. */
+  skipFirstQuote?: boolean;
+  /** Tailwind class for H2 section headings (e.g. "text-self"). Falls back to t.head. */
+  headingClass?: string;
 }
 
 // ── HTML helpers ────────────────────────────────────────────────────────────
@@ -65,7 +69,7 @@ function makeTokens(dark: boolean) {
 
 export function renderMarkdown(md: string, opts: RenderOptions = {}): string {
   if (!md) return '';
-  const { dark = false, skipRecall = true } = opts;
+  const { dark = false, skipRecall = true, skipFirstQuote = false, headingClass } = opts;
   const t = makeTokens(dark);
 
   // Strip YAML frontmatter
@@ -153,8 +157,9 @@ export function renderMarkdown(md: string, opts: RenderOptions = {}): string {
 
       if (inRecall) continue;
 
+      const h2Class = headingClass ?? t.head;
       const cls = isH2
-        ? `text-[10px] font-black uppercase tracking-[0.18em] mt-5 mb-2 ${t.head}`
+        ? `text-[10px] font-black uppercase tracking-[0.18em] mt-5 mb-2 ${h2Class}`
         : `text-[9px] font-black uppercase tracking-[0.14em] mt-3.5 mb-1.5 ${t.head} opacity-80`;
       out.push(`<p class="${cls}">${esc(name)}</p>`);
       continue;
@@ -166,8 +171,13 @@ export function renderMarkdown(md: string, opts: RenderOptions = {}): string {
     if (line.startsWith('> ')) {
       flushAll();
       const bqText = line.slice(2);
-      const isHero = !firstQuoteSeen || inKeyInsight;
+      const isFirst = !firstQuoteSeen;
       if (!firstQuoteSeen) firstQuoteSeen = true;
+
+      // Skip the opening hero blockquote if caller already shows definition as subtitle
+      if (isFirst && skipFirstQuote) continue;
+
+      const isHero = isFirst || inKeyInsight;
 
       if (isHero) {
         out.push(
