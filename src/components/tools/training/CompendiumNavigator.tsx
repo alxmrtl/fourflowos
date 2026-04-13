@@ -198,8 +198,8 @@ function parseRecallSections(source: string | null | undefined): { hook: string;
   // If source contains a full ## Recall section, extract just that block first
   const recallBlock = source.match(/##\s+Recall\s*\n([\s\S]*?)(?:\n##|$)/);
   const text = recallBlock ? recallBlock[1] : source;
-  const hook = text.match(/\*\*Hook\*\*:\s*([^\n]+)/)?.[1]?.trim() ?? '';
-  const mechanism = text.match(/\*\*Mechanism\*\*:\s*([^\n]+)/)?.[1]?.trim() ?? '';
+  const hook = text.match(/\*\*Hook:?\*\*:?\s*([^\n]+)/)?.[1]?.trim() ?? '';
+  const mechanism = text.match(/\*\*Mechanism:?\*\*:?\s*([^\n]+)/)?.[1]?.trim() ?? '';
   return { hook, mechanism };
 }
 
