@@ -120,7 +120,6 @@ interface PillarGroup {
   keys: FlowKeyGroup[];
   totalQualities: number;
   totalTechniques: number;
-  totalConcepts: number;
 }
 
 // ── Key ordering ─────────────────────────────────────────────────────
@@ -190,17 +189,6 @@ function TechniqueIcon() {
   );
 }
 
-function ConceptIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="flex-shrink-0">
-      <circle cx="6" cy="6" r="1.5" fill="currentColor" />
-      <ellipse cx="6" cy="6" rx="5" ry="2.2" stroke="currentColor" strokeWidth="1" fill="none" />
-      <ellipse cx="6" cy="6" rx="5" ry="2.2" stroke="currentColor" strokeWidth="1" fill="none" transform="rotate(60 6 6)" />
-      <ellipse cx="6" cy="6" rx="5" ry="2.2" stroke="currentColor" strokeWidth="1" fill="none" transform="rotate(120 6 6)" />
-    </svg>
-  );
-}
-
 // ── Inline card content renderer ────────────────────────────────────
 
 function renderContentMd(md: string, dark = true, headingClass?: string): string {
@@ -249,14 +237,12 @@ export default function CompendiumNavigator() {
   const [desktopMode, setDesktopMode] = useState<'grid' | 'state'>('grid');
   const [desktopActiveStateIdx, setDesktopActiveStateIdx] = useState(0);
   const [desktopQualIdx, setDesktopQualIdx] = useState(0);
-  const [desktopTab, setDesktopTab] = useState<'techniques' | 'concepts'>('techniques');
   const [desktopItemIdx, setDesktopItemIdx] = useState(0);
 
   // Mobile navigation state
   const [activePillar, setActivePillar] = useState<Pillar>('self');
   const [activeStateIndex, setActiveStateIndex] = useState(0);
   const [activeQualIndex, setActiveQualIndex] = useState(0);
-  const [mobileTab, setMobileTab] = useState<'techniques' | 'concepts'>('techniques');
   const [mobileItemIndex, setMobileItemIndex] = useState(0);
 
   // Modal state (shared desktop + mobile)
@@ -283,7 +269,7 @@ export default function CompendiumNavigator() {
     return pillars.map(pillar => {
       const pillarItems = allItems.filter(m => m.pillar === pillar);
       const qualityCards = pillarItems.filter(m => m.card_type === 'quality');
-      const children = pillarItems.filter(m => m.card_type === 'technique' || m.card_type === 'concept');
+      const children = pillarItems.filter(m => m.card_type === 'technique');
 
       const childMap = new Map<string, CompendiumItem[]>();
       for (const c of children) {
@@ -312,10 +298,7 @@ export default function CompendiumNavigator() {
 
         const nested: NestedQuality[] = keyQualities.map(m => ({
           ...m,
-          children: (childMap.get(m.id) ?? []).sort((a, b) => {
-            if (a.card_type !== b.card_type) return a.card_type === 'technique' ? -1 : 1;
-            return a.title.localeCompare(b.title);
-          }),
+          children: (childMap.get(m.id) ?? []).sort((a, b) => a.title.localeCompare(b.title)),
         }));
 
         const orphans = orphansByKey.get(key) ?? [];
@@ -329,7 +312,6 @@ export default function CompendiumNavigator() {
         keys,
         totalQualities: qualityCards.length,
         totalTechniques: pillarItems.filter(m => m.card_type === 'technique').length,
-        totalConcepts: pillarItems.filter(m => m.card_type === 'concept').length,
       };
     });
   }, [stats]);
@@ -357,10 +339,8 @@ export default function CompendiumNavigator() {
 
   const mobileItems = useMemo(() => {
     if (!activeQualCard) return [];
-    return activeQualCard.children.filter(c =>
-      mobileTab === 'techniques' ? c.card_type === 'technique' : c.card_type === 'concept'
-    );
-  }, [activeQualCard, mobileTab]);
+    return activeQualCard.children.filter(c => c.card_type === 'technique');
+  }, [activeQualCard]);
 
   const clampedMobileItemIndex = Math.min(mobileItemIndex, Math.max(0, mobileItems.length - 1));
 
@@ -371,10 +351,8 @@ export default function CompendiumNavigator() {
   const desktopItems = useMemo(() => {
     const qm = allStates[desktopActiveStateIdx]?.qualities[desktopQualIdx];
     if (!qm) return [];
-    return qm.children.filter(c =>
-      desktopTab === 'techniques' ? c.card_type === 'technique' : c.card_type === 'concept'
-    );
-  }, [allStates, desktopActiveStateIdx, desktopQualIdx, desktopTab]);
+    return qm.children.filter(c => c.card_type === 'technique');
+  }, [allStates, desktopActiveStateIdx, desktopQualIdx]);
   const clampedDesktopItemIdx = Math.min(desktopItemIdx, Math.max(0, desktopItems.length - 1));
   const desktopCurrentItem = desktopItems[clampedDesktopItemIdx] ?? null;
   const desktopPrevLabel = allStates.length > 0
@@ -389,7 +367,6 @@ export default function CompendiumNavigator() {
     const idx = allStates.findIndex(s => s.key === stateKey);
     setDesktopActiveStateIdx(idx >= 0 ? idx : 0);
     setDesktopQualIdx(0);
-    setDesktopTab('techniques');
     setDesktopItemIdx(0);
     setDesktopMode('state');
   };
@@ -401,7 +378,6 @@ export default function CompendiumNavigator() {
     const nextIdx = (desktopActiveStateIdx + dir + allStates.length) % allStates.length;
     setDesktopActiveStateIdx(nextIdx);
     setDesktopQualIdx(0);
-    setDesktopTab('techniques');
     setDesktopItemIdx(0);
   };
 
@@ -410,25 +386,17 @@ export default function CompendiumNavigator() {
     setActivePillar(p);
     setActiveStateIndex(0);
     setActiveQualIndex(0);
-    setMobileTab('techniques');
     setMobileItemIndex(0);
   };
 
   const selectState = (i: number) => {
     setActiveStateIndex(i);
     setActiveQualIndex(0);
-    setMobileTab('techniques');
     setMobileItemIndex(0);
   };
 
   const selectQual = (i: number) => {
     setActiveQualIndex(i);
-    setMobileTab('techniques');
-    setMobileItemIndex(0);
-  };
-
-  const switchMobileTab = (tab: 'techniques' | 'concepts') => {
-    setMobileTab(tab);
     setMobileItemIndex(0);
   };
 
@@ -569,36 +537,9 @@ export default function CompendiumNavigator() {
         {/* ── Content card ── */}
         <div className="bg-[#F6F3EF] rounded-t-[28px] flex flex-col min-h-[48vh]">
 
-          {/* Tab toggle + counter */}
+          {/* Label + counter */}
           <div className="flex items-center justify-between px-4 pt-4 pb-3 flex-shrink-0">
-            <div className="flex bg-black/[0.08] rounded-xl p-[3px] gap-[2px]">
-              <button
-                onClick={() => switchMobileTab('techniques')}
-                className={`
-                  h-8 px-4 rounded-[10px] text-[10px] font-black tracking-[0.12em] uppercase
-                  transition-all duration-180
-                  ${mobileTab === 'techniques'
-                    ? 'bg-neutral-dark text-white shadow-md'
-                    : 'text-neutral/35 hover:text-neutral/60'
-                  }
-                `}
-              >
-                Techniques
-              </button>
-              <button
-                onClick={() => switchMobileTab('concepts')}
-                className={`
-                  h-8 px-4 rounded-[10px] text-[10px] font-black tracking-[0.12em] uppercase
-                  transition-all duration-180
-                  ${mobileTab === 'concepts'
-                    ? 'bg-neutral-dark text-white shadow-md'
-                    : 'text-neutral/35 hover:text-neutral/60'
-                  }
-                `}
-              >
-                Concepts
-              </button>
-            </div>
+            <p className="text-[10px] font-black tracking-[0.12em] uppercase text-neutral/40">Techniques</p>
             {mobileItems.length > 0 && (
               <span className="text-[10px] font-semibold text-neutral/30 bg-black/[0.06] px-3 py-1 rounded-full">
                 {clampedMobileItemIndex + 1} / {mobileItems.length}
@@ -611,7 +552,7 @@ export default function CompendiumNavigator() {
             {mobileItems.length === 0 ? (
               <div className="flex-1 flex items-center justify-center px-8 text-center">
                 <p className="text-sm text-neutral/40">
-                  No {mobileTab} for this quality yet.
+                  No techniques for this quality yet.
                 </p>
               </div>
             ) : (
@@ -861,7 +802,7 @@ export default function CompendiumNavigator() {
                     return (
                       <button
                         key={quality.id}
-                        onClick={() => { setDesktopQualIdx(qi); setDesktopItemIdx(0); setDesktopTab('techniques'); }}
+                        onClick={() => { setDesktopQualIdx(qi); setDesktopItemIdx(0); }}
                         className={`relative overflow-hidden flex-1 rounded-xl px-3 py-4 flex flex-col items-center gap-1.5 text-center transition-all duration-200
                           ${isActive
                             ? `${dc.activeQualPill} shadow-md`
@@ -889,26 +830,12 @@ export default function CompendiumNavigator() {
 
                   {/* Left panel — item list */}
                   <div className="w-[220px] flex-shrink-0 flex flex-col gap-2 min-h-0">
-                    {/* Tab */}
-                    <div className="flex bg-black/[0.12] rounded-xl p-[3px] gap-[2px] flex-shrink-0">
-                      {(['techniques', 'concepts'] as const).map(tab => (
-                        <button
-                          key={tab}
-                          onClick={() => { setDesktopTab(tab); setDesktopItemIdx(0); }}
-                          className={`flex-1 h-7 rounded-[9px] text-[9px] font-black tracking-[0.12em] uppercase transition-all duration-200
-                            ${desktopTab === tab
-                              ? 'bg-neutral-dark text-white shadow-md'
-                              : 'text-white/25 hover:text-white/50'
-                            }`}
-                        >
-                          {tab}
-                        </button>
-                      ))}
-                    </div>
+                    {/* Label */}
+                    <p className="text-[9px] font-black tracking-[0.12em] uppercase text-white/40 px-1 pb-1 flex-shrink-0">Techniques</p>
                     {/* Item list */}
                     <div className="flex-1 overflow-y-auto space-y-1 pr-0.5 min-h-0">
                       {desktopItems.length === 0 ? (
-                        <p className="text-[11px] text-white/25 text-center py-6">No {desktopTab} yet</p>
+                        <p className="text-[11px] text-white/25 text-center py-6">No techniques yet</p>
                       ) : desktopItems.map((item, ii) => {
                         const isItemActive = ii === clampedDesktopItemIdx;
                         return (
@@ -922,7 +849,7 @@ export default function CompendiumNavigator() {
                               }`}
                           >
                             <span className={`flex-shrink-0 ${isItemActive ? dc.label : 'text-white/30'}`}>
-                              {item.card_type === 'technique' ? <TechniqueIcon /> : <ConceptIcon />}
+                              <TechniqueIcon />
                             </span>
                             <span className={`text-[11px] font-medium leading-snug flex-1 truncate ${isItemActive ? 'text-white/90' : 'text-white/40'}`}>
                               {item.title}
@@ -971,7 +898,7 @@ export default function CompendiumNavigator() {
                           </p>
                         )}
                         <p className="text-[10px] text-white/25">
-                          Select a {desktopTab === 'techniques' ? 'technique' : 'concept'} from the list to explore
+                          Select a technique from the list to explore
                         </p>
                       </div>
                     ) : null}

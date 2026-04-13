@@ -151,10 +151,10 @@ function processMarkdownFile({ filePath, content, pillar, flowKey }) {
   const tags = Array.isArray(frontmatter.tags) ? frontmatter.tags : [];
   const isQuality = tags.includes('type/quality');
   const isTechnique = tags.includes('type/technique');
-  const isConcept = tags.includes('type/concept');
-  if (!isQuality && !isTechnique && !isConcept) return null;
+  // Concepts are archived — skip them
+  if (!isQuality && !isTechnique) return null;
 
-  const cardType = isQuality ? 'quality' : isTechnique ? 'technique' : 'concept';
+  const cardType = isQuality ? 'quality' : 'technique';
 
   const file = path.basename(filePath);
   const id = file.replace('.md', '');
@@ -177,7 +177,7 @@ function processMarkdownFile({ filePath, content, pillar, flowKey }) {
     related_qualities: extractRelatedQualities(body),
     card_type: cardType,
     quality_type: qualityType,
-    parent_quality_id: (isTechnique || isConcept) ? extractParentQuality(frontmatter) : null,
+    parent_quality_id: isTechnique ? extractParentQuality(frontmatter) : null,
     content_hash: computeContentHash(content),
     updated_at: new Date().toISOString(),
   };
@@ -232,17 +232,7 @@ function getQualityFiles() {
         }
       }
 
-      // Concept notes in _concepts/ subfolder
-      const conceptsDir = path.join(keyPath, '_concepts');
-      if (fs.existsSync(conceptsDir) && fs.statSync(conceptsDir).isDirectory()) {
-        const conceptFiles = fs.readdirSync(conceptsDir).filter(f => f.endsWith('.md'));
-        for (const file of conceptFiles) {
-          const filePath = path.join(conceptsDir, file);
-          const content = fs.readFileSync(filePath, 'utf8');
-          const row = processMarkdownFile({ filePath, content, pillar, flowKey });
-          if (row) cards.push(row);
-        }
-      }
+      // _concepts/ subfolders are archived — not synced
     }
   }
 
@@ -267,8 +257,7 @@ async function sync() {
   // Breakdown by type
   const qualityRows = cards.filter(m => m.card_type === 'quality');
   const techniqueRows = cards.filter(m => m.card_type === 'technique');
-  const conceptRows = cards.filter(m => m.card_type === 'concept');
-  console.log(`  ${qualityRows.length} qualities, ${techniqueRows.length} techniques, ${conceptRows.length} concepts\n`);
+  console.log(`  ${qualityRows.length} qualities, ${techniqueRows.length} techniques\n`);
 
   // Score summary (qualities only)
   const scores = {};
@@ -329,7 +318,7 @@ async function sync() {
   }
 
   console.log(`✅ Sync complete — ${cards.length} cards in Supabase`);
-  console.log(`   (${qualityRows.length} qualities, ${techniqueRows.length} techniques, ${conceptRows.length} concepts)\n`);
+  console.log(`   (${qualityRows.length} qualities, ${techniqueRows.length} techniques)\n`);
 }
 
 sync().catch(err => {

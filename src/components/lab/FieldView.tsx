@@ -25,7 +25,7 @@ export const FIELDS: FieldConfig[] = [
     label: 'CONSUME',
     tools: [
       { id: 'flowread', label: 'FlowRead', description: 'Speed reading — paste text or a YouTube URL', color: STEEL },
-      { id: 'compendium', label: 'Compendium', description: 'Browse 191 flow protocols and concepts', color: AMETHYST },
+      { id: 'compendium', label: 'Compendium', description: 'Browse 153 flow qualities and techniques', color: AMETHYST },
     ],
   },
   {

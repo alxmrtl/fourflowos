@@ -28,10 +28,10 @@ function renderRecall(md: string): string {
   return renderRecallMd(md, { dark: false });
 }
 
-/** Render a child card (technique/concept) as a collapsible section */
+/** Render a child technique card as a collapsible section */
 function ChildCard({ child }: { child: CompendiumCard }) {
   const [open, setOpen] = useState(false);
-  const typeLabel = child.card_type === 'technique' ? 'Technique' : 'Concept';
+  const typeLabel = 'Technique';
 
   return (
     <div className="border border-neutral/10 rounded-lg overflow-hidden">
@@ -152,7 +152,7 @@ export default function QualityCard({ item, cardNumber, totalCards, onRate, onMa
             {children && children.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-light mt-4">
-                  Related Techniques & Concepts
+                  Related Techniques
                 </h3>
                 {children.map(child => (
                   <ChildCard key={child.id} child={child} />

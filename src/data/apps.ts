@@ -60,15 +60,13 @@ The output isn't a score. It's a map: here's where the signal is breaking down, 
     id: 'flowcompendium',
     name: 'FlowCompendium',
     tagline: 'Browse the full flow library.',
-    summary: 'The full library of flow qualities, techniques, and concepts',
-    description: 'Every quality, technique, and concept in the FourFlow framework — organized, searchable, and linkable to your profile. 36 qualities, 117 actionable techniques, 108 scientific concepts. The Compendium is the reference layer behind everything else.',
-    fullDescription: `The complete FourFlow knowledge base — three card types:
+    summary: 'The full library of flow qualities and techniques',
+    description: 'Every quality and technique in the FourFlow framework — organized, searchable, and linkable to your profile. 36 qualities, 117 actionable techniques. The Compendium is the reference layer behind everything else.',
+    fullDescription: `The complete FourFlow knowledge base — two card types:
 
 **Qualities** (36) — the named conditions that compose each Flow State. Each one has a Restore, Maintain, and Concentrate mode.
 
 **Techniques** (117) — atomic, numbered protocols. Concrete enough to follow without reading the source. Each technique activates a specific quality.
-
-**Concepts** (108) — the science and philosophy behind why each quality matters. Challenge-Skill Ratio, Window of Tolerance, Transient Hypofrontality, and more.
 
 Use spaced repetition to build fluency, or browse the Signal Grid to see your mastery at a glance.`,
     icon: '/assets/LOGOS/OPEN MIND.png',
@@ -79,14 +77,14 @@ Use spaced repetition to build fluency, or browse the Signal Grid to see your ma
     features: [
       { title: 'Signal Grid', description: 'Visual map of all 261 cards with mastery dots and enrichment intensity.' },
       { title: 'Spaced Repetition', description: 'SM-2 algorithm surfaces the right cards at the right time.' },
-      { title: 'Three Card Types', description: 'Qualities, Techniques, and Concepts — each with a distinct role.' },
+      { title: 'Two Card Types', description: 'Qualities and Techniques — each with a distinct role in the framework.' },
       { title: 'Pillar Filtering', description: 'Browse by SELF, SPACE, STORY, or SPIRIT to target specific areas.' },
     ],
     gradient: 'from-[#5B84B1] to-[#4E8C73]',
     accentColor: '#5B84B1',
     relatedPillars: ['self', 'space', 'story', 'spirit'],
     inDevelopment: false,
-    what: 'The full FourFlow knowledge library — 261 qualities, techniques, and concepts with spaced repetition.',
+    what: 'The full FourFlow knowledge library — 153 qualities and techniques with spaced repetition.',
   },
   'flowbreath': {
     id: 'flowbreath',

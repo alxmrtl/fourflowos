@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
   const sessionCap = mode === 'deep-dive' ? MAX_DEEP_DIVE : MAX_SESSION;
 
-  // Fetch all cards (qualities + techniques + concepts)
+  // Fetch all cards (qualities + techniques)
   let qualitiesQuery = db
     .from('mechanics')
     .select('id, title, pillar, flow_key, keywords, definition, content_md, recall_md, enrichment_score, techniques_count, related_qualities, card_type, parent_quality_id, content_hash, updated_at')
@@ -58,9 +58,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: qualitiesErr.message }, { status: 500 });
   }
 
-  // Separate quality SRS cards from child cards (techniques/concepts)
+  // Separate quality SRS cards from child cards (techniques only)
   const allQualities = (allCards ?? []).filter(m => m.card_type === 'quality');
-  const childCards = (allCards ?? []).filter(m => m.card_type === 'technique' || m.card_type === 'concept');
+  const childCards = (allCards ?? []).filter(m => m.card_type === 'technique');
 
   // Build parent → children map for study mode
   const childrenByParent = new Map<string, typeof childCards>();
