@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import type { MasteryStats, Pillar } from '@/types/training';
+import { KEYS } from '@/data/framework';
+import type { KeyType } from '@/types/framework';
 import CardDetailModal, { type StateData } from './CardDetailModal';
 import { renderMarkdown as sharedRenderMarkdown } from '@/lib/renderMarkdown';
 
@@ -189,6 +191,15 @@ function TechniqueIcon() {
   );
 }
 
+// ── Recall section parser ─────────────────────────────────────────
+
+function parseRecallSections(recall: string | null | undefined): { hook: string; mechanism: string } {
+  if (!recall) return { hook: '', mechanism: '' };
+  const hook = recall.match(/\*\*Hook\*\*:\s*([^\n]+)/)?.[1]?.trim() ?? '';
+  const mechanism = recall.match(/\*\*Mechanism\*\*:\s*([^\n]+)/)?.[1]?.trim() ?? '';
+  return { hook, mechanism };
+}
+
 // ── Inline card content renderer ────────────────────────────────────
 
 function renderContentMd(md: string, dark = true, headingClass?: string): string {
@@ -233,11 +244,12 @@ export default function CompendiumNavigator() {
   const [stats, setStats] = useState<MasteryStats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Desktop FlowStation navigation state
-  const [desktopMode, setDesktopMode] = useState<'grid' | 'state'>('grid');
-  const [desktopActiveStateIdx, setDesktopActiveStateIdx] = useState(0);
+  // Desktop navigation state
+  const [activeStateKey, setActiveStateKey] = useState<string>('tuned-emotions');
   const [desktopQualIdx, setDesktopQualIdx] = useState(0);
   const [desktopItemIdx, setDesktopItemIdx] = useState(0);
+  const [qualRecall, setQualRecall] = useState<{ hook: string; mechanism: string } | null>(null);
+  const [qualRecallLoading, setQualRecallLoading] = useState(false);
 
   // Mobile navigation state
   const [activePillar, setActivePillar] = useState<Pillar>('self');
@@ -345,41 +357,46 @@ export default function CompendiumNavigator() {
   const clampedMobileItemIndex = Math.min(mobileItemIndex, Math.max(0, mobileItems.length - 1));
 
   // ── Desktop derived data ─────────────────────────────────────────
-  const desktopStateGroup = allStates[desktopActiveStateIdx] ?? null;
+  const desktopStateGroup = useMemo(
+    () => allStates.find(s => s.key === activeStateKey) ?? allStates[0] ?? null,
+    [allStates, activeStateKey]
+  );
   const desktopPillar: Pillar = desktopStateGroup?.pillar ?? 'self';
+  const dc = PILLAR_COLORS[desktopPillar];
   const desktopDqm = desktopStateGroup?.qualities[desktopQualIdx] ?? null;
   const desktopItems = useMemo(() => {
-    const qm = allStates[desktopActiveStateIdx]?.qualities[desktopQualIdx];
+    const qm = desktopStateGroup?.qualities[desktopQualIdx];
     if (!qm) return [];
     return qm.children.filter(c => c.card_type === 'technique');
-  }, [allStates, desktopActiveStateIdx, desktopQualIdx]);
+  }, [desktopStateGroup, desktopQualIdx]);
   const clampedDesktopItemIdx = Math.min(desktopItemIdx, Math.max(0, desktopItems.length - 1));
   const desktopCurrentItem = desktopItems[clampedDesktopItemIdx] ?? null;
-  const desktopPrevLabel = allStates.length > 0
-    ? allStates[(desktopActiveStateIdx - 1 + allStates.length) % allStates.length]?.label ?? ''
-    : '';
-  const desktopNextLabel = allStates.length > 0
-    ? allStates[(desktopActiveStateIdx + 1) % allStates.length]?.label ?? ''
-    : '';
+  const activeKeyData = KEYS[activeStateKey as KeyType] ?? null;
 
   // ── Desktop handlers ─────────────────────────────────────────────
-  const desktopEnterState = (stateKey: string) => {
-    const idx = allStates.findIndex(s => s.key === stateKey);
-    setDesktopActiveStateIdx(idx >= 0 ? idx : 0);
+  const selectDesktopState = useCallback((key: string) => {
+    setActiveStateKey(key);
     setDesktopQualIdx(0);
     setDesktopItemIdx(0);
-    setDesktopMode('state');
-  };
+  }, []);
 
-  const desktopBackToGrid = () => setDesktopMode('grid');
+  // Sync activeStateKey to first loaded state if current key isn't found
+  useEffect(() => {
+    if (allStates.length > 0 && !allStates.find(s => s.key === activeStateKey)) {
+      setActiveStateKey(allStates[0].key);
+    }
+  }, [allStates, activeStateKey]);
 
-  const desktopCycleState = (dir: 1 | -1) => {
-    if (allStates.length === 0) return;
-    const nextIdx = (desktopActiveStateIdx + dir + allStates.length) % allStates.length;
-    setDesktopActiveStateIdx(nextIdx);
-    setDesktopQualIdx(0);
-    setDesktopItemIdx(0);
-  };
+  // Fetch recall sections when quality card changes
+  useEffect(() => {
+    if (!desktopDqm?.id) return;
+    setQualRecall(null);
+    setQualRecallLoading(true);
+    fetch(`/api/train/card/${encodeURIComponent(desktopDqm.id)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.recall_md) setQualRecall(parseRecallSections(d.recall_md)); })
+      .finally(() => setQualRecallLoading(false));
+  }, [desktopDqm?.id]);
 
   // ── Mobile handlers ──────────────────────────────────────────────
   const selectPillar = (p: Pillar) => {
@@ -636,277 +653,327 @@ export default function CompendiumNavigator() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-          DESKTOP UI  (hidden below lg) — FlowStation-style navigation
+          DESKTOP UI  (hidden below lg)
       ══════════════════════════════════════════════════════════ */}
-      <div className="hidden lg:block w-full relative overflow-hidden rounded-xl" style={{ height: 'calc(100vh - 285px)', minHeight: 420 }}>
+      <div className="hidden lg:flex lg:flex-col w-full rounded-xl overflow-hidden" style={{ height: 'calc(100vh - 285px)', minHeight: 520 }}>
 
-        {/* ─── GRID VIEW ────────────────────────────────────────── */}
+        {/* ─── TOP NAVIGATION BAR ───────────────────────────────── */}
         <div
-          className="absolute inset-0 p-4"
-          style={{
-            transform: desktopMode === 'grid' ? 'translateX(0)' : 'translateX(-100%)',
-            transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
-          }}
+          className="flex items-stretch flex-shrink-0"
+          style={{ background: 'rgba(255,255,255,0.025)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
         >
-          <div className="grid grid-cols-4 gap-4 h-full">
-            {pillarGroups.map(({ pillar, keys }) => {
-              const pc = PILLAR_COLORS[pillar];
-              const rgb = PILLAR_RGB[pillar];
-              return (
-                <div
-                  key={pillar}
-                  className="flex flex-col opacity-55 hover:opacity-100 transition-opacity duration-300 rounded-3xl"
-                  style={{ padding: '20px 14px 16px' }}
-                >
-                  {/* Column header */}
-                  <div className={`flex items-center gap-2.5 pb-4 mb-3.5 border-b-2 ${pc.border} flex-shrink-0`}>
-                    <Image
-                      src={PILLAR_LOGO[pillar]}
-                      alt={pillar}
-                      width={28} height={28}
-                      className="mix-blend-screen flex-shrink-0"
-                      style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))' }}
-                    />
-                    <span className={`text-[11px] xl:text-[13px] font-black tracking-[0.15em] xl:tracking-[0.20em] uppercase ${pc.label}`}>{pillar}</span>
-                  </div>
-                  {/* State cards */}
-                  <div className="flex flex-col gap-2.5 flex-1 min-h-0">
-                    {keys.map(({ key, label, qualities }) => (
-                      <button
-                        key={key}
-                        onClick={() => desktopEnterState(key)}
-                        className="flex-1 min-h-0 rounded-[20px] flex flex-col items-center justify-between text-center relative overflow-hidden group/card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl cursor-pointer"
-                        style={{ padding: '14px 12px 12px', background: `rgba(${rgb},0.14)` }}
-                      >
-                        {/* Shimmer overlay on hover */}
-                        <div
-                          className="absolute top-0 left-0 right-0 pointer-events-none rounded-[20px] opacity-0 group-hover/card:opacity-100 transition-opacity duration-200"
-                          style={{ height: '40%', background: 'linear-gradient(to bottom, rgba(255,255,255,0.10), transparent)' }}
-                        />
-                        {/* State name top */}
-                        <p className="text-[11px] xl:text-[13px] font-black tracking-[0.10em] xl:tracking-[0.14em] uppercase leading-tight text-white/95 relative z-10 flex-shrink-0 line-clamp-2">
-                          {label}
-                        </p>
-                        {/* Icon center */}
-                        <div className="flex-1 flex items-center justify-center py-2 relative z-10">
-                          {STATE_LOGO[key] && (
-                            <Image
-                              src={STATE_LOGO[key]}
-                              alt={label}
-                              width={64} height={64}
-                              className="mix-blend-screen transition-all duration-200 group-hover/card:scale-110"
-                              style={{ filter: 'drop-shadow(0 3px 10px rgba(0,0,0,0.50))' }}
-                            />
-                          )}
-                        </div>
-                        {/* Quality names bottom */}
-                        <div
-                          className="flex justify-around w-full pt-2.5 relative z-10 flex-shrink-0"
-                          style={{ borderTop: '1px solid rgba(255,255,255,0.15)', gap: '4px' }}
-                        >
-                          {qualities.map((m, qi) => {
-                            const qt = QUALITY_TYPES[qi] ?? 'restore';
-                            return (
-                              <div key={m.id} className="flex flex-col items-center gap-1 flex-1 min-w-0 overflow-hidden">
-                                <span className="text-[9px] xl:text-[10px] font-black tracking-[0.04em] xl:tracking-[0.06em] uppercase text-white/90 leading-tight truncate w-full text-center">
-                                  {m.title}
-                                </span>
-                                <div className="flex items-center gap-0.5">
-                                  <QualityTypeIcon type={qt} className="w-[10px] h-[10px] opacity-45 flex-shrink-0" />
-                                  <span className="text-[7px] xl:text-[8px] font-bold tracking-[0.08em] uppercase text-white/45 hidden xl:inline">
-                                    {qt}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+          {/* SOUL tab (disabled) */}
+          <div
+            title="Soul view — coming soon"
+            className="flex flex-col items-center justify-center gap-1 px-3 flex-shrink-0 cursor-not-allowed opacity-20 border-r border-white/[0.06]"
+          >
+            <div className="w-3.5 h-3.5 rounded-full border border-white/50 flex items-center justify-center">
+              <div className="w-1 h-1 rounded-full bg-white/70" />
+            </div>
+            <span className="text-[7px] font-black tracking-[0.18em] uppercase">SOUL</span>
           </div>
-        </div>
 
-        {/* ─── STATE VIEW ───────────────────────────────────────── */}
-        <div
-          className="absolute inset-0 flex flex-col p-1"
-          style={{
-            transform: desktopMode === 'state' ? 'translateX(0)' : 'translateX(100%)',
-            transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
-          }}
-        >
-          {desktopStateGroup && (() => {
-            const dc = PILLAR_COLORS[desktopPillar];
+          {/* Pillar groups */}
+          {(['self', 'space', 'story', 'spirit'] as Pillar[]).map((pillar) => {
+            const pc = PILLAR_COLORS[pillar];
+            const rgb = PILLAR_RGB[pillar];
+            const pillarKeys = pillarGroups.find(g => g.pillar === pillar)?.keys ?? [];
             return (
-              <>
-                {/* Header bar */}
-                <div className="flex items-center gap-3 pb-4 flex-shrink-0">
-                  <button
-                    onClick={desktopBackToGrid}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.10] text-white/50 hover:text-white/90 transition-all"
-                  >
-                    <span className="text-base leading-none">←</span>
-                    <span className="text-[9px] font-black uppercase tracking-wider">All States</span>
-                  </button>
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {STATE_LOGO[desktopStateGroup.key] && (
-                      <Image
-                        src={STATE_LOGO[desktopStateGroup.key]}
-                        alt={desktopStateGroup.label}
-                        width={20} height={20}
-                        className="rounded-sm mix-blend-screen opacity-90 flex-shrink-0"
-                        style={{ filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.5))' }}
-                      />
-                    )}
-                    <span className={`text-sm font-black uppercase tracking-wide ${dc.label} truncate`}>
-                      {desktopStateGroup.label}
-                    </span>
-                    <span className={`text-[9px] font-semibold uppercase tracking-wider opacity-40 ${dc.label} flex-shrink-0`}>
-                      {desktopPillar}
-                    </span>
-                  </div>
-                  {/* Key icon selector — all 12 states */}
-                  <div className="flex items-center gap-0.5 ml-auto">
-                    {allStates.map((state, idx) => (
-                      <button
-                        key={state.key}
-                        onClick={() => { setDesktopActiveStateIdx(idx); setDesktopQualIdx(0); setDesktopTab('techniques'); setDesktopItemIdx(0); }}
-                        title={state.label}
-                        className={`group w-[22px] h-[22px] rounded flex items-center justify-center transition-all duration-150
-                          ${idx > 0 && idx % 3 === 0 ? 'ml-1.5' : ''}
-                          ${idx === desktopActiveStateIdx ? 'bg-white/15' : 'hover:bg-white/[0.06]'}
-                        `}
-                      >
-                        {STATE_LOGO[state.key] && (
-                          <Image
-                            src={STATE_LOGO[state.key]}
-                            alt={state.label}
-                            width={16} height={16}
-                            className={`mix-blend-screen transition-opacity duration-150 ${idx === desktopActiveStateIdx ? 'opacity-95' : 'opacity-20 group-hover:opacity-55'}`}
-                            style={idx === desktopActiveStateIdx ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))' } : undefined}
-                          />
-                        )}
-                      </button>
-                    ))}
-                  </div>
+              <div key={pillar} className="flex flex-col flex-1 border-r border-white/[0.05] last:border-r-0">
+                {/* Pillar label row */}
+                <div className="px-2.5 pt-1.5 pb-1" style={{ borderBottom: `1px solid rgba(${rgb},0.10)` }}>
+                  <span className={`text-[6.5px] font-black tracking-[0.22em] uppercase ${pc.label} opacity-65`}>{pillar.toUpperCase()}</span>
                 </div>
-
-                {/* Quality row — taller stacked cards */}
-                <div className="flex gap-2 pb-3 flex-shrink-0">
-                  {(desktopStateGroup.qualities ?? []).map((quality, qi) => {
-                    const qt = (quality.quality_type as QualityType) ?? QUALITY_TYPES[qi] ?? 'restore';
-                    const isActive = qi === desktopQualIdx;
+                {/* State pills */}
+                <div className="flex gap-1 flex-1 p-1.5">
+                  {pillarKeys.map(({ key, label }) => {
+                    const isActive = key === activeStateKey;
                     return (
                       <button
-                        key={quality.id}
-                        onClick={() => { setDesktopQualIdx(qi); setDesktopItemIdx(0); }}
-                        className={`relative overflow-hidden flex-1 rounded-xl px-3 py-4 flex flex-col items-center gap-1.5 text-center transition-all duration-200
-                          ${isActive
-                            ? `${dc.activeQualPill} shadow-md`
-                            : 'bg-white/[0.04] text-white/40 hover:text-white/70 hover:bg-white/[0.07]'
-                          }`}
+                        key={key}
+                        onClick={() => selectDesktopState(key)}
+                        title={label}
+                        className={`
+                          flex-1 flex flex-col items-center gap-1 py-1.5 px-1 rounded-md
+                          font-black text-[7px] tracking-[0.05em] uppercase cursor-pointer border-none
+                          transition-all duration-150 overflow-hidden
+                          ${isActive ? 'text-white' : 'text-white/[0.22] hover:bg-white/[0.07] hover:text-white/[0.72]'}
+                        `}
+                        style={{
+                          borderBottom: `2px solid ${isActive ? `rgb(${rgb})` : 'transparent'}`,
+                          background: isActive ? `rgba(${rgb},0.20)` : 'rgba(255,255,255,0.03)',
+                          boxShadow: isActive ? `0 0 16px rgba(${rgb},0.18)` : undefined,
+                        }}
                       >
-                        {isActive && <div className="absolute inset-0 bg-gradient-to-b from-white/[0.10] to-transparent pointer-events-none rounded-xl" />}
-                        <div style={isActive ? { filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.45))' } : undefined}>
-                          <QualityTypeIcon type={qt} className="w-4 h-4 flex-shrink-0" />
-                        </div>
-                        <p className="text-[12px] font-black uppercase tracking-wide leading-tight">{quality.title}</p>
-                        <p className={`text-[9px] uppercase tracking-widest ${isActive ? 'opacity-65' : 'opacity-35'}`}>{qt}</p>
-                        {quality.definition && (
-                          <p className={`text-[10px] leading-snug mt-1 ${isActive ? 'opacity-80' : 'opacity-50'}`}>
-                            {quality.definition}
-                          </p>
+                        {STATE_LOGO[key] && (
+                          <Image
+                            src={STATE_LOGO[key]}
+                            alt={label}
+                            width={16} height={16}
+                            className={`mix-blend-screen flex-shrink-0 transition-opacity duration-150 ${isActive ? 'opacity-90' : 'opacity-25'}`}
+                            style={isActive ? { filter: `drop-shadow(0 0 4px rgba(${rgb},0.6))` } : undefined}
+                          />
                         )}
+                        <span className="truncate w-full text-center leading-tight">{label}</span>
                       </button>
                     );
                   })}
                 </div>
-
-                {/* Body: left panel + right panel */}
-                <div className="flex gap-4 flex-1 min-h-0">
-
-                  {/* Left panel — item list */}
-                  <div className="w-[220px] flex-shrink-0 flex flex-col gap-2 min-h-0">
-                    {/* Label */}
-                    <p className="text-[9px] font-black tracking-[0.12em] uppercase text-white/40 px-1 pb-1 flex-shrink-0">Techniques</p>
-                    {/* Item list */}
-                    <div className="flex-1 overflow-y-auto space-y-1 pr-0.5 min-h-0">
-                      {desktopItems.length === 0 ? (
-                        <p className="text-[11px] text-white/25 text-center py-6">No techniques yet</p>
-                      ) : desktopItems.map((item, ii) => {
-                        const isItemActive = ii === clampedDesktopItemIdx;
-                        return (
-                          <button
-                            key={item.id}
-                            onClick={() => setDesktopItemIdx(ii)}
-                            className={`w-full rounded-lg px-2.5 py-2 flex items-center gap-2 text-left transition-all duration-150 border-l-2
-                              ${isItemActive
-                                ? `${dc.bg} ${dc.border}`
-                                : 'hover:bg-white/[0.04] border-transparent'
-                              }`}
-                          >
-                            <span className={`flex-shrink-0 ${isItemActive ? dc.label : 'text-white/30'}`}>
-                              <TechniqueIcon />
-                            </span>
-                            <span className={`text-[11px] font-medium leading-snug flex-1 truncate ${isItemActive ? 'text-white/90' : 'text-white/40'}`}>
-                              {item.title}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                  </div>
-
-                  {/* Right panel — full card content inline */}
-                  <div className="flex-1 min-w-0 overflow-y-auto">
-                    {desktopCurrentItem ? (
-                      <div>
-                        <p className={`text-[9px] font-black tracking-[0.18em] uppercase mb-1.5 flex items-center gap-1.5 ${dc.label}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${dc.dot} inline-block`} />
-                          {desktopCurrentItem.card_type.toUpperCase()}
-                        </p>
-                        <h3
-                          className={`text-2xl font-black leading-tight tracking-tight mb-3 ${dc.label}`}
-                          style={{ letterSpacing: '-0.02em' }}
-                        >
-                          {desktopCurrentItem.title}
-                        </h3>
-                        {desktopCurrentItem.definition && (
-                          <p className="text-sm leading-relaxed text-white/65 mb-4">
-                            {desktopCurrentItem.definition}
-                          </p>
-                        )}
-                        <InlineCardContent cardId={desktopCurrentItem.id} dark={true} headingClass={dc.label} />
-                      </div>
-                    ) : desktopDqm ? (
-                      <div>
-                        <p className={`text-[9px] font-black tracking-[0.18em] uppercase mb-2 ${dc.label} opacity-50`}>
-                          {(QUALITY_TYPES[desktopQualIdx] ?? 'quality').toUpperCase()} QUALITY
-                        </p>
-                        <h3
-                          className={`text-2xl font-black leading-tight tracking-tight mb-3 ${dc.label}`}
-                          style={{ letterSpacing: '-0.02em' }}
-                        >
-                          {desktopDqm.title}
-                        </h3>
-                        {desktopDqm.definition && (
-                          <p className="text-sm leading-relaxed text-white/65 mb-4">
-                            {desktopDqm.definition}
-                          </p>
-                        )}
-                        <p className="text-[10px] text-white/25">
-                          Select a technique from the list to explore
-                        </p>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              </>
+              </div>
             );
-          })()}
+          })}
+        </div>
+
+        {/* ─── STATE HEADER + INSIGHT COLUMNS ──────────────────── */}
+        {desktopStateGroup && (
+          <div
+            className="flex-shrink-0"
+            style={{
+              background: `rgba(${PILLAR_RGB[desktopPillar]},0.08)`,
+              borderBottom: `1px solid rgba(${PILLAR_RGB[desktopPillar]},0.16)`,
+            }}
+          >
+            {/* Identity row */}
+            <div className="flex items-center gap-4 px-5 pt-4 pb-3">
+              {STATE_LOGO[desktopStateGroup.key] && (
+                <div
+                  className="w-[46px] h-[46px] rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: `radial-gradient(circle at 40% 35%, rgba(${PILLAR_RGB[desktopPillar]},0.50), rgba(${PILLAR_RGB[desktopPillar]},0.18))`,
+                    border: `1px solid rgba(${PILLAR_RGB[desktopPillar]},0.35)`,
+                    boxShadow: `0 0 20px rgba(${PILLAR_RGB[desktopPillar]},0.22)`,
+                  }}
+                >
+                  <Image
+                    src={STATE_LOGO[desktopStateGroup.key]}
+                    alt={desktopStateGroup.label}
+                    width={26} height={26}
+                    className="mix-blend-screen opacity-90"
+                    style={{ filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.5))' }}
+                  />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-baseline gap-2.5 mb-1">
+                  <h2 className="text-[20px] font-black text-white leading-none" style={{ letterSpacing: '-0.025em' }}>
+                    {desktopStateGroup.label}
+                  </h2>
+                  <span className={`text-[8px] font-black tracking-[0.18em] uppercase ${dc.label} opacity-75 flex-shrink-0`}>
+                    {desktopPillar.toUpperCase()}
+                  </span>
+                </div>
+                {activeKeyData?.description && (
+                  <p className="text-[11px] text-white/35 font-medium">{activeKeyData.description}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Three insight columns */}
+            <div className="grid grid-cols-3" style={{ borderTop: `1px solid rgba(${PILLAR_RGB[desktopPillar]},0.10)` }}>
+              {([
+                { label: 'Core Insight',    text: activeKeyData?.coreInsight ?? '' },
+                { label: 'Flow Connection', text: activeKeyData?.flowConnection ?? '' },
+                { label: 'Without This',    text: activeKeyData?.withoutThis ?? '' },
+              ] as const).map(({ label, text }, i) => (
+                <div
+                  key={label}
+                  className="px-5 py-3.5"
+                  style={i > 0 ? { borderLeft: `1px solid rgba(${PILLAR_RGB[desktopPillar]},0.10)` } : undefined}
+                >
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: `rgba(${PILLAR_RGB[desktopPillar]},0.70)` }} />
+                    <span className={`text-[7px] font-black tracking-[0.20em] uppercase ${dc.label} opacity-70`}>{label}</span>
+                  </div>
+                  <p className="text-[12px] font-medium leading-[1.58] text-white/[0.78]">{text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ─── QUALITIES SECTION ───────────────────────────────── */}
+        <div
+          className="flex-shrink-0 px-4 py-3"
+          style={{ background: 'rgba(255,255,255,0.015)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          {/* Quality tabs row */}
+          <div className="flex items-center gap-3 mb-2.5">
+            <span className="text-[7px] font-black tracking-[0.22em] uppercase text-white/[0.20] flex-shrink-0">QUALITIES</span>
+            <div className="flex gap-1.5">
+              {(desktopStateGroup?.qualities ?? []).map((qual, qi) => {
+                const qt = (qual.quality_type as QualityType) ?? QUALITY_TYPES[qi] ?? 'restore';
+                const isQActive = qi === desktopQualIdx;
+                return (
+                  <button
+                    key={qual.id}
+                    onClick={() => { setDesktopQualIdx(qi); setDesktopItemIdx(0); }}
+                    className={`
+                      flex items-center gap-2 px-4 py-2 rounded-[9px] border
+                      font-black text-[10px] tracking-[0.07em] uppercase cursor-pointer
+                      transition-all duration-150
+                      ${isQActive
+                        ? 'text-white'
+                        : 'bg-white/[0.04] text-white/[0.28] border-transparent hover:bg-white/[0.06] hover:text-white/[0.65]'
+                      }
+                    `}
+                    style={isQActive ? {
+                      background: `rgba(${PILLAR_RGB[desktopPillar]},0.22)`,
+                      border: `1px solid rgba(${PILLAR_RGB[desktopPillar]},0.32)`,
+                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+                    } : undefined}
+                  >
+                    <QualityTypeIcon type={qt} className={`w-3 h-3 flex-shrink-0 ${isQActive ? 'opacity-100' : 'opacity-55'}`} />
+                    <span>{qual.title}</span>
+                    <span className={`text-[7px] font-semibold ${isQActive ? 'opacity-55' : 'opacity-40'}`}>{qt}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Quality detail: 3-column bar */}
+          <div className="grid grid-cols-3 gap-2">
+
+            {/* Definition */}
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-[10px] px-3.5 py-3">
+              <div className="text-[6.5px] font-black tracking-[0.18em] uppercase text-white/[0.25] mb-1.5">Definition</div>
+              <p className="text-[11.5px] font-medium leading-[1.58] text-white/[0.72]">
+                {desktopDqm?.definition ?? ''}
+              </p>
+            </div>
+
+            {/* Why This Matters (Hook from recall_md) */}
+            <div
+              className="rounded-[10px] px-3.5 py-3"
+              style={{
+                background: `rgba(${PILLAR_RGB[desktopPillar]},0.07)`,
+                border: `1px solid rgba(${PILLAR_RGB[desktopPillar]},0.18)`,
+              }}
+            >
+              <div className={`text-[6.5px] font-black tracking-[0.18em] uppercase mb-1.5 ${dc.label} opacity-80`}>
+                Why This Matters
+              </div>
+              {qualRecallLoading ? (
+                <div className="flex items-center gap-1.5 py-1">
+                  <div className="w-3 h-3 rounded-full border border-white/10 border-t-white/40 animate-spin" />
+                  <span className="text-[10px] text-white/25">Loading…</span>
+                </div>
+              ) : (
+                <p className="text-[11.5px] font-medium leading-[1.58] text-white/[0.82]">
+                  {qualRecall?.hook ?? ''}
+                </p>
+              )}
+            </div>
+
+            {/* How It Works (Mechanism from recall_md) */}
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-[10px] px-3.5 py-3">
+              <div className="text-[6.5px] font-black tracking-[0.18em] uppercase text-white/[0.25] mb-1.5">How It Works</div>
+              {qualRecallLoading ? (
+                <div className="flex items-center gap-1.5 py-1">
+                  <div className="w-3 h-3 rounded-full border border-white/10 border-t-white/40 animate-spin" />
+                  <span className="text-[10px] text-white/25">Loading…</span>
+                </div>
+              ) : (
+                <p className="text-[11.5px] font-medium leading-[1.58] text-white/[0.68]">
+                  {qualRecall?.mechanism ?? ''}
+                </p>
+              )}
+            </div>
+
+          </div>
+        </div>
+
+        {/* ─── TECHNIQUES SECTION ──────────────────────────────── */}
+        <div className="flex flex-1 min-h-0" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+
+          {/* Left: technique list */}
+          <div className="w-[230px] flex-shrink-0 flex flex-col border-r border-white/[0.06]" style={{ background: 'rgba(255,255,255,0.012)' }}>
+            <div className="px-3.5 py-2.5 flex-shrink-0 border-b border-white/[0.05]">
+              <span className="text-[6.5px] font-black tracking-[0.22em] uppercase text-white/[0.22]">
+                TECHNIQUES{desktopItems.length > 0 ? ` · ${desktopItems.length}` : ''}
+              </span>
+            </div>
+            <div className="flex-1 overflow-y-auto py-1.5 px-2">
+              {desktopItems.length === 0 ? (
+                <p className="text-[11px] text-white/25 text-center py-6">No techniques yet</p>
+              ) : desktopItems.map((item, ii) => {
+                const isItemActive = ii === clampedDesktopItemIdx;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setDesktopItemIdx(ii)}
+                    className={`
+                      flex items-start gap-2.5 w-full px-3 py-2.5 rounded-lg text-left cursor-pointer border-none mb-1
+                      transition-all duration-150 border-l-2
+                      ${isItemActive
+                        ? 'text-white'
+                        : 'text-white/[0.35] hover:bg-white/[0.05] hover:text-white/[0.72] border-transparent'
+                      }
+                    `}
+                    style={isItemActive ? {
+                      background: `rgba(${PILLAR_RGB[desktopPillar]},0.16)`,
+                      borderLeftColor: `rgb(${PILLAR_RGB[desktopPillar]})`,
+                    } : undefined}
+                  >
+                    <span className={`flex-shrink-0 mt-0.5 ${isItemActive ? dc.label : 'text-white/30'}`}>
+                      <TechniqueIcon />
+                    </span>
+                    <span className="text-[10.5px] font-semibold leading-snug">{item.title}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right: technique detail */}
+          <div className="flex-1 min-w-0 overflow-y-auto px-8 py-6">
+            {desktopCurrentItem ? (
+              <div style={{ maxWidth: 600 }}>
+                {/* Breadcrumb */}
+                <div className="flex items-center gap-1.5 mb-4 text-white/[0.28] text-[9.5px] font-semibold tracking-[0.06em]">
+                  <span className={`${dc.label} opacity-75`}>{desktopPillar.toUpperCase()}</span>
+                  <span className="opacity-40">›</span>
+                  <span>{desktopStateGroup?.label}</span>
+                  <span className="opacity-40">›</span>
+                  <span>{desktopDqm?.title}</span>
+                  <span className="opacity-40">›</span>
+                  <span className="text-white/60">{desktopCurrentItem.title}</span>
+                </div>
+
+                {/* Type + title */}
+                <div className="mb-3.5">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <span className={`flex-shrink-0 ${dc.label}`}><TechniqueIcon /></span>
+                    <span className={`text-[7.5px] font-black tracking-[0.20em] uppercase ${dc.label} opacity-80`}>Technique</span>
+                  </div>
+                  <h3 className="text-[26px] font-black text-white leading-none" style={{ letterSpacing: '-0.03em' }}>
+                    {desktopCurrentItem.title}
+                  </h3>
+                </div>
+
+                {/* Definition */}
+                {desktopCurrentItem.definition && (
+                  <p className="text-[13px] font-medium leading-[1.68] text-white/[0.62] mb-6 pb-6 border-b border-white/[0.06]">
+                    {desktopCurrentItem.definition}
+                  </p>
+                )}
+
+                {/* Content */}
+                <InlineCardContent cardId={desktopCurrentItem.id} dark={true} headingClass={dc.label} />
+              </div>
+            ) : desktopDqm ? (
+              <div className="flex items-center justify-center h-full text-center px-8">
+                <div>
+                  <p className={`text-[9px] font-black tracking-[0.18em] uppercase mb-3 ${dc.label} opacity-40`}>
+                    {(QUALITY_TYPES[desktopQualIdx] ?? 'quality').toUpperCase()} QUALITY
+                  </p>
+                  <p className="text-[14px] font-semibold text-white/20">
+                    Select a technique from the list
+                  </p>
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
 
       </div>
