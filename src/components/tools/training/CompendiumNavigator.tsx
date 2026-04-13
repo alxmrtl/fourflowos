@@ -193,10 +193,13 @@ function TechniqueIcon() {
 
 // ── Recall section parser ─────────────────────────────────────────
 
-function parseRecallSections(recall: string | null | undefined): { hook: string; mechanism: string } {
-  if (!recall) return { hook: '', mechanism: '' };
-  const hook = recall.match(/\*\*Hook\*\*:\s*([^\n]+)/)?.[1]?.trim() ?? '';
-  const mechanism = recall.match(/\*\*Mechanism\*\*:\s*([^\n]+)/)?.[1]?.trim() ?? '';
+function parseRecallSections(source: string | null | undefined): { hook: string; mechanism: string } {
+  if (!source) return { hook: '', mechanism: '' };
+  // If source contains a full ## Recall section, extract just that block first
+  const recallBlock = source.match(/##\s+Recall\s*\n([\s\S]*?)(?:\n##|$)/);
+  const text = recallBlock ? recallBlock[1] : source;
+  const hook = text.match(/\*\*Hook\*\*:\s*([^\n]+)/)?.[1]?.trim() ?? '';
+  const mechanism = text.match(/\*\*Mechanism\*\*:\s*([^\n]+)/)?.[1]?.trim() ?? '';
   return { hook, mechanism };
 }
 
@@ -394,7 +397,7 @@ export default function CompendiumNavigator() {
     setQualRecallLoading(true);
     fetch(`/api/train/card/${encodeURIComponent(desktopDqm.id)}`)
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.recall_md) setQualRecall(parseRecallSections(d.recall_md)); })
+      .then(d => { if (d) setQualRecall(parseRecallSections(d.recall_md || d.content_md)); })
       .finally(() => setQualRecallLoading(false));
   }, [desktopDqm?.id]);
 
@@ -843,14 +846,8 @@ export default function CompendiumNavigator() {
             </div>
 
             {/* Why This Matters (Hook from recall_md) */}
-            <div
-              className="rounded-[10px] px-3.5 py-3"
-              style={{
-                background: `rgba(${PILLAR_RGB[desktopPillar]},0.07)`,
-                border: `1px solid rgba(${PILLAR_RGB[desktopPillar]},0.18)`,
-              }}
-            >
-              <div className={`text-[6.5px] font-black tracking-[0.18em] uppercase mb-1.5 ${dc.label} opacity-80`}>
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-[10px] px-3.5 py-3">
+              <div className="text-[6.5px] font-black tracking-[0.18em] uppercase text-white/[0.25] mb-1.5">
                 Why This Matters
               </div>
               {qualRecallLoading ? (
@@ -859,7 +856,7 @@ export default function CompendiumNavigator() {
                   <span className="text-[10px] text-white/25">Loading…</span>
                 </div>
               ) : (
-                <p className="text-[11.5px] font-medium leading-[1.58] text-white/[0.82]">
+                <p className="text-[11.5px] font-medium leading-[1.58] text-white/[0.72]">
                   {qualRecall?.hook ?? ''}
                 </p>
               )}
@@ -926,7 +923,7 @@ export default function CompendiumNavigator() {
           </div>
 
           {/* Right: technique detail */}
-          <div className="flex-1 min-w-0 overflow-y-auto px-8 py-6">
+          <div className="flex-1 min-w-0 overflow-y-auto px-8 py-6 text-white">
             {desktopCurrentItem ? (
               <div style={{ maxWidth: 600 }}>
                 {/* Breadcrumb */}
