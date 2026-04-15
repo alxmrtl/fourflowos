@@ -3,13 +3,13 @@
 import { useState, useCallback, useEffect } from 'react';
 
 export type FieldId = 'core' | 'consume' | 'catalyze' | 'create';
-export type ToolId = 'profile' | 'flowread' | 'compendium' | 'breathwork' | 'curiosity' | 'flowzone' | 'training';
+export type ToolId = 'flow-lens' | 'ancestral-signal' | 'flowread' | 'compendium' | 'breathwork' | 'curiosity' | 'flowzone' | 'training';
 
 const LAST_TOOL_KEY = 'flowlab_last_tool';
-const VALID_TOOLS: ToolId[] = ['profile', 'flowread', 'compendium', 'breathwork', 'curiosity', 'flowzone', 'training'];
+const VALID_TOOLS: ToolId[] = ['flow-lens', 'ancestral-signal', 'flowread', 'compendium', 'breathwork', 'curiosity', 'flowzone', 'training'];
 
 export function useLabState() {
-  const [activeTool, setActiveToolState] = useState<ToolId>('profile');
+  const [activeTool, setActiveToolState] = useState<ToolId>('flow-lens');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;

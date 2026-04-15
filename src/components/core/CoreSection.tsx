@@ -24,7 +24,7 @@ interface EsotericProfile {
   generated_at: string;
 }
 
-export default function CoreSection() {
+export default function CoreSection({ mode }: { mode?: 'lens' | 'esoteric' }) {
   const { user } = useAuth();
   const [flowLens, setFlowLens] = useState<FlowLensProfile | null>(null);
   const [esoteric, setEsoteric] = useState<EsotericProfile | null>(null);
@@ -68,8 +68,8 @@ export default function CoreSection() {
 
   return (
     <div className="space-y-4">
-      <FlowLensCard initialProfile={flowLens} />
-      <EsotericCard initialProfile={esoteric} />
+      {(!mode || mode === 'lens')     && <FlowLensCard initialProfile={flowLens} />}
+      {(!mode || mode === 'esoteric') && <EsotericCard initialProfile={esoteric} />}
     </div>
   );
 }

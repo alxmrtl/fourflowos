@@ -353,7 +353,8 @@ export const SECTIONS: SectionDef[] = [
     Icon: CoreIcon,
     Animation: CoreAnim,
     tools: [
-      { id: 'profile', label: 'Flow Profile', description: 'Your consciousness alignment map', icon: <AppIcon src="/assets/LOGOS/FOURFLOW - MAIN LOGO.png" alt="Flow Profile" /> },
+      { id: 'flow-lens',        label: 'Flow Lens',       description: "How you're wired",      icon: <AppIcon src="/assets/LOGOS/EMPOWERED ROLE.png"    alt="Flow Lens" /> },
+      { id: 'ancestral-signal', label: 'Ancestral Signal', description: 'The deep architecture', icon: <AppIcon src="/assets/LOGOS/GROUNDING VALUES.png" alt="Ancestral Signal" /> },
     ],
   },
   {

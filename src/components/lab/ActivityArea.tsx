@@ -18,11 +18,12 @@ interface ActivityAreaProps {
 
 // Tools that manage their own internal padding — the activity window provides
 // only the outer shell (border + width). Content tools get extra inner padding.
-const PADDED_TOOLS: ToolId[] = ['profile', 'breathwork', 'compendium', 'training'];
+const PADDED_TOOLS: ToolId[] = ['flow-lens', 'ancestral-signal', 'breathwork', 'compendium', 'training'];
 
 // Metadata for the consistent tool header bar
 const TOOL_META: Partial<Record<ToolId, { icon: string; label: string; description: string }>> = {
-  profile:    { icon: '/assets/LOGOS/FOURFLOW - MAIN LOGO.png', label: 'Flow Profile',   description: 'Your consciousness alignment map' },
+  'flow-lens':        { icon: '/assets/LOGOS/EMPOWERED ROLE.png',    label: 'Flow Lens',       description: "How you're wired"      },
+  'ancestral-signal': { icon: '/assets/LOGOS/GROUNDING VALUES.png', label: 'Ancestral Signal', description: 'The deep architecture' },
   flowread:   { icon: '/assets/apps/flowread-icon.png',          label: 'FlowRead',        description: 'Undivided attention + absorption training' },
   compendium: { icon: '/assets/LOGOS/OPEN MIND.png',             label: 'FlowCompendium',  description: 'Browse 191 flow protocols'         },
   breathwork: { icon: '/assets/LOGOS/FOCUSED BODY.png',          label: 'FlowBreath',      description: 'Shift state — body first'          },
@@ -51,7 +52,8 @@ function ToolHeader({ activeTool }: { activeTool: ToolId }) {
 
 function ToolContent({ activeTool, onBack }: ActivityAreaProps) {
   switch (activeTool) {
-    case 'profile':    return <ProfileSummary />;
+    case 'flow-lens':        return <ProfileSummary mode="lens" />;
+    case 'ancestral-signal': return <ProfileSummary mode="esoteric" />;
     case 'flowzone':   return <FlowZone hideHeader />;
     case 'flowread':   return <FlowRead hideHeader />;
     case 'curiosity':  return <CuriosityExplorer />;
@@ -62,7 +64,7 @@ function ToolContent({ activeTool, onBack }: ActivityAreaProps) {
           <Breathwork onDone={onBack} onSkip={onBack} label="FlowLab" />
         </div>
       );
-    default: return <ProfileSummary />;
+    default: return <ProfileSummary mode="lens" />;
   }
 }
 
