@@ -48,7 +48,8 @@ export const FIELDS: FieldConfig[] = [
     label: 'CORE',
     tools: [
       { id: 'training', label: 'Daily Reps', description: 'Spaced repetition — train the framework', color: AMETHYST },
-      { id: 'profile', label: 'Flow Profile', description: 'Your consciousness alignment map', color: STEEL },
+      { id: 'flow-lens', label: 'Flow Lens', description: "How you're wired", color: STEEL },
+      { id: 'ancestral-signal', label: 'Ancestral Signal', description: 'The deep architecture', color: AMETHYST },
     ],
   },
 ];

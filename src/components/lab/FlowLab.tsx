@@ -43,7 +43,7 @@ export default function FlowLab() {
       <div className="flex-1 min-h-0 pb-14 md:pb-0">
         <ActivityArea
           activeTool={activeTool}
-          onBack={() => setActiveTool('profile')}
+          onBack={() => setActiveTool('flow-lens')}
         />
       </div>
 
