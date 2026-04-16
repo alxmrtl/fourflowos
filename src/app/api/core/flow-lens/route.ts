@@ -10,31 +10,43 @@ export const maxDuration = 60;
 type Pillar = 'self' | 'space' | 'story' | 'spirit';
 
 /**
- * New answer format from Phase B intake.
- * q1, q2, q3, q6 = instinct tap / image pick pillar votes
- * q4 = slider 0–1 (SELF body-awareness depth)
- * q5 = ordered item IDs from DragRank (SPACE depth)
- * q7 = ordered item IDs from DragRank (STORY depth)
- * q8 = a/b/c/d plain choice (SPIRIT depth)
- * q9 = domain context string (no pillar score)
+ * V2 intake answers — visual-first, instinct-driven format.
+ *
+ * Phase 1 (rapid instinct):
+ *   q1  = BigPair orientation vote ('inward' | 'forward') — qualitative
+ *   q2  = ShapePick shape → pillar vote (+2)
+ *   q3  = BigPair state texture ('sharp' | 'loose') — qualitative
+ *   q4  = ThreeWayTap obstacle ('state'|'setup'|'direction') → pillar vote (+2)
+ *   q5  = PairOff tournament winner → dominant pillar (+3)
+ *   q6  = WordCloud selected words — qualitative, for Claude context
+ *
+ * Phase 2 (depth check):
+ *   q7  = Slider 0–1, SELF body-awareness depth
+ *   q8  = TwoTapPair { clearest, haziest } story item IDs — STORY depth
+ *   q9  = Slider 0–1, SPACE environment depth (0=friction, 1=clear)
+ *   q10 = PlainChoice a/b/c/d — SPIRIT depth
+ *   q11 = Domain context string (no pillar score)
  */
 interface FlowLensAnswers {
-  q1?: Pillar;
+  // Phase 1
+  q1?: 'inward' | 'forward';
   q2?: Pillar;
-  q3?: Pillar;
-  q4?: number;           // 0–1
-  q5?: string[];         // ordered: ['env','tools','feedback','social']
-  q6?: Pillar;
-  q7?: string[];         // ordered: ['purpose','mission','goal','task']
-  q8?: 'a' | 'b' | 'c' | 'd';
-  q9?: string;           // domain
+  q3?: 'sharp' | 'loose';
+  q4?: 'state' | 'setup' | 'direction';
+  q5?: Pillar;
+  q6?: string[];
+
+  // Phase 2
+  q7?: number;
+  q8?: { clearest: string; haziest: string };
+  q9?: number;
+  q10?: 'a' | 'b' | 'c' | 'd';
+  q11?: string;
 }
 
+// AnswerMetadata kept minimal — timing not captured in V2 (qualitative signals suffice)
 interface AnswerMetadata {
-  instinct_timings?: Partial<Record<'q1' | 'q2' | 'q6', number>>;
-  q4_value?: number;
-  q5_order?: string[];
-  q7_order?: string[];
+  [key: string]: unknown;
 }
 
 interface PillarScores {
@@ -64,18 +76,6 @@ async function getUserFromRequest(request: NextRequest): Promise<{ id: string } 
 
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
-/** Map rank position (0-indexed) of a list item to depth score 0–2 */
-function rankToDepth(orderedIds: string[], targetIds: string[]): number {
-  const positions = targetIds
-    .map(id => orderedIds.indexOf(id))
-    .filter(p => p >= 0);
-  if (positions.length === 0) return 1; // neutral fallback
-  const avgPos = positions.reduce((a, b) => a + b, 0) / positions.length;
-  if (avgPos <= 1.5) return 2;
-  if (avgPos <= 2.5) return 1;
-  return 0;
-}
-
 /** Map slider 0–1 to depth score 0–2 */
 function sliderToDepth(value: number): number {
   if (value > 0.66) return 2;
@@ -85,19 +85,55 @@ function sliderToDepth(value: number): number {
 
 const SPIRIT_DEPTH: Record<string, number> = { a: 2, b: 1, c: 0, d: 0 };
 
+/**
+ * Map ThreeWayTap obstacle answer to the pillar it votes for.
+ * 'direction' → STORY, 'state' → SELF, 'setup' → SPACE
+ * SPIRIT is intentionally absent from this question — its absence is meaningful.
+ */
+const OBSTACLE_PILLAR: Record<string, Pillar> = {
+  state:     'self',
+  setup:     'space',
+  direction: 'story',
+};
+
+/**
+ * Derive STORY depth from TwoTapPair result.
+ * Clearest item signals how far up the story stack they operate.
+ * Haziest = 'purpose' applies a penalty (no long-term frame).
+ */
+function storyDepthFromTwoTap(result: { clearest: string; haziest: string }): number {
+  const byClarity: Record<string, number> = { purpose: 2, mission: 2, goal: 1, task: 0 };
+  const base = byClarity[result.clearest] ?? 1;
+  const penalty = result.haziest === 'purpose' ? 1 : 0;
+  return Math.max(0, base - penalty);
+}
+
 function scorePillars(answers: FlowLensAnswers): PillarScores {
   const scores: PillarScores = { self: 0, space: 0, story: 0, spirit: 0 };
 
-  // Pillar votes: q1, q2, q3 (image pick), q6 — +2 each
-  for (const q of [answers.q1, answers.q2, answers.q3, answers.q6] as (Pillar | undefined)[]) {
-    if (q && q in scores) scores[q] += 2;
+  // q2: ShapePick — direct pillar vote (+2)
+  if (answers.q2 && answers.q2 in scores) scores[answers.q2] += 2;
+
+  // q4: ThreeWayTap obstacle — pillar vote (+2); SPIRIT absent here by design
+  if (answers.q4) {
+    const pillar = OBSTACLE_PILLAR[answers.q4];
+    if (pillar) scores[pillar] += 2;
   }
 
-  // Depth signals
-  scores.self   += answers.q4 != null ? sliderToDepth(answers.q4) : 1;
-  scores.space  += answers.q5 ? rankToDepth(answers.q5, ['env', 'tools']) : 1;
-  scores.story  += answers.q7 ? rankToDepth(answers.q7, ['goal', 'task']) : 1;
-  scores.spirit += SPIRIT_DEPTH[answers.q8 ?? ''] ?? 1;
+  // q5: PairOff tournament winner — strongest signal, weighted +3
+  if (answers.q5 && answers.q5 in scores) scores[answers.q5] += 3;
+
+  // q7: SELF slider depth (0–2)
+  scores.self   += answers.q7 != null ? sliderToDepth(answers.q7) : 1;
+
+  // q8: TwoTapPair STORY depth (0–2)
+  scores.story  += answers.q8 ? storyDepthFromTwoTap(answers.q8) : 1;
+
+  // q9: SPACE slider depth (0–2); left=friction=0, right=clear=1
+  scores.space  += answers.q9 != null ? sliderToDepth(answers.q9) : 1;
+
+  // q10: SPIRIT PlainChoice depth (0–2)
+  scores.spirit += SPIRIT_DEPTH[answers.q10 ?? ''] ?? 1;
 
   return scores;
 }
@@ -218,34 +254,28 @@ const PROFILE_TOOL: Anthropic.Tool = {
 
 // ─── Prompt ───────────────────────────────────────────────────────────────────
 
-function describeSliderDepth(value: number): string {
+function describeSelfDepth(value: number): string {
   if (value > 0.75) return 'Notices physical depletion quickly — usually within hours — and acts on it';
   if (value > 0.5)  return 'Usually connects slumps to something physical within a day or two';
   if (value > 0.25) return 'Realizes the physical connection in hindsight, after the slump has passed';
   return 'Rarely connects under-performance or mood to physical state';
 }
 
-function describeSpaceRank(orderedIds: string[]): string {
-  const top2 = orderedIds.slice(0, 2).join(' and ');
-  const map: Record<string, string> = {
-    env: 'clear workspace',
-    tools: 'exact right tool with no friction',
-    feedback: 'known feedback signal to track',
-    social: 'protected time (no interruptions)',
-  };
-  const labels = orderedIds.slice(0, 2).map(id => map[id] ?? id);
-  return `Ranked "${labels.join('" and "')}" as most important for their next session`;
+function describeSpaceDepth(value: number): string {
+  if (value > 0.75) return 'Environment is well-managed — operates with minimal environmental friction';
+  if (value > 0.5)  return 'Generally manages their workspace but some friction remains';
+  if (value > 0.25) return 'Noticeable environmental friction that affects sessions';
+  return 'Significant friction in environment or setup — getting in the way of work';
 }
 
-function describeStoryRank(orderedIds: string[]): string {
-  const map: Record<string, string> = {
+function describeStoryDepth(result: { clearest: string; haziest: string }): string {
+  const labels: Record<string, string> = {
     purpose: 'long-term why',
-    mission: '90-day target',
+    mission: '90-day direction',
     goal: 'what they\'re shipping this week',
     task: 'what they\'re doing next hour',
   };
-  const topTwo = orderedIds.slice(0, 2).map(id => map[id] ?? id);
-  return `Clearest on: "${topTwo.join('" and "')}" — less clear on: "${orderedIds.slice(2).map(id => map[id] ?? id).join('" and "')}"`;
+  return `Clearest on "${labels[result.clearest] ?? result.clearest}", haziest on "${labels[result.haziest] ?? result.haziest}"`;
 }
 
 const SPIRIT_DEPTH_LABELS: Record<string, string> = {
@@ -262,6 +292,12 @@ const PILLAR_DOMAINS: Record<Pillar, string> = {
   spirit: 'values, curiosity, and purpose',
 };
 
+const OBSTACLE_LABELS: Record<string, string> = {
+  state:     'their own state — energy, emotions, how they feel',
+  setup:     'their setup — environment, tools, friction',
+  direction: 'direction — clarity on goals and what they\'re aiming at',
+};
+
 function buildPrompt(
   answers: FlowLensAnswers,
   scores: PillarScores,
@@ -271,31 +307,35 @@ function buildPrompt(
 ): string {
   const techniques = recommendations.filter(r => r.type === 'technique');
   const toolRec    = recommendations.find(r => r.type === 'tool');
-  const domain     = answers.q9 ?? 'general';
+  const domain     = answers.q11 ?? 'general';
 
   const techList = techniques
     .map(r => `• ${r.title}: ${PILLAR_TECHNIQUES[blindSide].find(t => t.title === r.title)?.description ?? ''}`)
     .join('\n');
 
-  const voteLines = [
-    answers.q1 && `- When something isn't working, they look first at: ${PILLAR_DOMAINS[answers.q1]}`,
-    answers.q2 && `- When at their best, what made the difference: ${PILLAR_DOMAINS[answers.q2]}`,
-    answers.q3 && `- Visual resonance test picked: ${PILLAR_DOMAINS[answers.q3]}`,
-    answers.q6 && `- First move when they lose momentum: ${PILLAR_DOMAINS[answers.q6]}`,
+  // Scored signals
+  const scoredSignals = [
+    answers.q2  && `- Shape instinct picked: ${PILLAR_DOMAINS[answers.q2]}`,
+    answers.q4  && `- Biggest current obstacle: ${OBSTACLE_LABELS[answers.q4] ?? answers.q4}`,
+    answers.q5  && `- Pair-off winner (strongest claim on attention): ${PILLAR_DOMAINS[answers.q5]}`,
+    answers.q7  != null && `- Body awareness: ${describeSelfDepth(answers.q7)}`,
+    answers.q8  && `- Direction clarity: ${describeStoryDepth(answers.q8)}`,
+    answers.q9  != null && `- Environment status: ${describeSpaceDepth(answers.q9)}`,
+    answers.q10 && `- Values/purpose: ${SPIRIT_DEPTH_LABELS[answers.q10] ?? ''}`,
   ].filter(Boolean).join('\n');
 
-  const depthLines = [
-    answers.q4 != null && `- Body awareness: ${describeSliderDepth(answers.q4)}`,
-    answers.q5         && `- Environment/tools priority: ${describeSpaceRank(answers.q5)}`,
-    answers.q7         && `- Direction clarity: ${describeStoryRank(answers.q7)}`,
-    answers.q8         && `- Values/purpose: ${SPIRIT_DEPTH_LABELS[answers.q8] ?? ''}`,
+  // Qualitative context (not directly scored — use for texture and nuance)
+  const qualSignals = [
+    answers.q1  && `- Orientation pull: chose "${answers.q1 === 'inward' ? 'INWARD (settle, regulate, restore)' : 'FORWARD (build, push, progress)'}"`,
+    answers.q3  && `- Current state texture: "${answers.q3.toUpperCase()}" — ${answers.q3 === 'sharp' ? 'precise, focused, structured' : 'loose, open, less constrained'}`,
+    answers.q6?.length && `- State words chosen: ${answers.q6.join(', ')}`,
   ].filter(Boolean).join('\n');
 
   return `You are writing a Flow Lens Profile for someone in the domain of "${domain}".
 
 The profile identifies where they naturally focus as a performance lever (their "gravity") and where they have a consistent blind spot.
 
-## SCORES
+## PILLAR SCORES
 - Body/emotions/mind: ${scores.self}
 - Environment/tools: ${scores.space}
 - Direction/goals: ${scores.story}
@@ -304,10 +344,11 @@ The profile identifies where they naturally focus as a performance lever (their 
 Gravity (highest score): ${gravity.toUpperCase()} — ${PILLAR_DOMAINS[gravity]}
 Blind side (lowest score): ${blindSide.toUpperCase()} — ${PILLAR_DOMAINS[blindSide]}
 
-## THEIR ANSWER PATTERN
-${voteLines}
+## SCORED SIGNALS
+${scoredSignals}
 
-${depthLines}
+## QUALITATIVE CONTEXT (use for texture, not scoring)
+${qualSignals}
 
 ## PRACTICES TO RECOMMEND (for their blind side)
 Techniques:
