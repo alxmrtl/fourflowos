@@ -64,7 +64,7 @@ export default function FlowLensCard({ initialProfile }: Props) {
   }
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
+    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden text-white">
       {/* Header */}
       <div className="px-5 pt-5 pb-4 border-b border-white/[0.05]">
         <div>
