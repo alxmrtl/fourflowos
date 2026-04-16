@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -11,19 +9,32 @@ export const maxDuration = 60;
 
 type Pillar = 'self' | 'space' | 'story' | 'spirit';
 
+/**
+ * New answer format from Phase B intake.
+ * q1, q2, q3, q6 = instinct tap / image pick pillar votes
+ * q4 = slider 0–1 (SELF body-awareness depth)
+ * q5 = ordered item IDs from DragRank (SPACE depth)
+ * q7 = ordered item IDs from DragRank (STORY depth)
+ * q8 = a/b/c/d plain choice (SPIRIT depth)
+ * q9 = domain context string (no pillar score)
+ */
 interface FlowLensAnswers {
-  q1: Pillar;   // where do you look when something isn't working
-  q2: Pillar;   // when you're at your best, what made the difference
-  q3: Pillar;   // first thing you skip when life gets busy
-  q4: Pillar;   // watching someone struggle, what are they missing
-  q5: Pillar;   // how you explain your stuck periods
-  q6: 'a' | 'b' | 'c' | 'd'; // SELF depth: body/energy relationship
-  q7: 'a' | 'b' | 'c' | 'd'; // SPACE depth: environment/tools relationship
-  q8: 'a' | 'b' | 'c' | 'd'; // STORY depth: goals/direction relationship
-  q9: 'a' | 'b' | 'c' | 'd'; // SPIRIT depth: values/purpose relationship
-  q10: Pillar;  // how you prepare for best work
-  q11: Pillar;  // type of advice you naturally give
-  q12: string;  // domain context: 'creative' | 'career' | 'business' | 'personal'
+  q1?: Pillar;
+  q2?: Pillar;
+  q3?: Pillar;
+  q4?: number;           // 0–1
+  q5?: string[];         // ordered: ['env','tools','feedback','social']
+  q6?: Pillar;
+  q7?: string[];         // ordered: ['purpose','mission','goal','task']
+  q8?: 'a' | 'b' | 'c' | 'd';
+  q9?: string;           // domain
+}
+
+interface AnswerMetadata {
+  instinct_timings?: Partial<Record<'q1' | 'q2' | 'q6', number>>;
+  q4_value?: number;
+  q5_order?: string[];
+  q7_order?: string[];
 }
 
 interface PillarScores {
@@ -33,16 +44,13 @@ interface PillarScores {
   spirit: number;
 }
 
-// Depth scoring: a=strong, b=moderate, c=gap, d=gap
-const DEPTH_STRENGTH: Record<string, number> = { a: 2, b: 1, c: 0, d: 0 };
-
-// Pillar display names for prompt
-const PILLAR_NAMES: Record<Pillar, string> = {
-  self: 'SELF (Body, Emotions, Mind)',
-  space: 'SPACE (Environment, Tools, Systems)',
-  story: 'STORY (Direction, Mission, Narrative)',
-  spirit: 'SPIRIT (Values, Curiosity, Vision)',
-};
+interface StructuredProfile {
+  gravity_bullets: string[];
+  blind_side_bullets: string[];
+  the_move: string;
+  tool_prescription: string;
+  technique_prescriptions: { name: string; prescription: string }[];
+}
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
@@ -56,21 +64,40 @@ async function getUserFromRequest(request: NextRequest): Promise<{ id: string } 
 
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
+/** Map rank position (0-indexed) of a list item to depth score 0–2 */
+function rankToDepth(orderedIds: string[], targetIds: string[]): number {
+  const positions = targetIds
+    .map(id => orderedIds.indexOf(id))
+    .filter(p => p >= 0);
+  if (positions.length === 0) return 1; // neutral fallback
+  const avgPos = positions.reduce((a, b) => a + b, 0) / positions.length;
+  if (avgPos <= 1.5) return 2;
+  if (avgPos <= 2.5) return 1;
+  return 0;
+}
+
+/** Map slider 0–1 to depth score 0–2 */
+function sliderToDepth(value: number): number {
+  if (value > 0.66) return 2;
+  if (value > 0.33) return 1;
+  return 0;
+}
+
+const SPIRIT_DEPTH: Record<string, number> = { a: 2, b: 1, c: 0, d: 0 };
+
 function scorePillars(answers: FlowLensAnswers): PillarScores {
   const scores: PillarScores = { self: 0, space: 0, story: 0, spirit: 0 };
 
-  // Q1–Q5, Q10–Q11: direct pillar votes (+2 each for primary signal)
-  const directPillarQuestions: (keyof FlowLensAnswers)[] = ['q1', 'q2', 'q3', 'q4', 'q5', 'q10', 'q11'];
-  for (const q of directPillarQuestions) {
-    const p = answers[q] as Pillar;
-    if (p in scores) scores[p] += 2;
+  // Pillar votes: q1, q2, q3 (image pick), q6 — +2 each
+  for (const q of [answers.q1, answers.q2, answers.q3, answers.q6] as (Pillar | undefined)[]) {
+    if (q && q in scores) scores[q] += 2;
   }
 
-  // Q6–Q9: within-pillar depth (+bonus for strength, -penalty for gap)
-  scores.self   += DEPTH_STRENGTH[answers.q6] ?? 0;
-  scores.space  += DEPTH_STRENGTH[answers.q7] ?? 0;
-  scores.story  += DEPTH_STRENGTH[answers.q8] ?? 0;
-  scores.spirit += DEPTH_STRENGTH[answers.q9] ?? 0;
+  // Depth signals
+  scores.self   += answers.q4 != null ? sliderToDepth(answers.q4) : 1;
+  scores.space  += answers.q5 ? rankToDepth(answers.q5, ['env', 'tools']) : 1;
+  scores.story  += answers.q7 ? rankToDepth(answers.q7, ['goal', 'task']) : 1;
+  scores.spirit += SPIRIT_DEPTH[answers.q8 ?? ''] ?? 1;
 
   return scores;
 }
@@ -84,7 +111,7 @@ function deriveGravityAndBlindSide(scores: PillarScores): { gravity: Pillar; bli
   };
 }
 
-// ─── Technique recommendations ────────────────────────────────────────────────
+// ─── Recommendations ──────────────────────────────────────────────────────────
 
 interface Recommendation {
   type: 'technique' | 'tool';
@@ -93,68 +120,147 @@ interface Recommendation {
   path?: string;
 }
 
-// Curated technique samples per pillar — injected into prompt for concrete recommendations.
-// These are real technique slugs from the compendium.
 const PILLAR_TECHNIQUES: Record<Pillar, { title: string; path: string; description: string }[]> = {
   self: [
     { title: 'Movement Primer', path: 'compendium/framework/SELF/Focused-Body/_techniques/movement-primer.md', description: 'Brief physical activation before cognitive work' },
-    { title: 'Observer Redirect', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/observer-redirect.md', description: 'Detach from reactive patterns and redirect energy' },
     { title: 'Body State Check', path: 'compendium/framework/SELF/Focused-Body/_techniques/body-state-check.md', description: 'Rapid somatic scan to calibrate before working' },
+    { title: 'Observer Redirect', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/observer-redirect.md', description: 'Detach from reactive patterns and redirect energy' },
     { title: 'Breath Regulation', path: 'compendium/framework/SELF/Focused-Body/_techniques/breath-regulation.md', description: 'Nervous system reset via deliberate breathing' },
     { title: 'Pre-Session Clearance', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/pre-session-clearance.md', description: 'Release emotional residue before entering flow work' },
   ],
   space: [
-    { title: 'Compression Over Expansion', path: 'compendium/framework/SELF/Open-Mind/_techniques/compression-over-expansion.md', description: 'Narrow scope to amplify signal' },
-    { title: 'Overchoice Elimination', path: 'compendium/framework/SELF/Open-Mind/_techniques/overchoice-elimination.md', description: 'Remove decision points that fragment attention' },
     { title: 'Signal vs Noise Filter', path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/signal-vs-noise-filter.md', description: 'Audit which inputs actually inform action' },
     { title: 'Micro-Review Loop', path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/micro-review-loop.md', description: 'Short feedback cycles that close gaps fast' },
+    { title: 'Compression Over Expansion', path: 'compendium/framework/SELF/Open-Mind/_techniques/compression-over-expansion.md', description: 'Narrow scope to amplify signal' },
+    { title: 'Overchoice Elimination', path: 'compendium/framework/SELF/Open-Mind/_techniques/overchoice-elimination.md', description: 'Remove decision points that fragment attention' },
     { title: 'Streak Architecture', path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/streak-architecture.md', description: 'Make progress visible so momentum compounds' },
   ],
   story: [
-    { title: 'Open Loop Closure', path: 'compendium/framework/SELF/Open-Mind/_techniques/open-loop-closure.md', description: 'Close incomplete tasks that drain cognitive background' },
     { title: 'Sub-Goal Decomposition', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/sub-goal-decomposition.md', description: 'Break distant targets into near-term wins' },
     { title: 'Clarity Over Intensity', path: 'compendium/framework/SELF/Open-Mind/_techniques/clarity-over-intensity.md', description: 'Precision of aim before force of effort' },
+    { title: 'Open Loop Closure', path: 'compendium/framework/SELF/Open-Mind/_techniques/open-loop-closure.md', description: 'Close incomplete tasks that drain cognitive background' },
     { title: 'DMN-Goal Engagement', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/dmn-goal-engagement.md', description: 'Use default mode network for goal consolidation' },
     { title: 'Transition Ritual', path: 'compendium/framework/SELF/Open-Mind/_techniques/transition-ritual.md', description: 'Bridge between modes — signal to the brain what comes next' },
   ],
   spirit: [
     { title: 'Flow Channel Formula', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/flow-channel-formula.md', description: 'Calibrate challenge-skill balance for genuine pull' },
-    { title: 'Micro-Completion Architecture', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/micro-completion-architecture.md', description: 'Design work so small wins are structurally guaranteed' },
     { title: 'Pattern Literacy', path: 'compendium/framework/SELF/Open-Mind/_techniques/pattern-literacy.md', description: 'Read recurring themes in your work and energy' },
     { title: 'Progress Ledger', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/progress-ledger.md', description: 'Track invisible effort to keep motivation signal clean' },
+    { title: 'Micro-Completion Architecture', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/micro-completion-architecture.md', description: 'Design work so small wins are structurally guaranteed' },
     { title: 'Ambiguity Control', path: 'compendium/framework/SELF/Open-Mind/_techniques/ambiguity-control.md', description: 'Define what is known so the unknown stops leaking energy' },
   ],
 };
 
-// Your Practice tools — mapped to each pillar
 const PRACTICE_TOOLS: Record<Pillar, { title: string; description: string }> = {
-  self: { title: 'FlowZone', description: 'Deep work timer with breathwork — builds physiological coherence before and during focus sessions' },
-  space: { title: 'FlowRead', description: 'Speed reading trainer — builds feedback density and attention through deliberate practice' },
-  spirit: { title: 'FlowSpark', description: 'Curiosity mapping — surfaces genuine pulls and intersection patterns that reveal authentic flow channels' },
-  story: { title: 'Training', description: 'Compendium spaced repetition — daily reps across all 12 states build systematic framework fluency' },
+  self:   { title: 'FlowZone',  description: 'Deep work timer — makes each focus rep directional, channels body awareness into deliberate sessions' },
+  space:  { title: 'FlowRead',  description: 'Speed reading trainer — builds sustained attention and feedback density through deliberate practice' },
+  story:  { title: 'Training',  description: 'Compendium spaced repetition — daily reps build systematic fluency in what direction and clarity require' },
+  spirit: { title: 'FlowSpark', description: 'Curiosity mapping — surfaces genuine pulls and patterns that reveal what actually matters to you' },
 };
 
-function getRecommendations(blindSide: Pillar, domain: string): Recommendation[] {
+function getRecommendations(blindSide: Pillar): Recommendation[] {
   const techniques = PILLAR_TECHNIQUES[blindSide].slice(0, 2);
   const tool = PRACTICE_TOOLS[blindSide];
-
-  const recs: Recommendation[] = techniques.map(t => ({
-    type: 'technique' as const,
-    title: t.title,
-    pillar: blindSide,
-    path: t.path,
-  }));
-
-  recs.push({
-    type: 'tool',
-    title: tool.title,
-    pillar: blindSide,
-  });
-
-  return recs;
+  return [
+    ...techniques.map(t => ({ type: 'technique' as const, title: t.title, pillar: blindSide, path: t.path })),
+    { type: 'tool' as const, title: tool.title, pillar: blindSide },
+  ];
 }
 
-// ─── Generation prompt ────────────────────────────────────────────────────────
+// ─── Structured output tool ───────────────────────────────────────────────────
+
+const PROFILE_TOOL: Anthropic.Tool = {
+  name: 'generate_flow_lens_profile',
+  description: 'Output the structured Flow Lens profile as JSON',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      gravity_bullets: {
+        type: 'array',
+        description: '3 bullets about the person\'s gravity pillar — one tight sentence each, subject "You"',
+        items: { type: 'string' },
+        minItems: 3,
+        maxItems: 3,
+      },
+      blind_side_bullets: {
+        type: 'array',
+        description: '3 bullets about the person\'s blind-side pillar — one tight sentence each, honest about cost',
+        items: { type: 'string' },
+        minItems: 3,
+        maxItems: 3,
+      },
+      the_move: {
+        type: 'string',
+        description: '2 sentences: how the gravity is creating the blind side, and the one move that activates both',
+      },
+      tool_prescription: {
+        type: 'string',
+        description: '1 sentence: why this specific tool for this person, tied to their specific answer pattern',
+      },
+      technique_prescriptions: {
+        type: 'array',
+        description: '2 items, one per technique',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Exact technique name as provided' },
+            prescription: { type: 'string', description: '1 sentence: what to do and why for this specific person' },
+          },
+          required: ['name', 'prescription'],
+        },
+        minItems: 2,
+        maxItems: 2,
+      },
+    },
+    required: ['gravity_bullets', 'blind_side_bullets', 'the_move', 'tool_prescription', 'technique_prescriptions'],
+  },
+};
+
+// ─── Prompt ───────────────────────────────────────────────────────────────────
+
+function describeSliderDepth(value: number): string {
+  if (value > 0.75) return 'Notices physical depletion quickly — usually within hours — and acts on it';
+  if (value > 0.5)  return 'Usually connects slumps to something physical within a day or two';
+  if (value > 0.25) return 'Realizes the physical connection in hindsight, after the slump has passed';
+  return 'Rarely connects under-performance or mood to physical state';
+}
+
+function describeSpaceRank(orderedIds: string[]): string {
+  const top2 = orderedIds.slice(0, 2).join(' and ');
+  const map: Record<string, string> = {
+    env: 'clear workspace',
+    tools: 'exact right tool with no friction',
+    feedback: 'known feedback signal to track',
+    social: 'protected time (no interruptions)',
+  };
+  const labels = orderedIds.slice(0, 2).map(id => map[id] ?? id);
+  return `Ranked "${labels.join('" and "')}" as most important for their next session`;
+}
+
+function describeStoryRank(orderedIds: string[]): string {
+  const map: Record<string, string> = {
+    purpose: 'long-term why',
+    mission: '90-day target',
+    goal: 'what they\'re shipping this week',
+    task: 'what they\'re doing next hour',
+  };
+  const topTwo = orderedIds.slice(0, 2).map(id => map[id] ?? id);
+  return `Clearest on: "${topTwo.join('" and "')}" — less clear on: "${orderedIds.slice(2).map(id => map[id] ?? id).join('" and "')}"`;
+}
+
+const SPIRIT_DEPTH_LABELS: Record<string, string> = {
+  a: 'Strong inner compass — knows when something is off before they can say why',
+  b: 'Values matter deeply but rarely surface unless something violates them',
+  c: 'Purpose feels clear in good moments but vague when grinding',
+  d: 'Purpose is something they\'re still actively working out',
+};
+
+const PILLAR_DOMAINS: Record<Pillar, string> = {
+  self:   'body, emotions, and mental state',
+  space:  'environment, tools, and feedback systems',
+  story:  'direction, goals, and narrative',
+  spirit: 'values, curiosity, and purpose',
+};
 
 function buildPrompt(
   answers: FlowLensAnswers,
@@ -163,110 +269,59 @@ function buildPrompt(
   blindSide: Pillar,
   recommendations: Recommendation[],
 ): string {
-  const depthAnswerLabels: Record<string, Record<string, string>> = {
-    q6: {
-      a: 'Notices physical depletion quickly — usually within a day — and acts on it',
-      b: 'Takes a few days to connect slumps to something physical, then adjusts',
-      c: 'Usually realizes the physical connection in hindsight, after the slump has passed',
-      d: 'Rarely connects under-performance or mood to physical state',
-    },
-    q7: {
-      a: 'Constantly optimizing environment — enjoys designing the setup',
-      b: 'Functional minimalist — uses what works, doesn\'t overthink it',
-      c: 'Knows environment affects them but rarely addresses it',
-      d: 'Overwhelmed by setup friction but doesn\'t prioritize fixing it',
-    },
-    q8: {
-      a: 'Strong clarity — always knows what they\'re pointed at',
-      b: 'Sense of movement — direction matters more than a fixed target',
-      c: 'Vision is clear but near-term missions feel fuzzy',
-      d: 'Direction drifts when deep in execution',
-    },
-    q9: {
-      a: 'Strong inner compass — knows when something is off before they can say why',
-      b: 'Values matter deeply but rarely surface unless violated',
-      c: 'Purpose feels clear in good moments but vague when grinding',
-      d: 'Purpose is something they\'re still working out',
-    },
-  };
+  const techniques = recommendations.filter(r => r.type === 'technique');
+  const toolRec    = recommendations.find(r => r.type === 'tool');
+  const domain     = answers.q9 ?? 'general';
 
-  const pillarVoteQuestions = [
-    { q: 'q1', label: 'When something isn\'t working, they look first at', answer: PILLAR_NAMES[answers.q1] },
-    { q: 'q2', label: 'When at their best, what made the difference', answer: PILLAR_NAMES[answers.q2] },
-    { q: 'q3', label: 'First thing they skip when busy', answer: PILLAR_NAMES[answers.q3] },
-    { q: 'q4', label: 'What they think struggling people are missing', answer: PILLAR_NAMES[answers.q4] },
-    { q: 'q5', label: 'How they narrate their stuck periods', answer: PILLAR_NAMES[answers.q5] },
-    { q: 'q10', label: 'First move when they lose momentum mid-session', answer: PILLAR_NAMES[answers.q10] },
-    { q: 'q11', label: 'Type of advice they naturally give others', answer: PILLAR_NAMES[answers.q11] },
-  ];
-
-  const techList = recommendations
-    .filter(r => r.type === 'technique')
-    .map(r => `• ${r.title}: ${PILLAR_TECHNIQUES[blindSide as Pillar].find(t => t.title === r.title)?.description ?? ''}`)
+  const techList = techniques
+    .map(r => `• ${r.title}: ${PILLAR_TECHNIQUES[blindSide].find(t => t.title === r.title)?.description ?? ''}`)
     .join('\n');
 
-  const toolRec = recommendations.find(r => r.type === 'tool');
-  const domain = answers.q12;
+  const voteLines = [
+    answers.q1 && `- When something isn't working, they look first at: ${PILLAR_DOMAINS[answers.q1]}`,
+    answers.q2 && `- When at their best, what made the difference: ${PILLAR_DOMAINS[answers.q2]}`,
+    answers.q3 && `- Visual resonance test picked: ${PILLAR_DOMAINS[answers.q3]}`,
+    answers.q6 && `- First move when they lose momentum: ${PILLAR_DOMAINS[answers.q6]}`,
+  ].filter(Boolean).join('\n');
 
-  return `You are writing a Flow Lens Profile — a short, plain-language assessment of how someone is wired for performance and flow.
+  const depthLines = [
+    answers.q4 != null && `- Body awareness: ${describeSliderDepth(answers.q4)}`,
+    answers.q5         && `- Environment/tools priority: ${describeSpaceRank(answers.q5)}`,
+    answers.q7         && `- Direction clarity: ${describeStoryRank(answers.q7)}`,
+    answers.q8         && `- Values/purpose: ${SPIRIT_DEPTH_LABELS[answers.q8] ?? ''}`,
+  ].filter(Boolean).join('\n');
 
-The Flow Lens identifies where a person naturally gravitates as a lever (their strongest pattern) and where they have a consistent blind spot (what they systematically underweight).
+  return `You are writing a Flow Lens Profile for someone in the domain of "${domain}".
 
-## FRAMEWORK
-The four pillars:
-- SELF: Body, emotions, mind — the reception layer. How clear is the vessel?
-- SPACE: Environment, tools, systems — the transmission layer. Is the setup supporting signal flow?
-- STORY: Direction, mission, narrative — temporal direction. Do they know where they're going?
-- SPIRIT: Values, curiosity, vision — timeless direction. Are they connected to what matters?
+The profile identifies where they naturally focus as a performance lever (their "gravity") and where they have a consistent blind spot.
 
-## INTAKE DATA
+## SCORES
+- Body/emotions/mind: ${scores.self}
+- Environment/tools: ${scores.space}
+- Direction/goals: ${scores.story}
+- Values/purpose: ${scores.spirit}
 
-Pillar scores (from 12 questions):
-- SELF: ${scores.self}
-- SPACE: ${scores.space}
-- STORY: ${scores.story}
-- SPIRIT: ${scores.spirit}
+Gravity (highest score): ${gravity.toUpperCase()} — ${PILLAR_DOMAINS[gravity]}
+Blind side (lowest score): ${blindSide.toUpperCase()} — ${PILLAR_DOMAINS[blindSide]}
 
-Natural Gravity (highest): ${gravity.toUpperCase()}
-Blind Side (lowest): ${blindSide.toUpperCase()}
+## THEIR ANSWER PATTERN
+${voteLines}
 
-Domain context: ${domain}
+${depthLines}
 
-Pillar-mapping answers:
-${pillarVoteQuestions.map(v => `- ${v.label}: ${v.answer}`).join('\n')}
-
-Within-pillar depth answers:
-- SELF depth: ${depthAnswerLabels.q6[answers.q6]}
-- SPACE depth: ${depthAnswerLabels.q7[answers.q7]}
-- STORY depth: ${depthAnswerLabels.q8[answers.q8]}
-- SPIRIT depth: ${depthAnswerLabels.q9[answers.q9]}
-
-## RECOMMENDED PRACTICES (for Blind Side — ${blindSide.toUpperCase()})
-Techniques available:
+## PRACTICES TO RECOMMEND (for their blind side)
+Techniques:
 ${techList}
 Tool: ${toolRec ? `${toolRec.title} — ${PRACTICE_TOOLS[blindSide].description}` : ''}
 
-## OUTPUT FORMAT
-Write the profile in this exact structure, using the section headers as written:
-
-**YOUR GRAVITY: [Pillar Name in all caps]**
-[2–3 sentences. How they instinctively see the world through this lens. What they're naturally competent at. The strength that is also the constraint.]
-
-**YOUR BLIND SIDE: [Pillar Name in all caps]**
-[2–3 sentences. What they systematically underweight. The cost — not as a weakness list, but as "here's what you're consistently missing and what it's costing you." Be specific to their actual answers.]
-
-**THE COMPOUNDING MOVE**
-[1 paragraph. First identify the specific way this person's gravity is actively creating their blind side — not just "they underweight X" but how their gravity, applied in their domain, is functioning as a substitution for what the blind side would provide. Then name the one move that would activate both simultaneously: something they can do *through* their gravity that starts to develop the gap. If the insight could apply to any person with this gravity/blind-side combination, rewrite it — it must be derivable only from this person's specific answer pattern.]
-
-**PRACTICES**
-[List 2–3 specific practices. First the compendium techniques (name them exactly as given). Then the tool. One sentence per practice — what it does, not what it is. Domain context: ${domain}.]
-
-## TONE RULES
-- Plain language. No jargon. No "Flow Keys" or "pillars" vocabulary in the output — just name the domain directly (body, environment, direction, purpose).
-- Direct and specific. Not generic self-help. This person gave you specific answers — reflect them back with precision.
-- Warm but unsparing. Don't soften the blind side. Be honest about what it costs.
-- Length: ~300 words total. Dense, not padded.
-- Do not use bullet points except in the Practices section.`;
+## WRITING RULES
+- No framework jargon: no "pillar", "gravity", "blind side", "SELF/SPACE/STORY/SPIRIT", "Flow Key", "FourFlow"
+- Use plain language — name the domain directly (body, environment, direction, purpose)
+- Each bullet: one tight sentence. Subject "You". Direct and specific to their answer pattern.
+- "the_move": exactly 2 sentences. First: how their gravity is actively functioning as a substitute for what the blind side would provide. Second: the one concrete move that activates both simultaneously. Must be derivable only from THIS person's specific answers — not generic for this gravity/blind-side combination.
+- "tool_prescription": 1 sentence — reference something specific in their answer pattern
+- "technique_prescriptions": 1 sentence each — what to do and why for THIS person specifically
+- Warm but unsparing. Don't soften the blind side. Be honest about what it costs.`;
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
@@ -277,27 +332,34 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
   }
 
-  let body: { answers: FlowLensAnswers };
+  let body: { answers: FlowLensAnswers; answer_metadata?: AnswerMetadata };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ success: false, error: 'Invalid request body' }, { status: 400 });
   }
 
-  const { answers } = body;
+  const { answers, answer_metadata } = body;
   if (!answers || typeof answers !== 'object') {
     return NextResponse.json({ success: false, error: 'answers required' }, { status: 400 });
   }
 
   // Score pillars
-  const scores = scorePillars(answers);
+  const scores   = scorePillars(answers);
   const { gravity, blindSide } = deriveGravityAndBlindSide(scores);
-  const recommendations = getRecommendations(blindSide, answers.q12 ?? 'general');
+  const recommendations = getRecommendations(blindSide);
 
-  // Save intake
+  // Save intake (with answer_metadata if provided)
+  const intakePayload: Record<string, unknown> = {
+    user_id: user.id,
+    answers,
+    pillar_scores: scores,
+  };
+  if (answer_metadata) intakePayload.answer_metadata = answer_metadata;
+
   const { data: intake, error: intakeError } = await supabase
     .from('flow_lens_intakes')
-    .insert({ user_id: user.id, answers, pillar_scores: scores })
+    .insert(intakePayload)
     .select('id')
     .single();
 
@@ -306,36 +368,44 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Failed to save intake' }, { status: 500 });
   }
 
-  // Generate profile via Claude Haiku
+  // Generate profile via Claude Sonnet with structured tool_use
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const prompt = buildPrompt(answers, scores, gravity, blindSide, recommendations);
+  const prompt    = buildPrompt(answers, scores, gravity, blindSide, recommendations);
 
-  let profileText = '';
+  let structured: StructuredProfile | null = null;
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 800,
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1024,
+      tools: [PROFILE_TOOL],
+      tool_choice: { type: 'tool', name: 'generate_flow_lens_profile' },
       messages: [{ role: 'user', content: prompt }],
     });
-    profileText = message.content[0].type === 'text' ? message.content[0].text : '';
+    const toolBlock = message.content.find(b => b.type === 'tool_use');
+    if (toolBlock?.type === 'tool_use') {
+      structured = toolBlock.input as StructuredProfile;
+    }
   } catch (err) {
     console.error('[flow-lens] Claude error:', err);
     return NextResponse.json({ success: false, error: 'Generation failed' }, { status: 500 });
   }
 
-  if (!profileText) {
+  if (!structured) {
     return NextResponse.json({ success: false, error: 'Empty generation response' }, { status: 500 });
   }
 
-  // Parse structured sections from the generated text
   const profileJson = {
     gravity,
     blind_side: blindSide,
     pillar_scores: scores,
-    sections: parseProfileSections(profileText),
+    gravity_bullets:          structured.gravity_bullets,
+    blind_side_bullets:       structured.blind_side_bullets,
+    the_move:                 structured.the_move,
+    tool_prescription:        structured.tool_prescription,
+    technique_prescriptions:  structured.technique_prescriptions,
   };
 
-  // Save profile (upsert — replace previous if exists for this user)
+  // Upsert profile (replace previous if exists for this user)
   const { data: existing } = await supabase
     .from('flow_lens_profiles')
     .select('id')
@@ -343,20 +413,21 @@ export async function POST(request: NextRequest) {
     .limit(1)
     .maybeSingle();
 
+  const MODEL = 'claude-sonnet-4-6';
   let profileId: string;
 
   if (existing?.id) {
     const { error } = await supabase
       .from('flow_lens_profiles')
       .update({
-        intake_id: intake.id,
-        gravity_pillar: gravity,
+        intake_id:         intake.id,
+        gravity_pillar:    gravity,
         blind_side_pillar: blindSide,
-        profile_text: profileText,
-        profile_json: profileJson,
+        profile_text:      JSON.stringify(structured),
+        profile_json:      profileJson,
         recommendations,
-        model: 'claude-haiku-4-5-20251001',
-        generated_at: new Date().toISOString(),
+        model:             MODEL,
+        generated_at:      new Date().toISOString(),
       })
       .eq('id', existing.id);
     if (error) {
@@ -368,14 +439,14 @@ export async function POST(request: NextRequest) {
     const { data: newProfile, error } = await supabase
       .from('flow_lens_profiles')
       .insert({
-        user_id: user.id,
-        intake_id: intake.id,
-        gravity_pillar: gravity,
+        user_id:           user.id,
+        intake_id:         intake.id,
+        gravity_pillar:    gravity,
         blind_side_pillar: blindSide,
-        profile_text: profileText,
-        profile_json: profileJson,
+        profile_text:      JSON.stringify(structured),
+        profile_json:      profileJson,
         recommendations,
-        model: 'claude-haiku-4-5-20251001',
+        model:             MODEL,
       })
       .select('id')
       .single();
@@ -389,30 +460,13 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     success: true,
     profile: {
-      id: profileId,
-      gravity_pillar: gravity,
+      id:                profileId,
+      gravity_pillar:    gravity,
       blind_side_pillar: blindSide,
-      profile_text: profileText,
-      profile_json: profileJson,
+      profile_text:      JSON.stringify(structured),
+      profile_json:      profileJson,
       recommendations,
-      generated_at: new Date().toISOString(),
+      generated_at:      new Date().toISOString(),
     },
   });
-}
-
-function parseProfileSections(text: string): Record<string, string> {
-  const sections: Record<string, string> = {};
-  const sectionPatterns = [
-    { key: 'gravity', pattern: /\*\*YOUR GRAVITY[^*]*\*\*\s*([\s\S]*?)(?=\*\*YOUR BLIND SIDE|\*\*THE COMPOUNDING|\*\*PRACTICES|$)/i },
-    { key: 'blind_side', pattern: /\*\*YOUR BLIND SIDE[^*]*\*\*\s*([\s\S]*?)(?=\*\*THE COMPOUNDING|\*\*PRACTICES|$)/i },
-    { key: 'compounding_move', pattern: /\*\*THE COMPOUNDING MOVE\*\*\s*([\s\S]*?)(?=\*\*PRACTICES|$)/i },
-    { key: 'practices', pattern: /\*\*PRACTICES\*\*\s*([\s\S]*?)$/i },
-  ];
-
-  for (const { key, pattern } of sectionPatterns) {
-    const match = text.match(pattern);
-    if (match?.[1]) sections[key] = match[1].trim();
-  }
-
-  return sections;
 }

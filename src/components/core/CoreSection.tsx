@@ -5,17 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
 import FlowLensCard from './FlowLensCard';
 import EsotericCard from './EsotericCard';
-
-interface FlowLensProfile {
-  id: string;
-  gravity_pillar: string;
-  blind_side_pillar: string;
-  profile_text: string;
-  profile_json: Record<string, unknown> | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  recommendations: any[] | null;
-  generated_at: string;
-}
+import { type FlowLensDisplayProfile } from './flow-lens-demo-profile';
 
 interface EsotericProfile {
   id: string;
@@ -26,7 +16,7 @@ interface EsotericProfile {
 
 export default function CoreSection({ mode }: { mode?: 'lens' | 'esoteric' }) {
   const { user } = useAuth();
-  const [flowLens, setFlowLens] = useState<FlowLensProfile | null>(null);
+  const [flowLens, setFlowLens] = useState<FlowLensDisplayProfile | null>(null);
   const [esoteric, setEsoteric] = useState<EsotericProfile | null>(null);
   const [loading, setLoading] = useState(true);
 

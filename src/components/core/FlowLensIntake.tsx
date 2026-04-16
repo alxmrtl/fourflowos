@@ -1,178 +1,82 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AMETHYST, STEEL, CORAL, SAGE, GRADIENTS } from '@/styles/brand-colors';
+import { AMETHYST, STEEL } from '@/styles/brand-colors';
+import InstinctTap from './intake/InstinctTap';
+import ImagePick from './intake/ImagePick';
+import SliderQuestion from './intake/SliderQuestion';
+import DragRank from './intake/DragRank';
 
 type Pillar = 'self' | 'space' | 'story' | 'spirit';
 type DepthAnswer = 'a' | 'b' | 'c' | 'd';
 
-interface Answers {
-  q1?: Pillar; q2?: Pillar; q3?: Pillar; q4?: Pillar; q5?: Pillar;
-  q6?: DepthAnswer; q7?: DepthAnswer; q8?: DepthAnswer; q9?: DepthAnswer;
-  q10?: Pillar; q11?: Pillar; q12?: string;
+interface NewAnswers {
+  q1?: Pillar;          // instinct tap — pillar vote
+  q2?: Pillar;          // instinct tap — pillar vote
+  q3?: Pillar;          // image pick — pillar vote
+  q4?: number;          // slider 0–1 — SELF depth
+  q5?: string[];        // drag rank — SPACE depth
+  q6?: Pillar;          // instinct tap — pillar vote
+  q7?: string[];        // drag rank — STORY depth
+  q8?: DepthAnswer;     // plain choice — SPIRIT depth
+  q9?: string;          // domain context (distractor)
 }
 
-interface Question {
-  id: keyof Answers;
-  text: string;
-  options: { value: string; label: string }[];
+interface AnswerMetadata {
+  instinct_timings: Partial<Record<'q1' | 'q2' | 'q6', number>>;
+  q4_value?: number;
+  q5_order?: string[];
+  q7_order?: string[];
 }
 
-const PILLAR_COLORS: Record<Pillar, string> = {
-  self: CORAL,
-  space: SAGE,
-  story: STEEL,
-  spirit: AMETHYST,
-};
-
-const QUESTIONS: Question[] = [
-  {
-    id: 'q1',
-    text: 'When something important isn\'t working, where do you instinctively look first?',
-    options: [
-      { value: 'self',   label: 'My body, energy, or emotional state' },
-      { value: 'space',  label: 'My environment, tools, or setup' },
-      { value: 'story',  label: 'My goals, direction, or the plan' },
-      { value: 'spirit', label: 'My deeper purpose — whether this still matters' },
-    ],
-  },
-  {
-    id: 'q2',
-    text: 'When you\'re at your best, what made the difference?',
-    options: [
-      { value: 'self',   label: 'I was well-rested, moving, emotionally regulated' },
-      { value: 'space',  label: 'My environment was clean and my tools were dialed in' },
-      { value: 'story',  label: 'I had total clarity on what I was aiming at' },
-      { value: 'spirit', label: 'I felt deeply connected to why this mattered' },
-    ],
-  },
-  {
-    id: 'q3',
-    text: 'The first thing you skip when life gets busy:',
-    options: [
-      { value: 'self',   label: 'Sleep, movement, emotional processing' },
-      { value: 'space',  label: 'Keeping my workspace and systems clean' },
-      { value: 'story',  label: 'Checking whether the direction still makes sense' },
-      { value: 'spirit', label: 'Reconnecting to what actually matters to me' },
-    ],
-  },
-  {
-    id: 'q4',
-    text: 'Watching someone else struggle, you most often think they\'re missing:',
-    options: [
-      { value: 'self',   label: 'Self-awareness — they\'re depleted or emotionally reactive' },
-      { value: 'space',  label: 'Better tools or a cleaner environment' },
-      { value: 'story',  label: 'A clear goal — they\'re working without real direction' },
-      { value: 'spirit', label: 'They\'ve lost the thread back to what it\'s actually for' },
-    ],
-  },
-  {
-    id: 'q5',
-    text: 'When you explain your stuck periods to yourself, it\'s usually:',
-    options: [
-      { value: 'self',   label: '"I was depleted — not in a good state"' },
-      { value: 'space',  label: '"The setup wasn\'t right — too much friction"' },
-      { value: 'story',  label: '"I lost the thread — wasn\'t sure what I was aiming for"' },
-      { value: 'spirit', label: '"I\'d lost the signal — nothing felt worth doing because I couldn\'t locate what I actually cared about"' },
-    ],
-  },
-  {
-    id: 'q6',
-    text: 'When you\'ve been off lately — under-performing, irritable, foggy — how long before you connect it to something physical?',
-    options: [
-      { value: 'a', label: 'Within a day — I notice it and act on it' },
-      { value: 'b', label: 'A few days — I figure it out eventually and adjust' },
-      { value: 'c', label: 'I usually realize it in hindsight, after the slump has passed' },
-      { value: 'd', label: 'Honestly, I rarely make that connection' },
-    ],
-  },
-  {
-    id: 'q7',
-    text: 'Your relationship with your environment and tools:',
-    options: [
-      { value: 'a', label: 'Constantly optimizing — I enjoy designing the setup' },
-      { value: 'b', label: 'Functional minimalist — I use what works and don\'t overthink it' },
-      { value: 'c', label: 'I know my environment affects me but rarely address it' },
-      { value: 'd', label: 'Overwhelmed by setup friction, don\'t prioritize fixing it' },
-    ],
-  },
-  {
-    id: 'q8',
-    text: 'Your relationship with goals and direction:',
-    options: [
-      { value: 'a', label: 'Strong clarity — I always know what I\'m pointed at' },
-      { value: 'b', label: 'Sense of movement — direction matters more than a fixed target' },
-      { value: 'c', label: 'The vision is clear but near-term missions feel fuzzy' },
-      { value: 'd', label: 'Direction tends to drift when I\'m deep in execution' },
-    ],
-  },
-  {
-    id: 'q9',
-    text: 'Your relationship with values and purpose:',
-    options: [
-      { value: 'a', label: 'Strong inner compass — I know when something is off before I can explain why' },
-      { value: 'b', label: 'Values matter deeply but rarely surface unless something violates them' },
-      { value: 'c', label: 'Purpose feels clear in good moments but vague when I\'m grinding' },
-      { value: 'd', label: 'Purpose is something I\'m still actively working out' },
-    ],
-  },
-  {
-    id: 'q10',
-    text: 'When you lose momentum mid-session, your first move is usually:',
-    options: [
-      { value: 'self',   label: 'Step away physically — move, breathe, reset the body' },
-      { value: 'space',  label: 'Adjust the environment — change the setup or location' },
-      { value: 'story',  label: 'Reorient — reconnect to what I\'m actually trying to accomplish' },
-      { value: 'spirit', label: 'Pause and ask whether this is still worth the energy' },
-    ],
-  },
-  {
-    id: 'q11',
-    text: 'The type of advice you most naturally give others:',
-    options: [
-      { value: 'self',   label: '"Take care of yourself — rest, move, regulate"' },
-      { value: 'space',  label: '"Here\'s a tool or workflow that would help"' },
-      { value: 'story',  label: '"Let\'s get clear on what you actually want"' },
-      { value: 'spirit', label: '"Why does this matter to you? Is this still yours?"' },
-    ],
-  },
-  {
-    id: 'q12',
-    text: 'What\'s your primary domain right now?',
-    options: [
-      { value: 'creative work',   label: 'Creative work' },
-      { value: 'career/professional', label: 'Career / Professional' },
-      { value: 'business/entrepreneurship', label: 'Business / Building something' },
-      { value: 'personal growth', label: 'Personal growth / Inner work' },
-    ],
-  },
-];
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 interface FlowLensIntakeProps {
-  onSubmit: (answers: Answers) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSubmit: (answers: any) => void;
   onCancel: () => void;
   submitting: boolean;
 }
 
 export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowLensIntakeProps) {
   const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState<Answers>({});
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
+  const [answers, setAnswers] = useState<NewAnswers>({});
+  const [metadata, setMetadata] = useState<AnswerMetadata>({ instinct_timings: {} });
 
-  const q = QUESTIONS[current];
-  const totalQuestions = QUESTIONS.length;
-  const progress = current / totalQuestions;
+  // Shuffle options for PlainChoice questions once on mount
+  const q8Options = useMemo(() => shuffle([
+    { value: 'a', label: "Strong inner compass — I know when something is off before I can explain why" },
+    { value: 'b', label: "Values matter deeply but rarely surface unless something violates them" },
+    { value: 'c', label: "Purpose feels clear in good moments but vague when I'm grinding" },
+    { value: 'd', label: "Purpose is something I'm still actively working out" },
+  ]), []);
 
-  function selectAnswer(value: string) {
-    const newAnswers = { ...answers, [q.id]: value as Pillar & DepthAnswer };
-    setAnswers(newAnswers);
+  const q9Options = useMemo(() => shuffle([
+    { value: 'creative work',             label: 'Creative work' },
+    { value: 'career/professional',        label: 'Career / Professional' },
+    { value: 'business/entrepreneurship', label: 'Business / Building something' },
+    { value: 'personal growth',           label: 'Personal growth / Inner work' },
+  ]), []);
 
-    if (current < totalQuestions - 1) {
+  const TOTAL = 9;
+  const progress = current / TOTAL;
+
+  function advance(newAnswers: NewAnswers) {
+    if (current < TOTAL - 1) {
       setDirection('forward');
-      setTimeout(() => setCurrent(c => c + 1), 160);
+      setAnswers(newAnswers);
+      setCurrent(c => c + 1);
     } else {
-      onSubmit(newAnswers as Required<Answers>);
+      onSubmit({ answers: newAnswers, answer_metadata: metadata });
     }
   }
 
@@ -185,10 +89,183 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
     }
   }
 
-  const isPillarQuestion = ['q1','q2','q3','q4','q5','q10','q11'].includes(q.id);
+  // ── Question renderers ───────────────────────────────────────────────────────
+
+  function renderQ1() {
+    return (
+      <InstinctTap
+        text="When something important isn't working, where do you look first?"
+        options={[
+          { value: 'self',   label: 'My body, energy, or emotional state' },
+          { value: 'space',  label: 'My environment, tools, or setup' },
+          { value: 'story',  label: 'My goals, direction, or the plan' },
+          { value: 'spirit', label: 'My deeper purpose — whether this still matters' },
+        ]}
+        onSelect={(value, elapsedMs) => {
+          const next = { ...answers, q1: value };
+          setMetadata(m => ({ ...m, instinct_timings: { ...m.instinct_timings, q1: elapsedMs } }));
+          advance(next);
+        }}
+      />
+    );
+  }
+
+  function renderQ2() {
+    return (
+      <InstinctTap
+        text="When you're at your best, what made the difference?"
+        options={[
+          { value: 'self',   label: 'I was well-rested, moving, emotionally regulated' },
+          { value: 'space',  label: 'My environment was clean and my tools were dialed in' },
+          { value: 'story',  label: 'I had total clarity on what I was aiming at' },
+          { value: 'spirit', label: 'I felt deeply connected to why this mattered' },
+        ]}
+        onSelect={(value, elapsedMs) => {
+          const next = { ...answers, q2: value };
+          setMetadata(m => ({ ...m, instinct_timings: { ...m.instinct_timings, q2: elapsedMs } }));
+          advance(next);
+        }}
+      />
+    );
+  }
+
+  function renderQ3() {
+    return (
+      <ImagePick
+        text="Which of these pulls you?"
+        onSelect={value => {
+          advance({ ...answers, q3: value });
+        }}
+      />
+    );
+  }
+
+  function renderQ4() {
+    return (
+      <SliderQuestion
+        text="How quickly do you notice when your physical state is affecting your work?"
+        leftLabel="Rarely make the connection"
+        rightLabel="Within hours, same day"
+        onSelect={value => {
+          setMetadata(m => ({ ...m, q4_value: value }));
+          advance({ ...answers, q4: value });
+        }}
+      />
+    );
+  }
+
+  function renderQ5() {
+    return (
+      <DragRank
+        text="Rank these by how much they'd improve your next work session"
+        items={[
+          { id: 'env',      label: 'My workspace is clear and set up right' },
+          { id: 'tools',    label: 'I have the exact tool I need, no friction' },
+          { id: 'feedback', label: "I know what signal I'll track as I go" },
+          { id: 'social',   label: "Others know I'm working and won't interrupt" },
+        ]}
+        onSubmit={orderedIds => {
+          setMetadata(m => ({ ...m, q5_order: orderedIds }));
+          advance({ ...answers, q5: orderedIds });
+        }}
+      />
+    );
+  }
+
+  function renderQ6() {
+    return (
+      <InstinctTap
+        text="When you lose momentum mid-session, your first move is usually..."
+        options={[
+          { value: 'self',   label: 'Step away physically — move, breathe, reset the body' },
+          { value: 'space',  label: 'Adjust the environment — change the setup or location' },
+          { value: 'story',  label: "Reorient — reconnect to what I'm actually trying to accomplish" },
+          { value: 'spirit', label: 'Pause and ask whether this is still worth the energy' },
+        ]}
+        onSelect={(value, elapsedMs) => {
+          const next = { ...answers, q6: value };
+          setMetadata(m => ({ ...m, instinct_timings: { ...m.instinct_timings, q6: elapsedMs } }));
+          advance(next);
+        }}
+      />
+    );
+  }
+
+  function renderQ7() {
+    return (
+      <DragRank
+        text="Rank these by how clear each feels for you right now"
+        items={[
+          { id: 'purpose', label: 'I know why this matters long-term' },
+          { id: 'mission', label: 'I know my 90-day target' },
+          { id: 'goal',    label: "I know exactly what I'm shipping this week" },
+          { id: 'task',    label: "I know what I'm doing in the next hour" },
+        ]}
+        onSubmit={orderedIds => {
+          setMetadata(m => ({ ...m, q7_order: orderedIds }));
+          advance({ ...answers, q7: orderedIds });
+        }}
+      />
+    );
+  }
+
+  function renderQ8() {
+    return (
+      <div className="flex flex-col">
+        <p className="text-[9px] uppercase tracking-widest text-white/25 mb-5">Depth check</p>
+        <p className="text-white text-base font-medium leading-snug mb-6">Your relationship with values and purpose:</p>
+        <div className="space-y-2">
+          {q8Options.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => advance({ ...answers, q8: opt.value as DepthAnswer })}
+              className="w-full text-left px-4 py-3 rounded-xl border text-sm transition-all duration-150 hover:border-white/15 hover:bg-white/[0.05]"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                borderColor: 'rgba(255,255,255,0.07)',
+                color: 'rgba(255,255,255,0.55)',
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  function renderQ9() {
+    return (
+      <div className="flex flex-col">
+        <p className="text-[9px] uppercase tracking-widest text-white/25 mb-5">Context</p>
+        <p className="text-white text-base font-medium leading-snug mb-6">Your primary domain right now:</p>
+        <div className="space-y-2">
+          {q9Options.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => advance({ ...answers, q9: opt.value })}
+              className="w-full text-left px-4 py-3 rounded-xl border text-sm transition-all duration-150 hover:border-white/15 hover:bg-white/[0.05]"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                borderColor: 'rgba(255,255,255,0.07)',
+                color: 'rgba(255,255,255,0.55)',
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const RENDERERS = [
+    renderQ1, renderQ2, renderQ3, renderQ4, renderQ5,
+    renderQ6, renderQ7, renderQ8, renderQ9,
+  ];
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col">
       {/* Progress bar */}
       <div className="h-0.5 bg-white/[0.06] rounded-full mb-8 overflow-hidden">
         <motion.div
@@ -206,37 +283,13 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
           initial={{ opacity: 0, x: direction === 'forward' ? 20 : -20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: direction === 'forward' ? -20 : 20 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.18 }}
           className="flex-1 flex flex-col"
         >
-          <p className="text-[10px] tracking-widest uppercase text-white/25 mb-3">
-            {current + 1} / {totalQuestions}
+          <p className="text-[10px] tracking-widest uppercase text-white/20 mb-3">
+            {current + 1} / {TOTAL}
           </p>
-          <p className="text-white text-base font-medium leading-snug mb-6">{q.text}</p>
-
-          <div className="space-y-2">
-            {q.options.map(opt => {
-              const isSelected = answers[q.id] === opt.value;
-              const isPillarOpt = ['self', 'space', 'story', 'spirit'].includes(opt.value);
-              const accentColor = isPillarOpt ? PILLAR_COLORS[opt.value as Pillar] : AMETHYST;
-
-              return (
-                <button
-                  key={opt.value}
-                  onClick={() => selectAnswer(opt.value)}
-                  disabled={submitting}
-                  className="w-full text-left px-4 py-3 rounded-xl border transition-all duration-150 text-sm"
-                  style={{
-                    background: isSelected ? `${accentColor}18` : 'rgba(255,255,255,0.03)',
-                    borderColor: isSelected ? `${accentColor}60` : 'rgba(255,255,255,0.07)',
-                    color: isSelected ? '#fff' : 'rgba(255,255,255,0.55)',
-                  }}
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
+          {RENDERERS[current]()}
         </motion.div>
       </AnimatePresence>
 
@@ -248,9 +301,9 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
         >
           {current === 0 ? 'Cancel' : '← Back'}
         </button>
-        <span className="text-[10px] text-white/15">
-          {submitting ? 'Generating...' : 'Select to advance'}
-        </span>
+        {submitting && (
+          <span className="text-[10px] text-white/20">Generating...</span>
+        )}
       </div>
     </div>
   );
