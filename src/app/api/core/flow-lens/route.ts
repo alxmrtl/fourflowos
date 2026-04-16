@@ -10,41 +10,34 @@ export const maxDuration = 60;
 type Pillar = 'self' | 'space' | 'story' | 'spirit';
 
 /**
- * V2 intake answers — visual-first, instinct-driven format.
+ * V3 intake answers — instinct-first, signal-deep format.
  *
  * Phase 1 (rapid instinct):
- *   q1  = BigPair orientation vote ('inward' | 'forward') — qualitative
+ *   q1  = BigPair orientation ('inward' | 'forward') — qualitative
  *   q2  = ShapePick shape → pillar vote (+2)
  *   q3  = BigPair state texture ('sharp' | 'loose') — qualitative
- *   q4  = ThreeWayTap obstacle ('state'|'setup'|'direction') → pillar vote (+2)
- *   q5  = PairOff tournament winner → dominant pillar (+3)
- *   q6  = WordCloud selected words — qualitative, for Claude context
+ *   q4  = WordStorm: 3 words from 16, each mapped to a pillar (+1.5 each)
+ *   q5  = ImagePull: 2 image IDs from 8, each mapped to a pillar (+2 each)
+ *   q6  = Domain context string (no pillar score — used in prompt)
  *
- * Phase 2 (depth check):
- *   q7  = Slider 0–1, SELF body-awareness depth
- *   q8  = TwoTapPair { clearest, haziest } story item IDs — STORY depth
- *   q9  = Slider 0–1, SPACE environment depth (0=friction, 1=clear)
- *   q10 = PlainChoice a/b/c/d — SPIRIT depth
- *   q11 = Domain context string (no pillar score)
+ * Phase 2 (open signal):
+ *   q7  = Free text: "What's blocking your best work right now?"
+ *   q8  = Free text: "Last time fully in flow — what made it possible?"
  */
 interface FlowLensAnswers {
   // Phase 1
   q1?: 'inward' | 'forward';
   q2?: Pillar;
   q3?: 'sharp' | 'loose';
-  q4?: 'state' | 'setup' | 'direction';
-  q5?: Pillar;
-  q6?: string[];
+  q4?: string[];
+  q5?: string[];
+  q6?: string;
 
   // Phase 2
-  q7?: number;
-  q8?: { clearest: string; haziest: string };
-  q9?: number;
-  q10?: 'a' | 'b' | 'c' | 'd';
-  q11?: string;
+  q7?: string;
+  q8?: string;
 }
 
-// AnswerMetadata kept minimal — timing not captured in V2 (qualitative signals suffice)
 interface AnswerMetadata {
   [key: string]: unknown;
 }
@@ -74,39 +67,49 @@ async function getUserFromRequest(request: NextRequest): Promise<{ id: string } 
   return user ?? null;
 }
 
-// ─── Scoring ──────────────────────────────────────────────────────────────────
-
-/** Map slider 0–1 to depth score 0–2 */
-function sliderToDepth(value: number): number {
-  if (value > 0.66) return 2;
-  if (value > 0.33) return 1;
-  return 0;
-}
-
-const SPIRIT_DEPTH: Record<string, number> = { a: 2, b: 1, c: 0, d: 0 };
+// ─── Scoring maps ─────────────────────────────────────────────────────────────
 
 /**
- * Map ThreeWayTap obstacle answer to the pillar it votes for.
- * 'direction' → STORY, 'state' → SELF, 'setup' → SPACE
- * SPIRIT is intentionally absent from this question — its absence is meaningful.
+ * WordStorm — 16 words, each mapped to a pillar.
+ * Each selected word adds +1.5 to its pillar.
  */
-const OBSTACLE_PILLAR: Record<string, Pillar> = {
-  state:     'self',
-  setup:     'space',
-  direction: 'story',
+const WORD_PILLAR: Record<string, Pillar> = {
+  // SELF
+  ALIVE:     'self',
+  FOGGY:     'self',
+  GROUNDED:  'self',
+  SCATTERED: 'self',
+  // SPACE
+  CLUTTERED: 'space',
+  EQUIPPED:  'space',
+  SQUEEZED:  'space',
+  FLUID:     'space',
+  // STORY
+  DRIFTING:  'story',
+  BUILDING:  'story',
+  STUCK:     'story',
+  FOCUSED:   'story',
+  // SPIRIT
+  RESTLESS:  'spirit',
+  IGNITED:   'spirit',
+  HOLLOW:    'spirit',
+  CALLED:    'spirit',
 };
 
 /**
- * Derive STORY depth from TwoTapPair result.
- * Clearest item signals how far up the story stack they operate.
- * Haziest = 'purpose' applies a penalty (no long-term frame).
+ * ImagePull — 8 image IDs, each mapped to a pillar.
+ * Each selected image adds +2 to its pillar.
  */
-function storyDepthFromTwoTap(result: { clearest: string; haziest: string }): number {
-  const byClarity: Record<string, number> = { purpose: 2, mission: 2, goal: 1, task: 0 };
-  const base = byClarity[result.clearest] ?? 1;
-  const penalty = result.haziest === 'purpose' ? 1 : 0;
-  return Math.max(0, base - penalty);
-}
+const IMAGE_PILLAR: Record<string, Pillar> = {
+  pulse:   'self',
+  open:    'self',
+  setup:   'space',
+  tangle:  'space',
+  horizon: 'story',
+  peak:    'story',
+  flame:   'spirit',
+  north:   'spirit',
+};
 
 function scorePillars(answers: FlowLensAnswers): PillarScores {
   const scores: PillarScores = { self: 0, space: 0, story: 0, spirit: 0 };
@@ -114,26 +117,21 @@ function scorePillars(answers: FlowLensAnswers): PillarScores {
   // q2: ShapePick — direct pillar vote (+2)
   if (answers.q2 && answers.q2 in scores) scores[answers.q2] += 2;
 
-  // q4: ThreeWayTap obstacle — pillar vote (+2); SPIRIT absent here by design
-  if (answers.q4) {
-    const pillar = OBSTACLE_PILLAR[answers.q4];
-    if (pillar) scores[pillar] += 2;
+  // q4: WordStorm — each word +1.5 to its pillar
+  if (answers.q4?.length) {
+    for (const word of answers.q4) {
+      const pillar = WORD_PILLAR[word.toUpperCase()];
+      if (pillar) scores[pillar] += 1.5;
+    }
   }
 
-  // q5: PairOff tournament winner — strongest signal, weighted +3
-  if (answers.q5 && answers.q5 in scores) scores[answers.q5] += 3;
-
-  // q7: SELF slider depth (0–2)
-  scores.self   += answers.q7 != null ? sliderToDepth(answers.q7) : 1;
-
-  // q8: TwoTapPair STORY depth (0–2)
-  scores.story  += answers.q8 ? storyDepthFromTwoTap(answers.q8) : 1;
-
-  // q9: SPACE slider depth (0–2); left=friction=0, right=clear=1
-  scores.space  += answers.q9 != null ? sliderToDepth(answers.q9) : 1;
-
-  // q10: SPIRIT PlainChoice depth (0–2)
-  scores.spirit += SPIRIT_DEPTH[answers.q10 ?? ''] ?? 1;
+  // q5: ImagePull — each image +2 to its pillar
+  if (answers.q5?.length) {
+    for (const id of answers.q5) {
+      const pillar = IMAGE_PILLAR[id];
+      if (pillar) scores[pillar] += 2;
+    }
+  }
 
   return scores;
 }
@@ -158,32 +156,32 @@ interface Recommendation {
 
 const PILLAR_TECHNIQUES: Record<Pillar, { title: string; path: string; description: string }[]> = {
   self: [
-    { title: 'Movement Primer', path: 'compendium/framework/SELF/Focused-Body/_techniques/movement-primer.md', description: 'Brief physical activation before cognitive work' },
-    { title: 'Body State Check', path: 'compendium/framework/SELF/Focused-Body/_techniques/body-state-check.md', description: 'Rapid somatic scan to calibrate before working' },
-    { title: 'Observer Redirect', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/observer-redirect.md', description: 'Detach from reactive patterns and redirect energy' },
-    { title: 'Breath Regulation', path: 'compendium/framework/SELF/Focused-Body/_techniques/breath-regulation.md', description: 'Nervous system reset via deliberate breathing' },
-    { title: 'Pre-Session Clearance', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/pre-session-clearance.md', description: 'Release emotional residue before entering flow work' },
+    { title: 'Movement Primer',       path: 'compendium/framework/SELF/Focused-Body/_techniques/movement-primer.md',            description: 'Brief physical activation before cognitive work' },
+    { title: 'Body State Check',      path: 'compendium/framework/SELF/Focused-Body/_techniques/body-state-check.md',           description: 'Rapid somatic scan to calibrate before working' },
+    { title: 'Observer Redirect',     path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/observer-redirect.md',        description: 'Detach from reactive patterns and redirect energy' },
+    { title: 'Breath Regulation',     path: 'compendium/framework/SELF/Focused-Body/_techniques/breath-regulation.md',          description: 'Nervous system reset via deliberate breathing' },
+    { title: 'Pre-Session Clearance', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/pre-session-clearance.md',    description: 'Release emotional residue before entering flow work' },
   ],
   space: [
-    { title: 'Signal vs Noise Filter', path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/signal-vs-noise-filter.md', description: 'Audit which inputs actually inform action' },
-    { title: 'Micro-Review Loop', path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/micro-review-loop.md', description: 'Short feedback cycles that close gaps fast' },
-    { title: 'Compression Over Expansion', path: 'compendium/framework/SELF/Open-Mind/_techniques/compression-over-expansion.md', description: 'Narrow scope to amplify signal' },
-    { title: 'Overchoice Elimination', path: 'compendium/framework/SELF/Open-Mind/_techniques/overchoice-elimination.md', description: 'Remove decision points that fragment attention' },
-    { title: 'Streak Architecture', path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/streak-architecture.md', description: 'Make progress visible so momentum compounds' },
+    { title: 'Signal vs Noise Filter',       path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/signal-vs-noise-filter.md',    description: 'Audit which inputs actually inform action' },
+    { title: 'Micro-Review Loop',             path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/micro-review-loop.md',         description: 'Short feedback cycles that close gaps fast' },
+    { title: 'Compression Over Expansion',   path: 'compendium/framework/SELF/Open-Mind/_techniques/compression-over-expansion.md',        description: 'Narrow scope to amplify signal' },
+    { title: 'Overchoice Elimination',        path: 'compendium/framework/SELF/Open-Mind/_techniques/overchoice-elimination.md',           description: 'Remove decision points that fragment attention' },
+    { title: 'Streak Architecture',           path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/streak-architecture.md',      description: 'Make progress visible so momentum compounds' },
   ],
   story: [
-    { title: 'Sub-Goal Decomposition', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/sub-goal-decomposition.md', description: 'Break distant targets into near-term wins' },
-    { title: 'Clarity Over Intensity', path: 'compendium/framework/SELF/Open-Mind/_techniques/clarity-over-intensity.md', description: 'Precision of aim before force of effort' },
-    { title: 'Open Loop Closure', path: 'compendium/framework/SELF/Open-Mind/_techniques/open-loop-closure.md', description: 'Close incomplete tasks that drain cognitive background' },
-    { title: 'DMN-Goal Engagement', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/dmn-goal-engagement.md', description: 'Use default mode network for goal consolidation' },
-    { title: 'Transition Ritual', path: 'compendium/framework/SELF/Open-Mind/_techniques/transition-ritual.md', description: 'Bridge between modes — signal to the brain what comes next' },
+    { title: 'Sub-Goal Decomposition', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/sub-goal-decomposition.md',  description: 'Break distant targets into near-term wins' },
+    { title: 'Clarity Over Intensity', path: 'compendium/framework/SELF/Open-Mind/_techniques/clarity-over-intensity.md',       description: 'Precision of aim before force of effort' },
+    { title: 'Open Loop Closure',      path: 'compendium/framework/SELF/Open-Mind/_techniques/open-loop-closure.md',            description: 'Close incomplete tasks that drain cognitive background' },
+    { title: 'DMN-Goal Engagement',    path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/dmn-goal-engagement.md',     description: 'Use default mode network for goal consolidation' },
+    { title: 'Transition Ritual',      path: 'compendium/framework/SELF/Open-Mind/_techniques/transition-ritual.md',            description: 'Bridge between modes — signal to the brain what comes next' },
   ],
   spirit: [
-    { title: 'Flow Channel Formula', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/flow-channel-formula.md', description: 'Calibrate challenge-skill balance for genuine pull' },
-    { title: 'Pattern Literacy', path: 'compendium/framework/SELF/Open-Mind/_techniques/pattern-literacy.md', description: 'Read recurring themes in your work and energy' },
-    { title: 'Progress Ledger', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/progress-ledger.md', description: 'Track invisible effort to keep motivation signal clean' },
-    { title: 'Micro-Completion Architecture', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/micro-completion-architecture.md', description: 'Design work so small wins are structurally guaranteed' },
-    { title: 'Ambiguity Control', path: 'compendium/framework/SELF/Open-Mind/_techniques/ambiguity-control.md', description: 'Define what is known so the unknown stops leaking energy' },
+    { title: 'Flow Channel Formula',           path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/flow-channel-formula.md',          description: 'Calibrate challenge-skill balance for genuine pull' },
+    { title: 'Pattern Literacy',               path: 'compendium/framework/SELF/Open-Mind/_techniques/pattern-literacy.md',                   description: 'Read recurring themes in your work and energy' },
+    { title: 'Progress Ledger',                path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/progress-ledger.md',               description: 'Track invisible effort to keep motivation signal clean' },
+    { title: 'Micro-Completion Architecture',  path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/micro-completion-architecture.md', description: 'Design work so small wins are structurally guaranteed' },
+    { title: 'Ambiguity Control',              path: 'compendium/framework/SELF/Open-Mind/_techniques/ambiguity-control.md',                  description: 'Define what is known so the unknown stops leaking energy' },
   ],
 };
 
@@ -254,35 +252,15 @@ const PROFILE_TOOL: Anthropic.Tool = {
 
 // ─── Prompt ───────────────────────────────────────────────────────────────────
 
-function describeSelfDepth(value: number): string {
-  if (value > 0.75) return 'Notices physical depletion quickly — usually within hours — and acts on it';
-  if (value > 0.5)  return 'Usually connects slumps to something physical within a day or two';
-  if (value > 0.25) return 'Realizes the physical connection in hindsight, after the slump has passed';
-  return 'Rarely connects under-performance or mood to physical state';
-}
-
-function describeSpaceDepth(value: number): string {
-  if (value > 0.75) return 'Environment is well-managed — operates with minimal environmental friction';
-  if (value > 0.5)  return 'Generally manages their workspace but some friction remains';
-  if (value > 0.25) return 'Noticeable environmental friction that affects sessions';
-  return 'Significant friction in environment or setup — getting in the way of work';
-}
-
-function describeStoryDepth(result: { clearest: string; haziest: string }): string {
-  const labels: Record<string, string> = {
-    purpose: 'long-term why',
-    mission: '90-day direction',
-    goal: 'what they\'re shipping this week',
-    task: 'what they\'re doing next hour',
-  };
-  return `Clearest on "${labels[result.clearest] ?? result.clearest}", haziest on "${labels[result.haziest] ?? result.haziest}"`;
-}
-
-const SPIRIT_DEPTH_LABELS: Record<string, string> = {
-  a: 'Strong inner compass — knows when something is off before they can say why',
-  b: 'Values matter deeply but rarely surface unless something violates them',
-  c: 'Purpose feels clear in good moments but vague when grinding',
-  d: 'Purpose is something they\'re still actively working out',
+const IMAGE_DESCRIPTIONS: Record<string, string> = {
+  pulse:   'pulse / EKG wave (inner signal, body awareness)',
+  open:    'radiant bloom / open center (receptive, present)',
+  setup:   'dot grid (structure, environment)',
+  tangle:  'crossed curves / knot (friction, complexity)',
+  horizon: 'arrow on horizon (direction, momentum)',
+  peak:    'mountain peak / triangle (goal, aspiration)',
+  flame:   'flame (purpose, ignition)',
+  north:   '4-pointed star (values, true north)',
 };
 
 const PILLAR_DOMAINS: Record<Pillar, string> = {
@@ -290,12 +268,6 @@ const PILLAR_DOMAINS: Record<Pillar, string> = {
   space:  'environment, tools, and feedback systems',
   story:  'direction, goals, and narrative',
   spirit: 'values, curiosity, and purpose',
-};
-
-const OBSTACLE_LABELS: Record<string, string> = {
-  state:     'their own state — energy, emotions, how they feel',
-  setup:     'their setup — environment, tools, friction',
-  direction: 'direction — clarity on goals and what they\'re aiming at',
 };
 
 function buildPrompt(
@@ -307,29 +279,39 @@ function buildPrompt(
 ): string {
   const techniques = recommendations.filter(r => r.type === 'technique');
   const toolRec    = recommendations.find(r => r.type === 'tool');
-  const domain     = answers.q11 ?? 'general';
+  const domain     = answers.q6 ?? 'general';
 
   const techList = techniques
     .map(r => `• ${r.title}: ${PILLAR_TECHNIQUES[blindSide].find(t => t.title === r.title)?.description ?? ''}`)
     .join('\n');
 
-  // Scored signals
+  // Scored signals (q2, q4, q5)
+  const wordSignals = answers.q4?.length
+    ? answers.q4.map(w => {
+        const pillar = WORD_PILLAR[w.toUpperCase()];
+        return pillar ? `${w} (${PILLAR_DOMAINS[pillar].split(',')[0].trim()})` : w;
+      }).join(', ')
+    : null;
+
+  const imageSignals = answers.q5?.length
+    ? answers.q5.map(id => IMAGE_DESCRIPTIONS[id] ?? id).join('; ')
+    : null;
+
   const scoredSignals = [
-    answers.q2  && `- Shape instinct picked: ${PILLAR_DOMAINS[answers.q2]}`,
-    answers.q4  && `- Biggest current obstacle: ${OBSTACLE_LABELS[answers.q4] ?? answers.q4}`,
-    answers.q5  && `- Pair-off winner (strongest claim on attention): ${PILLAR_DOMAINS[answers.q5]}`,
-    answers.q7  != null && `- Body awareness: ${describeSelfDepth(answers.q7)}`,
-    answers.q8  && `- Direction clarity: ${describeStoryDepth(answers.q8)}`,
-    answers.q9  != null && `- Environment status: ${describeSpaceDepth(answers.q9)}`,
-    answers.q10 && `- Values/purpose: ${SPIRIT_DEPTH_LABELS[answers.q10] ?? ''}`,
+    answers.q2  && `- Shape instinct: ${PILLAR_DOMAINS[answers.q2]}`,
+    wordSignals  && `- Words chosen: ${wordSignals}`,
+    imageSignals && `- Images chosen: ${imageSignals}`,
   ].filter(Boolean).join('\n');
 
-  // Qualitative context (not directly scored — use for texture and nuance)
+  // Qualitative context (q1, q3 — no pillar score)
   const qualSignals = [
-    answers.q1  && `- Orientation pull: chose "${answers.q1 === 'inward' ? 'INWARD (settle, regulate, restore)' : 'FORWARD (build, push, progress)'}"`,
-    answers.q3  && `- Current state texture: "${answers.q3.toUpperCase()}" — ${answers.q3 === 'sharp' ? 'precise, focused, structured' : 'loose, open, less constrained'}`,
-    answers.q6?.length && `- State words chosen: ${answers.q6.join(', ')}`,
+    answers.q1 && `- Orientation: chose "${answers.q1 === 'inward' ? 'INWARD (settle, regulate, restore)' : 'FORWARD (build, push, progress)'}"`,
+    answers.q3 && `- State texture: "${answers.q3.toUpperCase()}" — ${answers.q3 === 'sharp' ? 'precise, focused, structured' : 'loose, open, less constrained'}`,
   ].filter(Boolean).join('\n');
+
+  // Free-text signals (q7, q8)
+  const blockingSignal  = answers.q7 ? `\n## SIGNAL: WHAT'S BLOCKING\n"${answers.q7}"` : '';
+  const flowSignal      = answers.q8 ? `\n## SIGNAL: LAST FLOW STATE\n"${answers.q8}"` : '';
 
   return `You are writing a Flow Lens Profile for someone in the domain of "${domain}".
 
@@ -349,6 +331,8 @@ ${scoredSignals}
 
 ## QUALITATIVE CONTEXT (use for texture, not scoring)
 ${qualSignals}
+${blockingSignal}
+${flowSignal}
 
 ## PRACTICES TO RECOMMEND (for their blind side)
 Techniques:
@@ -360,6 +344,7 @@ Tool: ${toolRec ? `${toolRec.title} — ${PRACTICE_TOOLS[blindSide].description}
 - Use plain language — name the domain directly (body, environment, direction, purpose)
 - Each bullet: one tight sentence. Subject "You". Direct and specific to their answer pattern.
 - "the_move": exactly 2 sentences. First: how their gravity is actively functioning as a substitute for what the blind side would provide. Second: the one concrete move that activates both simultaneously. Must be derivable only from THIS person's specific answers — not generic for this gravity/blind-side combination.
+- Use the free-text signals (WHAT'S BLOCKING and LAST FLOW STATE) — they are the richest data. Read for language that signals which domain they're operating in (body/energy language → self, environment language → space, goals/direction → story, meaning/values → spirit). Let this texture the bullets and the_move.
 - "tool_prescription": 1 sentence — reference something specific in their answer pattern
 - "technique_prescriptions": 1 sentence each — what to do and why for THIS person specifically
 - Warm but unsparing. Don't soften the blind side. Be honest about what it costs.`;
@@ -390,7 +375,7 @@ export async function POST(request: NextRequest) {
   const { gravity, blindSide } = deriveGravityAndBlindSide(scores);
   const recommendations = getRecommendations(blindSide);
 
-  // Save intake (with answer_metadata if provided)
+  // Save intake
   const intakePayload: Record<string, unknown> = {
     user_id: user.id,
     answers,
