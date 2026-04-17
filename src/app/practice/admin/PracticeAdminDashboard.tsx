@@ -94,12 +94,14 @@ export default function PracticeAdminDashboard() {
             <h1 className="text-lg font-semibold">Practice Admin</h1>
             <p className="text-xs text-white/30 mt-0.5">Flow Lens + Timeless Map profiles</p>
           </div>
-          <a
-            href="/profile/admin"
-            className="text-xs text-white/25 hover:text-white/50 transition-colors"
-          >
-            Legacy profiles →
-          </a>
+          <div className="flex items-center gap-4">
+            <a href="/practice/admin/prompt" className="text-xs text-white/25 hover:text-white/50 transition-colors">
+              Prompt inspector →
+            </a>
+            <a href="/profile/admin" className="text-xs text-white/25 hover:text-white/50 transition-colors">
+              Legacy profiles →
+            </a>
+          </div>
         </div>
       </div>
 
@@ -291,62 +293,112 @@ function DetailView({
 }) {
   if (type === 'flow_lens') {
     const intake = profile.flow_lens_intakes as Record<string, unknown> | null;
-    const profileJson = profile.profile_json as Record<string, unknown> | null;
-    const sections = profileJson?.sections as Record<string, string> | null;
+    const pj = profile.profile_json as Record<string, unknown> | null;
+    // Support both V4 array format and legacy sections format
+    const blindBullets  = (pj?.blind_side_bullets as string[] | null) ?? [];
+    const _theTellRaw = pj?.the_tell ?? (pj?.sections as Record<string,string> | null)?.blind_side;
+    const theTell = typeof _theTellRaw === 'string' ? _theTellRaw : '';
+    const _theMoveRaw = pj?.the_move ?? (pj?.sections as Record<string,string> | null)?.compounding_move;
+    const theMove = typeof _theMoveRaw === 'string' ? _theMoveRaw : '';
+    const techRecs      = (pj?.technique_prescriptions as { name: string; prescription: string }[] | null) ?? [];
+    const conceptRec    = pj?.concept_prescription as { name: string; why: string } | null;
+    const toolPrescription = (pj?.tool_prescription as string | null) ?? '';
+    const blindColor    = PILLAR_COLORS[profile.blind_side_pillar as string] ?? STEEL;
 
     return (
       <div className="space-y-4 text-sm">
+        {/* Pillar badges */}
         <div className="flex gap-2 flex-wrap">
-          <span
-            className="text-xs font-bold px-2 py-0.5 rounded-full"
-            style={{
-              background: `${PILLAR_COLORS[profile.gravity_pillar as string] ?? AMETHYST}20`,
-              color: PILLAR_COLORS[profile.gravity_pillar as string] ?? AMETHYST,
-            }}
-          >
-            {PILLAR_LABELS[profile.gravity_pillar as string] ?? 'GRAVITY'}
+          <span className="text-xs font-bold px-2 py-0.5 rounded-full"
+            style={{ background: `${PILLAR_COLORS[profile.gravity_pillar as string] ?? AMETHYST}20`, color: PILLAR_COLORS[profile.gravity_pillar as string] ?? AMETHYST }}>
+            {PILLAR_LABELS[profile.gravity_pillar as string] ?? 'GRAVITY'} gravity
           </span>
-          <span
-            className="text-xs font-bold px-2 py-0.5 rounded-full"
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              color: 'rgba(255,255,255,0.35)',
-            }}
-          >
+          <span className="text-xs font-bold px-2 py-0.5 rounded-full"
+            style={{ background: `${blindColor}15`, color: `${blindColor}90` }}>
             {PILLAR_LABELS[profile.blind_side_pillar as string] ?? 'BLIND'} gap
           </span>
         </div>
 
-        {sections?.gravity && (
+        {/* Bottleneck bullets */}
+        {blindBullets.length > 0 && (
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1">Gravity</p>
-            <p className="text-xs text-white/50 leading-relaxed">{sections.gravity}</p>
+            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1.5">Bottleneck</p>
+            <ul className="space-y-1">
+              {blindBullets.map((b, i) => (
+                <li key={i} className="text-xs text-white/50 leading-snug flex items-start gap-1.5">
+                  <span className="flex-shrink-0 mt-1.5 w-1 h-1 rounded-full" style={{ background: `${blindColor}60` }} />
+                  {b}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
-        {sections?.blind_side && (
+
+        {/* The Tell */}
+        {theTell ? (
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1">Blind Side</p>
-            <p className="text-xs text-white/50 leading-relaxed">{sections.blind_side}</p>
+            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1">The Tell</p>
+            <p className="text-xs text-white/45 leading-relaxed italic">{theTell}</p>
           </div>
-        )}
-        {sections?.compounding_move && (
+        ) : null}
+
+        {/* The Unlock */}
+        {theMove ? (
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1">Compounding Move</p>
-            <p className="text-xs text-white/50 leading-relaxed">{sections.compounding_move}</p>
+            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1">Unlock</p>
+            <p className="text-xs text-white/50 leading-relaxed">{theMove}</p>
           </div>
-        )}
-        {intake && (
+        ) : null}
+
+        {/* Tool prescription */}
+        {toolPrescription ? (
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1">Intake answers</p>
-            <div className="grid grid-cols-2 gap-1">
-              {Object.entries(intake.answers as Record<string, string>).map(([k, v]) => (
-                <div key={k} className="text-[10px] text-white/30">
-                  <span className="text-white/20">{k}: </span>{v}
+            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1">Tool</p>
+            <p className="text-xs text-white/45 leading-relaxed">{toolPrescription}</p>
+          </div>
+        ) : null}
+
+        {/* Technique prescriptions */}
+        {techRecs.length > 0 && (
+          <div>
+            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1.5">Techniques</p>
+            <div className="space-y-1.5">
+              {techRecs.map((t, i) => (
+                <div key={i}>
+                  <p className="text-xs font-medium text-white/60">{t.name}</p>
+                  <p className="text-[10px] text-white/35 leading-snug">{t.prescription}</p>
                 </div>
               ))}
             </div>
           </div>
         )}
+
+        {/* Concept */}
+        {conceptRec && (
+          <div>
+            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1">Concept</p>
+            <p className="text-xs font-medium text-white/60">{conceptRec.name}</p>
+            <p className="text-[10px] text-white/35 leading-snug">{conceptRec.why}</p>
+          </div>
+        )}
+
+        {/* Intake answers */}
+        {intake?.answers != null ? (
+          <div>
+            <p className="text-[9px] uppercase tracking-widest text-white/20 mb-1.5">Intake</p>
+            <div className="space-y-1">
+              {Object.entries(intake.answers as Record<string, unknown>).map(([k, v]) => {
+                const display = Array.isArray(v) ? (v as unknown[]).join(', ') : String(v);
+                return (
+                  <div key={k} className="text-[10px] text-white/30 flex gap-1.5">
+                    <span className="text-white/18 flex-shrink-0">{k}:</span>
+                    <span className="text-white/40 break-words">{display}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </div>
     );
   }
