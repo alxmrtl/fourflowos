@@ -88,4 +88,5 @@ export const TOOL_ICON: Record<string, string> = {
   FlowSpark:      '/assets/LOGOS/IGNITED CURIOSITY.png',
   FlowCompendium: '/assets/LOGOS/OPEN MIND.png',
   Training:       '/assets/LOGOS/OPEN MIND.png',
+  FlowUnlock:     '/assets/apps/flowunlock-icon.png',
 };
