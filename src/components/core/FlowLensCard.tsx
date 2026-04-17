@@ -68,8 +68,8 @@ export default function FlowLensCard({ initialProfile }: Props) {
       {/* Header */}
       <div className="px-5 pt-5 pb-4 border-b border-white/[0.05]">
         <div>
-          <p className="text-[10px] uppercase tracking-widest text-white/25 mb-0.5">Flow Lens</p>
-          <p className="text-white font-semibold text-sm">How you&apos;re wired</p>
+          <p className="text-[10px] uppercase tracking-widest text-white/25 mb-0.5">Flow Unlock</p>
+          <p className="text-white font-semibold text-sm">Find your block</p>
         </div>
       </div>
 
@@ -85,14 +85,14 @@ export default function FlowLensCard({ initialProfile }: Props) {
               className="flex flex-col items-start"
             >
               <p className="text-sm text-white/35 leading-relaxed mb-5">
-                ~9 questions, 2–3 min. Reveals where you naturally focus as a lever — and where you leave performance on the table.
+                8 questions, 3 min. Reads what&apos;s actually blocking you and gives you the specific move to break it.
               </p>
               <button
                 onClick={() => setCardState('intake')}
                 className="px-5 py-2 rounded-full text-white text-sm font-medium transition-opacity hover:opacity-90"
                 style={{ background: `linear-gradient(135deg, ${STEEL}, ${AMETHYST})` }}
               >
-                Take the Flow Lens
+                Find my block
               </button>
             </motion.div>
           )}

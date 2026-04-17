@@ -1,14 +1,15 @@
 'use client';
 
 /**
- * Flow Lens Profile — V1 Final
+ * Flow Unlock Profile — V4
  *
- * Visual:   Radial arcs — all elements full brightness, gravity has large glow. No numbers.
- * Framing:  Strong Signal / Weak Signal (fits FourFlow signal language)
- * Practice: MOVES — "worth trying given your wiring"
+ * Visual:   Radial arcs — gravity has glow + thicker stroke.
+ * Sections: How You're Wired / Your Hidden Bottleneck / The Tell / Your Unlock / Moves
+ * Moves:    Tool + 3 techniques + 1 concept to sit with
  */
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
 import {
@@ -88,7 +89,7 @@ function PillarArc({
           />
         </svg>
 
-        {/* Element image — always full opacity */}
+        {/* Element image */}
         <div
           className="absolute flex items-center justify-center"
           style={{ inset: STROKE + 6, zIndex: 2 }}
@@ -109,7 +110,6 @@ function PillarArc({
         </div>
       </div>
 
-      {/* Label — always legible */}
       <p
         className="text-[9px] font-bold tracking-[0.16em] uppercase leading-none"
         style={{ color: isGravity ? color : `${color}cc` }}
@@ -120,12 +120,12 @@ function PillarArc({
   );
 }
 
-// ── Section block (Strong/Weak Signal framing) ────────────────────────────────
+// ── Signal section (wired / bottleneck) ───────────────────────────────────────
 
 function SignalSection({
-  strength, pillar, sub, color, bullets,
+  label, pillar, sub, color, bullets,
 }: {
-  strength: 'STRONG SIGNAL' | 'WEAK SIGNAL';
+  label: string;
   pillar: string;
   sub: string;
   color: string;
@@ -139,7 +139,7 @@ function SignalSection({
       />
       <div className="flex items-baseline gap-2 mb-2.5 flex-wrap">
         <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: `${color}80` }}>
-          {strength}
+          {label}
         </p>
         <span className="text-xs font-semibold" style={{ color }}>{pillar}</span>
         <span className="text-[10px] text-white/30 hidden sm:inline">{sub}</span>
@@ -173,13 +173,15 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
   const maxScore = Math.max(...Object.values(scores), 1);
 
   const pj = profile.profile_json;
-  const gravityBullets  = pj?.gravity_bullets   ?? (pj?.sections?.gravity     ? [pj.sections.gravity]    : []);
-  const blindBullets    = pj?.blind_side_bullets ?? (pj?.sections?.blind_side  ? [pj.sections.blind_side] : []);
-  const theMove         = pj?.the_move           ?? pj?.sections?.compounding_move ?? '';
-  const toolRec         = profile.recommendations?.find(r => r.type === 'tool');
-  const techRecs        = profile.recommendations?.filter(r => r.type === 'technique') ?? [];
+  const gravityBullets   = pj?.gravity_bullets   ?? (pj?.sections?.gravity    ? [pj.sections.gravity]    : []);
+  const blindBullets     = pj?.blind_side_bullets ?? (pj?.sections?.blind_side ? [pj.sections.blind_side] : []);
+  const theTell          = pj?.the_tell ?? '';
+  const theMove          = pj?.the_move ?? pj?.sections?.compounding_move ?? '';
+  const toolRec          = profile.recommendations?.find(r => r.type === 'tool');
+  const techRecs         = profile.recommendations?.filter(r => r.type === 'technique') ?? [];
   const toolPrescription = pj?.tool_prescription ?? '';
   const techPrescriptions = pj?.technique_prescriptions ?? [];
+  const conceptRec       = pj?.concept_prescription ?? null;
 
   const generatedDate = new Date(profile.generated_at).toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
@@ -210,10 +212,10 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
         ))}
       </div>
 
-      {/* ── Strong Signal ── */}
+      {/* ── How You're Wired ── */}
       {gravityBullets.length > 0 && (
         <SignalSection
-          strength="STRONG SIGNAL"
+          label="HOW YOU'RE WIRED"
           pillar={PL[gravity]}
           sub={PS[gravity]}
           color={PC[gravity]}
@@ -221,10 +223,10 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
         />
       )}
 
-      {/* ── Weak Signal ── */}
+      {/* ── Your Hidden Bottleneck ── */}
       {blindBullets.length > 0 && (
         <SignalSection
-          strength="WEAK SIGNAL"
+          label="YOUR HIDDEN BOTTLENECK"
           pillar={PL[blindSide]}
           sub={PS[blindSide]}
           color={PC[blindSide]}
@@ -232,7 +234,21 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
         />
       )}
 
-      {/* ── The Move ── */}
+      {/* ── The Tell ── */}
+      {theTell && (
+        <div className="relative pl-3">
+          <div
+            className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full"
+            style={{ background: `linear-gradient(180deg, ${PC[gravity]}60, ${PC[blindSide]}60)` }}
+          />
+          <p className="text-[10px] font-bold tracking-widest uppercase text-white/35 mb-2">
+            THE TELL
+          </p>
+          <p className="text-sm text-white/65 leading-relaxed italic">{theTell}</p>
+        </div>
+      )}
+
+      {/* ── Your Unlock ── */}
       {theMove && (
         <div className="relative pl-3">
           <div
@@ -242,14 +258,14 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
             }}
           />
           <p className="text-[10px] font-bold tracking-widest uppercase text-white/35 mb-2">
-            THE MOVE
+            YOUR UNLOCK
           </p>
           <p className="text-sm text-white/62 leading-relaxed">{theMove}</p>
         </div>
       )}
 
       {/* ── Moves ── */}
-      {(toolRec || techRecs.length > 0) && (
+      {(toolRec || techRecs.length > 0 || conceptRec) && (
         <div>
           <div className="flex items-baseline gap-2 mb-3">
             <p className="text-[10px] font-bold tracking-widest uppercase text-white/35">MOVES</p>
@@ -259,8 +275,10 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
           <div className="space-y-2">
             {/* Tool */}
             {toolRec && (
-              <div
-                className="flex items-start gap-3 p-3 rounded-xl border"
+              <Link
+                href={toolRec.route ?? '/me'}
+                prefetch={false}
+                className="flex items-start gap-3 p-3 rounded-xl border group transition-opacity hover:opacity-80"
                 style={{
                   background: `${PC[blindSide]}0d`,
                   borderColor: `${PC[blindSide]}28`,
@@ -274,7 +292,7 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
                     className="object-contain rounded-md"
                   />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="text-sm font-semibold text-white">{toolRec.title}</span>
                     <span
@@ -291,7 +309,8 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
                     <p className="text-xs text-white/45 leading-snug">{toolPrescription}</p>
                   )}
                 </div>
-              </div>
+                <span className="flex-shrink-0 self-center text-white/25 group-hover:text-white/55 transition-colors text-xs">→</span>
+              </Link>
             )}
 
             {/* Techniques */}
@@ -312,6 +331,34 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
                 </div>
               );
             })}
+
+            {/* Concept */}
+            {conceptRec && (
+              <div
+                className="flex items-start gap-3 mt-1 pt-3"
+                style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+              >
+                <span
+                  className="flex-shrink-0 mt-[7px] w-1.5 h-1.5 rounded-full opacity-40"
+                  style={{ background: `${PC[blindSide]}` }}
+                />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-white/75 font-medium">{conceptRec.name}</span>
+                    <span
+                      className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded font-medium"
+                      style={{
+                        background: 'rgba(255,255,255,0.06)',
+                        color: 'rgba(255,255,255,0.35)',
+                      }}
+                    >
+                      Concept
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/40 leading-snug mt-0.5">{conceptRec.why}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -323,7 +370,7 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
           onClick={onRegenerate}
           className="text-[10px] text-white/30 hover:text-white/55 transition-colors"
         >
-          Retake →
+          Stuck again? Retake →
         </button>
       </div>
     </motion.div>

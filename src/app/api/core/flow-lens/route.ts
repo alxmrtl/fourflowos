@@ -10,30 +10,30 @@ export const maxDuration = 60;
 type Pillar = 'self' | 'space' | 'story' | 'spirit';
 
 /**
- * V3 intake answers — instinct-first, signal-deep format.
+ * V4 intake answers — trimmed instinct, deep signal.
  *
- * Phase 1 (rapid instinct):
- *   q1  = BigPair orientation ('inward' | 'forward') — qualitative
- *   q2  = ShapePick shape → pillar vote (+2)
- *   q3  = BigPair state texture ('sharp' | 'loose') — qualitative
- *   q4  = WordStorm: 3 words from 16, each mapped to a pillar (+1.5 each)
- *   q5  = ImagePull: 2 image IDs from 8, each mapped to a pillar (+2 each)
- *   q6  = Domain context string (no pillar score — used in prompt)
+ * Phase 1 (rapid instinct — 4 questions):
+ *   q1  = ShapePick shape → pillar vote (+2)
+ *   q2  = WordStorm: 3 words from 16, each mapped to a pillar (+1.5 each)
+ *   q3  = ImagePull: 2 image IDs from 8, each mapped to a pillar (+2 each)
+ *   q4  = Domain context string (no pillar score — used in prompt)
  *
- * Phase 2 (open signal):
- *   q7  = Free text: "What's blocking your best work right now?"
- *   q8  = Free text: "Last time fully in flow — what made it possible?"
+ * Phase 2 (open signal — 4 text questions):
+ *   q5  = "What's getting in the way of your best work right now?"
+ *   q6  = "Describe the last time you were fully in it."
+ *   q7  = "What do you tell yourself when you can't get started?"
+ *   q8  = "What are you actually chasing right now?"
  */
 interface FlowLensAnswers {
   // Phase 1
-  q1?: 'inward' | 'forward';
-  q2?: Pillar;
-  q3?: 'sharp' | 'loose';
-  q4?: string[];
-  q5?: string[];
-  q6?: string;
+  q1?: Pillar;
+  q2?: string[];
+  q3?: string[];
+  q4?: string;
 
   // Phase 2
+  q5?: string;
+  q6?: string;
   q7?: string;
   q8?: string;
 }
@@ -52,9 +52,11 @@ interface PillarScores {
 interface StructuredProfile {
   gravity_bullets: string[];
   blind_side_bullets: string[];
+  the_tell: string;
   the_move: string;
   tool_prescription: string;
   technique_prescriptions: { name: string; prescription: string }[];
+  concept_prescription: { name: string; why: string };
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -114,20 +116,20 @@ const IMAGE_PILLAR: Record<string, Pillar> = {
 function scorePillars(answers: FlowLensAnswers): PillarScores {
   const scores: PillarScores = { self: 0, space: 0, story: 0, spirit: 0 };
 
-  // q2: ShapePick — direct pillar vote (+2)
-  if (answers.q2 && answers.q2 in scores) scores[answers.q2] += 2;
+  // q1: ShapePick — direct pillar vote (+2)
+  if (answers.q1 && answers.q1 in scores) scores[answers.q1] += 2;
 
-  // q4: WordStorm — each word +1.5 to its pillar
-  if (answers.q4?.length) {
-    for (const word of answers.q4) {
+  // q2: WordStorm — each word +1.5 to its pillar
+  if (answers.q2?.length) {
+    for (const word of answers.q2) {
       const pillar = WORD_PILLAR[word.toUpperCase()];
       if (pillar) scores[pillar] += 1.5;
     }
   }
 
-  // q5: ImagePull — each image +2 to its pillar
-  if (answers.q5?.length) {
-    for (const id of answers.q5) {
+  // q3: ImagePull — each image +2 to its pillar
+  if (answers.q3?.length) {
+    for (const id of answers.q3) {
       const pillar = IMAGE_PILLAR[id];
       if (pillar) scores[pillar] += 2;
     }
@@ -152,101 +154,142 @@ interface Recommendation {
   title: string;
   pillar: string;
   path?: string;
+  route?: string;
 }
 
 const PILLAR_TECHNIQUES: Record<Pillar, { title: string; path: string; description: string }[]> = {
   self: [
-    { title: 'Movement Primer',       path: 'compendium/framework/SELF/Focused-Body/_techniques/movement-primer.md',            description: 'Brief physical activation before cognitive work' },
-    { title: 'Body State Check',      path: 'compendium/framework/SELF/Focused-Body/_techniques/body-state-check.md',           description: 'Rapid somatic scan to calibrate before working' },
-    { title: 'Observer Redirect',     path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/observer-redirect.md',        description: 'Detach from reactive patterns and redirect energy' },
-    { title: 'Breath Regulation',     path: 'compendium/framework/SELF/Focused-Body/_techniques/breath-regulation.md',          description: 'Nervous system reset via deliberate breathing' },
-    { title: 'Pre-Session Clearance', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/pre-session-clearance.md',    description: 'Release emotional residue before entering flow work' },
+    { title: 'Pre-Session Clearance', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/pre-session-clearance.md',    description: 'Witness emotional residue before work starts — without trying to fix it' },
+    { title: 'Body State Check',      path: 'compendium/framework/SELF/Focused-Body/_techniques/body-state-check.md',           description: 'Rapid somatic scan: read arousal level, breath, tension, then match a regulation tool to what you find' },
+    { title: 'Breath Regulation',     path: 'compendium/framework/SELF/Focused-Body/_techniques/breath-regulation.md',          description: 'Three-tool approach: cyclic sighing for daily reset, resonance breathing pre-session, 4-7-8 for acute moments' },
+    { title: 'Observer Redirect',     path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/observer-redirect.md',        description: 'Shift from "I am the reaction" to "I am watching it" — then redirect toward the work\'s effect' },
+    { title: 'Flow Channel Formula',  path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/flow-channel-formula.md',     description: 'Check the challenge-skill ratio before starting — diagnose boredom, anxiety, or the flow channel' },
+    { title: 'Movement Primer',       path: 'compendium/framework/SELF/Focused-Body/_techniques/movement-primer.md',            description: 'Brief physical activation before cognitive work — converts physical readiness into mental readiness' },
   ],
   space: [
-    { title: 'Signal vs Noise Filter',       path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/signal-vs-noise-filter.md',    description: 'Audit which inputs actually inform action' },
-    { title: 'Micro-Review Loop',             path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/micro-review-loop.md',         description: 'Short feedback cycles that close gaps fast' },
-    { title: 'Compression Over Expansion',   path: 'compendium/framework/SELF/Open-Mind/_techniques/compression-over-expansion.md',        description: 'Narrow scope to amplify signal' },
-    { title: 'Overchoice Elimination',        path: 'compendium/framework/SELF/Open-Mind/_techniques/overchoice-elimination.md',           description: 'Remove decision points that fragment attention' },
-    { title: 'Streak Architecture',           path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/streak-architecture.md',      description: 'Make progress visible so momentum compounds' },
+    { title: 'Physical Space Audit',        path: 'compendium/framework/SPACE/Intentional-Space/_techniques/physical-space-audit.md',             description: 'Clear workspace completely; return only what\'s needed today; apply the open-loop test to every object' },
+    { title: 'Micro-Review Loop',           path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/micro-review-loop.md',                 description: 'Two-minute pause at each work-unit boundary: one observation captured before the next unit starts' },
+    { title: 'Signal vs Noise Filter',      path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/signal-vs-noise-filter.md',            description: 'Audit which inputs actually move the work — cut what doesn\'t, weight what does' },
+    { title: 'Environmental Trigger Stack', path: 'compendium/framework/SPACE/Intentional-Space/_techniques/environmental-trigger-stack.md',       description: 'Stack sensory channels (sound, scent, light, posture) to condition the brain into focus state on cue' },
+    { title: 'Progress Dashboard',          path: 'compendium/framework/SPACE/Feedback-Systems/_techniques/progress-dashboard.md',                 description: 'Display 1-3 metrics that update immediately after each work unit — makes momentum visible' },
+    { title: 'One-Click Session Launch',    path: 'compendium/framework/SPACE/Optimized-Tools/_techniques/one-click-session-launch.md',           description: 'Collapse session-start to a single trigger by automating all non-decision steps' },
   ],
   story: [
-    { title: 'Sub-Goal Decomposition', path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/sub-goal-decomposition.md',  description: 'Break distant targets into near-term wins' },
-    { title: 'Clarity Over Intensity', path: 'compendium/framework/SELF/Open-Mind/_techniques/clarity-over-intensity.md',       description: 'Precision of aim before force of effort' },
-    { title: 'Open Loop Closure',      path: 'compendium/framework/SELF/Open-Mind/_techniques/open-loop-closure.md',            description: 'Close incomplete tasks that drain cognitive background' },
-    { title: 'DMN-Goal Engagement',    path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/dmn-goal-engagement.md',     description: 'Use default mode network for goal consolidation' },
-    { title: 'Transition Ritual',      path: 'compendium/framework/SELF/Open-Mind/_techniques/transition-ritual.md',            description: 'Bridge between modes — signal to the brain what comes next' },
+    { title: 'One Thing Card',          path: 'compendium/framework/STORY/Clear-Mission/_techniques/one-thing-card.md',            description: 'Physical card: "Today, the only thing that matters is ___" — one sentence, primary visual field' },
+    { title: 'Reframe Via Arc',         path: 'compendium/framework/STORY/Generative-Story/_techniques/reframe-via-arc.md',        description: 'Name the current stuckness as a story stage (ordeal, threshold, refusal) and name what comes next' },
+    { title: 'Momentum Ledger',         path: 'compendium/framework/STORY/Generative-Story/_techniques/momentum-ledger.md',        description: 'Daily log: what moved, what unlocked, the living edge — weekly review compounds direction' },
+    { title: 'Sub-Goal Decomposition',  path: 'compendium/framework/STORY/Clear-Mission/_techniques/sub-goal-decomposition.md',    description: 'Break distant targets into near wins with enough resolution to start today' },
+    { title: 'Open Loop Closure',       path: 'compendium/framework/STORY/Clear-Mission/_techniques/open-loop-closure.md',         description: 'Identify and close incomplete tasks draining background cognitive load' },
+    { title: 'Goal Hierarchy Cascade',  path: 'compendium/framework/STORY/Clear-Mission/_techniques/goal-hierarchy-cascade.md',   description: 'Five-level structure: 10-year direction → 1-year milestone → monthly → weekly → today\'s lever' },
   ],
   spirit: [
-    { title: 'Flow Channel Formula',           path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/flow-channel-formula.md',          description: 'Calibrate challenge-skill balance for genuine pull' },
-    { title: 'Pattern Literacy',               path: 'compendium/framework/SELF/Open-Mind/_techniques/pattern-literacy.md',                   description: 'Read recurring themes in your work and energy' },
-    { title: 'Progress Ledger',                path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/progress-ledger.md',               description: 'Track invisible effort to keep motivation signal clean' },
-    { title: 'Micro-Completion Architecture',  path: 'compendium/framework/SELF/Tuned-Emotions/_techniques/micro-completion-architecture.md', description: 'Design work so small wins are structurally guaranteed' },
-    { title: 'Ambiguity Control',              path: 'compendium/framework/SELF/Open-Mind/_techniques/ambiguity-control.md',                  description: 'Define what is known so the unknown stops leaking energy' },
+    { title: 'Excitement as GPS',          path: 'compendium/framework/SPIRIT/Ignited-Curiosity/_techniques/excitement-as-gps.md',            description: 'Treat genuine excitement as directional signal — follow it even when the destination isn\'t clear' },
+    { title: 'Clean/Dirty Fuel Assessment', path: 'compendium/framework/SPIRIT/Ignited-Curiosity/_techniques/clean-dirty-fuel-assessment.md', description: 'Three diagnostics: pushed vs pulled, why-deepening, process vs completion orientation — the anonymity test reveals most' },
+    { title: 'Integrity Gap Audit',        path: 'compendium/framework/SPIRIT/Grounding-Values/_techniques/integrity-gap-audit.md',           description: 'Three-column map: stated values vs revealed values (calendar, behavior) vs the gap — monthly review' },
+    { title: 'Values Stress Test',         path: 'compendium/framework/SPIRIT/Grounding-Values/_techniques/values-stress-test.md',            description: 'Construct worst-case where the value costs something real — tests whether it holds or was just preference' },
+    { title: 'Evidence Audit',             path: 'compendium/framework/SPIRIT/Visualized-Vision/_techniques/evidence-audit.md',               description: 'Distinguish evaluating direction by the mirror\'s current state vs internal clarity — separate signal from fear' },
+    { title: 'Pattern Literacy',           path: 'compendium/framework/SPIRIT/Ignited-Curiosity/_techniques/pattern-literacy.md',             description: 'Read recurring themes in your work and energy — what keeps surfacing is data' },
   ],
 };
 
-const PRACTICE_TOOLS: Record<Pillar, { title: string; description: string }> = {
-  self:   { title: 'FlowZone',  description: 'Deep work timer — makes each focus rep directional, channels body awareness into deliberate sessions' },
-  space:  { title: 'FlowRead',  description: 'Speed reading trainer — builds sustained attention and feedback density through deliberate practice' },
-  story:  { title: 'Training',  description: 'Compendium spaced repetition — daily reps build systematic fluency in what direction and clarity require' },
-  spirit: { title: 'FlowSpark', description: 'Curiosity mapping — surfaces genuine pulls and patterns that reveal what actually matters to you' },
+const PILLAR_CONCEPTS: Record<Pillar, { name: string; domain: string }> = {
+  self:   { name: 'Polyvagal Theory',          domain: 'nervous system regulation' },
+  space:  { name: 'Minimal Effective Feedback', domain: 'feedback system design' },
+  story:  { name: 'Default Mode Network',       domain: 'how the brain processes direction during rest' },
+  spirit: { name: 'Intrinsic Motivation',       domain: 'distinguishing genuine pull from performance anxiety' },
+};
+
+const PRACTICE_TOOLS: Record<Pillar, { title: string; description: string; route: string }> = {
+  self: {
+    title: 'FlowZone',
+    route: '/me?tool=flowzone',
+    description: 'Deep work focus timer. Each session you press a button when distraction pulls — makes the invisible work of maintaining focus visible. Builds body awareness through deliberate reps.',
+  },
+  space: {
+    title: 'FlowRead',
+    route: '/me?tool=flowread',
+    description: 'Speed reading trainer. Builds sustained attention and feedback density through timed reading with comprehension checks. Trains staying in signal without drift.',
+  },
+  story: {
+    title: 'FlowCompendium',
+    route: '/me?tool=compendium',
+    description: 'Browse 261 flow protocols via spaced repetition. Daily reps build systematic fluency — especially across direction, mission, and narrative clarity.',
+  },
+  spirit: {
+    title: 'FlowSpark',
+    route: '/me?tool=curiosity',
+    description: 'Curiosity mapping tool. Surfaces genuine pulls through structured prompts. Reveals what actually matters vs what you think should matter.',
+  },
 };
 
 function getRecommendations(blindSide: Pillar): Recommendation[] {
-  const techniques = PILLAR_TECHNIQUES[blindSide].slice(0, 2);
+  const techniques = PILLAR_TECHNIQUES[blindSide].slice(0, 3);
   const tool = PRACTICE_TOOLS[blindSide];
   return [
     ...techniques.map(t => ({ type: 'technique' as const, title: t.title, pillar: blindSide, path: t.path })),
-    { type: 'tool' as const, title: tool.title, pillar: blindSide },
+    { type: 'tool' as const, title: tool.title, pillar: blindSide, route: tool.route },
   ];
 }
 
 // ─── Structured output tool ───────────────────────────────────────────────────
 
 const PROFILE_TOOL: Anthropic.Tool = {
-  name: 'generate_flow_lens_profile',
-  description: 'Output the structured Flow Lens profile as JSON',
+  name: 'generate_flow_unlock',
+  description: 'Output the structured Flow Unlock profile as JSON',
   input_schema: {
     type: 'object' as const,
     properties: {
       gravity_bullets: {
         type: 'array',
-        description: '3 bullets about the person\'s gravity pillar — one tight sentence each, subject "You"',
+        description: '3 bullets about how this person is wired — written from cross-pattern analysis, not from what they literally said. Subject "You". One sentence each.',
         items: { type: 'string' },
         minItems: 3,
         maxItems: 3,
       },
       blind_side_bullets: {
         type: 'array',
-        description: '3 bullets about the person\'s blind-side pillar — one tight sentence each, honest about cost',
+        description: '3 bullets naming the structural tendency that creates drag — honest, unsparing, specific to this person\'s pattern. One sentence each.',
         items: { type: 'string' },
         minItems: 3,
         maxItems: 3,
       },
+      the_tell: {
+        type: 'string',
+        description: '2-3 sentences naming the specific cross-pattern or inversion you read. This is the insight they couldn\'t see themselves — name the structure, not the surface. Use signal language.',
+      },
       the_move: {
         type: 'string',
-        description: '2 sentences: how the gravity is creating the blind side, and the one move that activates both',
+        description: '2 sentences. First: how their gravity is substituting for what the blind side would provide. Second: the one concrete move that activates both. Must be specific to this person.',
       },
       tool_prescription: {
         type: 'string',
-        description: '1 sentence: why this specific tool for this person, tied to their specific answer pattern',
+        description: '1 sentence: why this specific tool for this specific person — reference something concrete from their signal, not the tool description.',
       },
       technique_prescriptions: {
         type: 'array',
-        description: '2 items, one per technique',
+        description: '3 items, one per technique. Each: what to do and why for this specific person.',
         items: {
           type: 'object',
           properties: {
             name: { type: 'string', description: 'Exact technique name as provided' },
-            prescription: { type: 'string', description: '1 sentence: what to do and why for this specific person' },
+            prescription: { type: 'string', description: '1 sentence: what to do and why for this person specifically' },
           },
           required: ['name', 'prescription'],
         },
-        minItems: 2,
-        maxItems: 2,
+        minItems: 3,
+        maxItems: 3,
+      },
+      concept_prescription: {
+        type: 'object',
+        description: 'One concept worth sitting with — name it and explain why it\'s relevant to this person\'s specific pattern in one sentence.',
+        properties: {
+          name: { type: 'string', description: 'Exact concept name as provided' },
+          why: { type: 'string', description: '1 sentence: why this concept for this person\'s specific pattern' },
+        },
+        required: ['name', 'why'],
       },
     },
-    required: ['gravity_bullets', 'blind_side_bullets', 'the_move', 'tool_prescription', 'technique_prescriptions'],
+    required: ['gravity_bullets', 'blind_side_bullets', 'the_tell', 'the_move', 'tool_prescription', 'technique_prescriptions', 'concept_prescription'],
   },
 };
 
@@ -279,75 +322,104 @@ function buildPrompt(
 ): string {
   const techniques = recommendations.filter(r => r.type === 'technique');
   const toolRec    = recommendations.find(r => r.type === 'tool');
-  const domain     = answers.q6 ?? 'general';
+  const domain     = answers.q4 ?? 'general';
+  const concept    = PILLAR_CONCEPTS[blindSide];
 
   const techList = techniques
     .map(r => `• ${r.title}: ${PILLAR_TECHNIQUES[blindSide].find(t => t.title === r.title)?.description ?? ''}`)
     .join('\n');
 
-  // Scored signals (q2, q4, q5)
-  const wordSignals = answers.q4?.length
-    ? answers.q4.map(w => {
+  // Scored signals (q1, q2, q3)
+  const wordSignals = answers.q2?.length
+    ? answers.q2.map(w => {
         const pillar = WORD_PILLAR[w.toUpperCase()];
         return pillar ? `${w} (${PILLAR_DOMAINS[pillar].split(',')[0].trim()})` : w;
       }).join(', ')
     : null;
 
-  const imageSignals = answers.q5?.length
-    ? answers.q5.map(id => IMAGE_DESCRIPTIONS[id] ?? id).join('; ')
+  const imageSignals = answers.q3?.length
+    ? answers.q3.map(id => IMAGE_DESCRIPTIONS[id] ?? id).join('; ')
     : null;
 
   const scoredSignals = [
-    answers.q2  && `- Shape instinct: ${PILLAR_DOMAINS[answers.q2]}`,
+    answers.q1  && `- Shape instinct: ${PILLAR_DOMAINS[answers.q1]}`,
     wordSignals  && `- Words chosen: ${wordSignals}`,
     imageSignals && `- Images chosen: ${imageSignals}`,
   ].filter(Boolean).join('\n');
 
-  // Qualitative context (q1, q3 — no pillar score)
-  const qualSignals = [
-    answers.q1 && `- Orientation: chose "${answers.q1 === 'inward' ? 'INWARD (settle, regulate, restore)' : 'FORWARD (build, push, progress)'}"`,
-    answers.q3 && `- State texture: "${answers.q3.toUpperCase()}" — ${answers.q3 === 'sharp' ? 'precise, focused, structured' : 'loose, open, less constrained'}`,
-  ].filter(Boolean).join('\n');
+  // Text signals (q5–q8)
+  const blockingSignal  = answers.q5 ? `\n## SIGNAL: WHAT'S BLOCKING\n"${answers.q5}"` : '';
+  const flowSignal      = answers.q6 ? `\n## SIGNAL: LAST FLOW STATE\n"${answers.q6}"` : '';
+  const monologueSignal = answers.q7 ? `\n## SIGNAL: INTERNAL MONOLOGUE\n"${answers.q7}"` : '';
+  const chasingSignal   = answers.q8 ? `\n## SIGNAL: WHAT THEY'RE CHASING\n"${answers.q8}"` : '';
 
-  // Free-text signals (q7, q8)
-  const blockingSignal  = answers.q7 ? `\n## SIGNAL: WHAT'S BLOCKING\n"${answers.q7}"` : '';
-  const flowSignal      = answers.q8 ? `\n## SIGNAL: LAST FLOW STATE\n"${answers.q8}"` : '';
+  return `You are generating a Flow Unlock for someone in "${domain}" who is currently stuck.
 
-  return `You are writing a Flow Lens Profile for someone in the domain of "${domain}".
+This is not a personality profile — it's a diagnostic read of what's blocking them right now, and the specific move that breaks it.
 
-The profile identifies where they naturally focus as a performance lever (their "gravity") and where they have a consistent blind spot.
+## PILLAR SCORES (instinct signals)
+- Body/emotions/mind (self): ${scores.self}
+- Environment/tools (space): ${scores.space}
+- Direction/goals (story): ${scores.story}
+- Values/purpose (spirit): ${scores.spirit}
 
-## PILLAR SCORES
-- Body/emotions/mind: ${scores.self}
-- Environment/tools: ${scores.space}
-- Direction/goals: ${scores.story}
-- Values/purpose: ${scores.spirit}
+Gravity (highest): ${gravity.toUpperCase()} — ${PILLAR_DOMAINS[gravity]}
+Blind side (lowest): ${blindSide.toUpperCase()} — ${PILLAR_DOMAINS[blindSide]}
 
-Gravity (highest score): ${gravity.toUpperCase()} — ${PILLAR_DOMAINS[gravity]}
-Blind side (lowest score): ${blindSide.toUpperCase()} — ${PILLAR_DOMAINS[blindSide]}
-
-## SCORED SIGNALS
+## INSTINCT SIGNALS
 ${scoredSignals}
-
-## QUALITATIVE CONTEXT (use for texture, not scoring)
-${qualSignals}
 ${blockingSignal}
 ${flowSignal}
+${monologueSignal}
+${chasingSignal}
 
-## PRACTICES TO RECOMMEND (for their blind side)
+## YOUR TASK: PSYCHOLINGUISTIC CROSS-PATTERN ANALYSIS
+
+Before writing a single word of output, work through these in order:
+
+1. ATTRIBUTION STYLE — How do they frame their obstacle? Internal (body/emotion/mental state) → self signal. Environmental (tools/setup/noise) → space signal. Directional (no clear path/goal) → story signal. Meaning-based (pointless/empty/disconnected) → spirit signal. Often this diverges from their instinct score. The divergence is data.
+
+2. ABSENT SIGNAL — What did they NOT mention in their flow description? If they described their last flow state without once mentioning how their body felt → self blind spot tell. No environment details → space blind spot. No purpose or meaning → spirit blind spot. What's missing is as diagnostic as what's there.
+
+3. METAPHOR REGISTER — What spatial metaphors do they reach for? "Walls closing in" / "can't breathe" = threat/self. "Going in circles" / "spinning" = story. "Noise everywhere" / "too much" = space. "Empty" / "hollow" / "drifting" = spirit. The metaphor reveals the domain they're operating in.
+
+4. ENERGY LANGUAGE — Do they hedge or assert? Hedging ("kind of", "I think", "maybe I should") = low signal certainty, often spirit gap. Rapid-fire lists in the obstacle description = story orientation (they see the map, can't move on it). Passive constructions ("things just aren't clicking") = difficulty naming the body state, often self blind spot. Urgency without direction = story gap.
+
+5. THE INVERSION — Where does their self-diagnosis diverge from the actual pattern? The person who lists external problems but describes flow in purely internal terms has the inversion backwards. Name the inversion. That's the tell.
+
+Write from these cross-patterns. Never paraphrase what they said. Name the structure underneath it.
+
+## PRACTICES TO RECOMMEND (for their ${blindSide.toUpperCase()} blind side)
+
 Techniques:
 ${techList}
-Tool: ${toolRec ? `${toolRec.title} — ${PRACTICE_TOOLS[blindSide].description}` : ''}
 
-## WRITING RULES
-- No framework jargon: no "pillar", "gravity", "blind side", "SELF/SPACE/STORY/SPIRIT", "Flow Key", "FourFlow"
-- Use plain language — name the domain directly (body, environment, direction, purpose)
-- Each bullet: one tight sentence. Subject "You". Direct and specific to their answer pattern.
-- "the_move": exactly 2 sentences. First: how their gravity is actively functioning as a substitute for what the blind side would provide. Second: the one concrete move that activates both simultaneously. Must be derivable only from THIS person's specific answers — not generic for this gravity/blind-side combination.
-- Use the free-text signals (WHAT'S BLOCKING and LAST FLOW STATE) — they are the richest data. Read for language that signals which domain they're operating in (body/energy language → self, environment language → space, goals/direction → story, meaning/values → spirit). Let this texture the bullets and the_move.
-- "tool_prescription": 1 sentence — reference something specific in their answer pattern
-- "technique_prescriptions": 1 sentence each — what to do and why for THIS person specifically
-- Warm but unsparing. Don't soften the blind side. Be honest about what it costs.`;
+Concept to prescribe:
+${concept.name} — the science of ${concept.domain}
+
+## PRACTICE TOOL
+${toolRec ? `${toolRec.title} — ${PRACTICE_TOOLS[blindSide].description}` : ''}
+Write one sentence explaining why it fits THIS person's specific pattern. Reference something concrete from their signals.
+
+## VOICE RULES (non-negotiable)
+
+These are hard constraints on every sentence you write:
+
+FORBIDDEN words and phrases: "navigate", "delve", "leverage", "showcase", "comprehensive", "it's worth noting", "journey", "transform", "unlock your potential", "holistic", "tap into", "resonate", "empower"
+FORBIDDEN constructions: em dash overuse; rule-of-three lists that feel padded; "Furthermore / Moreover / Additionally" transitions; anything starting with "You are someone who..."; softening hedges used to avoid committing to the insight
+FORBIDDEN tone: fake warmth ("That's incredible"), performative affirmations, corporate-speak
+
+REQUIRED voice:
+- Signal language is native here: "signal", "reception", "interference", "wiring", "frequency", "channel" — use these
+- Short declarative sentences. No compound-clause hedging.
+- Name the specific pattern, not the category. Not "you struggle with focus" — "you're running output with no input loop. Signal goes out, nothing comes back in."
+- Honest about the blind side. Warmth through specificity, not softening.
+- Present tense. "This is what's happening" not "this may be what's happening."
+- If they used a specific word (like "spiral", "drowning", "stuck"), you can mirror it once — then name what's underneath it.
+- "the_tell" especially must feel like a sharp observation no generic tool could make.
+
+No framework jargon in the output: no "pillar", "gravity", "blind side", "SELF/SPACE/STORY/SPIRIT", "Flow Key", "FourFlow".
+Name domains directly: body/mind/emotions, environment/tools, direction/goals, purpose/values.`;
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
@@ -394,7 +466,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Failed to save intake' }, { status: 500 });
   }
 
-  // Generate profile via Claude Sonnet with structured tool_use
+  // Generate via Claude Sonnet with structured tool_use
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const prompt    = buildPrompt(answers, scores, gravity, blindSide, recommendations);
 
@@ -402,9 +474,9 @@ export async function POST(request: NextRequest) {
   try {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
+      max_tokens: 1500,
       tools: [PROFILE_TOOL],
-      tool_choice: { type: 'tool', name: 'generate_flow_lens_profile' },
+      tool_choice: { type: 'tool', name: 'generate_flow_unlock' },
       messages: [{ role: 'user', content: prompt }],
     });
     const toolBlock = message.content.find(b => b.type === 'tool_use');
@@ -426,9 +498,11 @@ export async function POST(request: NextRequest) {
     pillar_scores: scores,
     gravity_bullets:          structured.gravity_bullets,
     blind_side_bullets:       structured.blind_side_bullets,
+    the_tell:                 structured.the_tell,
     the_move:                 structured.the_move,
     tool_prescription:        structured.tool_prescription,
     technique_prescriptions:  structured.technique_prescriptions,
+    concept_prescription:     structured.concept_prescription,
   };
 
   // Upsert profile (replace previous if exists for this user)

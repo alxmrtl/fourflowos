@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AMETHYST, STEEL } from '@/styles/brand-colors';
-import BigPair from './intake/BigPair';
 import ShapePick from './intake/ShapePick';
 import WordStorm from './intake/WordStorm';
 import ImagePull from './intake/ImagePull';
@@ -13,16 +12,16 @@ type Pillar = 'self' | 'space' | 'story' | 'spirit';
 
 interface NewAnswers {
   // Phase 1 — rapid instinct
-  q1?: 'inward' | 'forward';   // BigPair orientation
-  q2?: Pillar;                  // ShapePick shape vote
-  q3?: 'sharp' | 'loose';      // BigPair state texture
-  q4?: string[];                // WordStorm: 3 selected words
-  q5?: string[];                // ImagePull: 2 selected image IDs
-  q6?: string;                  // Domain context
+  q1?: Pillar;       // ShapePick shape vote
+  q2?: string[];     // WordStorm: 3 selected words
+  q3?: string[];     // ImagePull: 2 selected image IDs
+  q4?: string;       // Domain context
 
-  // Phase 2 — open signal
-  q7?: string;                  // Free text: what's blocking
-  q8?: string;                  // Free text: last flow memory
+  // Phase 2 — open signal (4 text questions)
+  q5?: string;       // "What's getting in the way?"
+  q6?: string;       // "Describe last flow state"
+  q7?: string;       // "What do you tell yourself?"
+  q8?: string;       // "What are you actually chasing?"
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -32,37 +31,6 @@ function shuffle<T>(arr: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
-}
-
-// ── SVGs for BigPair Q1 ────────────────────────────────────────────────────────
-
-function InwardSVG() {
-  return (
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M 24 24
-           C 24 19.5 29 16 32.5 19.5
-           C 36 23 33.5 31 27.5 33
-           C 18 36 10 28.5 10 21
-           C 10 11.5 18 5 28 5
-           C 39.5 5 45 14 44 24"
-        stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none"
-      />
-      <circle cx="24" cy="24" r="2" fill="currentColor" opacity="0.6" />
-    </svg>
-  );
-}
-
-function ForwardSVG() {
-  return (
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="4" y1="18" x2="14" y2="18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.35" />
-      <line x1="2" y1="24" x2="12" y2="24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.55" />
-      <line x1="4" y1="30" x2="14" y2="30" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.35" />
-      <line x1="14" y1="24" x2="36" y2="24" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M 28 16 L 38 24 L 28 32" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    </svg>
-  );
 }
 
 // ── Domain icons ───────────────────────────────────────────────────────────────
@@ -120,13 +88,14 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
   const [answers, setAnswers] = useState<NewAnswers>({});
 
-  const q6Options = useMemo(() => shuffle([
+  const q4Options = useMemo(() => shuffle([
     { value: 'creative work',             label: 'Creative',    icon: <CreativeSVG /> },
     { value: 'career/professional',        label: 'Career',      icon: <CareerSVG /> },
     { value: 'business/entrepreneurship', label: 'Building',    icon: <BusinessSVG /> },
     { value: 'personal growth',           label: 'Growth',      icon: <GrowthSVG /> },
   ]), []);
 
+  // 8 questions: 4 instinct + 4 signal
   const TOTAL = 8;
   const progress = current / TOTAL;
 
@@ -151,75 +120,45 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
 
   // ── Question renderers ─────────────────────────────────────────────────────
 
+  // Q1 — ShapePick (pillar vote)
   function renderQ1() {
     return (
-      <BigPair
-        options={[
-          {
-            value: 'inward' as const,
-            word: 'INWARD',
-            subtext: 'settle · regulate · restore',
-            svg: <InwardSVG />,
-          },
-          {
-            value: 'forward' as const,
-            word: 'FORWARD',
-            subtext: 'build · push · progress',
-            svg: <ForwardSVG />,
-          },
-        ]}
-        onSelect={value => advance({ ...answers, q1: value })}
+      <ShapePick
+        onSelect={(value) => advance({ ...answers, q1: value })}
       />
     );
   }
 
+  // Q2 — WordStorm
   function renderQ2() {
     return (
-      <ShapePick
-        onSelect={(value) => advance({ ...answers, q2: value })}
+      <WordStorm
+        onSelect={words => advance({ ...answers, q2: words })}
       />
     );
   }
 
+  // Q3 — ImagePull
   function renderQ3() {
     return (
-      <BigPair
-        options={[
-          { value: 'sharp' as const, word: 'SHARP' },
-          { value: 'loose' as const, word: 'LOOSE' },
-        ]}
-        onSelect={value => advance({ ...answers, q3: value })}
-      />
-    );
-  }
-
-  function renderQ4() {
-    return (
-      <WordStorm
-        onSelect={words => advance({ ...answers, q4: words })}
-      />
-    );
-  }
-
-  function renderQ5() {
-    return (
       <ImagePull
-        onSelect={images => advance({ ...answers, q5: images })}
+        onSelect={images => advance({ ...answers, q3: images })}
       />
     );
   }
 
-  function renderQ6() {
+  // Q4 — Domain context
+  function renderQ4() {
     return (
       <div className="flex flex-col">
         <p className="text-[9px] uppercase tracking-widest text-white/25 mb-1.5">Context</p>
-        <p className="text-white text-base font-medium leading-snug mb-5">Your primary domain right now:</p>
+        <p className="text-white text-base font-medium leading-snug mb-5">Where is the block showing up?</p>
         <div className="grid grid-cols-2 gap-2.5">
-          {q6Options.map(opt => (
+          {q4Options.map(opt => (
             <motion.button
               key={opt.value}
               whileTap={{ scale: 0.97 }}
-              onClick={() => advance({ ...answers, q6: opt.value })}
+              onClick={() => advance({ ...answers, q4: opt.value })}
               className="flex flex-col items-center justify-center gap-2 px-3 py-4 rounded-2xl border transition-all duration-200"
               style={{
                 background:  'rgba(255,255,255,0.025)',
@@ -247,36 +186,62 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
     );
   }
 
-  function renderQ7() {
+  // Q5 — What's blocking
+  function renderQ5() {
     return (
       <TextReflection
         label="Signal"
         question="What's getting in the way of your best work right now?"
-        placeholder="Could be internal, external, or just unclear…"
+        placeholder="Be specific — could be internal, external, or just unclear…"
+        onSelect={text => advance({ ...answers, q5: text })}
+      />
+    );
+  }
+
+  // Q6 — Last flow state
+  function renderQ6() {
+    return (
+      <TextReflection
+        label="Signal"
+        question="Describe the last time you were fully in it. Walk me through what made it possible."
+        placeholder="The last time things clicked — what were the conditions…"
+        onSelect={text => advance({ ...answers, q6: text })}
+      />
+    );
+  }
+
+  // Q7 — Internal monologue
+  function renderQ7() {
+    return (
+      <TextReflection
+        label="Signal"
+        question="What do you tell yourself when you can't get started — or when you lose the thread mid-work?"
+        placeholder="The actual internal voice, not the polished version…"
         onSelect={text => advance({ ...answers, q7: text })}
       />
     );
   }
 
+  // Q8 — What they're really chasing
   function renderQ8() {
     return (
       <TextReflection
         label="Signal"
-        question="When were you last fully in it? What made it possible?"
-        placeholder="The last time things clicked — what was different…"
-        onSelect={text => advance({ ...answers, q8: text })}
+        question="What are you actually chasing right now? Not what you should be chasing — what is it really?"
+        placeholder="Honest answer — the thing underneath the thing…"
+        onSelect={text => onSubmit({ answers: { ...answers, q8: text } })}
       />
     );
   }
 
   const RENDERERS = [
-    renderQ1, renderQ2, renderQ3, renderQ4, renderQ5, renderQ6,
-    renderQ7, renderQ8,
+    renderQ1, renderQ2, renderQ3, renderQ4,
+    renderQ5, renderQ6, renderQ7, renderQ8,
   ];
 
-  // Phase label: INSTINCT for q1–q6 (indices 0–5), SIGNAL for q7–q8 (indices 6–7)
-  const phaseLabel    = current < 6 ? 'INSTINCT' : 'SIGNAL';
-  const phaseChanged  = current === 6;
+  // Phase label: INSTINCT for q1–q4 (indices 0–3), SIGNAL for q5–q8 (indices 4–7)
+  const phaseLabel   = current < 4 ? 'INSTINCT' : 'SIGNAL';
+  const phaseChanged = current === 4;
 
   return (
     <div className="flex flex-col">
@@ -334,7 +299,7 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
           {current === 0 ? 'Cancel' : '← Back'}
         </button>
         {submitting && (
-          <span className="text-[10px] text-white/20">Generating…</span>
+          <span className="text-[10px] text-white/20">Reading your signal…</span>
         )}
       </div>
     </div>
