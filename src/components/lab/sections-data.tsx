@@ -353,7 +353,7 @@ export const SECTIONS: SectionDef[] = [
     Icon: CoreIcon,
     Animation: CoreAnim,
     tools: [
-      { id: 'flow-lens',        label: 'Flow Lens',       description: "How you're wired",      icon: <AppIcon src="/assets/LOGOS/EMPOWERED ROLE.png"    alt="Flow Lens" /> },
+      { id: 'flow-lens',        label: 'Flow Unlock',     description: 'Find your block',        icon: <AppIcon src="/assets/LOGOS/EMPOWERED ROLE.png"    alt="Flow Unlock" /> },
       { id: 'ancestral-signal', label: 'Ancestral Signal', description: 'The deep architecture', icon: <AppIcon src="/assets/LOGOS/GROUNDING VALUES.png" alt="Ancestral Signal" /> },
     ],
   },

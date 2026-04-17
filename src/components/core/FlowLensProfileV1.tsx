@@ -3,9 +3,8 @@
 /**
  * Flow Unlock Profile — V4
  *
- * Visual:   Radial arcs — gravity has glow + thicker stroke.
- * Sections: How You're Wired / Your Hidden Bottleneck / The Tell / Your Unlock / Moves
- * Moves:    Tool + 3 techniques + 1 concept to sit with
+ * Layout: Bottleneck area badge → potential unlock bullets → The Tell → Your Unlock → Moves
+ * No radial arcs. No gravity section. Focus is entirely on what's blocking + what to do.
  */
 
 import Image from 'next/image';
@@ -29,132 +28,33 @@ const PS: Record<Pillar, string> = {
   spirit: 'Values · Curiosity · Vision',
 };
 
-// ── Radial arc visual ─────────────────────────────────────────────────────────
+// ── Bottleneck area badge ─────────────────────────────────────────────────────
 
-const ARC_SIZE  = 68;
-const STROKE    = 3;
-const R         = (ARC_SIZE / 2) - STROKE - 2;
-const CIRC      = 2 * Math.PI * R;
-
-function PillarArc({
-  pillar, ratio, isGravity,
-}: { pillar: Pillar; ratio: number; isGravity: boolean }) {
+function BottleneckBadge({ pillar }: { pillar: Pillar }) {
   const color = PC[pillar];
-  const dash  = Math.max(0.05, ratio) * CIRC;
-  const gap   = CIRC - dash;
-
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="relative" style={{ width: ARC_SIZE, height: ARC_SIZE }}>
-        {/* Gravity ambient glow */}
-        {isGravity && (
-          <motion.div
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              inset: -10,
-              background: `radial-gradient(circle, ${color}40 0%, ${color}18 45%, transparent 70%)`,
-              zIndex: 0,
-            }}
-            animate={{ opacity: [0.7, 1, 0.7], scale: [1, 1.08, 1] }}
-            transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        )}
-
-        {/* Arc ring */}
-        <svg
-          width={ARC_SIZE}
-          height={ARC_SIZE}
-          className="absolute inset-0"
-          style={{ transform: 'rotate(-90deg)', zIndex: 1 }}
-        >
-          {/* Track */}
-          <circle
-            cx={ARC_SIZE / 2} cy={ARC_SIZE / 2} r={R}
-            fill="none"
-            stroke="rgba(255,255,255,0.06)"
-            strokeWidth={STROKE}
-          />
-          {/* Score arc */}
-          <circle
-            cx={ARC_SIZE / 2} cy={ARC_SIZE / 2} r={R}
-            fill="none"
-            stroke={color}
-            strokeWidth={isGravity ? STROKE + 1 : STROKE}
-            strokeLinecap="round"
-            strokeDasharray={`${dash} ${gap}`}
-            style={{
-              filter: isGravity ? `drop-shadow(0 0 5px ${color})` : 'none',
-              opacity: isGravity ? 1 : 0.65,
-            }}
-          />
-        </svg>
-
-        {/* Element image */}
-        <div
-          className="absolute flex items-center justify-center"
-          style={{ inset: STROKE + 6, zIndex: 2 }}
-        >
-          <div className="relative w-full h-full">
-            <Image
-              src={ELEMENT_SRC[pillar]}
-              alt={PL[pillar]}
-              fill
-              className="object-contain"
-              style={{
-                filter: isGravity
-                  ? `drop-shadow(0 0 14px ${color}) drop-shadow(0 0 6px ${color}cc) drop-shadow(0 0 28px ${color}55)`
-                  : 'none',
-              }}
-            />
-          </div>
+    <div className="flex items-center gap-3">
+      <div
+        className="relative flex-shrink-0 rounded-xl overflow-hidden flex items-center justify-center"
+        style={{
+          width: 44, height: 44,
+          background: `${color}14`,
+          border: `1px solid ${color}30`,
+        }}
+      >
+        <div className="relative w-6 h-6">
+          <Image src={ELEMENT_SRC[pillar]} alt={PL[pillar]} fill className="object-contain" />
         </div>
       </div>
-
-      <p
-        className="text-[9px] font-bold tracking-[0.16em] uppercase leading-none"
-        style={{ color: isGravity ? color : `${color}cc` }}
-      >
-        {PL[pillar]}
-      </p>
-    </div>
-  );
-}
-
-// ── Signal section (wired / bottleneck) ───────────────────────────────────────
-
-function SignalSection({
-  label, pillar, sub, color, bullets,
-}: {
-  label: string;
-  pillar: string;
-  sub: string;
-  color: string;
-  bullets: string[];
-}) {
-  return (
-    <div className="relative pl-3">
-      <div
-        className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full"
-        style={{ background: `${color}50` }}
-      />
-      <div className="flex items-baseline gap-2 mb-2.5 flex-wrap">
-        <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: `${color}80` }}>
-          {label}
+      <div>
+        <p className="text-[9px] font-bold tracking-widest uppercase mb-0.5" style={{ color: `${color}80` }}>
+          LIKELY UNLOCK AREA
         </p>
-        <span className="text-xs font-semibold" style={{ color }}>{pillar}</span>
-        <span className="text-[10px] text-white/30 hidden sm:inline">{sub}</span>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-sm font-semibold" style={{ color }}>{PL[pillar]}</span>
+          <span className="text-[10px] text-white/30">{PS[pillar]}</span>
+        </div>
       </div>
-      <ul className="space-y-1.5">
-        {bullets.map((b, i) => (
-          <li key={i} className="flex items-start gap-2">
-            <span
-              className="flex-shrink-0 mt-[7px] w-1 h-1 rounded-full"
-              style={{ background: `${color}65` }}
-            />
-            <span className="text-sm text-white/62 leading-snug">{b}</span>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
@@ -167,13 +67,9 @@ interface Props {
 }
 
 export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
-  const gravity  = profile.gravity_pillar as Pillar;
   const blindSide = profile.blind_side_pillar as Pillar;
-  const scores   = profile.profile_json?.pillar_scores ?? { self: 0, space: 0, story: 0, spirit: 0 };
-  const maxScore = Math.max(...Object.values(scores), 1);
 
   const pj = profile.profile_json;
-  const gravityBullets   = pj?.gravity_bullets   ?? (pj?.sections?.gravity    ? [pj.sections.gravity]    : []);
   const blindBullets     = pj?.blind_side_bullets ?? (pj?.sections?.blind_side ? [pj.sections.blind_side] : []);
   const theTell          = pj?.the_tell ?? '';
   const theMove          = pj?.the_move ?? pj?.sections?.compounding_move ?? '';
@@ -187,51 +83,40 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
     month: 'short', day: 'numeric', year: 'numeric',
   });
 
-  // Order: gravity first, then others sorted by score desc, blind side last
-  const others = (['self', 'space', 'story', 'spirit'] as Pillar[])
-    .filter(p => p !== gravity && p !== blindSide)
-    .sort((a, b) => (scores[b] ?? 0) - (scores[a] ?? 0));
-  const orderedPillars: Pillar[] = [gravity, ...others, blindSide];
+  const color = PC[blindSide];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="space-y-7 text-white"
+      className="space-y-6 text-white"
     >
-      {/* ── Radial arc signature ── */}
-      <div className="grid grid-cols-4 gap-3 py-2">
-        {orderedPillars.map(p => (
-          <PillarArc
-            key={p}
-            pillar={p}
-            ratio={(scores[p] ?? 0) / maxScore}
-            isGravity={p === gravity}
-          />
-        ))}
-      </div>
+      {/* ── Bottleneck area badge ── */}
+      <BottleneckBadge pillar={blindSide} />
 
-      {/* ── How You're Wired ── */}
-      {gravityBullets.length > 0 && (
-        <SignalSection
-          label="HOW YOU'RE WIRED"
-          pillar={PL[gravity]}
-          sub={PS[gravity]}
-          color={PC[gravity]}
-          bullets={gravityBullets}
-        />
-      )}
-
-      {/* ── Your Hidden Bottleneck ── */}
+      {/* ── Potential unlock bullets ── */}
       {blindBullets.length > 0 && (
-        <SignalSection
-          label="YOUR HIDDEN BOTTLENECK"
-          pillar={PL[blindSide]}
-          sub={PS[blindSide]}
-          color={PC[blindSide]}
-          bullets={blindBullets}
-        />
+        <div className="relative pl-3">
+          <div
+            className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full"
+            style={{ background: `${color}45` }}
+          />
+          <p className="text-[9px] text-white/25 mb-3 leading-relaxed">
+            Based on your signals — a direction to test, not a verdict
+          </p>
+          <ul className="space-y-1.5">
+            {blindBullets.map((b, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span
+                  className="flex-shrink-0 mt-[7px] w-1 h-1 rounded-full"
+                  style={{ background: `${color}65` }}
+                />
+                <span className="text-sm text-white/62 leading-snug">{b}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {/* ── The Tell ── */}
@@ -239,12 +124,12 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
         <div className="relative pl-3">
           <div
             className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full"
-            style={{ background: `linear-gradient(180deg, ${PC[gravity]}60, ${PC[blindSide]}60)` }}
+            style={{ background: `${color}35` }}
           />
-          <p className="text-[10px] font-bold tracking-widest uppercase text-white/35 mb-2">
+          <p className="text-[10px] font-bold tracking-widest uppercase text-white/30 mb-2">
             THE TELL
           </p>
-          <p className="text-sm text-white/65 leading-relaxed italic">{theTell}</p>
+          <p className="text-sm text-white/60 leading-relaxed italic">{theTell}</p>
         </div>
       )}
 
@@ -253,14 +138,12 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
         <div className="relative pl-3">
           <div
             className="absolute left-0 top-0 bottom-0 w-[2px] rounded-full"
-            style={{
-              background: `linear-gradient(180deg, ${PC[gravity]}, ${PC[blindSide]})`,
-            }}
+            style={{ background: color }}
           />
           <p className="text-[10px] font-bold tracking-widest uppercase text-white/35 mb-2">
             YOUR UNLOCK
           </p>
-          <p className="text-sm text-white/62 leading-relaxed">{theMove}</p>
+          <p className="text-sm text-white/70 leading-relaxed">{theMove}</p>
         </div>
       )}
 
