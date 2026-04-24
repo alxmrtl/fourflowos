@@ -116,6 +116,16 @@ export function useFlowStore() {
 
   const selectedPriority = dayData.priorities.find(p => p.id === selectedPriorityId) || null;
 
+  const completePriority = useCallback((id: string) => {
+    setDayData(prev => ({
+      ...prev,
+      priorities: prev.priorities.map(p => p.id === id ? { ...p, completed: true } : p),
+    }));
+  }, []);
+
+  const activePriorities = dayData.priorities.filter(p => !p.completed);
+  const donePriorities   = dayData.priorities.filter(p =>  p.completed);
+
   const resetDay = useCallback(() => {
     setDayData({ date: todayKey(), priorities: [], sessions: [] });
     setSelectedPriorityId(null);
@@ -133,6 +143,9 @@ export function useFlowStore() {
     addPriority,
     removePriority,
     updatePriority,
+    completePriority,
+    activePriorities,
+    donePriorities,
     addSession,
     totalMinutes,
     totalReps,
