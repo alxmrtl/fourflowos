@@ -35,6 +35,7 @@ const DEFAULT_SETTINGS: FlowSettings = {
   breathworkPatternId: 'box',
   breathworkPre: false,
   breathworkPost: false,
+  breathworkCycles: 5,
   audioSource: 'none',
   audioVolume: 0.5,
   youtubeCustomUrl: '',

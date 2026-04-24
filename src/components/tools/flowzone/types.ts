@@ -64,7 +64,29 @@ export interface FlowSettings {
   breathworkPatternId: string;
   breathworkPre: boolean;
   breathworkPost: boolean;
+  breathworkCycles: number;
   audioSource: AudioSource;
   audioVolume: number;
   youtubeCustomUrl: string;
+}
+
+export interface DashboardLayoutProps {
+  activePriorities: Priority[];
+  donePriorities: Priority[];
+  selectedPriorityId: string | null;
+  selectedPriority: Priority | null;
+  settings: FlowSettings;
+  sessionCount: number;
+  totalMinutes: number;
+  totalReps: number;
+  onSelectPriority: (id: string | null) => void;
+  onUpdateSettings: (partial: Partial<FlowSettings>) => void;
+  onAddPriority: (text: string) => void;
+  onRemovePriority: (id: string) => void;
+  onUpdatePriority: (id: string, text: string) => void;
+  onStart: () => void;
+  newPriority: string;
+  setNewPriority: (val: string) => void;
+  editingId: string | null;
+  setEditingId: (id: string | null) => void;
 }
