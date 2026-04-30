@@ -30,7 +30,7 @@ function MobileSheet({
   return (
     <div
       className="w-full h-full overflow-hidden rounded-t-[20px] border-t border-white/[0.1]"
-      style={{ background: 'rgba(10,10,10,0.82)' }}
+      style={{ background: '#0a0a0a' }}
     >
       {/* Animation — full-bleed background */}
       <div className="absolute inset-0 opacity-55 pointer-events-none">
@@ -127,11 +127,7 @@ function BottomNavBar({
   return (
     <div
       className="fixed bottom-0 inset-x-0 z-50 h-14 grid grid-cols-4 border-t border-white/[0.08]"
-      style={{
-        background: 'rgba(8,8,8,0.97)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-      }}
+      style={{ background: '#080808' }}
     >
       {SECTIONS.map((section, idx) => {
         const isActive = activeSection === idx;
@@ -141,22 +137,24 @@ function BottomNavBar({
             onClick={() => onSelectSection(idx)}
             className="flex flex-col items-center justify-center gap-1 relative"
           >
-            {/* Active indicator — colored line at top of button */}
-            <div
-              className="absolute top-0 inset-x-3 h-[2px] rounded-b-full transition-opacity duration-200"
-              style={{
-                background: section.color,
-                opacity: isActive ? 1 : 0,
-              }}
-            />
-            <div className="flex-shrink-0 transition-opacity duration-200" style={{ opacity: 1 }}>
+            {/* Active glow */}
+            {isActive && (
+              <div
+                className="absolute inset-x-2 inset-y-1 rounded-xl pointer-events-none transition-all duration-200"
+                style={{
+                  background: `${section.color}12`,
+                  boxShadow: `0 0 14px 3px ${section.color}30`,
+                }}
+              />
+            )}
+            <div className="relative flex-shrink-0">
               <section.Icon color={section.color} size={20} active={isActive} />
             </div>
             <span
-              className="text-[8px] font-bold uppercase tracking-[0.16em] transition-colors duration-200"
+              className="relative text-[8px] font-bold uppercase tracking-[0.16em] transition-colors duration-200"
               style={{
                 fontFamily: 'var(--font-mono, monospace)',
-                color: isActive ? section.color : 'rgba(255,255,255,0.65)',
+                color: isActive ? section.color : 'rgba(255,255,255,0.85)',
               }}
             >
               {section.label}
