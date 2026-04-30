@@ -40,7 +40,7 @@ export default function FlowLab() {
       </div>
 
       {/* Tool content — takes remaining space; pb-14 on mobile keeps content above fixed bottom nav */}
-      <div className="flex-1 min-h-0 pb-14 md:pb-0">
+      <div className="flex-1 min-h-0 pb-[60px] md:pb-0">
         <ActivityArea
           activeTool={activeTool}
           onBack={() => setActiveTool('flow-lens')}

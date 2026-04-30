@@ -10,6 +10,14 @@ interface MobileNavProps {
   onSelectTool: (tool: ToolId) => void;
 }
 
+// Lighter tints of each pillar color — same hue, high enough luminance for WCAG AAA on #080808
+const LABEL_TINT: Record<string, string> = {
+  '#E84535': '#F4907A', // CORAL  → 9.05:1
+  '#4E8C73': '#7DC0A3', // SAGE   → 9.67:1
+  '#3E6FA3': '#82A8CB', // STEEL  → 8.09:1
+  '#6330A0': '#B88FE0', // AMETHYST → 7.68:1
+};
+
 // ─── Bottom sheet ─────────────────────────────────────────────────────────────
 
 function MobileSheet({
@@ -47,7 +55,7 @@ function MobileSheet({
 
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full">
-          {/* Header row: label + close button */}
+        {/* Header row: label + close button */}
         <div className="flex items-center justify-between px-4 pt-3 pb-1 flex-shrink-0">
           <div className="flex items-center gap-2">
             <span
@@ -56,7 +64,7 @@ function MobileSheet({
             >
               {section.label}
             </span>
-            <span className="text-[10px] text-white/30 font-light">{section.description}</span>
+            <span className="text-[10px] text-white/45 font-light">{section.description}</span>
           </div>
           <button
             onClick={onClose}
@@ -83,14 +91,14 @@ function MobileSheet({
                 className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl border text-left"
                 style={{
                   background: isActive ? `${section.color}18` : 'rgba(255,255,255,0.07)',
-                  borderColor: isActive ? `${section.color}70` : 'rgba(255,255,255,0.12)',
+                  borderColor: isActive ? `${section.color}85` : 'rgba(255,255,255,0.12)',
                   boxShadow: isActive ? `0 0 12px 1px ${section.color}25` : 'none',
                 }}
                 whileTap={{ scale: 0.975 }}
                 transition={{ duration: 0.1 }}
               >
                 <span
-                  className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
+                  className="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
                   style={{
                     background: isActive ? `${section.color}28` : 'rgba(255,255,255,0.1)',
                     border: `1px solid ${isActive ? section.color + '55' : 'rgba(255,255,255,0.12)'}`,
@@ -102,7 +110,7 @@ function MobileSheet({
                   <span className="text-[13px] font-medium leading-tight" style={{ color: '#fff' }}>
                     {tool.label}
                   </span>
-                  <span className="text-[11px] text-white/50 mt-0.5 leading-tight font-light">
+                  <span className="text-[11px] text-white/60 mt-0.5 leading-tight font-light">
                     {tool.description}
                   </span>
                 </span>
@@ -126,11 +134,15 @@ function BottomNavBar({
 }) {
   return (
     <div
-      className="fixed bottom-0 inset-x-0 z-50 h-14 grid grid-cols-4 border-t border-white/[0.08]"
+      className="fixed bottom-0 inset-x-0 z-50 h-[60px] grid grid-cols-4 border-t border-white/[0.08]"
       style={{ background: '#080808' }}
     >
       {SECTIONS.map((section, idx) => {
         const isActive = activeSection === idx;
+        const labelColor = isActive
+          ? (LABEL_TINT[section.color] ?? section.color)
+          : 'rgba(255,255,255,0.90)';
+
         return (
           <button
             key={section.id}
@@ -140,21 +152,21 @@ function BottomNavBar({
             {/* Active glow */}
             {isActive && (
               <div
-                className="absolute inset-x-2 inset-y-1 rounded-xl pointer-events-none transition-all duration-200"
+                className="absolute inset-x-1.5 inset-y-0.5 rounded-xl pointer-events-none transition-all duration-200"
                 style={{
                   background: `${section.color}12`,
-                  boxShadow: `0 0 14px 3px ${section.color}30`,
+                  boxShadow: `0 0 18px 4px ${section.color}38`,
                 }}
               />
             )}
             <div className="relative flex-shrink-0">
-              <section.Icon color={section.color} size={20} active={isActive} />
+              <section.Icon color={section.color} size={22} active={isActive} />
             </div>
             <span
               className="relative text-[8px] font-bold uppercase tracking-[0.16em] transition-colors duration-200"
               style={{
                 fontFamily: 'var(--font-mono, monospace)',
-                color: isActive ? section.color : 'rgba(255,255,255,0.85)',
+                color: labelColor,
               }}
             >
               {section.label}
@@ -193,7 +205,7 @@ export default function MobileNav({ activeTool, onSelectTool }: MobileNavProps) 
           <motion.div
             key="sheet"
             className="fixed inset-x-0 z-40"
-            style={{ bottom: '56px', height: '196px' }}
+            style={{ bottom: '60px', height: '196px' }}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
