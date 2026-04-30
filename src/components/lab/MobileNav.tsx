@@ -82,8 +82,9 @@ function MobileSheet({
                 }}
                 className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl border text-left"
                 style={{
-                  background: isActive ? `${section.color}12` : 'rgba(255,255,255,0.04)',
-                  borderColor: isActive ? `${section.color}50` : 'rgba(255,255,255,0.08)',
+                  background: isActive ? `${section.color}18` : 'rgba(255,255,255,0.07)',
+                  borderColor: isActive ? `${section.color}70` : 'rgba(255,255,255,0.12)',
+                  boxShadow: isActive ? `0 0 12px 1px ${section.color}25` : 'none',
                 }}
                 whileTap={{ scale: 0.975 }}
                 transition={{ duration: 0.1 }}
@@ -91,18 +92,17 @@ function MobileSheet({
                 <span
                   className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
                   style={{
-                    background: isActive ? `${section.color}20` : 'rgba(255,255,255,0.06)',
-                    border: `1px solid ${isActive ? section.color + '40' : 'rgba(255,255,255,0.08)'}`,
-                    opacity: isActive ? 1 : 0.55,
+                    background: isActive ? `${section.color}28` : 'rgba(255,255,255,0.1)',
+                    border: `1px solid ${isActive ? section.color + '55' : 'rgba(255,255,255,0.12)'}`,
                   }}
                 >
                   {tool.icon}
                 </span>
                 <span className="flex flex-col">
-                  <span className="text-[13px] font-medium leading-tight" style={{ color: isActive ? '#fff' : 'rgba(255,255,255,0.75)' }}>
+                  <span className="text-[13px] font-medium leading-tight" style={{ color: '#fff' }}>
                     {tool.label}
                   </span>
-                  <span className="text-[11px] text-white/30 mt-0.5 leading-tight font-light">
+                  <span className="text-[11px] text-white/50 mt-0.5 leading-tight font-light">
                     {tool.description}
                   </span>
                 </span>
