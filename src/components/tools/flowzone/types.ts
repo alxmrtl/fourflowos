@@ -34,6 +34,7 @@ export interface BreathworkPattern {
 export interface BreathworkPhase {
   label: string;
   durationMs: number;
+  holdScale?: number; // For Hold phases: 1.0 = hold at top (after inhale), 0.6 = hold at bottom (after exhale)
 }
 
 export interface AmbientSound {

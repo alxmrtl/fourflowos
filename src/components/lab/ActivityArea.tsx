@@ -61,7 +61,7 @@ function ToolContent({ activeTool, onBack }: ActivityAreaProps) {
     case 'breathwork':
       return (
         <div className="flex items-start justify-center pt-6">
-          <Breathwork onDone={onBack} onSkip={onBack} label="FlowLab" />
+          <Breathwork onDone={onBack} onSkip={onBack} label="FlowLab" targetCycles={5} />
         </div>
       );
     default: return <ProfileSummary mode="lens" />;

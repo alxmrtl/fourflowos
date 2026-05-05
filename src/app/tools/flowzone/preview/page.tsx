@@ -247,6 +247,7 @@ export default function FlowZonePreviewPage() {
             <Breathwork
               label={breathworkLabel}
               patternId={store.settings.breathworkPatternId}
+              targetCycles={store.settings.breathworkCycles}
               onDone={handleBreathworkDone}
               onSkip={handleBreathworkDone}
             />

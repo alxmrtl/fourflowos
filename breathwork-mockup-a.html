@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Breathwork Mockup A — Corrected</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sage:     #6BA292;
+    --amethyst: #7A4DA4;
+    --coral:    #FF6F61;
+    --steel:    #5B84B1;
+    --bg:       #0a0a0a;
+    --card:     #111;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 32px;
+  }
+
+  /* ── Orb area ── */
+  .orb-wrap {
+    position: relative;
+    width: 192px;
+    height: 192px;
+    margin-bottom: 32px;
+  }
+
+  /* Progress arc */
+  .arc-svg {
+    position: absolute;
+    inset: -20px;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    pointer-events: none;
+  }
+
+  /* Concentric rings */
+  .ring-outer, .ring-mid, .ring-main {
+    position: absolute;
+    border-radius: 50%;
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .ring-outer {
+    inset: -12px;
+    border: 1px solid rgba(122, 77, 164, 0.15);
+  }
+
+  .ring-mid {
+    inset: -4px;
+    border: 1px solid rgba(107, 162, 146, 0.12);
+  }
+
+  .ring-main {
+    inset: 0;
+    background: radial-gradient(circle, rgba(107,162,146,0.25), rgba(122,77,164,0.09));
+    border: 2px solid rgba(107,162,146,0.37);
+    transition: transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .orb-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .phase-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+
+  .cycle-text {
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+  }
+
+  /* ── Controls ── */
+  .pattern-name {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .pattern-selector {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pattern-btn {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid #2a2a2a;
+    background: #181818;
+    color: #666;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: inherit;
+  }
+
+  .pattern-btn.active {
+    background: rgba(107,162,146,0.12);
+    border-color: rgba(107,162,146,0.4);
+    color: var(--sage);
+  }
+
+  .cycles-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .cycles-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #444;
+  }
+
+  .cycle-pip {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #2a2a2a;
+    background: #181818;
+    color: #555;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: inherit;
+  }
+
+  .cycle-pip.active {
+    background: rgba(107,162,146,0.12);
+    border-color: rgba(107,162,146,0.4);
+    color: var(--sage);
+  }
+
+  .done-btn {
+    padding: 10px 32px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, var(--sage), rgba(122,77,164,0.8));
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s;
+    font-family: inherit;
+    box-shadow: 0 2px 16px rgba(107,162,146,0.2);
+  }
+
+  .done-btn:hover { transform: scale(1.04); }
+
+  .divider {
+    width: 1px;
+    height: 14px;
+    background: #222;
+    margin: 0 4px;
+  }
+</style>
+</head>
+<body>
+
+<p class="label">Pre-Session Breathwork</p>
+
+<!-- Pattern selector -->
+<div class="pattern-selector" id="patternSelector"></div>
+
+<!-- Cycles selector -->
+<div class="cycles-row">
+  <span class="cycles-label">Cycles</span>
+  <div id="cyclePips"></div>
+</div>
+
+<!-- Orb -->
+<div class="orb-wrap" id="orbWrap">
+  <!-- Progress arc -->
+  <svg class="arc-svg" viewBox="0 0 232 232" id="arcSvg">
+    <circle cx="116" cy="116" r="112" fill="none" stroke="rgba(107,162,146,0.08)" stroke-width="2"/>
+    <circle cx="116" cy="116" r="112" fill="none"
+      stroke="#6BA292" stroke-width="2" stroke-linecap="round"
+      id="arcFill"
+      transform="rotate(-90 116 116)"
+    />
+  </svg>
+
+  <div class="ring-outer" id="ringOuter"></div>
+  <div class="ring-mid"   id="ringMid"></div>
+  <div class="ring-main"  id="ringMain"></div>
+
+  <div class="orb-label">
+    <span class="phase-text" id="phaseText">—</span>
+    <span class="cycle-text" id="cycleText">— / —</span>
+  </div>
+</div>
+
+<p class="pattern-name" id="patternName">Box 4-4-4-4</p>
+
+<button class="done-btn" id="doneBtn">Done</button>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+
+const PATTERNS = [
+  {
+    id: 'box', name: 'Box 4-4-4-4',
+    phases: [
+      { label: 'Inhale',  ms: 4000, holdScale: null },
+      { label: 'Hold',    ms: 4000, holdScale: 1.0 },
+      { label: 'Exhale',  ms: 4000, holdScale: null },
+      { label: 'Hold',    ms: 4000, holdScale: 0.6 },
+    ],
+  },
+  {
+    id: '478', name: '4-7-8 Pattern',
+    phases: [
+      { label: 'Inhale',  ms: 4000, holdScale: null },
+      { label: 'Hold',    ms: 7000, holdScale: 1.0 },
+      { label: 'Exhale',  ms: 8000, holdScale: null },
+    ],
+  },
+  {
+    id: 'coherent', name: '5.5-5.5 Rhythm',
+    phases: [
+      { label: 'Inhale',  ms: 5500, holdScale: null },
+      { label: 'Exhale',  ms: 5500, holdScale: null },
+    ],
+  },
+  {
+    id: 'energize', name: '2-2 Rapid',
+    phases: [
+      { label: 'Inhale',  ms: 2000, holdScale: null },
+      { label: 'Exhale',  ms: 2000, holdScale: null },
+    ],
+  },
+];
+
+const CYCLE_OPTIONS = [3, 5, 10, 15];
+
+let patternIdx   = 0;
+let targetCycles = 5;
+let startTime    = null;
+let rafId        = null;
+let running      = false;
+
+// ── DOM refs ───────────────────────────────────────────────────────────────
+
+const ringOuter   = document.getElementById('ringOuter');
+const ringMid     = document.getElementById('ringMid');
+const ringMain    = document.getElementById('ringMain');
+const phaseText   = document.getElementById('phaseText');
+const cycleText   = document.getElementById('cycleText');
+const patternName = document.getElementById('patternName');
+const arcFill     = document.getElementById('arcFill');
+const doneBtn     = document.getElementById('doneBtn');
+
+// ── Arc helper ─────────────────────────────────────────────────────────────
+
+const R = 112;
+const CIRC = 2 * Math.PI * R;
+
+function setArc(progress) {
+  const offset = CIRC * (1 - Math.min(progress, 1));
+  arcFill.setAttribute('stroke-dasharray', CIRC);
+  arcFill.setAttribute('stroke-dashoffset', offset);
+}
+
+setArc(0);
+
+// ── Scale helper ───────────────────────────────────────────────────────────
+
+function applyScale(scale) {
+  ringOuter.style.transform = `scale(${scale * 0.95})`;
+  ringMid.style.transform   = `scale(${scale * 0.98})`;
+  ringMain.style.transform  = `scale(${scale})`;
+}
+
+applyScale(0.6);
+
+// ── Animation loop ─────────────────────────────────────────────────────────
+
+function tick() {
+  const pattern = PATTERNS[patternIdx];
+  const cycleDuration = pattern.phases.reduce((s, p) => s + p.ms, 0);
+
+  const elapsed       = Date.now() - startTime;
+  const completedCycles = Math.floor(elapsed / cycleDuration);
+
+  // Auto-stop
+  if (completedCycles >= targetCycles) {
+    applyScale(0.6);
+    phaseText.textContent = 'Done';
+    cycleText.textContent  = `${targetCycles} / ${targetCycles}`;
+    setArc(1);
+    running = false;
+    return;
+  }
+
+  const cyclePos = elapsed % cycleDuration;
+  setArc(completedCycles / targetCycles);
+  cycleText.textContent = `${completedCycles + 1} / ${targetCycles}`;
+
+  let accumulated = 0;
+  let foundPhase = null, progress = 0;
+  for (const phase of pattern.phases) {
+    if (cyclePos < accumulated + phase.ms) {
+      foundPhase = phase;
+      progress   = (cyclePos - accumulated) / phase.ms;
+      break;
+    }
+    accumulated += phase.ms;
+  }
+
+  if (foundPhase) {
+    phaseText.textContent = foundPhase.label;
+    let scale;
+    if (foundPhase.label === 'Inhale') {
+      scale = 0.6 + 0.4 * progress;
+    } else if (foundPhase.label === 'Exhale') {
+      scale = 1.0 - 0.4 * progress;
+    } else {
+      scale = foundPhase.holdScale ?? 1.0;
+    }
+    applyScale(scale);
+  }
+
+  rafId = requestAnimationFrame(tick);
+}
+
+function startSession() {
+  if (rafId) cancelAnimationFrame(rafId);
+  startTime = Date.now();
+  running   = true;
+  phaseText.textContent = '...';
+  cycleText.textContent  = `1 / ${targetCycles}`;
+  setArc(0);
+  rafId = requestAnimationFrame(tick);
+}
+
+// ── Build pattern selector ─────────────────────────────────────────────────
+
+const selector = document.getElementById('patternSelector');
+PATTERNS.forEach((p, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'pattern-btn' + (i === 0 ? ' active' : '');
+  btn.textContent = p.name;
+  btn.onclick = () => {
+    patternIdx = i;
+    patternName.textContent = p.name;
+    selector.querySelectorAll('.pattern-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    startSession();
+  };
+  selector.appendChild(btn);
+});
+
+// ── Build cycle pips ───────────────────────────────────────────────────────
+
+const pipsContainer = document.getElementById('cyclePips');
+pipsContainer.style.display = 'flex';
+pipsContainer.style.gap = '6px';
+
+CYCLE_OPTIONS.forEach(n => {
+  const pip = document.createElement('button');
+  pip.className = 'cycle-pip' + (n === targetCycles ? ' active' : '');
+  pip.textContent = n;
+  pip.onclick = () => {
+    targetCycles = n;
+    pipsContainer.querySelectorAll('.cycle-pip').forEach(b => b.classList.remove('active'));
+    pip.classList.add('active');
+    startSession();
+  };
+  pipsContainer.appendChild(pip);
+});
+
+// ── Done button ────────────────────────────────────────────────────────────
+
+doneBtn.onclick = () => {
+  if (rafId) cancelAnimationFrame(rafId);
+  applyScale(0.6);
+  phaseText.textContent = '—';
+  cycleText.textContent  = '— / —';
+  setArc(0);
+  running = false;
+  // In the real app, this calls onDone()
+};
+
+// ── Auto-start ─────────────────────────────────────────────────────────────
+
+startSession();
+</script>
+</body>
+</html>

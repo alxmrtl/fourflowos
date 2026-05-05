@@ -203,6 +203,7 @@ export default function FlowZone({ hideHeader }: { hideHeader?: boolean } = {}) 
             <Breathwork
               label={breathworkLabel}
               patternId={store.settings.breathworkPatternId}
+              targetCycles={store.settings.breathworkCycles}
               onDone={handleBreathworkDone}
               onSkip={handleBreathworkSkip}
             />

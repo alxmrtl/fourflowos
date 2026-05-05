@@ -3,15 +3,17 @@ import { BreathworkPattern, BreathworkPhase } from './types';
 
 interface UseBreathworkReturn {
   isActive: boolean;
+  isComplete: boolean;
   currentPhase: BreathworkPhase | null;
   phaseProgress: number; // 0-1 within current phase
   cycleCount: number;
-  start: (pattern: BreathworkPattern) => void;
+  start: (pattern: BreathworkPattern, targetCycles?: number) => void;
   stop: () => void;
 }
 
 export function useBreathwork(): UseBreathworkReturn {
   const [isActive, setIsActive] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   const [currentPhase, setCurrentPhase] = useState<BreathworkPhase | null>(null);
   const [phaseProgress, setPhaseProgress] = useState(0);
   const [cycleCount, setCycleCount] = useState(0);
@@ -19,6 +21,7 @@ export function useBreathwork(): UseBreathworkReturn {
   const rafRef = useRef<number>(0);
   const patternRef = useRef<BreathworkPattern | null>(null);
   const startTimeRef = useRef(0);
+  const targetCyclesRef = useRef<number | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   const playTone = useCallback((freq: number, duration: number) => {
@@ -46,6 +49,15 @@ export function useBreathwork(): UseBreathworkReturn {
     const elapsed = Date.now() - startTimeRef.current;
     const cyclePos = elapsed % pattern.cycleDurationMs;
     const completedCycles = Math.floor(elapsed / pattern.cycleDurationMs);
+
+    // Auto-stop when target reached
+    const target = targetCyclesRef.current;
+    if (target !== null && completedCycles >= target) {
+      setIsActive(false);
+      setIsComplete(true);
+      return;
+    }
+
     setCycleCount(completedCycles);
 
     let accumulated = 0;
@@ -64,7 +76,6 @@ export function useBreathwork(): UseBreathworkReturn {
     if (foundPhase) {
       setCurrentPhase(prev => {
         if (prev?.label !== foundPhase!.label) {
-          // Phase transition — play tone
           if (foundPhase!.label === 'Inhale') playTone(440, 0.3);
           else if (foundPhase!.label === 'Exhale') playTone(330, 0.3);
           else playTone(380, 0.2);
@@ -77,10 +88,12 @@ export function useBreathwork(): UseBreathworkReturn {
     rafRef.current = requestAnimationFrame(animate);
   }, [playTone]);
 
-  const start = useCallback((pattern: BreathworkPattern) => {
+  const start = useCallback((pattern: BreathworkPattern, targetCycles?: number) => {
     patternRef.current = pattern;
     startTimeRef.current = Date.now();
+    targetCyclesRef.current = targetCycles ?? null;
     setCycleCount(0);
+    setIsComplete(false);
     setIsActive(true);
     rafRef.current = requestAnimationFrame(animate);
   }, [animate]);
@@ -88,10 +101,12 @@ export function useBreathwork(): UseBreathworkReturn {
   const stop = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
     setIsActive(false);
+    setIsComplete(false);
     setCurrentPhase(null);
     setPhaseProgress(0);
     setCycleCount(0);
     patternRef.current = null;
+    targetCyclesRef.current = null;
   }, []);
 
   useEffect(() => {
@@ -101,5 +116,5 @@ export function useBreathwork(): UseBreathworkReturn {
     };
   }, []);
 
-  return { isActive, currentPhase, phaseProgress, cycleCount, start, stop };
+  return { isActive, isComplete, currentPhase, phaseProgress, cycleCount, start, stop };
 }

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Breathwork Mockup B — Brand Aligned</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sage:     #6BA292;
+    --amethyst: #7A4DA4;
+    --coral:    #FF6F61;
+    --steel:    #5B84B1;
+    --bg:       #050505;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ── Ambient background glow ── */
+  .bg-glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0;
+    pointer-events: none;
+    transition: background 1.2s ease, opacity 0.8s ease;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+  }
+
+  /* ── Main container ── */
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px;
+    gap: 0;
+  }
+
+  /* ── Top label ── */
+  .session-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 48px;
+  }
+
+  /* ── Orb stage ── */
+  .orb-stage {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    margin-bottom: 40px;
+  }
+
+  /* Orbit dots canvas — cycle progress */
+  .orbit-svg {
+    position: absolute;
+    inset: -28px;
+    width: calc(100% + 56px);
+    height: calc(100% + 56px);
+    pointer-events: none;
+  }
+
+  /* Main orb */
+  .orb {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.6s ease,
+                background 0.8s ease;
+    background: radial-gradient(circle at 45% 40%,
+      rgba(107,162,146,0.22) 0%,
+      rgba(122,77,164,0.12) 55%,
+      transparent 100%);
+    box-shadow:
+      0 0 0 1px rgba(107,162,146,0.18),
+      0 0 40px rgba(107,162,146,0.08),
+      inset 0 0 30px rgba(122,77,164,0.06);
+  }
+
+  /* Inner highlight — gives the orb depth */
+  .orb::before {
+    content: '';
+    position: absolute;
+    top: 16%;
+    left: 20%;
+    width: 40%;
+    height: 30%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.07), transparent);
+    pointer-events: none;
+  }
+
+  /* Phase label inside orb */
+  .orb-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .phase-text {
+    font-size: 22px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: -0.01em;
+    transition: opacity 0.3s ease;
+  }
+
+  .pattern-label {
+    font-size: 10px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.2);
+    margin-top: 6px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── Particles ── */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* ── Controls below orb ── */
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  /* Pattern selector — minimal chips */
+  .pattern-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pat-chip {
+    padding: 5px 13px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: transparent;
+    color: rgba(255,255,255,0.3);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .pat-chip.active {
+    border-color: rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* Cycles selector */
+  .cycles-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cycles-lbl {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+  }
+
+  .cyc-pip {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: transparent;
+    color: rgba(255,255,255,0.25);
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .cyc-pip.active {
+    border-color: var(--sage);
+    color: var(--sage);
+    background: rgba(107,162,146,0.08);
+  }
+
+  /* Done button */
+  .done-btn {
+    margin-top: 8px;
+    padding: 11px 36px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .done-btn:hover {
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* Complete flash */
+  @keyframes completePulse {
+    0%   { box-shadow: 0 0 0 0 rgba(107,162,146,0.5); }
+    70%  { box-shadow: 0 0 0 24px rgba(107,162,146,0); }
+    100% { box-shadow: 0 0 0 0 rgba(107,162,146,0); }
+  }
+
+  .orb.complete {
+    animation: completePulse 0.8s ease forwards;
+  }
+</style>
+</head>
+<body>
+
+<!-- Ambient glow -->
+<div class="bg-glow" id="bgGlow"></div>
+
+<div class="container">
+  <p class="session-label">Pre-Session · Breathwork</p>
+
+  <!-- Orb stage -->
+  <div class="orb-stage" id="orbStage">
+
+    <!-- Orbit dots SVG — filled as cycles complete -->
+    <svg class="orbit-svg" viewBox="0 0 296 296" id="orbitSvg"></svg>
+
+    <!-- Particles (generated by JS) -->
+    <div id="particles"></div>
+
+    <!-- Orb -->
+    <div class="orb" id="orb">
+      <div class="orb-inner">
+        <span class="phase-text" id="phaseText">—</span>
+        <span class="pattern-label" id="patternLabel">Box 4-4-4-4</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <!-- Pattern chips -->
+    <div class="pattern-row" id="patternRow"></div>
+
+    <!-- Cycles -->
+    <div class="cycles-row">
+      <span class="cycles-lbl">Cycles</span>
+      <div style="display:flex;gap:5px;" id="cyclePips"></div>
+    </div>
+
+    <!-- Done -->
+    <button class="done-btn" id="doneBtn">Done</button>
+  </div>
+</div>
+
+<script>
+// ── Data ───────────────────────────────────────────────────────────────────
+
+const PATTERNS = [
+  {
+    id: 'box', name: 'Box 4-4-4-4',
+    phases: [
+      { label: 'Inhale',  ms: 4000, holdScale: null },
+      { label: 'Hold',    ms: 4000, holdScale: 1.0 },
+      { label: 'Exhale',  ms: 4000, holdScale: null },
+      { label: 'Hold',    ms: 4000, holdScale: 0.6 },
+    ],
+  },
+  {
+    id: '478', name: '4-7-8',
+    phases: [
+      { label: 'Inhale',  ms: 4000, holdScale: null },
+      { label: 'Hold',    ms: 7000, holdScale: 1.0 },
+      { label: 'Exhale',  ms: 8000, holdScale: null },
+    ],
+  },
+  {
+    id: 'coherent', name: '5.5 Rhythm',
+    phases: [
+      { label: 'Inhale',  ms: 5500, holdScale: null },
+      { label: 'Exhale',  ms: 5500, holdScale: null },
+    ],
+  },
+  {
+    id: 'energize', name: '2-2 Rapid',
+    phases: [
+      { label: 'Inhale',  ms: 2000, holdScale: null },
+      { label: 'Exhale',  ms: 2000, holdScale: null },
+    ],
+  },
+];
+
+const CYCLE_OPTIONS = [3, 5, 10, 15];
+
+// ── Phase colors (brand-aligned) ───────────────────────────────────────────
+
+const PHASE_COLORS = {
+  'Inhale':  { glow: 'rgba(107,162,146,0.18)', bg: '#6BA292', shadow: 'rgba(107,162,146,0.28)' },
+  'Hold':    { glow: 'rgba(122,77,164,0.18)',  bg: '#7A4DA4', shadow: 'rgba(122,77,164,0.22)' },
+  'Exhale':  { glow: 'rgba(255,111,97,0.12)',  bg: '#FF6F61', shadow: 'rgba(255,111,97,0.18)' },
+};
+
+// ── State ──────────────────────────────────────────────────────────────────
+
+let patternIdx    = 0;
+let targetCycles  = 5;
+let startTime     = null;
+let rafId         = null;
+let lastPhase     = null;
+let lastCompleted = -1;
+let holdStartTime = null;
+
+// ── DOM ────────────────────────────────────────────────────────────────────
+
+const orb         = document.getElementById('orb');
+const phaseText   = document.getElementById('phaseText');
+const patternLabel= document.getElementById('patternLabel');
+const bgGlow      = document.getElementById('bgGlow');
+const orbitSvg    = document.getElementById('orbitSvg');
+const doneBtn     = document.getElementById('doneBtn');
+
+// ── Orbit dots ─────────────────────────────────────────────────────────────
+
+const ORBIT_R  = 140;  // radius of dot ring in viewBox (296×296, center 148,148)
+const DOT_R    = 4;
+
+function buildOrbitDots(n) {
+  orbitSvg.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const angle = (i / n) * 2 * Math.PI - Math.PI / 2; // start at top
+    const cx = 148 + ORBIT_R * Math.cos(angle);
+    const cy = 148 + ORBIT_R * Math.sin(angle);
+
+    // Track dot
+    const track = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    track.setAttribute('cx', cx);
+    track.setAttribute('cy', cy);
+    track.setAttribute('r', DOT_R);
+    track.setAttribute('fill', 'rgba(255,255,255,0.06)');
+    orbitSvg.appendChild(track);
+
+    // Fill dot (visible when cycle complete)
+    const fill = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    fill.setAttribute('cx', cx);
+    fill.setAttribute('cy', cy);
+    fill.setAttribute('r', DOT_R);
+    fill.setAttribute('fill', '#6BA292');
+    fill.setAttribute('opacity', '0');
+    fill.setAttribute('id', `dot-${i}`);
+    fill.style.transition = 'opacity 0.4s ease';
+    orbitSvg.appendChild(fill);
+  }
+}
+
+function updateOrbitDots(completedCycles) {
+  for (let i = 0; i < targetCycles; i++) {
+    const dot = document.getElementById(`dot-${i}`);
+    if (dot) dot.setAttribute('opacity', i < completedCycles ? '1' : '0');
+  }
+}
+
+// ── Orb scale ─────────────────────────────────────────────────────────────
+
+function applyScale(scale) {
+  orb.style.transform = `scale(${scale})`;
+}
+
+// ── Phase color transitions ────────────────────────────────────────────────
+
+function applyPhaseColor(label) {
+  const c = PHASE_COLORS[label] || PHASE_COLORS['Inhale'];
+
+  // Ambient glow
+  bgGlow.style.background = c.glow;
+  bgGlow.style.opacity    = '1';
+
+  // Orb box-shadow
+  orb.style.boxShadow = `
+    0 0 0 1px rgba(255,255,255,0.07),
+    0 0 60px ${c.shadow},
+    0 0 120px ${c.shadow.replace('0.', '0.0')},
+    inset 0 0 40px rgba(0,0,0,0.3)
+  `;
+}
+
+// ── Particles ─────────────────────────────────────────────────────────────
+
+const particleContainer = document.getElementById('particles');
+const NUM_PARTICLES = 7;
+const particleEls = [];
+
+for (let i = 0; i < NUM_PARTICLES; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = 3 + Math.random() * 4;
+  p.style.width  = size + 'px';
+  p.style.height = size + 'px';
+  p.style.background = 'rgba(107,162,146,0.5)';
+  p.style.borderRadius = '50%';
+  p.style.position = 'absolute';
+  particleContainer.appendChild(p);
+  particleEls.push(p);
+}
+
+let particleAnimIds = [];
+
+function stopParticles() {
+  particleAnimIds.forEach(id => cancelAnimationFrame(id));
+  particleAnimIds = [];
+  particleEls.forEach(p => { p.style.opacity = 0; });
+}
+
+function startParticles(direction) { // 'out' | 'in' | 'still'
+  stopParticles();
+  if (direction === 'still') return;
+
+  particleEls.forEach((p, i) => {
+    const angle = (i / NUM_PARTICLES) * 2 * Math.PI + Math.random() * 0.4;
+    const startR = 80 + Math.random() * 20;
+    const endR   = direction === 'out'
+      ? 130 + Math.random() * 30
+      : 20  + Math.random() * 20;
+
+    const cx = 120, cy = 120;
+    const startX = cx + Math.cos(angle) * startR;
+    const startY = cy + Math.sin(angle) * startR;
+    const endX   = cx + Math.cos(angle) * endR;
+    const endY   = cy + Math.sin(angle) * endR;
+
+    const dur = 800 + Math.random() * 600;
+    const delay = i * 60;
+    let t0 = null;
+
+    function frame(ts) {
+      if (!t0) t0 = ts + delay;
+      const elapsed = ts - t0;
+      if (elapsed < 0) { particleAnimIds.push(requestAnimationFrame(frame)); return; }
+      const prog = Math.min(elapsed / dur, 1);
+      const eased = 1 - Math.pow(1 - prog, 3); // ease-out cubic
+
+      p.style.left    = (startX + (endX - startX) * eased) + 'px';
+      p.style.top     = (startY + (endY - startY) * eased) + 'px';
+      p.style.opacity = prog < 0.5
+        ? (prog * 2 * 0.7)
+        : (1 - (prog - 0.5) * 2) * 0.7;
+
+      if (prog < 1) particleAnimIds.push(requestAnimationFrame(frame));
+    }
+
+    particleAnimIds.push(requestAnimationFrame(frame));
+  });
+}
+
+// ── Animation loop ─────────────────────────────────────────────────────────
+
+function tick() {
+  const pattern = PATTERNS[patternIdx];
+  const cycleDuration = pattern.phases.reduce((s, p) => s + p.ms, 0);
+
+  const elapsed         = Date.now() - startTime;
+  const completedCycles = Math.floor(elapsed / cycleDuration);
+
+  // Orbit dots
+  if (completedCycles !== lastCompleted) {
+    lastCompleted = completedCycles;
+    updateOrbitDots(completedCycles);
+  }
+
+  // Auto-stop
+  if (completedCycles >= targetCycles) {
+    applyScale(0.6);
+    phaseText.textContent = 'Complete';
+    orb.classList.add('complete');
+    stopParticles();
+    bgGlow.style.opacity = '0';
+    updateOrbitDots(targetCycles);
+    return;
+  }
+
+  const cyclePos = elapsed % cycleDuration;
+  let accumulated = 0;
+  let foundPhase = null, progress = 0;
+  for (const phase of pattern.phases) {
+    if (cyclePos < accumulated + phase.ms) {
+      foundPhase = phase;
+      progress   = (cyclePos - accumulated) / phase.ms;
+      break;
+    }
+    accumulated += phase.ms;
+  }
+
+  if (foundPhase) {
+    phaseText.textContent = foundPhase.label;
+
+    // Phase change — update colors, particles, transition speed
+    if (foundPhase.label !== lastPhase) {
+      lastPhase = foundPhase.label;
+      if (foundPhase.label === 'Hold') {
+        holdStartTime = Date.now();
+        // Shorter transition so the sine micro-pulse isn't over-smoothed
+        orb.style.transition = 'transform 0.09s ease, box-shadow 0.6s ease, background 0.8s ease';
+      } else {
+        holdStartTime = null;
+        orb.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.6s ease, background 0.8s ease';
+      }
+      applyPhaseColor(foundPhase.label);
+      if (foundPhase.label === 'Inhale')      startParticles('out');
+      else if (foundPhase.label === 'Exhale') startParticles('in');
+      else                                     startParticles('still');
+    }
+
+    let scale;
+    if (foundPhase.label === 'Inhale') {
+      scale = 0.6 + 0.4 * progress;
+    } else if (foundPhase.label === 'Exhale') {
+      scale = 1.0 - 0.4 * progress;
+    } else {
+      // Micro-pulse during hold: sine wave so the orb never looks frozen
+      const holdElapsed = holdStartTime ? Date.now() - holdStartTime : 0;
+      const microPulse  = Math.sin(holdElapsed / 1600) * 0.013;
+      scale = (foundPhase.holdScale ?? 1.0) + microPulse;
+    }
+    applyScale(scale);
+  }
+
+  rafId = requestAnimationFrame(tick);
+}
+
+function startSession() {
+  if (rafId) cancelAnimationFrame(rafId);
+  stopParticles();
+  orb.classList.remove('complete');
+  startTime    = Date.now();
+  lastPhase    = null;
+  lastCompleted = -1;
+  phaseText.textContent  = '...';
+  patternLabel.textContent = PATTERNS[patternIdx].name;
+  buildOrbitDots(targetCycles);
+  updateOrbitDots(0);
+  bgGlow.style.background = 'rgba(107,162,146,0.12)';
+  bgGlow.style.opacity = '0.7';
+  applyScale(0.6);
+  orb.style.boxShadow = `
+    0 0 0 1px rgba(255,255,255,0.07),
+    0 0 40px rgba(107,162,146,0.12),
+    inset 0 0 30px rgba(0,0,0,0.3)
+  `;
+  rafId = requestAnimationFrame(tick);
+}
+
+// ── Build pattern chips ────────────────────────────────────────────────────
+
+const patternRow = document.getElementById('patternRow');
+PATTERNS.forEach((p, i) => {
+  const chip = document.createElement('button');
+  chip.className = 'pat-chip' + (i === 0 ? ' active' : '');
+  chip.textContent = p.name;
+  chip.onclick = () => {
+    patternIdx = i;
+    patternRow.querySelectorAll('.pat-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    startSession();
+  };
+  patternRow.appendChild(chip);
+});
+
+// ── Build cycle pips ───────────────────────────────────────────────────────
+
+const cyclePips = document.getElementById('cyclePips');
+CYCLE_OPTIONS.forEach(n => {
+  const pip = document.createElement('button');
+  pip.className = 'cyc-pip' + (n === targetCycles ? ' active' : '');
+  pip.textContent = n;
+  pip.onclick = () => {
+    targetCycles = n;
+    cyclePips.querySelectorAll('.cyc-pip').forEach(c => c.classList.remove('active'));
+    pip.classList.add('active');
+    startSession();
+  };
+  cyclePips.appendChild(pip);
+});
+
+// ── Done ───────────────────────────────────────────────────────────────────
+
+doneBtn.onclick = () => {
+  if (rafId) cancelAnimationFrame(rafId);
+  stopParticles();
+  applyScale(0.6);
+  phaseText.textContent = '—';
+  bgGlow.style.opacity = '0';
+  orb.style.boxShadow = '';
+};
+
+// ── Init ───────────────────────────────────────────────────────────────────
+
+buildOrbitDots(targetCycles);
+startSession();
+</script>
+</body>
+</html>

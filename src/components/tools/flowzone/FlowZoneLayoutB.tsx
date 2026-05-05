@@ -237,9 +237,9 @@ export default function FlowZoneLayoutB(props: DashboardLayoutProps) {
 
             <div className="space-y-2">
               {[
-                { label: 'Duration',   value: selectedDurationLabel,  color: STEEL },
-                { label: 'Breathwork', value: selectedBreathworkLabel, color: CORAL },
-                { label: 'Audio',      value: selectedAudioLabel,      color: SAGE },
+                { label: 'Duration',   value: selectedDurationLabel,                                            color: STEEL },
+                { label: 'Breathwork', value: `${selectedBreathworkLabel} · ${settings.breathworkCycles}×`,     color: CORAL },
+                { label: 'Audio',      value: selectedAudioLabel,                                               color: SAGE },
               ].map(row => (
                 <div key={row.label} className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-1.5 flex-shrink-0">

@@ -22,9 +22,9 @@ export const BREATHWORK_PATTERNS: BreathworkPattern[] = [
     description: 'Equal inhale, hold, exhale, hold',
     phases: [
       { label: 'Inhale', durationMs: 4000 },
-      { label: 'Hold', durationMs: 4000 },
+      { label: 'Hold',   durationMs: 4000, holdScale: 1.0 },
       { label: 'Exhale', durationMs: 4000 },
-      { label: 'Hold', durationMs: 4000 },
+      { label: 'Hold',   durationMs: 4000, holdScale: 0.6 },
     ],
     cycleDurationMs: 16000,
   },
@@ -35,7 +35,7 @@ export const BREATHWORK_PATTERNS: BreathworkPattern[] = [
     description: 'Extended exhale calms the nervous system',
     phases: [
       { label: 'Inhale', durationMs: 4000 },
-      { label: 'Hold', durationMs: 7000 },
+      { label: 'Hold',   durationMs: 7000, holdScale: 1.0 },
       { label: 'Exhale', durationMs: 8000 },
     ],
     cycleDurationMs: 19000,
