@@ -269,7 +269,7 @@ ${concept.name} — the science of ${concept.domain}
 
 ## PRACTICE TOOL
 ${toolRec ? `${toolRec.title} — ${PRACTICE_TOOLS[blindSide].description}` : ''}
-Write one sentence explaining why it fits THIS person's specific pattern. Reference something concrete from their signals.
+Write one sentence explaining why it fits THIS person's specific pattern. Reference something concrete from their signals. Only describe capabilities explicitly stated above — do not attribute features (like spaced repetition, progress tracking, or anything else) that aren't in the description.
 
 ## VOICE RULES (non-negotiable)
 
