@@ -5,7 +5,8 @@ interface UseBreathworkReturn {
   isActive: boolean;
   isComplete: boolean;
   currentPhase: BreathworkPhase | null;
-  phaseProgress: number; // 0-1 within current phase
+  phaseProgress: number;   // 0-1 within current phase
+  cycleProgress: number;   // 0-1 within the full cycle
   cycleCount: number;
   start: (pattern: BreathworkPattern, targetCycles?: number) => void;
   stop: () => void;
@@ -16,6 +17,7 @@ export function useBreathwork(): UseBreathworkReturn {
   const [isComplete, setIsComplete] = useState(false);
   const [currentPhase, setCurrentPhase] = useState<BreathworkPhase | null>(null);
   const [phaseProgress, setPhaseProgress] = useState(0);
+  const [cycleProgress, setCycleProgress] = useState(0);
   const [cycleCount, setCycleCount] = useState(0);
 
   const rafRef = useRef<number>(0);
@@ -59,6 +61,7 @@ export function useBreathwork(): UseBreathworkReturn {
     }
 
     setCycleCount(completedCycles);
+    setCycleProgress(cyclePos / pattern.cycleDurationMs);
 
     let accumulated = 0;
     let foundPhase: BreathworkPhase | null = null;
@@ -93,6 +96,7 @@ export function useBreathwork(): UseBreathworkReturn {
     startTimeRef.current = Date.now();
     targetCyclesRef.current = targetCycles ?? null;
     setCycleCount(0);
+    setCycleProgress(0);
     setIsComplete(false);
     setIsActive(true);
     rafRef.current = requestAnimationFrame(animate);
@@ -104,6 +108,7 @@ export function useBreathwork(): UseBreathworkReturn {
     setIsComplete(false);
     setCurrentPhase(null);
     setPhaseProgress(0);
+    setCycleProgress(0);
     setCycleCount(0);
     patternRef.current = null;
     targetCyclesRef.current = null;
@@ -116,5 +121,5 @@ export function useBreathwork(): UseBreathworkReturn {
     };
   }, []);
 
-  return { isActive, isComplete, currentPhase, phaseProgress, cycleCount, start, stop };
+  return { isActive, isComplete, currentPhase, phaseProgress, cycleProgress, cycleCount, start, stop };
 }

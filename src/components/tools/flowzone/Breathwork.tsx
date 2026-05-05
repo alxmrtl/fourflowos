@@ -23,19 +23,49 @@ interface BreathworkProps {
   patternId?: string;
 }
 
+interface GlowRing {
+  id: number;
+  cx: number;
+  cy: number;
+}
+
 export default function Breathwork({ onDone, onSkip, label, targetCycles, patternId }: BreathworkProps) {
   const [selectedPattern, setSelectedPattern] = useState<BreathworkPattern | null>(null);
-  const { isActive, isComplete, currentPhase, phaseProgress, cycleCount, start, stop } = useBreathwork();
+  const { isActive, isComplete, currentPhase, phaseProgress, cycleProgress, cycleCount, start, stop } = useBreathwork();
   const [autoStarted, setAutoStarted] = useState(false);
+  const [glowRings, setGlowRings] = useState<GlowRing[]>([]);
 
   // Track hold phase entry time for micro-pulse
-  const holdStartRef = useRef<number | null>(null);
-  const lastPhaseRef = useRef<string | null>(null);
+  const holdStartRef     = useRef<number | null>(null);
+  const lastPhaseRef     = useRef<string | null>(null);
+  const prevCycleRef     = useRef(0);
+
   const phaseLabel = currentPhase?.label ?? null;
   if (phaseLabel !== lastPhaseRef.current) {
     lastPhaseRef.current = phaseLabel;
     holdStartRef.current = phaseLabel === 'Hold' ? Date.now() : null;
   }
+
+  // Dot position helper (shared between render and effect)
+  const getDotPos = (i: number) => {
+    const angle = (i / targetCycles) * 2 * Math.PI - Math.PI / 2;
+    return { cx: 120 + 112 * Math.cos(angle), cy: 120 + 112 * Math.sin(angle) };
+  };
+
+  // Detect cycle completion → fire glow ring at that dot
+  useEffect(() => {
+    if (cycleCount > prevCycleRef.current && isActive) {
+      const completedIdx = cycleCount - 1;
+      if (completedIdx >= 0 && completedIdx < targetCycles) {
+        const pos = getDotPos(completedIdx);
+        const id = Date.now() + completedIdx;
+        setGlowRings(prev => [...prev, { id, ...pos }]);
+        setTimeout(() => setGlowRings(prev => prev.filter(r => r.id !== id)), 900);
+      }
+    }
+    prevCycleRef.current = cycleCount;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cycleCount, isActive, targetCycles]);
 
   // Auto-start with given pattern
   useEffect(() => {
@@ -76,22 +106,22 @@ export default function Breathwork({ onDone, onSkip, label, targetCycles, patter
     return (currentPhase.holdScale ?? 1.0) + Math.sin(holdElapsed / 1600) * 0.013;
   })();
 
-  // Shorter Framer transition during hold so the micro-pulse isn't over-smoothed
+  // Shorter Framer transition during hold so micro-pulse isn't over-smoothed
   const orbTransition = currentPhase?.label === 'Hold'
     ? { duration: 0.09, ease: 'easeOut' as const }
     : { duration: 0.3,  ease: 'easeOut' as const };
 
   const phaseAccent = PHASE_COLOR[currentPhase?.label ?? ''] ?? SAGE;
 
-  // Orbit dots — one dot per target cycle, filled as cycles complete
-  // SVG is positioned at inset -24px → 240×240 for a 192×192 container
-  // center = (120,120), orbit radius = 112 (just outside the outer ring at ~108)
+  // Orbit dots with progressive opacity on the active cycle dot
   const orbitDots = Array.from({ length: targetCycles }, (_, i) => {
-    const angle = (i / targetCycles) * 2 * Math.PI - Math.PI / 2;
+    const pos = getDotPos(i);
+    const completed = i < cycleCount;
+    const current   = i === cycleCount;
     return {
-      cx: 120 + 112 * Math.cos(angle),
-      cy: 120 + 112 * Math.sin(angle),
-      filled: i < cycleCount,
+      ...pos,
+      fill:    completed || current ? SAGE : 'rgba(255,255,255,0.08)',
+      opacity: completed ? 1 : current ? Math.max(0.15, cycleProgress) : 1,
     };
   });
 
@@ -103,13 +133,6 @@ export default function Breathwork({ onDone, onSkip, label, targetCycles, patter
       transition={{ duration: 0.4 }}
       className="flex flex-col items-center justify-center min-h-[60vh]"
     >
-      <p
-        className="text-xs font-bold uppercase tracking-widest mb-4"
-        style={{ color: SAGE }}
-      >
-        {label} Breathwork
-      </p>
-
       <AnimatePresence mode="wait">
         {!isActive ? (
           <motion.div
@@ -163,20 +186,37 @@ export default function Breathwork({ onDone, onSkip, label, targetCycles, patter
             {/* Orb + orbit progress dots */}
             <div className="relative w-48 h-48 mb-8">
 
-              {/* Orbit dots — overall cycle progress */}
+              {/* Orbit dots SVG — overall cycle progress */}
               <svg
                 className="absolute pointer-events-none"
                 style={{ inset: -24, width: 'calc(100% + 48px)', height: 'calc(100% + 48px)' }}
                 viewBox="0 0 240 240"
               >
+                {/* Static dots */}
                 {orbitDots.map((dot, i) => (
                   <circle
                     key={i}
                     cx={dot.cx}
                     cy={dot.cy}
                     r={3.5}
-                    fill={dot.filled ? SAGE : 'rgba(255,255,255,0.07)'}
-                    style={{ transition: 'fill 0.4s ease' }}
+                    fill={dot.fill}
+                    opacity={dot.opacity}
+                  />
+                ))}
+
+                {/* Glow rings — fire outward on cycle completion */}
+                {glowRings.map(ring => (
+                  <motion.circle
+                    key={ring.id}
+                    cx={ring.cx}
+                    cy={ring.cy}
+                    r={3.5}
+                    fill="none"
+                    stroke={SAGE}
+                    strokeWidth={2}
+                    initial={{ r: 3.5, opacity: 0.9, strokeWidth: 2 }}
+                    animate={{ r: 18,  opacity: 0,   strokeWidth: 0.5 }}
+                    transition={{ duration: 0.75, ease: 'easeOut' }}
                   />
                 ))}
               </svg>
