@@ -454,7 +454,7 @@ export default function TimelessAnchorSectionV2() {
   const headerInView = useInView(headerRef, { once: true, amount: 0.4 });
 
   return (
-    <section className="relative py-24 md:py-32 bg-[#0a0a0a] overflow-hidden">
+    <section id="anchor" className="relative py-24 md:py-32 bg-[#0a0a0a] overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         <div ref={headerRef} className="text-center mb-14">
           <motion.h2
@@ -478,11 +478,10 @@ export default function TimelessAnchorSectionV2() {
 
       <div className="max-w-6xl mx-auto px-6">
         <div className="max-w-2xl mx-auto mt-0 space-y-8">
-          <BridgeParagraph>Before language, this was a survival tool.</BridgeParagraph>
-          <BridgeParagraph>When ordinary capacity wasn't enough, evolution gave us another gear.</BridgeParagraph>
-          <BridgeParagraph>Once survival stopped being the only game, we found it again — by choice.</BridgeParagraph>
-          <BridgeParagraph>Every civilization that pushed human performance to its edge ended up in the same place.</BridgeParagraph>
-          <BridgeParagraph>Different directions, different words, same coordinates.</BridgeParagraph>
+          <BridgeParagraph>Before language, a body already knew this. Running past tired. Breath catching its own rhythm. Everything else falling away.</BridgeParagraph>
+          <BridgeParagraph>It was survival&apos;s last gear &mdash; kept in reserve for the moments ordinary effort wasn&apos;t enough.</BridgeParagraph>
+          <BridgeParagraph>When survival stopped being the whole game, people started reaching for it on purpose. Sitting still until it arrived. Climbing in through breath, through movement, through long stretches of attention nothing was allowed to interrupt.</BridgeParagraph>
+          <BridgeParagraph>Every tradition that looked closely ended up describing the same place.</BridgeParagraph>
         </div>
       </div>
 
@@ -490,11 +489,9 @@ export default function TimelessAnchorSectionV2() {
 
       <div className="max-w-6xl mx-auto px-6">
         <div className="max-w-2xl mx-auto mt-16 space-y-8">
-          <BridgeParagraph>Different centuries. Different continents. Different words.</BridgeParagraph>
-          <BridgeParagraph>Same state. Same biology.</BridgeParagraph>
-          <BridgeParagraph>That pattern — independent arrival at the same coordinates, across every tradition that looked closely at what humans are capable of — is the strongest evidence that this is real. Not reserved for monks or athletes. Built into the hardware.</BridgeParagraph>
-          <BridgeParagraph>What changes is the stakes. When execution was the hard part, alignment was a nice-to-have. When execution handles itself, alignment is the whole game.</BridgeParagraph>
-          <BridgeParagraph>The conditions are knowable. Your pattern across them is yours alone.</BridgeParagraph>
+          <BridgeParagraph>Different words. Different directions. Same coordinates.</BridgeParagraph>
+          <BridgeParagraph>Same nervous system finding the same place, century after century.</BridgeParagraph>
+          <BridgeParagraph>Call it what you want. Flow. Samadhi. Mushin. The pocket. Every age has named it because every age has found it &mdash; in the same body you&apos;re sitting in. Yours by default.</BridgeParagraph>
           <motion.p
             className="font-sans text-lg text-gray-300 leading-[1.8]"
             initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
@@ -516,7 +513,7 @@ export default function TimelessAnchorSectionV2() {
             >
               FourFlowOS
             </motion.span>
-            {' '}is built on that.
+            {' '}is built on that. And on what&apos;s changed since.
           </motion.p>
         </div>
       </div>

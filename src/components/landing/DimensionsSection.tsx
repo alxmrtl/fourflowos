@@ -146,7 +146,7 @@ export default function DimensionsSection() {
               visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut', delay: 0.2 } },
             }}
           >
-            We&apos;ve mapped twelve keys that govern whether flow is available to you — across four dimensions of experience. The keys are the same for everyone. How they fit together in you is not.
+            Twelve keys across four dimensions decide whether the state is available to you in a given moment. The keys are the same for everyone. How they fit together in you is yours alone.
           </motion.p>
 
           {/* Pillar symbol cluster */}

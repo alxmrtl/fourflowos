@@ -125,37 +125,19 @@ export default function HonestMomentSection() {
       <div className="relative max-w-2xl mx-auto px-6 space-y-12">
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            You&apos;ve felt it before. Time bending. Effort dissolving. The distance between wanting and doing closing to nothing.
+            Most of your life happens outside of it.
           </p>
         </ScrollParagraph>
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            Then it&apos;s gone. And the question underneath &mdash; <em>how do I get back</em> &mdash; never quite gets answered.
+            You feel it most clearly when it briefly comes back. The afternoon that disappears into something good. The conversation you forget you&apos;re having. The thirty minutes of work that feel like five and leave you wondering why everything else doesn&apos;t go like that.
           </p>
         </ScrollParagraph>
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            Something larger is shifting underneath that question.
-          </p>
-        </ScrollParagraph>
-
-        <ScrollParagraph>
-          <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            For most of history, what stood between you and your best work was execution &mdash; the tools, the time, the capacity to do what needed doing. Every framework, every measure of progress was built to close that gap.
-          </p>
-        </ScrollParagraph>
-
-        <ScrollParagraph>
-          <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            That gap is closing on its own now. AI handles execution. More every week. The tools improve whether you keep up or not.
-          </p>
-        </ScrollParagraph>
-
-        <ScrollParagraph>
-          <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            What&apos;s left is not a capacity problem. It&apos;s a clarity problem. More options. More power. Less certainty about what any of it is for.
+            Then it&apos;s gone. And the rest of the day feels like reaching for something you can&apos;t quite locate.
           </p>
         </ScrollParagraph>
 
@@ -163,10 +145,10 @@ export default function HonestMomentSection() {
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            These have never been answered by better systems.
+            These don&apos;t get answered by thinking harder about them. They get dissolved by living from a place where they don&apos;t need to be asked.
           </p>
           <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
-            They are answered in a{' '}
+            That place is the{' '}
             <motion.span
               className="bg-clip-text text-transparent"
               style={{ display: 'inline-block', backgroundImage: GRADIENTS.textAccent }}
@@ -181,10 +163,10 @@ export default function HonestMomentSection() {
             >
               state
             </motion.span>
-            &mdash; one where the signal is clear enough to hear what&apos;s already true.
+            {' '}your ancestors found at the end of a long run. The one a sword master settled into before the blade moved. The one you&apos;ve fallen into without meaning to, and never quite figured out how to find on purpose.
           </p>
           <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
-            One we&apos;ve had access to for far longer than the noise has existed.
+            It has conditions. You can learn them. Yours look different from anyone else&apos;s.
           </p>
         </ScrollParagraph>
       </div>

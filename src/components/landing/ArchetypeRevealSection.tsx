@@ -206,15 +206,13 @@ export default function ArchetypeRevealSection() {
             transition={{ duration: 1.0, ease: 'easeOut' }}
           >
             <p className="font-sans text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-600 mb-4">
-              Your practice space
+              Your practice
             </p>
             <h2 className="font-display text-4xl md:text-5xl font-normal text-white mb-5 leading-[1.1]">
-              Everything you need.<br />One place.
+              Map it. Train it.<br />Live it.
             </h2>
             <p className="font-sans text-lg text-gray-400 leading-relaxed mb-8">
-              FourFlow brings the framework to life — your Profile, your protocols, and your focus
-              tools, all built around the same 12 conditions. Know your map. Use your tools. Build
-              the reps.
+              Your Flow Profile reads your pattern &mdash; which conditions in you are clear, which are clouded, and which one moves the rest when it shifts. The tools turn the map into something you do daily.
             </p>
 
             {/* Feature lines */}

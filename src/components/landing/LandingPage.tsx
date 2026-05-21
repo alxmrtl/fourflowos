@@ -19,11 +19,11 @@ export default function LandingPage() {
       {/* 1. Hero */}
       <HeroSectionV2 />
 
-      {/* 2. Honest Moment */}
-      <HonestMomentSection />
-
-      {/* 3. Timeless Anchor — historical timeline carousel */}
+      {/* 2. Timeless Anchor — historical timeline carousel */}
       <TimelessAnchorSectionV2 />
+
+      {/* 3. Honest Moment */}
+      <HonestMomentSection />
 
       {/* 5. Framework: DimensionsSection (includes "conditions are universal" header) */}
       <DimensionsSection />

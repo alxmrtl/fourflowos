@@ -12,7 +12,7 @@ export default function HeroSectionV2() {
 
   const scrollToNext = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    document.getElementById('honest-moment')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('anchor')?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
   return (
@@ -138,7 +138,7 @@ export default function HeroSectionV2() {
             Begin your practice
           </Link>
           <a
-            href="#honest-moment"
+            href="#anchor"
             onClick={scrollToNext}
             className="font-sans inline-flex items-center gap-2 px-8 py-4 font-medium rounded-full border border-white/30 text-white/80 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-300"
           >
