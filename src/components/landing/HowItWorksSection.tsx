@@ -16,7 +16,7 @@ const steps = [
   {
     number: '02',
     title: 'See what\'s in the way',
-    body: 'Receive your Flow Archetype — an AI-generated profile across all 12 keys that names the specific pattern holding you back.',
+    body: 'Receive your Flow Profile — a map across all 12 keys that shows what\'s in the way and where the opening is.',
     color: '#4E8C73',
     href: null,
     cta: null,

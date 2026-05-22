@@ -5,17 +5,17 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { GRADIENTS } from '@/styles/brand-colors';
 
 const QUESTIONS = [
-  'What makes you come alive?',
-  'What am I here for?',
-  'What makes my life meaningful?',
-  'What direction is right for me?',
-  'When do I feel most like myself?',
-  'What would I do if I knew I couldn\'t fail?',
-  'What lights me up without burning me out?',
-  'What am I building, really?',
-  'What do I already know that I\'m not acting on?',
-  'What does the right kind of hard feel like?',
+  'What makes me come alive?',
+  'When did this last feel easy?',
+  'What was different about that day?',
+  'Why do I have to push for what used to be natural?',
   'What am I putting off that actually matters?',
+  'What lights me up without burning me out?',
+  'Why does my best feel so far from my baseline?',
+  'What\'s between me and the work that matters?',
+  'When do I feel most like myself?',
+  'What am I building, really?',
+  'Why isn\'t it always like this?',
   'What does moving well through life look like?',
 ];
 
@@ -125,19 +125,31 @@ export default function HonestMomentSection() {
       <div className="relative max-w-2xl mx-auto px-6 space-y-12">
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            Most of your life happens outside of it.
+            You&apos;ve been there.
           </p>
         </ScrollParagraph>
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            You feel it most clearly when it briefly comes back. The afternoon that disappears into something good. The conversation you forget you&apos;re having. The thirty minutes of work that feel like five and leave you wondering why everything else doesn&apos;t go like that.
+            The drive home you don&apos;t remember taking. The afternoon that ended before you noticed it starting. The run where you forgot you were running. The conversation that flew on its own and left you lighter than when it started. The thirty minutes of work that felt like five. The kid you were playing with when you forgot what time it was.
           </p>
         </ScrollParagraph>
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            Then it&apos;s gone. And the rest of the day feels like reaching for something you can&apos;t quite locate.
+            You came back from it different.
+          </p>
+        </ScrollParagraph>
+
+        <ScrollParagraph>
+          <p className="font-sans text-lg text-gray-400 leading-[1.8]">
+            Then it&apos;s gone. Effort comes back. The clock thickens. You try to push your way back in — by force, by coffee, by changing rooms — and nothing takes.
+          </p>
+        </ScrollParagraph>
+
+        <ScrollParagraph>
+          <p className="font-sans text-lg text-gray-400 leading-[1.8]">
+            So you start to ask yourself questions.
           </p>
         </ScrollParagraph>
 
@@ -145,10 +157,10 @@ export default function HonestMomentSection() {
 
         <ScrollParagraph>
           <p className="font-sans text-lg text-gray-400 leading-[1.8]">
-            These don&apos;t get answered by thinking harder about them. They get dissolved by living from a place where they don&apos;t need to be asked.
+            These don&apos;t get answered by thinking harder. They dissolve inside the state where they don&apos;t need to be asked.
           </p>
           <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
-            That place is the{' '}
+            People have been finding their way to that{' '}
             <motion.span
               className="bg-clip-text text-transparent"
               style={{ display: 'inline-block', backgroundImage: GRADIENTS.textAccent }}
@@ -163,10 +175,7 @@ export default function HonestMomentSection() {
             >
               state
             </motion.span>
-            {' '}your ancestors found at the end of a long run. The one a sword master settled into before the blade moved. The one you&apos;ve fallen into without meaning to, and never quite figured out how to find on purpose.
-          </p>
-          <p className="font-sans text-lg text-gray-400 leading-[1.8] mt-4">
-            It has conditions. You can learn them. Yours look different from anyone else&apos;s.
+            {' '}for a long time. A thousand names. The same thing underneath.
           </p>
         </ScrollParagraph>
       </div>

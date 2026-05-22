@@ -94,30 +94,16 @@ export default function HeroSectionV2() {
         </motion.h1>
 
         <motion.h2
-          className="font-display text-5xl md:text-7xl font-normal italic mb-8 leading-[1.05] tracking-tight"
+          className="font-display text-5xl md:text-7xl font-normal italic mb-14 leading-[1.05] tracking-tight"
           variants={{
             hidden: { opacity: 0, y: 36, filter: 'blur(10px)' },
             visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: 'easeOut' } },
           }}
         >
           <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textAccent }}>
-            Find your way back to it.
+            It&apos;s still here.
           </span>
         </motion.h2>
-
-        {/* Subtext */}
-        <motion.p
-          className="font-sans text-base md:text-lg text-gray-400 max-w-md mx-auto mb-10 leading-relaxed"
-          variants={{
-            hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
-            visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: 'easeOut' } },
-          }}
-        >
-          The state is ancient.<br />
-          <span className="bg-clip-text text-transparent [text-shadow:none]" style={{ backgroundImage: GRADIENTS.textAccent }}>
-            The moment calls for it.
-          </span>
-        </motion.p>
 
         {/* CTAs */}
         <motion.div
@@ -128,14 +114,14 @@ export default function HeroSectionV2() {
           }}
         >
           <Link
-            href="/me"
+            href="/map"
             className="font-sans inline-flex items-center gap-2 px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105"
             style={{ background: GRADIENTS.primaryCta }}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M8 1L9.5 6.5L15 8L9.5 9.5L8 15L6.5 9.5L1 8L6.5 6.5L8 1Z" fill="currentColor" />
             </svg>
-            Begin your practice
+            Map your signal
           </Link>
           <a
             href="#anchor"

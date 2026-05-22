@@ -268,12 +268,12 @@ export default function LandingNav() {
             {/* CTA Button */}
             <div className="mt-2">
               <Link
-                href="/me"
+                href="/map"
                 className="block w-full text-center px-5 py-3 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300"
                 style={{ background: 'linear-gradient(135deg, #3E6FA3, #6330A0)' }}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Begin your practice
+                Map your signal
               </Link>
             </div>
           </div>

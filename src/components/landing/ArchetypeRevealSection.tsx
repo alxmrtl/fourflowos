@@ -6,9 +6,10 @@ import { useRef } from 'react';
 import { GRADIENTS, CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
 
 const featureLines = [
-  { color: AMETHYST, text: 'Your Flow Profile — the alignment map that makes everything else make sense' },
-  { color: STEEL,    text: 'CONSUME + CATALYZE — tools for taking in and breaking inertia' },
-  { color: SAGE,     text: 'FlowZone — a focus timer that counts the invisible work of staying present' },
+  { color: AMETHYST, text: 'Flow Unlock · Ancestral Signal — read where the pattern lives' },
+  { color: STEEL,    text: 'FlowRead · FlowCompendium — take signal in, learn the science' },
+  { color: CORAL,    text: 'FlowBreath · FlowSpark — shift state, find what\'s pulling' },
+  { color: SAGE,     text: 'FlowZone — focus reps for the moments you almost lose it' },
 ];
 
 const SECTIONS = [
@@ -17,7 +18,10 @@ const SECTIONS = [
     label: 'CORE',
     desc: 'Know yourself',
     color: AMETHYST,
-    tools: [{ name: 'Flow Profile', sub: 'Your alignment map' }],
+    tools: [
+      { name: 'Flow Unlock', sub: 'Find your block' },
+      { name: 'Ancestral Signal', sub: 'Deep architecture' },
+    ],
     active: true,
   },
   {
@@ -169,7 +173,7 @@ function FlowLabPreview() {
             className="text-[8px] font-semibold tracking-[0.15em] uppercase"
             style={{ color: AMETHYST }}
           >
-            Flow Profile
+            Flow Unlock
           </span>
         </div>
         <div className="w-full max-w-[180px] space-y-1.5">
@@ -209,10 +213,10 @@ export default function ArchetypeRevealSection() {
               Your practice
             </p>
             <h2 className="font-display text-4xl md:text-5xl font-normal text-white mb-5 leading-[1.1]">
-              Map it. Train it.<br />Live it.
+              The pattern lives<br />in the practice.
             </h2>
             <p className="font-sans text-lg text-gray-400 leading-relaxed mb-8">
-              Your Flow Profile reads your pattern &mdash; which conditions in you are clear, which are clouded, and which one moves the rest when it shifts. The tools turn the map into something you do daily.
+              You discover yours by doing the work. Two readings point you in. The rest of the stack is the daily practice that makes it visible.
             </p>
 
             {/* Feature lines */}
@@ -231,11 +235,11 @@ export default function ArchetypeRevealSection() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-start gap-4">
               <Link
-                href="/me"
+                href="/map"
                 className="font-sans px-7 py-3.5 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105 text-sm"
                 style={{ background: GRADIENTS.primaryCta }}
               >
-                Begin your practice
+                Map your signal
               </Link>
               <Link
                 href="/framework"

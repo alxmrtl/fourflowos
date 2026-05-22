@@ -8,6 +8,7 @@ import HonestMomentSection from './HonestMomentSection';
 import TimelessAnchorSectionV2 from './TimelessAnchorSectionV2';
 import DimensionsSection from './DimensionsSection';
 import ArchetypeRevealSection from './ArchetypeRevealSection';
+import HowItWorksSection from './HowItWorksSection';
 import Footer from './Footer';
 
 
@@ -19,17 +20,20 @@ export default function LandingPage() {
       {/* 1. Hero */}
       <HeroSectionV2 />
 
-      {/* 2. Timeless Anchor — historical timeline carousel */}
-      <TimelessAnchorSectionV2 />
-
-      {/* 3. Honest Moment */}
+      {/* 2. Honest Moment — recognition before history */}
       <HonestMomentSection />
 
-      {/* 5. Framework: DimensionsSection (includes "conditions are universal" header) */}
+      {/* 3. Timeless Anchor — historical timeline carousel */}
+      <TimelessAnchorSectionV2 />
+
+      {/* 4. Framework: DimensionsSection */}
       <DimensionsSection />
 
-      {/* 6. Archetype Reveal */}
+      {/* 5. Archetype Reveal */}
       <ArchetypeRevealSection />
+
+      {/* 6. How It Works */}
+      <HowItWorksSection />
 
       {/* 7. Work Together CTA */}
       <section className="relative py-16 bg-[#050505]">
@@ -42,7 +46,7 @@ export default function LandingPage() {
             Read your profile with someone who knows the terrain.
           </h2>
           <p className="font-sans text-sm text-gray-400 mb-8 max-w-md mx-auto">
-            One session to go from archetype to a clear next move.
+            One session to go from your map to a clear next move.
           </p>
           <Link
             href="/together"
