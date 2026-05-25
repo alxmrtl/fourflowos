@@ -104,7 +104,7 @@ export default function DimensionsSection() {
       </div>
 
       <motion.div
-        className="relative max-w-6xl mx-auto px-6"
+        className="relative max-w-7xl mx-auto px-4 lg:px-8"
         initial="hidden"
         animate={isInView ? 'visible' : 'hidden'}
         variants={{
@@ -116,7 +116,7 @@ export default function DimensionsSection() {
         }}
       >
         {/* Section header — That alignment has a structure */}
-        <div className="text-center mb-8 md:mb-10">
+        <div className="max-w-3xl mx-auto text-center mb-8 md:mb-10">
           <motion.h2
             className="font-display text-3xl md:text-5xl font-normal text-white leading-[1.15]"
             variants={{
@@ -124,10 +124,11 @@ export default function DimensionsSection() {
               visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 1.0, ease: 'easeOut', delay: 0.1 } },
             }}
           >
-            That alignment has a structure.<br />
+            That alignment has a{' '}
             <span className="italic bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
-              Four dimensions. Twelve Keys. One State.
+              structure
             </span>
+            .
           </motion.h2>
         </div>
 

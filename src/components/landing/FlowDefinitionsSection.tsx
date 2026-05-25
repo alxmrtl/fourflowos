@@ -7,7 +7,6 @@ import { GRADIENTS } from '@/styles/brand-colors';
 interface DefEntry {
   pos: string;
   text: string;
-  ours?: boolean;
 }
 
 const DEFS: DefEntry[] = [
@@ -20,17 +19,31 @@ const DEFS: DefEntry[] = [
     text: 'To move without resistance; to act from a center that requires no effort to maintain.',
   },
   {
-    pos: 'philosophical · n.',
+    pos: 'The coherence of inner state · n.',
     text: 'The alignment of inner state with outer act, such that the doing and the doer become one.',
-  },
-  {
-    pos: 'fourflowOS · n.',
-    text: 'Coherence, in motion.',
-    ours: true,
   },
 ];
 
-function Entry({ num, pos, text, ours, delay }: { num: number; pos: string; text: string; ours?: boolean; delay: number }) {
+const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
+
+function scrollToNext(from: HTMLElement | null) {
+  const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-reel-section]'));
+  const parent = from?.closest('[data-reel-section]') as HTMLElement | null;
+  const idx = parent ? sections.indexOf(parent) : -1;
+  const next = sections[idx + 1];
+  if (!next) return;
+  const startY = window.scrollY;
+  const distance = next.offsetTop - startY;
+  const startTime = performance.now();
+  const step = (now: number) => {
+    const t = Math.min(1, (now - startTime) / 900);
+    window.scrollTo(0, startY + distance * easeOutQuart(t));
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function Entry({ num, pos, text, delay }: { num: number; pos: string; text: string; delay: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.4 });
 
@@ -45,18 +58,38 @@ function Entry({ num, pos, text, ours, delay }: { num: number; pos: string; text
       <div className="font-display text-xl text-white/45 w-7 flex-shrink-0 leading-[1.55]">{num}</div>
       <div className="flex-1 min-w-0">
         <div className="font-display italic text-white/45 text-[13px] mb-1.5 tracking-wide">{pos}</div>
-        <div
-          className={
-            ours
-              ? 'font-display italic text-2xl md:text-[26px] leading-[1.4] bg-clip-text text-transparent'
-              : 'font-display text-lg md:text-xl leading-[1.55] text-white/90'
-          }
-          style={ours ? { backgroundImage: GRADIENTS.textWide } : undefined}
-        >
+        <div className="font-display text-lg md:text-xl leading-[1.55] text-white/90">
           {text}
         </div>
       </div>
     </motion.div>
+  );
+}
+
+function FourFlowBridge() {
+  const ref = useRef<HTMLButtonElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+
+  return (
+    <motion.button
+      ref={ref}
+      onClick={() => scrollToNext(ref.current)}
+      className="group mx-auto w-fit mt-10 md:mt-14 flex flex-col items-center gap-2 backdrop-blur-sm bg-white/[0.04] border border-white/[0.1] rounded-2xl px-10 py-5 shadow-[0_0_32px_rgba(122,77,164,0.15)] hover:shadow-[0_0_48px_rgba(122,77,164,0.28)] hover:bg-white/[0.07] hover:border-white/[0.18] transition-all duration-300 cursor-pointer"
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 1.0, ease: 'easeOut', delay: 0.3 }}
+    >
+      <div className="font-display italic text-white/40 text-[12px] tracking-wide group-hover:text-white/55 transition-colors">
+        fourflowOS · n.
+      </div>
+      <div
+        className="font-display italic text-2xl md:text-3xl leading-[1.3] bg-clip-text text-transparent"
+        style={{ backgroundImage: GRADIENTS.textWide }}
+      >
+        Alignment, in motion.
+      </div>
+      <span className="text-white/35 group-hover:text-white/60 transition-colors mt-1">↓</span>
+    </motion.button>
   );
 }
 
@@ -102,12 +135,15 @@ export default function FlowDefinitionsSection() {
                 num={i + 1}
                 pos={d.pos}
                 text={d.text}
-                ours={d.ours}
                 delay={i * 0.5}
               />
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="relative max-w-3xl mx-auto px-6 flex justify-center">
+        <FourFlowBridge />
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
