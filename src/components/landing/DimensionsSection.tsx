@@ -104,7 +104,7 @@ export default function DimensionsSection() {
       </div>
 
       <motion.div
-        className="relative max-w-7xl mx-auto px-4 lg:px-8"
+        className="relative w-full px-[10%] lg:px-[20%]"
         initial="hidden"
         animate={isInView ? 'visible' : 'hidden'}
         variants={{

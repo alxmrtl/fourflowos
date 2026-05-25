@@ -30,6 +30,7 @@ function computeBlend(cycleT: number): number {
 }
 
 export default function ConvergenceSection() {
+  const sectionRef = useRef<HTMLElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const c1Ref = useRef<SVGCircleElement>(null);
   const c2Ref = useRef<SVGCircleElement>(null);
@@ -54,7 +55,7 @@ export default function ConvergenceSection() {
     const lF = lFRef.current;
     if (!svg || !c1 || !c2 || !c3 || !cF || !ring || !l1 || !l2 || !l3 || !lF) return;
 
-    const startTime = performance.now();
+    let startTime: number | null = null;
     let raf = 0;
 
     const trackLabel = (label: SVGTextElement, circ: SVGCircleElement, padding: number) => {
@@ -75,6 +76,7 @@ export default function ConvergenceSection() {
     const LABELS = [l1, l2, l3];
 
     const animate = (now: number) => {
+      if (startTime === null) startTime = now;
       const elapsed = now - startTime;
       const cycleT = elapsed % T_CYCLE;
       const blend = computeBlend(cycleT);
@@ -99,25 +101,41 @@ export default function ConvergenceSection() {
 
       raf = requestAnimationFrame(animate);
     };
-    raf = requestAnimationFrame(animate);
+
+    let timeout: ReturnType<typeof setTimeout>;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          timeout = setTimeout(() => {
+            raf = requestAnimationFrame(animate);
+          }, 2000);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
 
     return () => {
+      observer.disconnect();
+      clearTimeout(timeout);
       cancelAnimationFrame(raf);
     };
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-[#050505] overflow-hidden">
+    <section ref={sectionRef} className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-[#050505] overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="relative max-w-3xl mx-auto px-6 text-center mb-10 md:mb-14">
         <h2 className="font-display text-3xl md:text-5xl font-normal text-white leading-[1.15]">
-          Where productivity, wellness, meaning{' '}
+          Harmonizing productivity, wellness,{' '}
           <span
             className="italic bg-clip-text text-transparent"
             style={{ backgroundImage: GRADIENTS.textWide }}
           >
-            stop competing
+            and meaning
           </span>
           .
         </h2>
@@ -172,7 +190,7 @@ export default function ConvergenceSection() {
               dominantBaseline="middle"
               fill="#F0EDE8"
               fontFamily="Inter, system-ui, sans-serif"
-              fontSize="13"
+              fontSize="20"
               letterSpacing="1.5"
               opacity="0.85"
             >
@@ -185,7 +203,7 @@ export default function ConvergenceSection() {
               dominantBaseline="middle"
               fill="#F0EDE8"
               fontFamily="Inter, system-ui, sans-serif"
-              fontSize="13"
+              fontSize="20"
               letterSpacing="1.5"
               opacity="0.85"
             >
@@ -198,7 +216,7 @@ export default function ConvergenceSection() {
               dominantBaseline="middle"
               fill="#F0EDE8"
               fontFamily="Inter, system-ui, sans-serif"
-              fontSize="13"
+              fontSize="20"
               letterSpacing="1.5"
               opacity="0.85"
             >
@@ -212,7 +230,7 @@ export default function ConvergenceSection() {
               fill="#F0EDE8"
               fontFamily="var(--font-display, 'EB Garamond'), Georgia, serif"
               fontStyle="italic"
-              fontSize="34"
+              fontSize="52"
               opacity="0"
             >
               flow

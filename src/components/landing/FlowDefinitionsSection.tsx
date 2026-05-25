@@ -19,8 +19,8 @@ const DEFS: DefEntry[] = [
     text: 'To move without resistance; to act from a center that requires no effort to maintain.',
   },
   {
-    pos: 'The coherence of inner state · n.',
-    text: 'The alignment of inner state with outer act, such that the doing and the doer become one.',
+    pos: 'philosophical · n.',
+    text: 'Coherence of inner state with outer act, such that the doing and the doer become one.',
   },
 ];
 
@@ -86,7 +86,7 @@ function FourFlowBridge() {
         className="font-display italic text-2xl md:text-3xl leading-[1.3] bg-clip-text text-transparent"
         style={{ backgroundImage: GRADIENTS.textWide }}
       >
-        Alignment, in motion.
+        Optimal experience through alignment.
       </div>
       <span className="text-white/35 group-hover:text-white/60 transition-colors mt-1">↓</span>
     </motion.button>
