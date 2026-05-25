@@ -84,7 +84,7 @@ export default function HeroSectionV2() {
       >
         {/* Headline */}
         <motion.h1
-          className="font-display text-5xl md:text-7xl font-normal mb-2 text-white leading-[1.05] tracking-tight"
+          className="font-display text-4xl md:text-6xl font-normal mb-2 text-white leading-[1.1] tracking-tight"
           variants={{
             hidden: { opacity: 0, y: 36, filter: 'blur(10px)' },
             visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: 'easeOut' } },
@@ -94,14 +94,14 @@ export default function HeroSectionV2() {
         </motion.h1>
 
         <motion.h2
-          className="font-display text-5xl md:text-7xl font-normal italic mb-14 leading-[1.05] tracking-tight"
+          className="font-display text-4xl md:text-6xl font-normal italic mb-14 leading-[1.1] tracking-tight"
           variants={{
             hidden: { opacity: 0, y: 36, filter: 'blur(10px)' },
             visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: 'easeOut' } },
           }}
         >
-          <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textAccent }}>
-            It&apos;s still here.
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: GRADIENTS.textWide }}>
+            Find it where you are.
           </span>
         </motion.h2>
 
@@ -114,14 +114,14 @@ export default function HeroSectionV2() {
           }}
         >
           <Link
-            href="/map"
+            href="/apps"
             className="font-sans inline-flex items-center gap-2 px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105"
             style={{ background: GRADIENTS.primaryCta }}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M8 1L9.5 6.5L15 8L9.5 9.5L8 15L6.5 9.5L1 8L6.5 6.5L8 1Z" fill="currentColor" />
             </svg>
-            Map your signal
+            Begin Your Practice
           </Link>
           <a
             href="#anchor"

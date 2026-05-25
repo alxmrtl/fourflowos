@@ -3,6 +3,7 @@
 import { motion, useAnimationFrame, useInView } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { AMETHYST, CORAL, STEEL, GRADIENTS } from '@/styles/brand-colors';
+import PrincipleBridge from './PrincipleBridge';
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -454,16 +455,23 @@ export default function TimelessAnchorSectionV2() {
   const headerInView = useInView(headerRef, { once: true, amount: 0.4 });
 
   return (
-    <section id="anchor" className="relative py-24 md:py-32 bg-[#0a0a0a] overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-[#0a0a0a] overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         <div ref={headerRef} className="text-center mb-14">
           <motion.h2
-            className="font-display text-3xl md:text-4xl font-normal text-white mb-4"
+            className="font-display text-3xl md:text-5xl font-normal text-white leading-[1.15] mb-4"
             initial={{ opacity: 0, y: 56, filter: 'blur(14px)' }}
             animate={headerInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
             transition={{ duration: 1.0, ease: 'easeOut' }}
           >
-            It has a thousand names.
+            It has a{' '}
+            <span
+              className="italic bg-clip-text text-transparent"
+              style={{ backgroundImage: GRADIENTS.textWide }}
+            >
+              thousand names
+            </span>
+            .
           </motion.h2>
           <motion.p
             className="font-sans text-lg text-gray-500 max-w-md mx-auto"
@@ -476,46 +484,10 @@ export default function TimelessAnchorSectionV2() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="max-w-2xl mx-auto mt-0 space-y-8">
-          <BridgeParagraph>Before language, a body already knew this. Running past tired. Breath catching its own rhythm. Everything else falling away.</BridgeParagraph>
-          <BridgeParagraph>It was survival&apos;s last gear &mdash; kept in reserve for the moments ordinary effort wasn&apos;t enough.</BridgeParagraph>
-          <BridgeParagraph>When survival stopped being the whole game, people started reaching for it on purpose. Sitting still until it arrived. Climbing in through breath, through movement, through long stretches of attention nothing was allowed to interrupt.</BridgeParagraph>
-          <BridgeParagraph>Every tradition that looked closely ended up describing the same place.</BridgeParagraph>
-        </div>
-      </div>
-
       <ScrollingCarousel />
 
       <div className="max-w-6xl mx-auto px-6">
-        <div className="max-w-2xl mx-auto mt-16 space-y-8">
-          <BridgeParagraph>Different words. Different directions. Same coordinates.</BridgeParagraph>
-          <BridgeParagraph>Same nervous system finding the same place, century after century.</BridgeParagraph>
-          <BridgeParagraph>Call it what you want. Flow. Samadhi. Mushin. The pocket. Every age has named it because every age has found it &mdash; in the same body you&apos;re sitting in. Yours by default.</BridgeParagraph>
-          <motion.p
-            className="font-sans text-lg text-gray-300 leading-[1.8]"
-            initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-          >
-            <motion.span
-              className="bg-clip-text text-transparent"
-              style={{ display: 'inline-block', backgroundImage: GRADIENTS.textAccent }}
-              animate={{
-                filter: [
-                  'drop-shadow(0 0 5px rgba(232,69,53,0.55)) drop-shadow(0 0 14px rgba(232,69,53,0.22))',
-                  'drop-shadow(0 0 5px rgba(62,111,163,0.65)) drop-shadow(0 0 14px rgba(62,111,163,0.28))',
-                  'drop-shadow(0 0 5px rgba(232,69,53,0.55)) drop-shadow(0 0 14px rgba(232,69,53,0.22))',
-                ],
-              }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              FourFlowOS
-            </motion.span>
-            {' '}is built on that. And on what&apos;s changed since.
-          </motion.p>
-        </div>
+        <PrincipleBridge>Underneath them all, one state.</PrincipleBridge>
       </div>
     </section>
   );

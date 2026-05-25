@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 · flow, n. — Definitions</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --self: #E84535; --space: #4E8C73; --story: #3E6FA3; --spirit: #6330A0;
+    --bg: #0a0a0a; --text: #F0EDE8; --muted: rgba(255,255,255,0.45);
+    --dim: rgba(255,255,255,0.28); --line: rgba(255,255,255,0.08);
+    --serif: 'EB Garamond', Georgia, serif;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+  html, body { background: var(--bg); color: var(--text); font-family: var(--sans); }
+
+  /* Variant separator */
+  .variant-label {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,10,0.85); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 32px; display: flex; gap: 24px; align-items: center;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  }
+  .variant-label .tag { color: var(--muted); }
+  .variant-label .tag strong { color: var(--text); font-weight: 600; margin-right: 6px; }
+  .variant-label a { color: var(--muted); text-decoration: none; margin-left: auto; }
+  .variant-label a:hover { color: var(--text); }
+
+  .section {
+    min-height: 100vh; padding: 140px 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .divider {
+    height: 1px; background: var(--line); margin: 0 auto; width: 60%;
+    position: relative;
+  }
+  .divider::before {
+    content: "Variant B ↓"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+    background: var(--bg); padding: 0 16px; color: var(--dim); font-size: 10px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+  }
+
+  .principle {
+    font-family: var(--serif); font-weight: 400; font-style: italic;
+    font-size: clamp(20px, 2.4vw, 28px); color: var(--muted);
+    text-align: center; margin-bottom: 64px; max-width: 640px;
+  }
+  .principle em { font-style: normal; color: var(--text); }
+
+  /* ─────────── VARIANT A: scroll-stacked OED card ─────────── */
+  .oed-card {
+    width: min(720px, 100%);
+    background: rgba(255,255,255,0.015);
+    border: 1px solid var(--line);
+    padding: 56px 48px;
+    position: relative;
+  }
+  .oed-card::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top, rgba(99,48,160,0.06), transparent 60%);
+    pointer-events: none;
+  }
+  .oed-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
+  .oed-word { font-family: var(--serif); font-size: 56px; font-weight: 500; letter-spacing: -0.01em; }
+  .oed-phonetic { font-family: var(--serif); font-style: italic; color: var(--muted); font-size: 22px; }
+  .oed-etym { color: var(--dim); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .oed-entry {
+    display: flex; gap: 20px; padding: 24px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.06);
+    opacity: 0; filter: blur(6px); transform: translateY(12px);
+    transition: opacity 0.9s ease, filter 0.9s ease, transform 0.9s ease;
+  }
+  .oed-entry:last-child { border-bottom: none; }
+  .oed-entry.in { opacity: 1; filter: blur(0); transform: none; }
+  .oed-num { font-family: var(--serif); font-size: 22px; color: var(--muted); width: 32px; flex-shrink: 0; font-feature-settings: "lnum"; }
+  .oed-body { flex: 1; }
+  .oed-pos { font-family: var(--serif); font-style: italic; color: var(--muted); font-size: 13px; margin-bottom: 6px; letter-spacing: 0.04em; }
+  .oed-def { font-family: var(--serif); font-size: 19px; line-height: 1.55; color: var(--text); }
+  .oed-entry.is-ours .oed-def {
+    background: linear-gradient(90deg, var(--self), var(--space), var(--story), var(--spirit));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-style: italic;
+  }
+  .oed-entry.is-ours .oed-pos { color: rgba(255,255,255,0.6); }
+  .oed-footnote {
+    margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line);
+    color: var(--dim); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    text-align: right;
+  }
+
+  /* ─────────── VARIANT B: flip-cycle cards ─────────── */
+  .flip-stage {
+    width: min(640px, 100%); height: 360px;
+    position: relative;
+  }
+  .flip-card {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--line);
+    padding: 56px 48px;
+    display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; transform: translateY(20px) scale(0.99);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    pointer-events: none;
+  }
+  .flip-card.active { opacity: 1; transform: none; pointer-events: auto; }
+  .flip-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+  .flip-word { font-family: var(--serif); font-size: 44px; font-weight: 500; }
+  .flip-phonetic { font-family: var(--serif); font-style: italic; color: var(--muted); font-size: 18px; }
+  .flip-meta { display: flex; gap: 12px; align-items: baseline; margin-top: 24px; margin-bottom: 14px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .flip-num { font-family: var(--serif); color: var(--muted); font-size: 18px; }
+  .flip-pos { font-family: var(--serif); font-style: italic; color: var(--muted); font-size: 13px; letter-spacing: 0.04em; }
+  .flip-def { font-family: var(--serif); font-size: 22px; line-height: 1.5; color: var(--text); }
+  .flip-card.is-ours .flip-def {
+    background: linear-gradient(90deg, var(--self), var(--space), var(--story), var(--spirit));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-style: italic;
+  }
+  .flip-controls { margin-top: 32px; display: flex; gap: 12px; justify-content: center; }
+  .flip-dot { width: 28px; height: 3px; background: rgba(255,255,255,0.12); border: none; cursor: pointer; transition: background 0.3s; padding: 0; }
+  .flip-dot.active { background: linear-gradient(90deg, var(--self), var(--story)); }
+  .flip-dot:hover { background: rgba(255,255,255,0.25); }
+  .flip-dot.active:hover { background: linear-gradient(90deg, var(--self), var(--story)); }
+  .flip-progress { width: min(640px, 100%); height: 1px; background: var(--line); margin-top: 24px; position: relative; }
+  .flip-progress::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(90deg, var(--self), var(--story)); width: 25%; transition: width 0.5s ease; }
+  .flip-progress.p2::after { width: 50%; }
+  .flip-progress.p3::after { width: 75%; }
+  .flip-progress.p4::after { width: 100%; }
+
+  @media (max-width: 640px) {
+    .oed-card, .flip-stage, .flip-card { padding: 40px 28px; }
+    .oed-word { font-size: 44px; }
+    .oed-def, .flip-def { font-size: 17px; }
+    .flip-stage { height: 420px; }
+  }
+</style>
+</head>
+<body>
+  <div class="variant-label">
+    <span class="tag"><strong>01</strong>flow, n. — Definitions</span>
+    <span class="tag" style="color: var(--dim);">↓ scroll to compare</span>
+    <a href="index.html">← all mockups</a>
+  </div>
+
+  <!-- ───────── VARIANT A ───────── -->
+  <section class="section">
+    <div class="principle">A word with <em>many edges</em>.</div>
+    <div class="oed-card" id="oedCard">
+      <div class="oed-head">
+        <span class="oed-word">flow</span>
+        <span class="oed-phonetic">/floʊ/</span>
+      </div>
+      <div class="oed-etym">Old English <em>flōwan</em> · to move freely · root of <em>fluent</em>, <em>influence</em></div>
+      <div class="oed-entry">
+        <div class="oed-num">1</div>
+        <div class="oed-body">
+          <div class="oed-pos">scientific · n.</div>
+          <div class="oed-def">A state of optimal experience marked by complete absorption, where action and awareness merge.</div>
+        </div>
+      </div>
+      <div class="oed-entry">
+        <div class="oed-num">2</div>
+        <div class="oed-body">
+          <div class="oed-pos">somatic · v.</div>
+          <div class="oed-def">To move without resistance; to act from a center that requires no effort to maintain.</div>
+        </div>
+      </div>
+      <div class="oed-entry">
+        <div class="oed-num">3</div>
+        <div class="oed-body">
+          <div class="oed-pos">philosophical · n.</div>
+          <div class="oed-def">The alignment of inner state with outer act, such that the doing and the doer become one.</div>
+        </div>
+      </div>
+      <div class="oed-entry is-ours">
+        <div class="oed-num">4</div>
+        <div class="oed-body">
+          <div class="oed-pos">fourflowOS · n.</div>
+          <div class="oed-def">Coherence, in motion.</div>
+        </div>
+      </div>
+      <div class="oed-footnote">Variant A · scroll-stacked OED format</div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ───────── VARIANT B ───────── -->
+  <section class="section">
+    <div class="principle">A word with <em>many edges</em>.</div>
+    <div class="flip-stage" id="flipStage">
+      <div class="flip-card active" data-i="1">
+        <div class="flip-head"><span class="flip-word">flow</span><span class="flip-phonetic">/floʊ/</span></div>
+        <div class="flip-meta"><span class="flip-num">1.</span><span class="flip-pos">scientific · n.</span></div>
+        <div class="flip-def">A state of optimal experience marked by complete absorption, where action and awareness merge.</div>
+      </div>
+      <div class="flip-card" data-i="2">
+        <div class="flip-head"><span class="flip-word">flow</span><span class="flip-phonetic">/floʊ/</span></div>
+        <div class="flip-meta"><span class="flip-num">2.</span><span class="flip-pos">somatic · v.</span></div>
+        <div class="flip-def">To move without resistance; to act from a center that requires no effort to maintain.</div>
+      </div>
+      <div class="flip-card" data-i="3">
+        <div class="flip-head"><span class="flip-word">flow</span><span class="flip-phonetic">/floʊ/</span></div>
+        <div class="flip-meta"><span class="flip-num">3.</span><span class="flip-pos">philosophical · n.</span></div>
+        <div class="flip-def">The alignment of inner state with outer act, such that the doing and the doer become one.</div>
+      </div>
+      <div class="flip-card is-ours" data-i="4">
+        <div class="flip-head"><span class="flip-word">flow</span><span class="flip-phonetic">/floʊ/</span></div>
+        <div class="flip-meta"><span class="flip-num">4.</span><span class="flip-pos">fourflowOS · n.</span></div>
+        <div class="flip-def">Coherence, in motion.</div>
+      </div>
+    </div>
+    <div class="flip-controls" id="flipControls">
+      <button class="flip-dot active" data-i="1" aria-label="Definition 1"></button>
+      <button class="flip-dot" data-i="2" aria-label="Definition 2"></button>
+      <button class="flip-dot" data-i="3" aria-label="Definition 3"></button>
+      <button class="flip-dot" data-i="4" aria-label="Definition 4"></button>
+    </div>
+    <div class="flip-progress" id="flipProgress"></div>
+    <div class="oed-footnote" style="margin-top: 40px;">Variant B · flip-cycle through cards</div>
+  </section>
+
+<script>
+  // Variant A: stagger-reveal entries on scroll-in
+  (() => {
+    const entries = document.querySelectorAll('#oedCard .oed-entry');
+    const io = new IntersectionObserver((items) => {
+      items.forEach(it => {
+        if (it.isIntersecting) {
+          entries.forEach((e, i) => setTimeout(() => e.classList.add('in'), i * 220));
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.35 });
+    if (entries[0]) io.observe(entries[0]);
+  })();
+
+  // Variant B: auto-cycle + click control
+  (() => {
+    const stage = document.getElementById('flipStage');
+    const cards = stage.querySelectorAll('.flip-card');
+    const dots = document.querySelectorAll('#flipControls .flip-dot');
+    const progress = document.getElementById('flipProgress');
+    let i = 0, total = cards.length, timer;
+    const show = (n) => {
+      i = ((n % total) + total) % total;
+      cards.forEach((c, k) => c.classList.toggle('active', k === i));
+      dots.forEach((d, k) => d.classList.toggle('active', k === i));
+      progress.className = 'flip-progress p' + (i + 1);
+    };
+    const tick = () => { timer = setTimeout(() => { show(i + 1); tick(); }, 4200); };
+    dots.forEach(d => d.addEventListener('click', () => {
+      clearTimeout(timer);
+      show(parseInt(d.dataset.i, 10) - 1);
+      tick();
+    }));
+    tick();
+  })();
+</script>
+</body>
+</html>

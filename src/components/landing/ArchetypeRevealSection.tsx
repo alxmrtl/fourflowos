@@ -1,9 +1,8 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
-import Link from 'next/link';
 import { useRef } from 'react';
-import { GRADIENTS, CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
+import { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
 
 const featureLines = [
   { color: AMETHYST, text: 'Flow Unlock · Ancestral Signal — read where the pattern lives' },
@@ -196,7 +195,7 @@ export default function ArchetypeRevealSection() {
   const previewInView = useInView(previewRef, { once: true, amount: 0.3 });
 
   return (
-    <section className="relative py-24 md:py-32 bg-[#050505]">
+    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-[#050505]">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="max-w-6xl mx-auto px-6">
@@ -212,15 +211,22 @@ export default function ArchetypeRevealSection() {
             <p className="font-sans text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-600 mb-4">
               Your practice
             </p>
-            <h2 className="font-display text-4xl md:text-5xl font-normal text-white mb-5 leading-[1.1]">
-              The pattern lives<br />in the practice.
+            <h2 className="font-display text-3xl md:text-5xl font-normal text-white mb-5 leading-[1.15]">
+              It already lives<br />
+              <span
+                className="italic bg-clip-text text-transparent"
+                style={{ backgroundImage: GRADIENTS.textWide }}
+              >
+                in the practice
+              </span>
+              .
             </h2>
             <p className="font-sans text-lg text-gray-400 leading-relaxed mb-8">
-              You discover yours by doing the work. Two readings point you in. The rest of the stack is the daily practice that makes it visible.
+              You discover the pattern by doing the work. The stack is the daily surface where it becomes visible.
             </p>
 
             {/* Feature lines */}
-            <ul className="space-y-3 mb-10">
+            <ul className="space-y-3">
               {featureLines.map((line) => (
                 <li key={line.text} className="flex items-center gap-3">
                   <span
@@ -231,23 +237,6 @@ export default function ArchetypeRevealSection() {
                 </li>
               ))}
             </ul>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-start gap-4">
-              <Link
-                href="/map"
-                className="font-sans px-7 py-3.5 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105 text-sm"
-                style={{ background: GRADIENTS.primaryCta }}
-              >
-                Map your signal
-              </Link>
-              <Link
-                href="/framework"
-                className="font-sans text-sm text-gray-500 hover:text-gray-300 transition-colors self-center"
-              >
-                Explore the framework →
-              </Link>
-            </div>
           </motion.div>
 
           {/* Right — FlowLab UI preview */}
