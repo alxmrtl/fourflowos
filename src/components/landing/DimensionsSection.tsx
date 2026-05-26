@@ -133,7 +133,7 @@ export default function DimensionsSection() {
         </div>
 
         {/* Four dimension cards */}
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
           {dimensionData.map((dimension, index) => {
             const audienceCopy = getAudienceCopy(dimension.id);
 
@@ -152,7 +152,7 @@ export default function DimensionsSection() {
                 }}
               >
                 <motion.div
-                  className="relative rounded-2xl overflow-hidden cursor-pointer group h-[260px] md:h-[300px]"
+                  className="relative rounded-2xl overflow-hidden cursor-pointer group h-[210px] md:h-[300px]"
                   style={{
                     background: `linear-gradient(135deg, ${dimension.color}08, ${dimension.color}03)`,
                     border: `1px solid ${dimension.color}20`,
@@ -163,16 +163,16 @@ export default function DimensionsSection() {
                 >
                   {/* Front content - Dimension info */}
                   <motion.div
-                    className="absolute inset-0 p-6 md:p-8"
+                    className="absolute inset-0 p-4 md:p-8"
                     animate={{
                       opacity: revealedDimension === dimension.id ? 0 : 1,
                     }}
                     transition={{ duration: 0.3, delay: revealedDimension === dimension.id ? 0 : 0.3 }}
                   >
-                    <div className="flex items-start gap-5">
+                    <div className="flex items-start gap-4 md:gap-5">
                       {/* Shape */}
                       <motion.div
-                        className="relative flex-shrink-0 w-20 h-20 md:w-24 md:h-24"
+                        className="relative flex-shrink-0 w-14 h-14 md:w-20 md:h-20"
                         animate={{
                           scale: [1, 1.03, 1],
                         }}
@@ -199,25 +199,25 @@ export default function DimensionsSection() {
                       <div className="flex-1 min-w-0">
                         {/* Name */}
                         <h3
-                          className="text-2xl md:text-3xl font-bold tracking-tight mb-2"
+                          className="text-xl md:text-3xl font-bold tracking-tight mb-1.5 md:mb-2"
                           style={{ color: dimension.color }}
                         >
                           {dimension.name}
                         </h3>
 
                         {/* Audience-aware tagline */}
-                        <p className="text-lg text-white font-medium mb-1">
+                        <p className="text-sm md:text-lg text-white font-medium mb-1">
                           {audienceCopy ? `"${audienceCopy.tagline}"` : `"${dimension.question}"`}
                         </p>
 
-                        {/* Audience-aware description */}
-                        <p className="text-gray-400 text-xs mb-3">
+                        {/* Audience-aware description — hidden on mobile */}
+                        <p className="hidden md:block text-gray-400 text-xs mb-3">
                           {audienceCopy ? audienceCopy.description : dimension.meta}
                         </p>
 
-                        {/* Shape + Symbolism */}
+                        {/* Shape + Symbolism — hidden on mobile */}
                         <p
-                          className="text-sm font-medium italic"
+                          className="hidden md:block text-sm font-medium italic"
                           style={{ color: `${dimension.color}99` }}
                         >
                           {dimension.shape} — {dimension.symbolism}
@@ -225,8 +225,22 @@ export default function DimensionsSection() {
                       </div>
                     </div>
 
-                    {/* Keys teaser bar */}
-                    <div className="absolute bottom-6 left-6 right-6 pt-4 border-t border-white/5">
+                    {/* Mobile-only tap hint */}
+                    <div className="md:hidden absolute bottom-3 right-4 flex items-center gap-1.5">
+                      <div className="flex gap-1">
+                        {dimension.keys.map((keyId) => (
+                          <div
+                            key={keyId}
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ background: dimension.color }}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-gray-600">›</span>
+                    </div>
+
+                    {/* Desktop teaser bar */}
+                    <div className="hidden md:block absolute bottom-6 left-6 right-6 pt-4 border-t border-white/5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-gray-600 uppercase tracking-wider">
@@ -267,7 +281,7 @@ export default function DimensionsSection() {
 
                   {/* Back content - Flow Keys with audience-aware copy */}
                   <motion.div
-                    className="absolute inset-0 p-6 md:p-8 flex"
+                    className="absolute inset-0 p-3 md:p-8 flex"
                     initial={false}
                     animate={{
                       opacity: revealedDimension === dimension.id ? 1 : 0,
@@ -276,7 +290,7 @@ export default function DimensionsSection() {
                     transition={{ duration: 0.3, delay: revealedDimension === dimension.id ? 0.3 : 0 }}
                   >
                     {/* Vertical title on left */}
-                    <div className="flex flex-col items-center justify-center mr-6 md:mr-8 pl-1">
+                    <div className="flex flex-col items-center justify-center mr-3 md:mr-8 pl-0.5 md:pl-1">
                       <h3
                         className="text-sm font-bold tracking-widest uppercase whitespace-nowrap"
                         style={{
@@ -290,7 +304,7 @@ export default function DimensionsSection() {
                     </div>
 
                     {/* Keys list */}
-                    <div className="flex-1 flex flex-col justify-center space-y-2">
+                    <div className="flex-1 flex flex-col justify-center space-y-1.5 md:space-y-2">
                       {dimension.keys.map((keyId, keyIndex) => {
                         const key = KEYS[keyId as keyof typeof KEYS];
                         const keyCopy = getKeyCopy(keyId);
@@ -308,10 +322,10 @@ export default function DimensionsSection() {
                               delay: revealedDimension === dimension.id ? 0.35 + keyIndex * 0.08 : 0,
                               ease: 'easeOut'
                             }}
-                            className="flex items-center gap-3 p-3 rounded-xl bg-black/30 backdrop-blur-sm"
+                            className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-xl bg-black/30 backdrop-blur-sm"
                           >
                             <div
-                              className="relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden"
+                              className="relative w-8 h-8 md:w-10 md:h-10 flex-shrink-0 rounded-lg overflow-hidden"
                               style={{ background: `${dimension.color}30` }}
                             >
                               <Image
@@ -322,10 +336,10 @@ export default function DimensionsSection() {
                               />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-sm font-semibold text-white">
+                              <h4 className="text-xs md:text-sm font-semibold text-white">
                                 {key.name}
                               </h4>
-                              <p className="text-xs text-white/50 line-clamp-2">
+                              <p className="hidden md:block text-xs text-white/50 line-clamp-2">
                                 {keyCopy ? keyCopy.focus : key.description}
                               </p>
                             </div>

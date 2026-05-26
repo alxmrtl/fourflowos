@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1">
+<title>Dimensions — Version B: Name-First Minimal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: #050505;
+    min-height: 100vh;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .frame {
+    width: 375px;
+    margin: 24px auto;
+    background: #050505;
+    position: relative;
+    outline: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+
+  .label {
+    text-align: center;
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    font-family: system-ui, sans-serif;
+    padding: 8px 0 4px;
+    text-transform: uppercase;
+  }
+
+  .section {
+    padding: 28px 20px;
+    position: relative;
+  }
+
+  .bg-glows {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 20% 20%, #E84535 0%, transparent 30%),
+      radial-gradient(circle at 80% 30%, #4E8C73 0%, transparent 30%),
+      radial-gradient(circle at 30% 80%, #3E6FA3 0%, transparent 30%),
+      radial-gradient(circle at 70% 70%, #6330A0 0%, transparent 30%);
+    opacity: 0.03;
+  }
+
+  h2.title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 400;
+    color: white;
+    line-height: 1.15;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .gradient-text {
+    font-style: italic;
+    background: linear-gradient(90deg, #E84535, #4E8C73, #3E6FA3, #6330A0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Cards */
+  .cards-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+  }
+
+  /* Each card — 155px, left-border accent, no icon */
+  .card {
+    position: relative;
+    height: 155px;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  /* Left border accent via box-shadow inset */
+  .card-accent {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 14px 0 0 14px;
+  }
+
+  /* Front */
+  .card-front {
+    position: absolute;
+    inset: 0;
+    padding: 20px 20px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: opacity 0.25s ease;
+  }
+
+  .card-front.hidden { opacity: 0; pointer-events: none; }
+
+  .dim-name-large {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .dim-question-small {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .front-hint {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.20);
+    font-family: system-ui, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Ink overlay */
+  .ink-overlay {
+    position: absolute;
+    inset: 0;
+    clip-path: circle(0% at 15% 18%);
+    transition: clip-path 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ink-overlay.revealed {
+    clip-path: circle(150% at 15% 18%);
+  }
+
+  /* Back */
+  .card-back {
+    position: absolute;
+    inset: 0;
+    padding: 16px 18px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease 0.15s;
+  }
+
+  .card-back.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Key item — border-left accent, no icon */
+  .key-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.25);
+  }
+
+  .key-bar {
+    width: 2px;
+    height: 22px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .key-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.01em;
+  }
+
+  /* Bridge */
+  .bridge-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+  }
+
+  .bridge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    padding: 10px 22px;
+    cursor: pointer;
+  }
+
+  .bridge-text {
+    font-style: italic;
+    font-size: 15px;
+    color: rgba(255,255,255,0.50);
+    text-align: center;
+  }
+
+  .bridge-arrow {
+    color: rgba(255,255,255,0.26);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<p class="label">Version B — Name-First Minimal &nbsp;|&nbsp; 375px mobile</p>
+<div class="frame">
+  <section class="section">
+    <div class="bg-glows"></div>
+
+    <h2 class="title" style="position:relative;z-index:1">
+      That alignment has a <span class="gradient-text">structure</span>.
+    </h2>
+
+    <div class="cards-grid">
+
+      <!-- SELF -->
+      <div class="card" id="card-self" onclick="toggleCard('self')"
+        style="background: linear-gradient(135deg, rgba(232,69,53,0.07), rgba(232,69,53,0.02)); border: 1px solid rgba(232,69,53,0.18)">
+        <div class="card-accent" style="background:#E84535"></div>
+        <div class="ink-overlay" id="ink-self"
+          style="background: linear-gradient(135deg, rgba(232,69,53,0.22), rgba(232,69,53,0.12))"></div>
+
+        <div class="card-front" id="front-self">
+          <div class="dim-name-large" style="color:#E84535">SELF</div>
+          <div class="dim-question-small">How am I right now?</div>
+          <div class="front-hint">tap to open</div>
+        </div>
+
+        <div class="card-back" id="back-self">
+          <div class="key-item">
+            <div class="key-bar" style="background:#E84535"></div>
+            <div class="key-name">Tuned Emotions</div>
+          </div>
+          <div class="key-item">
+            <div class="key-bar" style="background:#E84535"></div>
+            <div class="key-name">Open Mind</div>
+          </div>
+          <div class="key-item">
+            <div class="key-bar" style="background:#E84535"></div>
+            <div class="key-name">Focused Body</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPACE -->
+      <div class="card" id="card-space" onclick="toggleCard('space')"
+        style="background: linear-gradient(135deg, rgba(78,140,115,0.07), rgba(78,140,115,0.02)); border: 1px solid rgba(78,140,115,0.18)">
+        <div class="card-accent" style="background:#4E8C73"></div>
+        <div class="ink-overlay" id="ink-space"
+          style="background: linear-gradient(135deg, rgba(78,140,115,0.22), rgba(78,140,115,0.12))"></div>
+
+        <div class="card-front" id="front-space">
+          <div class="dim-name-large" style="color:#4E8C73">SPACE</div>
+          <div class="dim-question-small">What supports my flow?</div>
+          <div class="front-hint">tap to open</div>
+        </div>
+
+        <div class="card-back" id="back-space">
+          <div class="key-item">
+            <div class="key-bar" style="background:#4E8C73"></div>
+            <div class="key-name">Intentional Space</div>
+          </div>
+          <div class="key-item">
+            <div class="key-bar" style="background:#4E8C73"></div>
+            <div class="key-name">Optimized Tools</div>
+          </div>
+          <div class="key-item">
+            <div class="key-bar" style="background:#4E8C73"></div>
+            <div class="key-name">Feedback Systems</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STORY -->
+      <div class="card" id="card-story" onclick="toggleCard('story')"
+        style="background: linear-gradient(135deg, rgba(62,111,163,0.07), rgba(62,111,163,0.02)); border: 1px solid rgba(62,111,163,0.18)">
+        <div class="card-accent" style="background:#3E6FA3"></div>
+        <div class="ink-overlay" id="ink-story"
+          style="background: linear-gradient(135deg, rgba(62,111,163,0.22), rgba(62,111,163,0.12))"></div>
+
+        <div class="card-front" id="front-story">
+          <div class="dim-name-large" style="color:#3E6FA3">STORY</div>
+          <div class="dim-question-small">What am I building?</div>
+          <div class="front-hint">tap to open</div>
+        </div>
+
+        <div class="card-back" id="back-story">
+          <div class="key-item">
+            <div class="key-bar" style="background:#3E6FA3"></div>
+            <div class="key-name">Generative Story</div>
+          </div>
+          <div class="key-item">
+            <div class="key-bar" style="background:#3E6FA3"></div>
+            <div class="key-name">Clear Mission</div>
+          </div>
+          <div class="key-item">
+            <div class="key-bar" style="background:#3E6FA3"></div>
+            <div class="key-name">Empowered Role</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPIRIT -->
+      <div class="card" id="card-spirit" onclick="toggleCard('spirit')"
+        style="background: linear-gradient(135deg, rgba(99,48,160,0.07), rgba(99,48,160,0.02)); border: 1px solid rgba(99,48,160,0.18)">
+        <div class="card-accent" style="background:#6330A0"></div>
+        <div class="ink-overlay" id="ink-spirit"
+          style="background: linear-gradient(135deg, rgba(99,48,160,0.22), rgba(99,48,160,0.12))"></div>
+
+        <div class="card-front" id="front-spirit">
+          <div class="dim-name-large" style="color:#6330A0">SPIRIT</div>
+          <div class="dim-question-small">What drives me?</div>
+          <div class="front-hint">tap to open</div>
+        </div>
+
+        <div class="card-back" id="back-spirit">
+          <div class="key-item">
+            <div class="key-bar" style="background:#6330A0"></div>
+            <div class="key-name">Grounding Values</div>
+          </div>
+          <div class="key-item">
+            <div class="key-bar" style="background:#6330A0"></div>
+            <div class="key-name">Visualized Vision</div>
+          </div>
+          <div class="key-item">
+            <div class="key-bar" style="background:#6330A0"></div>
+            <div class="key-name">Ignited Curiosity</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bridge-wrap">
+      <div class="bridge">
+        <div class="bridge-text">When the twelve keys cohere, the state is here.</div>
+        <div class="bridge-arrow">↓</div>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<script>
+  const state = { self: false, space: false, story: false, spirit: false };
+
+  function toggleCard(id) {
+    state[id] = !state[id];
+    const ink = document.getElementById('ink-' + id);
+    const front = document.getElementById('front-' + id);
+    const back = document.getElementById('back-' + id);
+
+    if (state[id]) {
+      ink.classList.add('revealed');
+      front.classList.add('hidden');
+      setTimeout(() => back.classList.add('visible'), 150);
+    } else {
+      ink.classList.remove('revealed');
+      back.classList.remove('visible');
+      setTimeout(() => front.classList.remove('hidden'), 150);
+    }
+  }
+</script>
+</body>
+</html>
