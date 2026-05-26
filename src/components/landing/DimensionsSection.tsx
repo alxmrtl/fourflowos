@@ -133,7 +133,7 @@ export default function DimensionsSection() {
         </div>
 
         {/* Four dimension cards */}
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 gap-2 md:gap-6 lg:gap-8">
           {dimensionData.map((dimension, index) => {
             const audienceCopy = getAudienceCopy(dimension.id);
 
@@ -152,7 +152,7 @@ export default function DimensionsSection() {
                 }}
               >
                 <motion.div
-                  className="relative rounded-2xl overflow-hidden cursor-pointer group h-[210px] md:h-[300px]"
+                  className="relative rounded-2xl overflow-hidden cursor-pointer group h-[156px] md:h-[300px]"
                   style={{
                     background: `linear-gradient(135deg, ${dimension.color}08, ${dimension.color}03)`,
                     border: `1px solid ${dimension.color}20`,
@@ -163,16 +163,16 @@ export default function DimensionsSection() {
                 >
                   {/* Front content - Dimension info */}
                   <motion.div
-                    className="absolute inset-0 p-4 md:p-8"
+                    className="absolute inset-0 p-3 md:p-8 flex flex-col justify-center"
                     animate={{
                       opacity: revealedDimension === dimension.id ? 0 : 1,
                     }}
                     transition={{ duration: 0.3, delay: revealedDimension === dimension.id ? 0 : 0.3 }}
                   >
-                    <div className="flex items-start gap-4 md:gap-5">
+                    <div className="flex items-center gap-3 md:gap-5">
                       {/* Shape */}
                       <motion.div
-                        className="relative flex-shrink-0 w-14 h-14 md:w-20 md:h-20"
+                        className="relative flex-shrink-0 w-9 h-9 md:w-20 md:h-20"
                         animate={{
                           scale: [1, 1.03, 1],
                         }}
@@ -199,14 +199,14 @@ export default function DimensionsSection() {
                       <div className="flex-1 min-w-0">
                         {/* Name */}
                         <h3
-                          className="text-xl md:text-3xl font-bold tracking-tight mb-1.5 md:mb-2"
+                          className="text-sm md:text-3xl font-bold tracking-tight mb-1 md:mb-2"
                           style={{ color: dimension.color }}
                         >
                           {dimension.name}
                         </h3>
 
                         {/* Audience-aware tagline */}
-                        <p className="text-sm md:text-lg text-white font-medium mb-1">
+                        <p className="text-[10px] md:text-lg text-white/80 font-medium mb-0.5 md:mb-1 leading-tight">
                           {audienceCopy ? `"${audienceCopy.tagline}"` : `"${dimension.question}"`}
                         </p>
 
@@ -292,7 +292,7 @@ export default function DimensionsSection() {
                     {/* Vertical title on left */}
                     <div className="flex flex-col items-center justify-center mr-3 md:mr-8 pl-0.5 md:pl-1">
                       <h3
-                        className="text-sm font-bold tracking-widest uppercase whitespace-nowrap"
+                        className="text-[9px] md:text-sm font-bold tracking-widest uppercase whitespace-nowrap"
                         style={{
                           color: dimension.color,
                           writingMode: 'vertical-rl',
@@ -304,7 +304,7 @@ export default function DimensionsSection() {
                     </div>
 
                     {/* Keys list */}
-                    <div className="flex-1 flex flex-col justify-center space-y-1.5 md:space-y-2">
+                    <div className="flex-1 flex flex-col justify-center space-y-1 md:space-y-2">
                       {dimension.keys.map((keyId, keyIndex) => {
                         const key = KEYS[keyId as keyof typeof KEYS];
                         const keyCopy = getKeyCopy(keyId);
@@ -322,10 +322,10 @@ export default function DimensionsSection() {
                               delay: revealedDimension === dimension.id ? 0.35 + keyIndex * 0.08 : 0,
                               ease: 'easeOut'
                             }}
-                            className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-xl bg-black/30 backdrop-blur-sm"
+                            className="flex items-center gap-1.5 md:gap-3 p-1.5 md:p-3 rounded-lg md:rounded-xl bg-black/30 backdrop-blur-sm"
                           >
                             <div
-                              className="relative w-8 h-8 md:w-10 md:h-10 flex-shrink-0 rounded-lg overflow-hidden"
+                              className="relative w-6 h-6 md:w-10 md:h-10 flex-shrink-0 rounded-md md:rounded-lg overflow-hidden"
                               style={{ background: `${dimension.color}30` }}
                             >
                               <Image
@@ -336,7 +336,7 @@ export default function DimensionsSection() {
                               />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-xs md:text-sm font-semibold text-white">
+                              <h4 className="text-[10px] md:text-sm font-semibold text-white leading-tight">
                                 {key.name}
                               </h4>
                               <p className="hidden md:block text-xs text-white/50 line-clamp-2">
