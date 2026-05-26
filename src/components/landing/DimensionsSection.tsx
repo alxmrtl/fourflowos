@@ -236,7 +236,7 @@ export default function DimensionsSection() {
                           />
                         ))}
                       </div>
-                      <span className="text-[10px] text-gray-600">›</span>
+                      <span className="text-[10px] text-gray-400 md:text-gray-600">›</span>
                     </div>
 
                     {/* Desktop teaser bar */}

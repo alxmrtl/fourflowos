@@ -55,11 +55,11 @@ function Entry({ num, pos, text, delay }: { num: number; pos: string; text: stri
       animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
       transition={{ duration: 1.6, ease: 'easeOut', delay }}
     >
-      <div className="font-display text-sm md:text-xl text-white/45 w-5 md:w-6 flex-shrink-0 leading-[1.55]">{num}</div>
+      <div className="font-display text-sm md:text-xl text-white/70 md:text-white/45 w-5 md:w-6 flex-shrink-0 leading-[1.55]">{num}</div>
       <div className="flex-1 min-w-0">
         <div className="hidden md:block font-display italic text-white/45 text-[13px] mb-1.5 tracking-wide">{pos}</div>
         <div className="md:hidden font-display text-sm leading-[1.5] text-white/85">
-          <span className="italic text-white/40 mr-1">{pos} </span>{text}
+          <span className="italic text-white/60 md:text-white/40 mr-1">{pos} </span>{text}
         </div>
         <div className="hidden md:block font-display md:text-base leading-[1.55] text-white/90">
           {text}
@@ -82,7 +82,7 @@ function FourFlowBridge() {
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 1.0, ease: 'easeOut', delay: 0.3 }}
     >
-      <div className="font-display italic text-white/40 text-[12px] tracking-wide group-hover:text-white/55 transition-colors">
+      <div className="font-display italic text-white/60 md:text-white/40 text-[12px] tracking-wide group-hover:text-white/70 md:group-hover:text-white/55 transition-colors">
         fourflowOS · n.
       </div>
       <div
@@ -91,7 +91,7 @@ function FourFlowBridge() {
       >
         Optimal experience through alignment.
       </div>
-      <span className="text-white/35 group-hover:text-white/60 transition-colors mt-1">↓</span>
+      <span className="text-white/55 md:text-white/35 group-hover:text-white/70 md:group-hover:text-white/60 transition-colors mt-1">↓</span>
     </motion.button>
   );
 }

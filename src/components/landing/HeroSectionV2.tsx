@@ -126,7 +126,7 @@ export default function HeroSectionV2() {
           <a
             href="#anchor"
             onClick={scrollToNext}
-            className="font-sans inline-flex items-center gap-2 px-8 py-4 font-medium rounded-full border border-white/30 text-white/80 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-300"
+            className="font-sans inline-flex items-center gap-2 px-8 py-4 font-medium rounded-full border border-white/40 md:border-white/30 text-white/80 hover:text-white hover:border-white/50 hover:bg-white/5 transition-all duration-300"
           >
             Walk me through it
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
