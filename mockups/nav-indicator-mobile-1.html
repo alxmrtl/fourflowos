@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Mobile 1 — Bottom Dots</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --coral:    #E84535;
+      --sage:     #4E8C73;
+      --steel:    #3E6FA3;
+      --amethyst: #6330A0;
+      --bg:       #0a0a0a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: rgba(255,255,255,0.8);
+      font-family: 'Inter', -apple-system, sans-serif;
+      overflow-x: hidden;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 52px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+    .nav-logo {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.9);
+    }
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 18px;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+    .nav-menu span {
+      display: block;
+      height: 1px;
+      background: white;
+      border-radius: 1px;
+    }
+
+    /* ─── SECTIONS ─── */
+    .section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      padding: 70px 28px 80px;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .section-num {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.18);
+      text-transform: uppercase;
+    }
+    .section-title {
+      font-size: clamp(28px, 8vw, 40px);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      color: rgba(255,255,255,0.72);
+      text-align: center;
+      line-height: 1.15;
+    }
+    .section-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.25);
+      text-align: center;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* ─── BOTTOM DOT STRIP ─── */
+    #dot-strip {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 430px;
+      margin: 0 auto;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-bottom: 24px;
+
+      /* gradient scrim */
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%);
+      height: 80px;
+      pointer-events: none;
+    }
+
+    .dots-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: all;
+    }
+
+    .dot-btn {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.22);
+      flex-shrink: 0;
+      cursor: pointer;
+      transition:
+        width  0.22s cubic-bezier(.4,0,.2,1),
+        height 0.22s cubic-bezier(.4,0,.2,1),
+        background 0.22s ease,
+        box-shadow 0.22s ease,
+        opacity 0.22s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* past sections: slightly brighter */
+    .dot-btn.past {
+      background: rgba(255,255,255,0.38);
+    }
+
+    /* active */
+    .dot-btn.active {
+      width: 10px;
+      height: 10px;
+      background: var(--c);
+      box-shadow: 0 0 8px var(--c), 0 0 16px var(--cf);
+    }
+
+    /* ─── BADGE ─── */
+    .badge {
+      position: fixed;
+      top: 62px;
+      right: 12px;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.2);
+      text-transform: uppercase;
+      z-index: 200;
+      background: rgba(255,255,255,0.04);
+      padding: 4px 8px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo">FOURFLOWOS</span>
+  <div class="nav-menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</nav>
+
+<div class="badge">Mobile 1 — Bottom Dots</div>
+
+<!-- SECTIONS (populated by JS) -->
+<div id="sections-wrap"></div>
+
+<!-- BOTTOM DOT STRIP (populated by JS) -->
+<div id="dot-strip">
+  <div class="dots-row" id="dots-row"></div>
+</div>
+
+<script>
+  const SECTIONS = [
+    { id: 'hero',        name: 'Hero',             sub: 'Flow is your nature.',            color: '#E84535' },
+    { id: 'questions',   name: 'Question Rain',     sub: "You've been asking the right questions.", color: '#4E8C73' },
+    { id: 'anchor',      name: 'Timeless Anchor',   sub: 'It has a thousand names.',        color: '#3E6FA3' },
+    { id: 'defs',        name: 'Flow Definitions',  sub: 'A state of Flow.',                color: '#6330A0' },
+    { id: 'convergence', name: 'Convergence',        sub: 'Where things stop competing.',   color: '#E84535' },
+    { id: 'dimensions',  name: 'Dimensions',         sub: 'Alignment has a structure.',      color: '#4E8C73' },
+    { id: 'unique',      name: 'Unique Stack',       sub: 'Your alignment is yours alone.',  color: '#3E6FA3' },
+    { id: 'closing',     name: 'Closing',            sub: 'Find it where you are.',          color: '#6330A0' },
+  ];
+
+  // Build sections
+  const wrap = document.getElementById('sections-wrap');
+  SECTIONS.forEach((s, i) => {
+    const el = document.createElement('section');
+    el.className = 'section';
+    el.id = `sec-${i}`;
+    el.innerHTML = `
+      <p class="section-num">0${i+1}&thinsp;/&thinsp;08</p>
+      <h2 class="section-title">${s.name}</h2>
+      <p class="section-sub">${s.sub}</p>
+    `;
+    wrap.appendChild(el);
+  });
+
+  // Build dots
+  const dotsRow = document.getElementById('dots-row');
+  const dots = [];
+  SECTIONS.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot-btn';
+    d.style.setProperty('--c', s.color);
+    d.style.setProperty('--cf', s.color + '38');
+    d.addEventListener('click', () => {
+      document.getElementById(`sec-${i}`).scrollIntoView({ behavior: 'smooth' });
+    });
+    dotsRow.appendChild(d);
+    dots.push(d);
+  });
+
+  // Active tracking
+  let active = 0;
+  function setActive(idx) {
+    if (idx === active && dots[active].classList.contains('active')) return;
+    dots.forEach((d, i) => {
+      d.classList.remove('active', 'past');
+      if (i < idx) d.classList.add('past');
+    });
+    dots[idx].classList.add('active');
+    active = idx;
+  }
+  setActive(0);
+
+  function onScroll() {
+    const midY = window.scrollY + window.innerHeight / 2;
+    let best = 0, bestDist = Infinity;
+    SECTIONS.forEach((_, i) => {
+      const el = document.getElementById(`sec-${i}`);
+      const center = el.offsetTop + el.offsetHeight / 2;
+      const d = Math.abs(midY - center);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    setActive(best);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
+</html>

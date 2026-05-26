@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desktop 2 — Chapter Marks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --coral:    #E84535;
+      --sage:     #4E8C73;
+      --steel:    #3E6FA3;
+      --amethyst: #6330A0;
+      --bg:       #0a0a0a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: rgba(255,255,255,0.8);
+      font-family: 'Inter', -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 56px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+    .nav-logo {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.9);
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── SECTIONS ─── */
+    .section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      padding: 80px 120px 40px;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .section-num {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.18);
+      text-transform: uppercase;
+    }
+    .section-title {
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      color: rgba(255,255,255,0.72);
+      text-align: center;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.25);
+      margin-top: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── CHAPTER MARKS ─── */
+    #chapter-marks {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .mark-row {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 6px 0;
+      position: relative;
+    }
+
+    /* left border accent */
+    .mark-accent {
+      width: 2px;
+      height: 22px;
+      background: var(--c);
+      border-radius: 1px;
+      flex-shrink: 0;
+      transform: scaleY(0);
+      transform-origin: center;
+      transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+    }
+
+    .mark-row.active .mark-accent {
+      transform: scaleY(1);
+    }
+
+    /* abbreviation */
+    .mark-abbr {
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+      margin-left: 7px;
+      width: 18px;
+      transition: color 0.18s ease;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .mark-row.active .mark-abbr {
+      color: rgba(255,255,255,0.75);
+    }
+
+    .mark-row:hover .mark-abbr {
+      color: rgba(255,255,255,0.5);
+    }
+
+    .mark-row.active:hover .mark-abbr {
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* expanded full name — slides in on hover */
+    .mark-name {
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+      margin-left: 10px;
+      opacity: 0;
+      max-width: 0;
+      overflow: hidden;
+      transition: opacity 0.18s ease, max-width 0.22s cubic-bezier(.4,0,.2,1);
+      pointer-events: none;
+    }
+
+    .mark-row.active .mark-name {
+      color: rgba(255,255,255,0.72);
+    }
+
+    /* show on hover of individual row */
+    .mark-row:hover .mark-name {
+      opacity: 1;
+      max-width: 140px;
+    }
+
+    /* also show active label always */
+    .mark-row.active .mark-name {
+      opacity: 1;
+      max-width: 140px;
+    }
+
+    /* ─── BADGE ─── */
+    .badge {
+      position: fixed;
+      top: 68px;
+      right: 20px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.2);
+      text-transform: uppercase;
+      z-index: 200;
+      background: rgba(255,255,255,0.04);
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo">FOURFLOWOS</span>
+  <ul class="nav-links">
+    <li><a href="#">How It Works</a></li>
+    <li><a href="#">Framework</a></li>
+    <li><a href="#">Work Together</a></li>
+  </ul>
+</nav>
+
+<div class="badge">Desktop 2 — Chapter Marks</div>
+
+<!-- CHAPTER MARKS (populated by JS) -->
+<div id="chapter-marks"></div>
+
+<!-- SECTIONS (populated by JS) -->
+<div id="sections-wrap"></div>
+
+<script>
+  const SECTIONS = [
+    { id: 'hero',        abbr: 'HE', name: 'Hero',             sub: 'Flow is your nature. Find it where you are.',      color: '#E84535' },
+    { id: 'questions',   abbr: 'QR', name: 'Question Rain',     sub: "You've been asking the right questions.",          color: '#4E8C73' },
+    { id: 'anchor',      abbr: 'TA', name: 'Timeless Anchor',   sub: 'It has a thousand names.',                        color: '#3E6FA3' },
+    { id: 'defs',        abbr: 'FD', name: 'Flow Definitions',  sub: 'A state of Flow.',                                color: '#6330A0' },
+    { id: 'convergence', abbr: 'CO', name: 'Convergence',        sub: 'Where productivity, wellness, meaning align.',    color: '#E84535' },
+    { id: 'dimensions',  abbr: 'DI', name: 'Dimensions',         sub: 'That alignment has a structure.',                 color: '#4E8C73' },
+    { id: 'unique',      abbr: 'US', name: 'Unique Stack',       sub: 'Your alignment is yours alone.',                  color: '#3E6FA3' },
+    { id: 'closing',     abbr: 'CL', name: 'Closing',            sub: 'Find it where you are.',                          color: '#6330A0' },
+  ];
+
+  // Build sections
+  const wrap = document.getElementById('sections-wrap');
+  SECTIONS.forEach((s, i) => {
+    const el = document.createElement('section');
+    el.className = 'section';
+    el.id = `sec-${i}`;
+    el.innerHTML = `
+      <p class="section-num">0${i+1}&thinsp;/&thinsp;08</p>
+      <h2 class="section-title">${s.name}</h2>
+      <p class="section-sub">${s.sub}</p>
+    `;
+    wrap.appendChild(el);
+  });
+
+  // Build chapter marks
+  const marksEl = document.getElementById('chapter-marks');
+  const markRows = [];
+  SECTIONS.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'mark-row';
+    row.style.setProperty('--c', s.color);
+    row.innerHTML = `
+      <div class="mark-accent"></div>
+      <span class="mark-abbr">${s.abbr}</span>
+      <span class="mark-name">${s.name}</span>
+    `;
+    row.addEventListener('click', () => {
+      document.getElementById(`sec-${i}`).scrollIntoView({ behavior: 'smooth' });
+    });
+    marksEl.appendChild(row);
+    markRows.push(row);
+  });
+
+  // Active tracking
+  let active = 0;
+  function setActive(idx) {
+    if (idx === active) return;
+    markRows[active].classList.remove('active');
+    active = idx;
+    markRows[active].classList.add('active');
+  }
+  markRows[0].classList.add('active');
+
+  function onScroll() {
+    const midY = window.scrollY + window.innerHeight / 2;
+    let best = 0, bestDist = Infinity;
+    SECTIONS.forEach((_, i) => {
+      const el = document.getElementById(`sec-${i}`);
+      const center = el.offsetTop + el.offsetHeight / 2;
+      const d = Math.abs(midY - center);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    setActive(best);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
+</html>

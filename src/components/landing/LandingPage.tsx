@@ -13,6 +13,7 @@ import UniqueStackSection from './UniqueStackSection';
 import ClosingSection from './ClosingSection';
 import Footer from './Footer';
 import { useReelScroll } from '@/hooks/useReelScroll';
+import SectionIndicator from '@/components/nav/SectionIndicator';
 
 /**
  * Wraps each section with scroll-driven opacity so sections crossfade as the
@@ -66,6 +67,7 @@ export default function LandingPage() {
   return (
     <div className="bg-[#0a0a0a]">
       <LandingNav />
+      <SectionIndicator />
 
       {/* 1. Hero — Flow is your nature. Find it where you are. */}
       <ReelSection>

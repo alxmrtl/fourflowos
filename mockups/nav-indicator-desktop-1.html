@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desktop 1 — Dot Rail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --coral:    #E84535;
+      --sage:     #4E8C73;
+      --steel:    #3E6FA3;
+      --amethyst: #6330A0;
+      --bg:       #0a0a0a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: rgba(255,255,255,0.8);
+      font-family: 'Inter', -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 56px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+    .nav-logo {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.9);
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── SECTIONS ─── */
+    .section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      padding: 80px 120px 40px;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .section-num {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.18);
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+    .section-title {
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      color: rgba(255,255,255,0.72);
+      text-align: center;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.25);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      margin-top: 8px;
+    }
+
+    /* ─── DOT RAIL ─── */
+    #dot-rail {
+      position: fixed;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .rail-inner {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    /* vertical track behind dots */
+    .rail-track {
+      position: absolute;
+      left: 4px;          /* half of 9px max dot width */
+      top: 14px;          /* start below first dot center */
+      bottom: 14px;
+      width: 1px;
+      background: rgba(255,255,255,0.07);
+      transform: translateX(-50%);
+    }
+
+    .dot-row {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 10px 0;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      flex-shrink: 0;
+      transition: width 0.22s cubic-bezier(.4,0,.2,1),
+                  height 0.22s cubic-bezier(.4,0,.2,1),
+                  background 0.22s ease,
+                  box-shadow 0.22s ease;
+    }
+
+    .dot-row.active .dot {
+      width: 9px;
+      height: 9px;
+      background: var(--c);
+      box-shadow: 0 0 8px var(--c), 0 0 18px var(--cf);
+    }
+
+    /* label — hidden by default, visible on rail hover */
+    .dot-label {
+      margin-left: 12px;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.45);
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    .dot-row.active .dot-label {
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* show labels when hovering the entire rail */
+    #dot-rail:hover .dot-label {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* individual row hover brightens its own label */
+    .dot-row:hover .dot-label {
+      color: rgba(255,255,255,0.85) !important;
+    }
+    .dot-row:hover .dot {
+      background: rgba(255,255,255,0.5);
+    }
+    .dot-row.active:hover .dot {
+      background: var(--c);
+    }
+
+    /* ─── BADGE ─── */
+    .badge {
+      position: fixed;
+      top: 68px;
+      right: 20px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.2);
+      text-transform: uppercase;
+      z-index: 200;
+      background: rgba(255,255,255,0.04);
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo">FOURFLOWOS</span>
+  <ul class="nav-links">
+    <li><a href="#">How It Works</a></li>
+    <li><a href="#">Framework</a></li>
+    <li><a href="#">Work Together</a></li>
+  </ul>
+</nav>
+
+<div class="badge">Desktop 1 — Dot Rail</div>
+
+<!-- DOT RAIL (populated by JS) -->
+<div id="dot-rail">
+  <div class="rail-inner" id="rail-inner">
+    <div class="rail-track"></div>
+  </div>
+</div>
+
+<!-- SECTIONS (populated by JS) -->
+<div id="sections-wrap"></div>
+
+<script>
+  const SECTIONS = [
+    { id: 'hero',       name: 'Hero',             sub: 'Flow is your nature. Find it where you are.',      color: '#E84535' },
+    { id: 'questions',  name: 'Question Rain',     sub: "You've been asking the right questions.",          color: '#4E8C73' },
+    { id: 'anchor',     name: 'Timeless Anchor',   sub: 'It has a thousand names.',                        color: '#3E6FA3' },
+    { id: 'defs',       name: 'Flow Definitions',  sub: 'A state of Flow.',                                color: '#6330A0' },
+    { id: 'convergence',name: 'Convergence',        sub: 'Where productivity, wellness, meaning align.',    color: '#E84535' },
+    { id: 'dimensions', name: 'Dimensions',         sub: 'That alignment has a structure.',                 color: '#4E8C73' },
+    { id: 'unique',     name: 'Unique Stack',       sub: 'Your alignment is yours alone.',                  color: '#3E6FA3' },
+    { id: 'closing',    name: 'Closing',            sub: 'Find it where you are.',                          color: '#6330A0' },
+  ];
+
+  // Build sections
+  const wrap = document.getElementById('sections-wrap');
+  SECTIONS.forEach((s, i) => {
+    const el = document.createElement('section');
+    el.className = 'section';
+    el.id = `sec-${i}`;
+    el.innerHTML = `
+      <p class="section-num">0${i+1}&thinsp;/&thinsp;08</p>
+      <h2 class="section-title">${s.name}</h2>
+      <p class="section-sub">${s.sub}</p>
+    `;
+    wrap.appendChild(el);
+  });
+
+  // Build dot rail
+  const railInner = document.getElementById('rail-inner');
+  const dotRows = [];
+  SECTIONS.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'dot-row';
+    row.style.setProperty('--c', s.color);
+    row.style.setProperty('--cf', s.color + '35');
+    row.innerHTML = `<div class="dot"></div><span class="dot-label">${s.name}</span>`;
+    row.addEventListener('click', () => {
+      document.getElementById(`sec-${i}`).scrollIntoView({ behavior: 'smooth' });
+    });
+    railInner.appendChild(row);
+    dotRows.push(row);
+  });
+
+  // Active tracking
+  let active = 0;
+  function setActive(idx) {
+    if (idx === active) return;
+    dotRows[active].classList.remove('active');
+    active = idx;
+    dotRows[active].classList.add('active');
+  }
+  dotRows[0].classList.add('active');
+
+  function onScroll() {
+    const midY = window.scrollY + window.innerHeight / 2;
+    let best = 0, bestDist = Infinity;
+    SECTIONS.forEach((_, i) => {
+      const el = document.getElementById(`sec-${i}`);
+      const center = el.offsetTop + el.offsetHeight / 2;
+      const d = Math.abs(midY - center);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    setActive(best);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
+</html>
