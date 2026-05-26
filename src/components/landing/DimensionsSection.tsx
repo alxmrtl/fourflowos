@@ -155,7 +155,8 @@ export default function DimensionsSection() {
                   className="relative rounded-2xl overflow-hidden cursor-pointer group h-[156px] md:h-[300px]"
                   style={{
                     background: `linear-gradient(135deg, ${dimension.color}08, ${dimension.color}03)`,
-                    border: `1px solid ${dimension.color}20`,
+                    border: `1px solid ${dimension.color}45`,
+                    boxShadow: `0 0 18px ${dimension.color}18`,
                   }}
                   whileHover={{ scale: 1.01 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}

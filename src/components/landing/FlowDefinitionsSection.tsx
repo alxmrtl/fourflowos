@@ -77,7 +77,7 @@ function FourFlowBridge() {
     <motion.button
       ref={ref}
       onClick={() => scrollToNext(ref.current)}
-      className="group w-fit mt-5 md:mt-10 flex flex-col items-start gap-2 backdrop-blur-sm bg-white/[0.04] border border-white/[0.1] rounded-2xl px-6 py-2.5 md:px-8 md:py-4 shadow-[0_0_32px_rgba(122,77,164,0.15)] hover:shadow-[0_0_48px_rgba(122,77,164,0.28)] hover:bg-white/[0.07] hover:border-white/[0.18] transition-all duration-300 cursor-pointer"
+      className="group w-fit mt-5 md:mt-10 flex flex-col items-start gap-2 backdrop-blur-sm bg-white/[0.07] border border-white/[0.18] rounded-2xl px-6 py-2.5 md:px-8 md:py-4 shadow-[0_0_36px_rgba(122,77,164,0.28)] hover:shadow-[0_0_56px_rgba(122,77,164,0.45)] hover:bg-white/[0.11] hover:border-white/[0.28] transition-all duration-300 cursor-pointer"
       initial={{ opacity: 0, y: 16 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 1.0, ease: 'easeOut', delay: 0.3 }}
@@ -85,13 +85,15 @@ function FourFlowBridge() {
       <div className="font-display italic text-white/60 md:text-white/40 text-[12px] tracking-wide group-hover:text-white/70 md:group-hover:text-white/55 transition-colors">
         fourflowOS · n.
       </div>
-      <div
-        className="font-display italic text-base md:text-lg leading-[1.3] bg-clip-text text-transparent"
-        style={{ backgroundImage: GRADIENTS.textWide }}
-      >
-        Optimal experience through alignment.
+      <div className="flex items-center gap-3">
+        <div
+          className="font-display italic text-base md:text-lg leading-[1.3] bg-clip-text text-transparent"
+          style={{ backgroundImage: GRADIENTS.textWide }}
+        >
+          Optimal experience through alignment.
+        </div>
+        <span className="text-white/55 md:text-white/35 group-hover:text-white/70 md:group-hover:text-white/60 transition-colors flex-shrink-0">↓</span>
       </div>
-      <span className="text-white/55 md:text-white/35 group-hover:text-white/70 md:group-hover:text-white/60 transition-colors mt-1">↓</span>
     </motion.button>
   );
 }
