@@ -137,7 +137,7 @@ export default function UniqueStackSection() {
     for (let i = 0; i < N; i++) {
       const c = document.createElementNS(SVG_NS, 'circle');
       const k = KEYS[i];
-      c.setAttribute('r', String(7 * k.weight));
+      c.setAttribute('r', String(10 * k.weight));
       c.setAttribute('fill', k.color);
       c.setAttribute('filter', 'url(#uniqueGlow)');
       c.setAttribute('opacity', '0.92');
@@ -172,7 +172,7 @@ export default function UniqueStackSection() {
       const t = (now - breatheStart) / 1000;
       dots.forEach((d, i) => {
         const k = KEYS[i];
-        const baseR = 7 * k.weight;
+        const baseR = 10 * k.weight;
         const pulse = 1 + 0.12 * Math.sin(t * 1.2 + i * 0.5);
         d.setAttribute('r', String(baseR * pulse));
         d.setAttribute('opacity', String(0.75 + 0.2 * Math.sin(t * 0.9 + i * 0.7)));
@@ -313,7 +313,7 @@ export default function UniqueStackSection() {
       </div>
 
       <div className="relative max-w-3xl mx-auto px-6">
-        <div className="relative w-full aspect-[720/500] max-h-[50vh]">
+        <div className="relative w-full aspect-[720/500] max-h-[65vh]">
           <svg
             ref={svgRef}
             viewBox={`0 0 ${W} ${H}`}
@@ -347,10 +347,13 @@ export default function UniqueStackSection() {
 
           <div
             ref={hintRef}
-            className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-3 flex items-center gap-2 font-display italic text-white/50 text-sm transition-opacity duration-700"
+            className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-4 flex flex-col items-center transition-opacity duration-700"
           >
-            <span className="inline-block w-3 h-3 rounded-full border border-white/30 animate-ping" />
-            tap anywhere to re-align
+            <div className="relative w-10 h-10 flex items-center justify-center">
+              <span className="absolute w-10 h-10 rounded-full border border-white/15 animate-ping" style={{ animationDuration: '1.8s' }} />
+              <span className="absolute w-5 h-5 rounded-full border border-white/25 animate-ping" style={{ animationDuration: '1.8s', animationDelay: '0.35s' }} />
+              <span className="w-2.5 h-2.5 rounded-full bg-white/40" />
+            </div>
           </div>
         </div>
       </div>

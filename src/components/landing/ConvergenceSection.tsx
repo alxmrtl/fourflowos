@@ -6,7 +6,7 @@ import PrincipleBridge from './PrincipleBridge';
 
 const CX = 340;
 const CY = 240;
-const R = 130;
+const R = 155;
 
 // Continuous loop phase durations (ms)
 const T_ORBIT = 5000;
@@ -90,8 +90,8 @@ export default function ConvergenceSection() {
         const y = orbitY + (CY - orbitY) * blend;
         CIRCS[i].setAttribute('cx', String(x));
         CIRCS[i].setAttribute('cy', String(y));
-        CIRCS[i].setAttribute('r', String(85 - 18 * blend));
-        trackLabel(LABELS[i], CIRCS[i], 22);
+        CIRCS[i].setAttribute('r', String(105 - 24 * blend));
+        trackLabel(LABELS[i], CIRCS[i], 28);
         LABELS[i].setAttribute('opacity', String(0.85 * (1 - blend)));
       }
 
@@ -142,7 +142,7 @@ export default function ConvergenceSection() {
       </div>
 
       <div className="relative max-w-3xl mx-auto px-6">
-        <div className="w-full aspect-[680/480] max-h-[55vh]">
+        <div className="w-full aspect-[680/480] max-h-[68vh]">
           <svg ref={svgRef} viewBox="0 0 680 480" className="w-full h-full" aria-hidden="true">
             <defs>
               <radialGradient id="convSelfGrad" cx="0.5" cy="0.5" r="0.5">
@@ -175,13 +175,13 @@ export default function ConvergenceSection() {
               </filter>
             </defs>
 
-            <circle ref={ringRef} cx={CX} cy={CY} r="92" fill="none" stroke="url(#convRingStroke)" strokeWidth="1" opacity="0" />
+            <circle ref={ringRef} cx={CX} cy={CY} r="112" fill="none" stroke="url(#convRingStroke)" strokeWidth="1" opacity="0" />
 
-            <circle ref={c1Ref} cx="200" cy="240" r="85" fill="url(#convSelfGrad)" filter="url(#convBlur)" />
-            <circle ref={c2Ref} cx="340" cy="140" r="85" fill="url(#convStoryGrad)" filter="url(#convBlur)" />
-            <circle ref={c3Ref} cx="480" cy="240" r="85" fill="url(#convSpiritGrad)" filter="url(#convBlur)" />
+            <circle ref={c1Ref} cx="200" cy="240" r="105" fill="url(#convSelfGrad)" filter="url(#convBlur)" />
+            <circle ref={c2Ref} cx="340" cy="140" r="105" fill="url(#convStoryGrad)" filter="url(#convBlur)" />
+            <circle ref={c3Ref} cx="480" cy="240" r="105" fill="url(#convSpiritGrad)" filter="url(#convBlur)" />
 
-            <circle ref={cFRef} cx={CX} cy={CY} r="90" fill="url(#convFlowGrad)" opacity="0" />
+            <circle ref={cFRef} cx={CX} cy={CY} r="110" fill="url(#convFlowGrad)" opacity="0" />
 
             <text
               ref={l1Ref}
@@ -190,7 +190,7 @@ export default function ConvergenceSection() {
               dominantBaseline="middle"
               fill="#F0EDE8"
               fontFamily="Inter, system-ui, sans-serif"
-              fontSize="20"
+              fontSize="26"
               letterSpacing="1.5"
               opacity="0.85"
             >
@@ -203,7 +203,7 @@ export default function ConvergenceSection() {
               dominantBaseline="middle"
               fill="#F0EDE8"
               fontFamily="Inter, system-ui, sans-serif"
-              fontSize="20"
+              fontSize="26"
               letterSpacing="1.5"
               opacity="0.85"
             >
@@ -216,7 +216,7 @@ export default function ConvergenceSection() {
               dominantBaseline="middle"
               fill="#F0EDE8"
               fontFamily="Inter, system-ui, sans-serif"
-              fontSize="20"
+              fontSize="26"
               letterSpacing="1.5"
               opacity="0.85"
             >
@@ -230,7 +230,7 @@ export default function ConvergenceSection() {
               fill="#F0EDE8"
               fontFamily="var(--font-display, 'EB Garamond'), Georgia, serif"
               fontStyle="italic"
-              fontSize="52"
+              fontSize="64"
               opacity="0"
             >
               flow

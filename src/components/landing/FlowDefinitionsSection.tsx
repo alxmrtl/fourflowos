@@ -50,18 +50,18 @@ function Entry({ num, pos, text, delay }: { num: number; pos: string; text: stri
   return (
     <motion.div
       ref={ref}
-      className="flex gap-3 md:gap-5 py-2.5 md:py-6 border-b border-dashed border-white/[0.06] last:border-b-0"
+      className="flex gap-3 md:gap-4 py-2.5 md:py-4 border-b border-dashed border-white/[0.06] last:border-b-0"
       initial={{ opacity: 0, y: 16, filter: 'blur(8px)' }}
       animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
       transition={{ duration: 1.6, ease: 'easeOut', delay }}
     >
-      <div className="font-display text-sm md:text-xl text-white/45 w-5 md:w-7 flex-shrink-0 leading-[1.55]">{num}</div>
+      <div className="font-display text-sm md:text-xl text-white/45 w-5 md:w-6 flex-shrink-0 leading-[1.55]">{num}</div>
       <div className="flex-1 min-w-0">
         <div className="hidden md:block font-display italic text-white/45 text-[13px] mb-1.5 tracking-wide">{pos}</div>
         <div className="md:hidden font-display text-sm leading-[1.5] text-white/85">
           <span className="italic text-white/40 mr-1">{pos} </span>{text}
         </div>
-        <div className="hidden md:block font-display md:text-xl leading-[1.55] text-white/90">
+        <div className="hidden md:block font-display md:text-base leading-[1.55] text-white/90">
           {text}
         </div>
       </div>
@@ -77,7 +77,7 @@ function FourFlowBridge() {
     <motion.button
       ref={ref}
       onClick={() => scrollToNext(ref.current)}
-      className="group mx-auto w-fit mt-5 md:mt-14 flex flex-col items-center gap-2 backdrop-blur-sm bg-white/[0.04] border border-white/[0.1] rounded-2xl px-6 py-2.5 md:px-10 md:py-5 shadow-[0_0_32px_rgba(122,77,164,0.15)] hover:shadow-[0_0_48px_rgba(122,77,164,0.28)] hover:bg-white/[0.07] hover:border-white/[0.18] transition-all duration-300 cursor-pointer"
+      className="group w-fit mt-5 md:mt-10 flex flex-col items-start gap-2 backdrop-blur-sm bg-white/[0.04] border border-white/[0.1] rounded-2xl px-6 py-2.5 md:px-8 md:py-4 shadow-[0_0_32px_rgba(122,77,164,0.15)] hover:shadow-[0_0_48px_rgba(122,77,164,0.28)] hover:bg-white/[0.07] hover:border-white/[0.18] transition-all duration-300 cursor-pointer"
       initial={{ opacity: 0, y: 16 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 1.0, ease: 'easeOut', delay: 0.3 }}
@@ -86,7 +86,7 @@ function FourFlowBridge() {
         fourflowOS · n.
       </div>
       <div
-        className="font-display italic text-lg md:text-3xl leading-[1.3] bg-clip-text text-transparent"
+        className="font-display italic text-base md:text-lg leading-[1.3] bg-clip-text text-transparent"
         style={{ backgroundImage: GRADIENTS.textWide }}
       >
         Optimal experience through alignment.
@@ -102,7 +102,7 @@ export default function FlowDefinitionsSection() {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="relative max-w-3xl mx-auto px-6">
-        <h2 className="text-center font-display text-3xl md:text-5xl font-normal text-white leading-[1.15] mb-4 md:mb-16">
+        <h2 className="text-center font-display text-3xl md:text-5xl font-normal text-white leading-[1.15] mb-4 md:mb-10">
           A state of{' '}
           <span
             className="italic bg-clip-text text-transparent"
@@ -113,7 +113,7 @@ export default function FlowDefinitionsSection() {
           .
         </h2>
 
-        <div className="relative bg-white/[0.015] border border-white/[0.08] p-4 md:p-14">
+        <div className="relative bg-white/[0.015] border border-white/[0.08] p-4 md:p-8">
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -123,7 +123,7 @@ export default function FlowDefinitionsSection() {
 
           <div className="relative">
             <div className="flex items-baseline gap-4 mb-3 md:mb-2 pb-3 md:pb-0 border-b md:border-b-0 border-white/[0.08]">
-              <span className="font-display text-3xl md:text-6xl text-white font-medium tracking-tight">
+              <span className="font-display text-3xl md:text-4xl text-white font-medium tracking-tight">
                 flow
               </span>
               <span className="font-display italic text-white/45 text-xl">/floʊ/</span>
@@ -145,7 +145,7 @@ export default function FlowDefinitionsSection() {
         </div>
       </div>
 
-      <div className="relative max-w-3xl mx-auto px-6 flex justify-center">
+      <div className="relative max-w-3xl mx-auto px-6 flex justify-start">
         <FourFlowBridge />
       </div>
 
