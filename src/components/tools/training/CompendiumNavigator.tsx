@@ -555,13 +555,13 @@ export default function CompendiumNavigator() {
         </div>
 
         {/* ── Content card ── */}
-        <div className="bg-[#F6F3EF] rounded-t-[28px] flex flex-col min-h-[48vh]">
+        <div className="bg-[#111111] rounded-t-[28px] flex flex-col min-h-[48vh]">
 
           {/* Label + counter */}
           <div className="flex items-center justify-between px-4 pt-4 pb-3 flex-shrink-0">
-            <p className="text-[10px] font-black tracking-[0.12em] uppercase text-neutral/40">Techniques</p>
+            <p className="text-[10px] font-black tracking-[0.12em] uppercase text-white/35">Techniques</p>
             {mobileItems.length > 0 && (
-              <span className="text-[10px] font-semibold text-neutral/30 bg-black/[0.06] px-3 py-1 rounded-full">
+              <span className="text-[10px] font-semibold text-white/30 bg-white/[0.06] px-3 py-1 rounded-full">
                 {clampedMobileItemIndex + 1} / {mobileItems.length}
               </span>
             )}
@@ -571,7 +571,7 @@ export default function CompendiumNavigator() {
           <div className="flex-1 relative flex flex-col min-h-0">
             {mobileItems.length === 0 ? (
               <div className="flex-1 flex items-center justify-center px-8 text-center">
-                <p className="text-sm text-neutral/40">
+                <p className="text-sm text-white/35">
                   No techniques for this quality yet.
                 </p>
               </div>
@@ -592,12 +592,12 @@ export default function CompendiumNavigator() {
                         {currentItem.title}
                       </h3>
                       {currentItem.definition && (
-                        <p className="text-[13px] leading-relaxed text-neutral/75">
+                        <p className="text-[13px] leading-relaxed text-white/65">
                           {currentItem.definition}
                         </p>
                       )}
                       <div className="mt-4">
-                        <InlineCardContent cardId={currentItem.id} dark={false} headingClass={c.label} />
+                        <InlineCardContent cardId={currentItem.id} dark={true} headingClass={c.label} />
                       </div>
                     </div>
                   )}
@@ -637,7 +637,7 @@ export default function CompendiumNavigator() {
           </div>
 
           {/* Dot indicators + bottom nav */}
-          <div className="flex items-center justify-center gap-1.5 px-4 py-4 flex-shrink-0 border-t border-black/[0.06]">
+          <div className="flex items-center justify-center gap-1.5 px-4 py-4 flex-shrink-0 border-t border-white/[0.06]">
             {mobileItems.map((_, i) => (
               <button
                 key={i}
@@ -646,7 +646,7 @@ export default function CompendiumNavigator() {
                   h-[5px] rounded-full transition-all duration-200
                   ${i === clampedMobileItemIndex
                     ? `w-4 ${c.dot}`
-                    : 'w-[5px] bg-black/[0.12]'
+                    : 'w-[5px] bg-white/[0.12]'
                   }
                 `}
               />
