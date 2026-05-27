@@ -6,24 +6,19 @@ import { GRADIENTS } from '@/styles/brand-colors';
 import PrincipleBridge from './PrincipleBridge';
 
 const QUESTIONS = [
-  // productivity
-  'Why does my best feel so far from my baseline?',
-  'What am I putting off that actually matters?',
-  'What does deep work feel like again?',
-  "What's between me and the work that matters?",
-  // wellness
-  'When did this last feel easy?',
-  'What lights me up without burning me out?',
-  "What's the cost of pushing through?",
-  'When do I feel most like myself?',
-  // meaning
   'What makes me come alive?',
+  'What am I putting off that actually matters?',
+  'When do I feel most like myself?',
+  "Why can't I just focus?",
   'What am I doing this for?',
-  'What would feel like enough?',
-  'What matters that I keep deferring?',
+  'What lights me up without wearing me out?',
+  'What do I actually want?',
+  'What am I waiting for?',
+  'When did I stop trusting myself?',
+  "What's pulling me forward?",
 ];
 
-const X_OFFSETS = [0, -24, 18, -32, 28, 8, -18, 32, -8, 22, -28, 12];
+const X_OFFSETS = [0, -24, 18, -32, 28, 8, -18, 32, -8, 22];
 
 interface RainItem {
   id: number;
@@ -108,12 +103,12 @@ export default function QuestionRainSection() {
       />
       <div className="relative max-w-3xl mx-auto px-6">
         <h2 className="text-center font-display text-3xl md:text-5xl font-normal text-white leading-[1.15] mb-10 md:mb-14">
-          You&apos;ve been asking the{' '}
+          You already know{' '}
           <span
             className="italic bg-clip-text text-transparent"
             style={{ backgroundImage: GRADIENTS.textWide }}
           >
-            right questions
+            there&apos;s more
           </span>
           .
         </h2>
