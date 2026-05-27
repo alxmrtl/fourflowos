@@ -349,7 +349,8 @@ function ScrollingCarousel() {
       el.style.opacity = (proximity * 0.95).toFixed(3);
     });
 
-    // Blur-proximity on cards
+    // Blur-proximity on cards (desktop only — blur hurts readability on mobile)
+    const isDesktop = window.innerWidth >= 768;
     const containerRect = containerRef.current.getBoundingClientRect();
     const containerCenter = containerRect.left + containerRect.width / 2;
     const activationRadius = 380;
@@ -358,7 +359,7 @@ function ScrollingCarousel() {
       const cardCenter = rect.left + rect.width / 2;
       const dist = Math.abs(cardCenter - containerCenter);
       const proximity = Math.max(0, 1 - Math.pow(dist / activationRadius, 2));
-      el.style.filter  = `blur(${((1 - proximity) * 6).toFixed(2)}px)`;
+      el.style.filter  = isDesktop ? `blur(${((1 - proximity) * 6).toFixed(2)}px)` : '';
       el.style.opacity = (0.2 + proximity * 0.8).toFixed(3);
     });
 

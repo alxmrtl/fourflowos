@@ -114,7 +114,7 @@ export default function HeroSectionV2() {
           }}
         >
           <Link
-            href="/apps"
+            href="https://fourflowos.com/me"
             className="font-sans inline-flex items-center gap-2 px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105"
             style={{ background: GRADIENTS.primaryCta }}
           >

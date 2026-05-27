@@ -62,7 +62,7 @@ export default function ClosingSection() {
         </h2>
 
         <div className="flex flex-wrap justify-center items-start gap-12 md:gap-24">
-          <Door href="/apps" label="Start your practice" sub="on your own" color={STEEL} />
+          <Door href="https://fourflowos.com/me" label="Start your practice" sub="on your own" color={STEEL} />
           <Door href="/together" label="Work together" sub="with a guide" color={SAGE} />
         </div>
 
