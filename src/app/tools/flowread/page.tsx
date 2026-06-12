@@ -1,10 +1,15 @@
 import FlowRead from '@/components/tools/flowread/FlowRead';
+import ToolShell from '@/components/ui/ToolShell';
 
 export const metadata = {
   title: 'FlowRead — Speed Reading Trainer | FourFlowOS',
-  description: 'Train your reading speed with RSVP, phrase chunking, and line pacing techniques. Track your progress and build faster reading habits.',
+  description: 'Train absorption at full attention with RSVP, phrase chunking, and line pacing. Opens the Open Mind Key.',
 };
 
 export default function FlowReadPage() {
-  return <FlowRead />;
+  return (
+    <ToolShell toolId="flowread" standalone>
+      <FlowRead />
+    </ToolShell>
+  );
 }

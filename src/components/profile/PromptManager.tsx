@@ -171,7 +171,7 @@ export default function PromptManager() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-6 md:p-10">
+    <div className="min-h-screen bg-ground p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -264,7 +264,7 @@ export default function PromptManager() {
                       min={500}
                       max={4000}
                       step={100}
-                      className="w-full h-1.5 rounded-full appearance-none bg-white/10 accent-[#4E8C73] cursor-pointer"
+                      className="w-full h-1.5 rounded-full appearance-none bg-white/10 accent-space cursor-pointer"
                     />
                     <p className="text-xs text-gray-500 mt-1">{tokenLabel(formData.max_tokens)}</p>
                   </div>

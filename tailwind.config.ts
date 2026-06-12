@@ -1,10 +1,13 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
+import { TAILWIND_COLORS, TYPE_SCALE, DURATION_MS, EASE_FLOW_CSS, CSS_VARS } from "./src/styles/tokens";
 
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/data/**/*.{js,ts}",
   ],
   theme: {
     extend: {
@@ -12,42 +15,22 @@ const config: Config = {
         sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
         display: ["var(--font-cormorant)", "Georgia", "serif"],
       },
-      colors: {
-        // FourFlow Brand Colors — keep in sync with src/styles/brand-colors.ts
-        self: {
-          DEFAULT: "#E84535",
-          light: "#F05A49",
-          dark: "#C4311F",
-        },
-        space: {
-          DEFAULT: "#4E8C73",
-          light: "#6AAF8E",
-          dark: "#37634F",
-        },
-        story: {
-          DEFAULT: "#3E6FA3",
-          light: "#5A8DC2",
-          dark: "#2B5080",
-        },
-        spirit: {
-          DEFAULT: "#6330A0",
-          light: "#8248C8",
-          dark: "#461F78",
-        },
-        neutral: {
-          DEFAULT: "#333333",
-          light: "#666666",
-          dark: "#1A1A1A",
-        },
-        background: {
-          DEFAULT: "#F5F5F5",
-          light: "#FFFFFF",
-          dark: "#E8E8E8",
-        },
+      // All color values come from src/styles/tokens.ts — edit there, not here.
+      colors: TAILWIND_COLORS,
+      fontSize: TYPE_SCALE as unknown as Record<string, [string, Record<string, string>]>,
+      transitionDuration: Object.fromEntries(
+        Object.entries(DURATION_MS).map(([k, v]) => [k, `${v}ms`]),
+      ),
+      transitionTimingFunction: {
+        flow: EASE_FLOW_CSS,
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addBase }) => {
+      addBase({ ":root": CSS_VARS });
+    }),
+  ],
 };
 
 export default config;

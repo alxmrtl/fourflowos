@@ -456,7 +456,7 @@ export default function TimelessAnchorSectionV2() {
   const headerInView = useInView(headerRef, { once: true, amount: 0.4 });
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-[#0a0a0a] overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-ground overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         <div ref={headerRef} className="text-center mb-14">
           <motion.h2

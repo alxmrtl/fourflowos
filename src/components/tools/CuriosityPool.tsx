@@ -491,7 +491,7 @@ export default function CuriosityPool({
           className="relative mb-4 rounded-xl border border-white/5 overflow-hidden"
           style={{
             height: containerSize.h,
-            background: 'radial-gradient(ellipse at center, rgba(122,77,164,0.04) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse at center, rgba(99, 48, 160,0.04) 0%, transparent 70%)',
           }}
         >
           {/* SVG connection lines - live tracked */}

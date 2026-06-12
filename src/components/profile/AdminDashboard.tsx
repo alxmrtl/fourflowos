@@ -14,8 +14,8 @@ const STATUS_CONFIG: Record<AssessmentStatus, { label: string; color: string; bg
   processing: { label: 'Intake', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
   session_1_scheduled: { label: 'Intake', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
   session_1_complete: { label: 'Intake', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-  synthesis: { label: 'Profile Ready', color: 'text-[#3E6FA3]', bg: 'bg-[#3E6FA3]/10 border-[#3E6FA3]/20' },
-  session_2_scheduled: { label: 'Profile Ready', color: 'text-[#3E6FA3]', bg: 'bg-[#3E6FA3]/10 border-[#3E6FA3]/20' },
+  synthesis: { label: 'Profile Ready', color: 'text-story', bg: 'bg-story/10 border-story/20' },
+  session_2_scheduled: { label: 'Profile Ready', color: 'text-story', bg: 'bg-story/10 border-story/20' },
   delivered: { label: 'Delivered', color: 'text-green-400', bg: 'bg-green-500/10 border-green-500/20' },
 };
 
@@ -66,7 +66,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-6 md:p-10">
+    <div className="min-h-screen bg-ground p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">

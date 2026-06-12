@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import KeywordPicker from '../intake-ui/KeywordPicker';
 
-const ACCENT = '#7A4DA4';
+const ACCENT = '#6330A0';
 
 const VALUES_WORDS = [
   'integrity', 'freedom', 'depth', 'beauty', 'truth', 'service', 'mastery',

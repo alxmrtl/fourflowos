@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import Image from 'next/image';
 import { CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
+import { COMPENDIUM_SHORT_DESCRIPTION } from '@/data/compendium-meta';
 import type { ToolId } from './useLabState';
 
 // ─── Hydration guard ──────────────────────────────────────────────────────────
@@ -332,8 +333,31 @@ export function CreateIcon({ color, size = 20, active = false }: SectionIconProp
 }
 
 // ─── Section + tool definitions ───────────────────────────────────────────────
+// CANONICAL tool metadata. Every surface (SectionBar, MobileNav, ToolShell
+// headers, standalone routes) reads from here — never redefine labels,
+// descriptions, or icons elsewhere.
+//
+// Adding a tool: (1) extend ToolId + VALID_TOOLS in useLabState.ts,
+// (2) add a ToolDef below, (3) add a case to ToolContent in ActivityArea.tsx,
+// (4) optionally add a standalone route under src/app/tools/<name>/.
 
-export interface ToolDef { id: ToolId; label: string; description: string; icon: React.ReactNode }
+/** A Key this tool trains, shown as a chip in the tool header. */
+export interface KeyTrained { name: string; color: string }
+
+export interface ToolDef {
+  id: ToolId;
+  label: string;
+  /** One-line purpose — header subtitle + nav description. */
+  description: string;
+  iconSrc: string;
+  /** Keys this tool trains (Equip-layer prescription framing). */
+  keysTrained?: KeyTrained[];
+  /** Inner padding the activity window provides ('none' = tool manages its own). */
+  padding: 'none' | 'normal' | 'compact';
+  /** Activity window width. */
+  width: 'normal' | 'wide';
+}
+
 export interface SectionDef {
   id: string;
   label: string;
@@ -353,8 +377,17 @@ export const SECTIONS: SectionDef[] = [
     Icon: CoreIcon,
     Animation: CoreAnim,
     tools: [
-      { id: 'flow-lens',        label: 'Flow Unlock',     description: 'Find your block',        icon: <AppIcon src="/assets/apps/flowunlock-icon.png"  alt="Flow Unlock" /> },
-      { id: 'ancestral-signal', label: 'Timeless Map', description: 'The deep architecture', icon: <AppIcon src="/assets/LOGOS/GROUNDING VALUES.png" alt="Timeless Map" /> },
+      {
+        id: 'flow-lens', label: 'Flow Unlock', description: 'Find your block',
+        iconSrc: '/assets/apps/flowunlock-icon.png',
+        padding: 'normal', width: 'normal',
+      },
+      {
+        id: 'ancestral-signal', label: 'Timeless Map', description: 'What you were born carrying',
+        iconSrc: '/assets/LOGOS/GROUNDING VALUES.png',
+        keysTrained: [{ name: 'Grounding Values', color: AMETHYST }],
+        padding: 'normal', width: 'normal',
+      },
     ],
   },
   {
@@ -365,8 +398,17 @@ export const SECTIONS: SectionDef[] = [
     Icon: ConsumeIcon,
     Animation: ConsumeAnim,
     tools: [
-      { id: 'flowread', label: 'FlowRead', description: 'Focus reading trainer', icon: <AppIcon src="/assets/apps/flowread-icon.png" alt="FlowRead" /> },
-      { id: 'compendium', label: 'FlowCompendium', description: 'Browse 191 flow protocols', icon: <AppIcon src="/assets/LOGOS/OPEN MIND.png" alt="FlowCompendium" /> },
+      {
+        id: 'flowread', label: 'FlowRead', description: 'Read at full attention',
+        iconSrc: '/assets/apps/flowread-icon.png',
+        keysTrained: [{ name: 'Open Mind', color: CORAL }],
+        padding: 'none', width: 'normal',
+      },
+      {
+        id: 'compendium', label: 'FlowCompendium', description: COMPENDIUM_SHORT_DESCRIPTION,
+        iconSrc: '/assets/LOGOS/OPEN MIND.png',
+        padding: 'compact', width: 'wide',
+      },
     ],
   },
   {
@@ -377,8 +419,18 @@ export const SECTIONS: SectionDef[] = [
     Icon: CatalyzeIcon,
     Animation: CatalyzeAnim,
     tools: [
-      { id: 'breathwork', label: 'FlowBreath', description: 'Shift state — body first', icon: <AppIcon src="/assets/LOGOS/FOCUSED BODY.png" alt="FlowBreath" /> },
-      { id: 'curiosity', label: 'FlowSpark', description: 'Map what pulls you', icon: <AppIcon src="/assets/LOGOS/IGNITED CURIOSITY.png" alt="FlowSpark" /> },
+      {
+        id: 'breathwork', label: 'FlowBreath', description: 'Change your state in two minutes',
+        iconSrc: '/assets/LOGOS/FOCUSED BODY.png',
+        keysTrained: [{ name: 'Tuned Emotions', color: CORAL }],
+        padding: 'normal', width: 'normal',
+      },
+      {
+        id: 'curiosity', label: 'FlowSpark', description: 'Map what pulls you',
+        iconSrc: '/assets/LOGOS/IGNITED CURIOSITY.png',
+        keysTrained: [{ name: 'Ignited Curiosity', color: AMETHYST }],
+        padding: 'none', width: 'normal',
+      },
     ],
   },
   {
@@ -389,14 +441,38 @@ export const SECTIONS: SectionDef[] = [
     Icon: CreateIcon,
     Animation: CreateAnim,
     tools: [
-      { id: 'flowzone', label: 'FlowZone', description: 'Focus timer + reps', icon: <AppIcon src="/assets/apps/flowzone-icon.png" alt="FlowZone" /> },
+      {
+        id: 'flowzone', label: 'FlowZone', description: 'The deep work container',
+        iconSrc: '/assets/apps/flowzone-icon.png',
+        keysTrained: [
+          { name: 'Focused Body', color: CORAL },
+          { name: 'Intentional Space', color: SAGE },
+        ],
+        padding: 'none', width: 'normal',
+      },
+      {
+        id: 'flowwrite', label: 'FlowWrite', description: 'Write before you think',
+        iconSrc: '/assets/LOGOS/GENERATIVE STORY.png',
+        keysTrained: [{ name: 'Generative Story', color: STEEL }],
+        padding: 'none', width: 'normal',
+      },
     ],
   },
 ];
 
-// ─── Helper: map any ToolId → section index ───────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
+/** Map any ToolId → section index. */
 export function sectionFromTool(tool: ToolId): number {
   const idx = SECTIONS.findIndex(s => s.tools.some(t => t.id === tool));
   return idx >= 0 ? idx : 0;
+}
+
+/** Flattened lookup: tool metadata + its section's accent color. */
+export function getToolMeta(tool: ToolId): (ToolDef & { sectionColor: string }) | null {
+  for (const section of SECTIONS) {
+    const def = section.tools.find(t => t.id === tool);
+    if (def) return { ...def, sectionColor: section.color };
+  }
+  return null;
 }

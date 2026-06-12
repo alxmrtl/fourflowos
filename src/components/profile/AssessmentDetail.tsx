@@ -415,7 +415,7 @@ ${a.spirit_vision}`.trim();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-ground flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
       </div>
     );
@@ -423,7 +423,7 @@ ${a.spirit_vision}`.trim();
 
   if (!assessment) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-gray-500">
+      <div className="min-h-screen bg-ground flex items-center justify-center text-gray-500">
         Assessment not found.
       </div>
     );
@@ -454,7 +454,7 @@ ${a.spirit_vision}`.trim();
   const allOutputs = deliveredOrphan ? [...generations, deliveredOrphan] : generations;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-6 md:p-10">
+    <div className="min-h-screen bg-ground p-6 md:p-10">
       {/* Scoped markdown styles */}
       <style jsx global>{`
         .admin-profile-content h1 {
@@ -605,7 +605,7 @@ ${a.spirit_vision}`.trim();
                 <div>
                   <p className="text-xs font-medium text-gray-400">Full prompt</p>
                   <p className="text-xs text-gray-600 mt-0.5">
-                    Intake data is pre-filled. <span className="text-[#4E8C73]/70">{'{CHART_DATA}'}</span> is replaced at runtime with a Haiku-generated archetypal summary.
+                    Intake data is pre-filled. <span className="text-space/70">{'{CHART_DATA}'}</span> is replaced at runtime with a Haiku-generated archetypal summary.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -653,7 +653,7 @@ ${a.spirit_vision}`.trim();
             loading={generating}
             disabled={generating}
             onClick={generateProfile}
-            color={isCustomPromptActive ? 'from-[#F97316] to-[#6330A0]' : assessment.status === 'intake_submitted' ? 'from-[#4E8C73] to-[#6330A0]' : 'from-[#3E6FA3] to-[#6330A0]'}
+            color={isCustomPromptActive ? 'from-[#F97316] to-spirit' : assessment.status === 'intake_submitted' ? 'from-space to-spirit' : 'from-story to-spirit'}
           />
 
           {/* Terminal command */}
@@ -685,7 +685,7 @@ ${a.spirit_vision}`.trim();
                   </div>
                 )}
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 text-xs text-[#4E8C73] font-mono bg-white/[0.04] px-3 py-2 rounded-lg border border-white/[0.07] select-all">
+                  <code className="flex-1 text-xs text-space font-mono bg-white/[0.04] px-3 py-2 rounded-lg border border-white/[0.07] select-all">
                     {cliCommand}
                   </code>
                   <button
@@ -823,7 +823,7 @@ ${a.spirit_vision}`.trim();
                           </span>
                         )}
                         {isActiveDraft && (
-                          <span className="text-xs text-[#3E6FA3] bg-[#3E6FA3]/10 px-1.5 py-0.5 rounded border border-[#3E6FA3]/20">
+                          <span className="text-xs text-story bg-story/10 px-1.5 py-0.5 rounded border border-story/20">
                             Active Draft
                           </span>
                         )}
@@ -912,7 +912,7 @@ ${a.spirit_vision}`.trim();
                               loading={delivering}
                               disabled={delivering}
                               onClick={deliverProfile}
-                              color="from-[#22C55E] to-[#4E8C73]"
+                              color="from-[#22C55E] to-space"
                             />
                           </div>
                         )}
@@ -921,7 +921,7 @@ ${a.spirit_vision}`.trim();
                         {isDelivered && assessment.view_token && (
                           <div className="mt-5 pt-4 border-t border-white/[0.06]">
                             <p className="text-xs text-gray-500 mb-1">Client view link:</p>
-                            <code className="text-xs text-[#4E8C73] break-all">
+                            <code className="text-xs text-space break-all">
                               {typeof window !== 'undefined'
                                 ? `${window.location.origin}/profile/view/${assessment.view_token}`
                                 : `/profile/view/${assessment.view_token}`}
@@ -1010,7 +1010,7 @@ function ActionButton({
   loading,
   disabled,
   onClick,
-  color = 'from-[#4E8C73] to-[#6330A0]',
+  color = 'from-space to-spirit',
 }: {
   label: string;
   loading: boolean;

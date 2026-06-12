@@ -21,7 +21,7 @@ export default function PageLayout({
   accentColor = '#6330A0'
 }: PageLayoutProps) {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
+    <div className="min-h-screen bg-ground relative overflow-hidden">
       {/* Subtle animated background */}
       <div className="fixed inset-0 pointer-events-none">
         {/* Gradient orbs - very subtle */}

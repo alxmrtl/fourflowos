@@ -9,7 +9,7 @@ export default function AgentTeaserSection() {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section ref={ref} className="relative py-20 md:py-24 bg-[#0a0a0a]">
+    <section ref={ref} className="relative py-20 md:py-24 bg-ground">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
 
       <div className="max-w-2xl mx-auto px-6">

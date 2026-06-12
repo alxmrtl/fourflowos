@@ -239,10 +239,10 @@ export default function AppsSection() {
     <section
       id="apps"
       ref={ref}
-      className="relative py-24 md:py-32 bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] overflow-hidden"
+      className="relative py-24 md:py-32 bg-gradient-to-b from-[#0f0f0f] to-ground overflow-hidden"
     >
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#6330A0]/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#E84535]/10 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-spirit/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-self/10 rounded-full blur-3xl" />
 
       <motion.div
         className="max-w-7xl mx-auto px-6 relative z-10"

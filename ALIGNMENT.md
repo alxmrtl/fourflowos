@@ -47,6 +47,13 @@ Rule from lexicon: "consciousness alignment" is accurate *internal* language (ar
 - [x] `/apps` page intro: prescriptions framing ("your Flow Profile shows which Key is blocked, and the matching tool opens it")
 - [x] Stale card counts unified to 153 (apps.ts, ActivityArea, ArchetypeRevealSection — old: 191/261)
 
-## 7. Code-level legacy identifiers (explicitly OK to leave)
+## 7. Design language ratified — ✅ June 12, 2026
+
+The live site's evolved design language is now canon (BRAND_BIBLE.md updated to match):
+- **Palette**: deepened set — Coral #E84535, Sage #4E8C73, Steel #3E6FA3, Amethyst #6330A0 (original brighter values retired)
+- **Typography**: Cormorant Garamond (display) + DM Sans (body) — supersedes Inter-only spec
+- **Tokens**: `src/styles/tokens.ts` is the umbrella source (colors via `brand-colors.ts`, type scale, motion durations, easings, glow helpers); `tailwind.config.ts` imports from it. New code uses token classes (`text-self`, `duration-gentle`), not arbitrary hex.
+
+## 8. Code-level legacy identifiers (explicitly OK to leave)
 
 `Pillar` types, `pillar` DB columns, `mechanics` Supabase table, `card_type` values — legacy identifiers, fine in code per lexicon. Do not mass-rename; migrate opportunistically.

@@ -27,7 +27,7 @@ export default function SpectrumSlider({
   valueLeft,
   valueRight,
   onChange,
-  accent = '#5B84B1',
+  accent = '#3E6FA3',
 }: SpectrumSliderProps) {
   // Map value → slider position (0–10)
   const sliderPos = value === valueLeft ? 2 : value === valueRight ? 8 : 5;

@@ -28,15 +28,15 @@ export default function EULAPage() {
         </p>
         <ul className="space-y-2 text-gray-400">
           <li className="flex items-start gap-2">
-            <span className="text-[#E84535]">•</span>
+            <span className="text-self">•</span>
             Download and install the App on devices you own or control
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-[#4E8C73]">•</span>
+            <span className="text-space">•</span>
             Use the App for your personal, non-commercial purposes
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-[#3E6FA3]">•</span>
+            <span className="text-story">•</span>
             Access any updates or new versions of the App made available to you
           </li>
         </ul>
@@ -143,7 +143,7 @@ export default function EULAPage() {
         <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
           <Link
             href="/privacy"
-            className="text-[#6330A0] hover:text-[#9A6DC4] transition-colors font-medium"
+            className="text-spirit hover:text-[#9A6DC4] transition-colors font-medium"
           >
             View our Privacy Policy →
           </Link>
@@ -237,7 +237,7 @@ export default function EULAPage() {
         <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
           <a
             href="mailto:fourflowos@gmail.com"
-            className="text-[#6330A0] hover:text-[#9A6DC4] transition-colors font-medium"
+            className="text-spirit hover:text-[#9A6DC4] transition-colors font-medium"
           >
             fourflowos@gmail.com
           </a>
@@ -245,7 +245,7 @@ export default function EULAPage() {
       </LegalSection>
 
       {/* Agreement Statement */}
-      <section className="p-8 bg-gradient-to-br from-[#E84535]/10 via-[#4E8C73]/10 to-[#6330A0]/10 border border-white/10 rounded-2xl">
+      <section className="p-8 bg-gradient-to-br from-self/10 via-space/10 to-spirit/10 border border-white/10 rounded-2xl">
         <h2 className="text-2xl font-bold text-white mb-4">Agreement</h2>
         <p className="text-gray-300 mb-4">
           BY DOWNLOADING, INSTALLING, OR USING ANY FOURFLOWOS APPLICATION, YOU ACKNOWLEDGE THAT YOU

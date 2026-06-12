@@ -21,11 +21,11 @@ export default function ContentPage({ initialContent, initialRelatedArticles = [
   const estimatedTime = content.read_time || content.estimated_duration || 5;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pb-32">
+    <div className="min-h-screen bg-ground pb-32">
       <TopBar />
 
       {/* Breadcrumb Navigation */}
-      <div className="bg-[#111111] border-b border-white/10">
+      <div className="bg-ground-lift border-b border-white/10">
         <div className="max-w-6xl mx-auto px-2 lg:px-8 py-3">
           <nav className="flex items-center space-x-3 text-sm">
             <span className="text-gray-500">Framework</span>
@@ -48,7 +48,7 @@ export default function ContentPage({ initialContent, initialRelatedArticles = [
       </div>
 
       {/* Content Header */}
-      <div className="bg-[#050505] border-b border-white/10">
+      <div className="bg-ground-deep border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4 lg:px-8 py-6 lg:py-8">
           <div className="flex items-start gap-4">
             <div
@@ -72,7 +72,7 @@ export default function ContentPage({ initialContent, initialRelatedArticles = [
                   {estimatedTime} min
                 </span>
                 {content.scientific_backing && (
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#3E6FA3]/20 text-[#7DA3C9]">
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-story/20 text-[#7DA3C9]">
                     Science-backed
                   </span>
                 )}
@@ -107,7 +107,7 @@ export default function ContentPage({ initialContent, initialRelatedArticles = [
                 strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
                 em: ({ children }) => <em className="italic text-gray-300">{children}</em>,
                 code: ({ children }) => <code className="bg-white/10 text-gray-200 px-2 py-1 rounded text-sm font-mono">{children}</code>,
-                link: ({ children, value }) => <a href={value.href} className="text-[#6330A0] hover:text-[#9A6DC4] underline">{children}</a>
+                link: ({ children, value }) => <a href={value.href} className="text-spirit hover:text-[#9A6DC4] underline">{children}</a>
               },
               list: {
                 bullet: ({ children }) => <ul className="list-disc list-inside space-y-2 mb-6 ml-4">{children}</ul>,

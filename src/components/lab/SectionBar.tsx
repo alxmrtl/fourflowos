@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useMounted, SECTIONS } from './sections-data';
+import { useMounted, SECTIONS, AppIcon } from './sections-data';
 import ToolButton from './ToolButton';
 import type { ToolId } from './useLabState';
 import type { SectionDef } from './sections-data';
@@ -51,7 +51,7 @@ function SectionColumn({ section, activeTool, onSelectTool }: {
             description={tool.description}
             color={section.color}
             isActive={activeTool === tool.id}
-            icon={tool.icon}
+            icon={<AppIcon src={tool.iconSrc} alt={tool.label} />}
             onClick={() => onSelectTool(tool.id)}
           />
         ))}

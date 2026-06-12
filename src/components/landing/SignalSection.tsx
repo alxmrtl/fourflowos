@@ -25,9 +25,9 @@ function BreathingPulse() {
       `}</style>
 
       {/* Outer rings */}
-      <div className="ring-3 absolute w-44 h-44 rounded-full border border-[#E84535]/10" />
-      <div className="ring-2 absolute w-32 h-32 rounded-full border border-[#E84535]/20" />
-      <div className="ring-1 absolute w-20 h-20 rounded-full border border-[#E84535]/30" />
+      <div className="ring-3 absolute w-44 h-44 rounded-full border border-self/10" />
+      <div className="ring-2 absolute w-32 h-32 rounded-full border border-self/20" />
+      <div className="ring-1 absolute w-20 h-20 rounded-full border border-self/30" />
 
       {/* Core */}
       <div
@@ -81,7 +81,7 @@ function EmblemAnimation() {
           fill
           className="object-contain"
         />
-        <div className="absolute inset-0 rounded-full blur-xl bg-[#6330A0]/30" style={{ zIndex: -1 }} />
+        <div className="absolute inset-0 rounded-full blur-xl bg-spirit/30" style={{ zIndex: -1 }} />
       </div>
 
       <div className="shape-tr absolute w-16 h-16 translate-x-8 -translate-y-8" style={{ zIndex: 2 }}>
@@ -91,7 +91,7 @@ function EmblemAnimation() {
           fill
           className="object-contain"
         />
-        <div className="absolute inset-0 rounded-full blur-xl bg-[#4E8C73]/30" style={{ zIndex: -1 }} />
+        <div className="absolute inset-0 rounded-full blur-xl bg-space/30" style={{ zIndex: -1 }} />
       </div>
 
       <div className="shape-bl absolute w-16 h-16 -translate-x-8 translate-y-8" style={{ zIndex: 3 }}>
@@ -101,7 +101,7 @@ function EmblemAnimation() {
           fill
           className="object-contain"
         />
-        <div className="absolute inset-0 rounded-full blur-xl bg-[#3E6FA3]/30" style={{ zIndex: -1 }} />
+        <div className="absolute inset-0 rounded-full blur-xl bg-story/30" style={{ zIndex: -1 }} />
       </div>
 
       <div className="shape-tl absolute w-16 h-16 -translate-x-8 -translate-y-8" style={{ zIndex: 4 }}>
@@ -111,7 +111,7 @@ function EmblemAnimation() {
           fill
           className="object-contain"
         />
-        <div className="absolute inset-0 rounded-full blur-xl bg-[#E84535]/30" style={{ zIndex: -1 }} />
+        <div className="absolute inset-0 rounded-full blur-xl bg-self/30" style={{ zIndex: -1 }} />
       </div>
 
       {/* Center glow when aligned */}
@@ -268,7 +268,7 @@ function CircularFrequencyAnimation({ inView }: { inView: boolean }) {
             <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor={`rgba(255,255,255,${0.1 + centerBrightness * 0.6})`} />
               <stop offset="30%" stopColor={`rgba(200,180,220,${0.05 + centerBrightness * 0.3})`} />
-              <stop offset="60%" stopColor={`rgba(122,77,164,${0.02 + centerBrightness * 0.15})`} />
+              <stop offset="60%" stopColor={`rgba(99, 48, 160,${0.02 + centerBrightness * 0.15})`} />
               <stop offset="100%" stopColor="transparent" />
             </radialGradient>
             <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -388,7 +388,7 @@ export default function SignalSection() {
       <div
         className="absolute inset-0 opacity-20"
         style={{
-          background: 'radial-gradient(ellipse at 50% 50%, rgba(122,77,164,0.15) 0%, transparent 60%)',
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(99, 48, 160,0.15) 0%, transparent 60%)',
         }}
       />
 

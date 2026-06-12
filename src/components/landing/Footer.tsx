@@ -12,12 +12,12 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer ref={ref} className="relative bg-[#050505] pt-20 pb-8 overflow-hidden">
+    <footer ref={ref} className="relative bg-ground-deep pt-20 pb-8 overflow-hidden">
       {/* Top gradient line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
       {/* Background decoration */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-t from-[#6330A0]/5 to-transparent rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-t from-spirit/5 to-transparent rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Main footer content */}
@@ -43,8 +43,8 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-gray-500 max-w-md mb-6 leading-relaxed">
-              The operating system for flow states. A framework and ecosystem of tools
-              designed to help you achieve effortless focus through the alignment of
+              The operating system for flow. Flow isn&apos;t forced — it&apos;s cultivated,
+              and the conditions are trainable. One framework, four dimensions:
               Self, Space, Story, and Spirit.
             </p>
             <div className="flex items-center gap-2">

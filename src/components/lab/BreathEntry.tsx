@@ -154,7 +154,7 @@ export default function BreathEntry({ onComplete, onSkip }: BreathEntryProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center relative select-none"
+      className="min-h-screen bg-ground flex flex-col items-center justify-center relative select-none"
     >
       {/* Pillar label + prompt */}
       <AnimatePresence mode="wait">

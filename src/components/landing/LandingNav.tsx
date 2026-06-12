@@ -60,7 +60,7 @@ export default function LandingNav() {
       >
         {/* Background */}
         <motion.div
-          className="absolute inset-0 bg-[#0a0a0a]/90 border-b border-white/5"
+          className="absolute inset-0 bg-ground/90 border-b border-white/5"
           style={{ opacity: backgroundOpacity }}
         />
 
@@ -89,8 +89,8 @@ export default function LandingNav() {
                   href={link.href}
                   className={`relative px-4 py-1.5 text-white text-sm font-medium rounded-full border bg-gradient-to-r transition-all duration-300 ${
                     isYourPractice
-                      ? 'border-[#3E6FA3]/70 from-[#3E6FA3]/20 to-[#6330A0]/20 shadow-[0_0_22px_rgba(62,111,163,0.30)]'
-                      : 'border-[#3E6FA3]/35 from-[#3E6FA3]/[0.08] to-[#6330A0]/[0.08] hover:from-[#3E6FA3]/15 hover:to-[#6330A0]/15 hover:border-[#3E6FA3]/55 shadow-[0_0_14px_rgba(62,111,163,0.10)] hover:shadow-[0_0_22px_rgba(62,111,163,0.25)]'
+                      ? 'border-story/70 from-story/20 to-spirit/20 shadow-[0_0_22px_rgba(62,111,163,0.30)]'
+                      : 'border-story/35 from-story/[0.08] to-spirit/[0.08] hover:from-story/15 hover:to-spirit/15 hover:border-story/55 shadow-[0_0_14px_rgba(62,111,163,0.10)] hover:shadow-[0_0_22px_rgba(62,111,163,0.25)]'
                   }`}
                 >
                   {link.label}
@@ -269,7 +269,7 @@ export default function LandingNav() {
             <div className="mt-2">
               <Link
                 href="/map"
-                className="block w-full text-center px-5 py-3 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300"
+                className="block w-full text-center px-5 py-3 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-spirit/25 transition-all duration-300"
                 style={{ background: 'linear-gradient(135deg, #3E6FA3, #6330A0)' }}
                 onClick={() => setIsMobileMenuOpen(false)}
               >

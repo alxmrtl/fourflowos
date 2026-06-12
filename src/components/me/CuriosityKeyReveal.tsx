@@ -123,7 +123,7 @@ export default function CuriosityKeyReveal({ data, curiosity }: Props) {
           ) : (
             <div
               className="rounded-xl border border-white/6 p-4"
-              style={{ background: 'rgba(122,77,164,0.04)' }}
+              style={{ background: 'rgba(99, 48, 160,0.04)' }}
             >
               <p className="text-xs text-gray-600 mb-2">
                 Connect the Curiosity Map to see your active interests here.

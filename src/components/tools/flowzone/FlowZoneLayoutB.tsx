@@ -458,7 +458,7 @@ export default function FlowZoneLayoutB(props: DashboardLayoutProps) {
                 step={0.05}
                 value={settings.audioVolume}
                 onChange={e => onUpdateSettings({ audioVolume: parseFloat(e.target.value) })}
-                className="w-20 accent-[#4E8C73]"
+                className="w-20 accent-space"
               />
             </div>
           </div>

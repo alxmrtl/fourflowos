@@ -276,7 +276,7 @@ export default function TimelessAnchorSection() {
   const headerInView = useInView(headerRef, { once: true, amount: 0.4 });
 
   return (
-    <section className="relative py-24 md:py-32 bg-[#0a0a0a] overflow-hidden">
+    <section className="relative py-24 md:py-32 bg-ground overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
         <div ref={headerRef} className="text-center mb-14">

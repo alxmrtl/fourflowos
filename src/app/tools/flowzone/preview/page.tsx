@@ -97,7 +97,7 @@ export default function FlowZonePreviewPage() {
   // Guard: mounting
   if (!store.mounted || loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-ground flex items-center justify-center">
         <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white/80 animate-spin" />
       </div>
     );
@@ -138,7 +138,7 @@ export default function FlowZonePreviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
+    <div className="min-h-screen bg-ground text-white flex flex-col">
       {/* Preview header */}
       <header className="flex items-center justify-between px-6 py-4 pl-[68px]">
         <div className="flex items-center gap-3">
@@ -242,7 +242,7 @@ export default function FlowZonePreviewPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 z-50 bg-ground/95 backdrop-blur-sm flex items-center justify-center"
           >
             <Breathwork
               label={breathworkLabel}

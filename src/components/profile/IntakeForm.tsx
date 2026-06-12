@@ -117,7 +117,7 @@ function IntakeGateway({ onBegin }: { onBegin: () => void }) {
           <button
             type="button"
             onClick={onBegin}
-            className="px-8 py-3 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02]"
+            className="px-8 py-3 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-spirit/20 transition-all duration-300 hover:scale-[1.02]"
             style={{ background: GRADIENTS.tertiaryCta }}
           >
             I&apos;m ready
@@ -324,7 +324,7 @@ export default function IntakeForm() {
               type="button"
               onClick={handleNext}
               disabled={!canContinue}
-              className="px-6 py-2.5 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="px-6 py-2.5 text-white rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-spirit/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
               style={{ background: GRADIENTS.tertiaryCta }}
             >
               Continue
@@ -334,7 +334,7 @@ export default function IntakeForm() {
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="px-8 py-3 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="px-8 py-3 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-spirit/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               style={{ background: GRADIENTS.tertiaryCta }}
             >
               {isSubmitting ? (

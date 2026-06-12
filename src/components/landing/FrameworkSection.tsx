@@ -10,22 +10,22 @@ const dimensionDetails = {
   self: {
     descriptor: 'Inner Mastery',
     fullDescription: 'Tuning your inner compass for flow navigation. Master your emotions, sharpen your mind, and optimize your body to become a vessel for peak performance.',
-    gradient: 'from-[#E84535]/20 to-transparent',
+    gradient: 'from-self/20 to-transparent',
   },
   space: {
     descriptor: 'Environment Design',
     fullDescription: 'Creating environments that amplify your potential. Design intentional spaces, optimize your tools, and build feedback systems that make flow inevitable.',
-    gradient: 'from-[#4E8C73]/20 to-transparent',
+    gradient: 'from-space/20 to-transparent',
   },
   story: {
     descriptor: 'Direction Setting',
     fullDescription: 'Crafting narratives that drive meaningful action. Develop a generative story, build a clear mission, and embody an empowered role in your journey.',
-    gradient: 'from-[#3E6FA3]/20 to-transparent',
+    gradient: 'from-story/20 to-transparent',
   },
   spirit: {
     descriptor: 'Inner Drive',
     fullDescription: 'Aligning with your deepest values and vision. Ground yourself in core values, visualize your future, and ignite the curiosity that fuels endless growth.',
-    gradient: 'from-[#6330A0]/20 to-transparent',
+    gradient: 'from-spirit/20 to-transparent',
   },
 };
 

@@ -199,11 +199,11 @@ export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPa
           <div className="max-w-4xl mx-auto px-6">
             <Link
               href="/tools/flowspark"
-              className="group block p-6 md:p-8 rounded-2xl border border-white/10 hover:border-[#6330A0]/40 bg-gradient-to-r from-[#6330A0]/10 to-transparent transition-all duration-300"
+              className="group block p-6 md:p-8 rounded-2xl border border-white/10 hover:border-spirit/40 bg-gradient-to-r from-spirit/10 to-transparent transition-all duration-300"
             >
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 bg-[#6330A0]/20">
-                  <svg className="w-7 h-7 text-[#6330A0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 bg-spirit/20">
+                  <svg className="w-7 h-7 text-spirit" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
@@ -212,7 +212,7 @@ export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPa
                   <h3 className="text-lg font-semibold text-white group-hover:translate-x-1 transition-transform">FlowSpark</h3>
                   <p className="text-gray-400 text-sm mt-1">Map your curiosities to find where flow lives.</p>
                 </div>
-                <svg className="w-5 h-5 text-[#6330A0] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-spirit opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -227,11 +227,11 @@ export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPa
           <div className="max-w-4xl mx-auto px-6">
             <Link
               href="/tools/flowzone"
-              className="group block p-6 md:p-8 rounded-2xl border border-white/10 hover:border-[#4E8C73]/40 bg-gradient-to-r from-[#4E8C73]/10 to-transparent transition-all duration-300"
+              className="group block p-6 md:p-8 rounded-2xl border border-white/10 hover:border-space/40 bg-gradient-to-r from-space/10 to-transparent transition-all duration-300"
             >
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#4E8C7320' }}>
-                  <svg className="w-7 h-7 text-[#4E8C73]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-7 h-7 text-space" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
@@ -240,7 +240,7 @@ export default function KeyPage({ keyId, dimension, initialContent = [] }: KeyPa
                   <h3 className="text-lg font-semibold text-white group-hover:translate-x-1 transition-transform">FlowZone — Deep Work Companion</h3>
                   <p className="text-gray-400 text-sm mt-1">Breathwork, Focus Reps, and ambient audio to enter and sustain your flow state.</p>
                 </div>
-                <svg className="w-5 h-5 text-[#4E8C73] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-space opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>

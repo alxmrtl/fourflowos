@@ -51,7 +51,7 @@ export default function ProblemSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-24 md:py-32 bg-[#0a0a0a] overflow-hidden"
+      className="relative py-24 md:py-32 bg-ground overflow-hidden"
     >
       {/* Subtle gradient backdrop */}
       <div className="absolute inset-0">

@@ -470,7 +470,7 @@ export default function FrameworkPage() {
               {/* Map your signal */}
               <Link
                 href="/map"
-                className="group relative rounded-2xl border border-white/10 p-6 hover:border-[#6330A0]/40 hover:bg-[#6330A0]/[0.05] transition-all duration-300"
+                className="group relative rounded-2xl border border-white/10 p-6 hover:border-spirit/40 hover:bg-spirit/[0.05] transition-all duration-300"
               >
                 <div
                   className="w-8 h-8 rounded-lg mb-4 flex items-center justify-center"

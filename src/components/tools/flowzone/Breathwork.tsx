@@ -150,16 +150,22 @@ export default function Breathwork({ onDone, onSkip, label, targetCycles, patter
                 <button
                   key={pattern.id}
                   onClick={() => handleSelectAndStart(pattern)}
-                  className="w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#6330A0]/40 text-left transition-all group flex items-stretch gap-3 overflow-hidden"
+                  className="w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:border-spirit/40 text-left transition-all group flex items-stretch gap-3 overflow-hidden"
                 >
                   <div
                     className="w-1 rounded-full flex-shrink-0"
                     style={{ background: PATTERN_ACCENTS[i % PATTERN_ACCENTS.length] }}
                   />
                   <div className="flex-1">
-                    <p className="text-white font-medium text-sm group-hover:translate-x-1 transition-transform">
-                      {pattern.name}
-                    </p>
+                    <div className="flex items-baseline gap-2 group-hover:translate-x-1 transition-transform">
+                      <p className="text-white font-medium text-sm">{pattern.name}</p>
+                      <span
+                        className="text-[10px] font-medium tracking-wide"
+                        style={{ color: PATTERN_ACCENTS[i % PATTERN_ACCENTS.length] }}
+                      >
+                        {pattern.benefit}
+                      </span>
+                    </div>
                     <p className="text-gray-500 text-xs mt-1">{pattern.description}</p>
                   </div>
                   <svg className="w-5 h-5 text-gray-600 group-hover:text-gray-400 transition-colors flex-shrink-0 self-center" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -71,23 +71,9 @@ export default function EsotericCard({ initialProfile, esotericName = 'Timeless 
     }
   }
 
+  // Renders inside ToolShell — the shell owns the header; this is body only.
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden">
-      {/* Header */}
-      <div className="px-5 pt-5 pb-4 border-b border-white/[0.05]">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[10px] uppercase tracking-widest text-white/25 mb-0.5">{esotericName}</p>
-            <p className="text-white font-semibold text-sm">The deep architecture</p>
-          </div>
-          {cardState === 'profile' && (
-            <div className="w-2 h-2 rounded-full mt-1" style={{ background: STEEL }} />
-          )}
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="px-5 py-5">
+    <div className="text-white">
         <AnimatePresence mode="wait">
           {cardState === 'empty' && (
             <motion.div
@@ -95,9 +81,45 @@ export default function EsotericCard({ initialProfile, esotericName = 'Timeless 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-start"
+              className="flex flex-col items-center text-center"
             >
-              <p className="text-sm text-white/35 leading-relaxed mb-5">
+              {/* Slow orbital — name, number, stars circling what you carry */}
+              <div className="relative w-28 h-28 mb-5" aria-hidden="true">
+                <motion.svg
+                  viewBox="0 0 112 112"
+                  className="absolute inset-0"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 36, repeat: Infinity, ease: 'linear' }}
+                >
+                  <ellipse cx="56" cy="56" rx="50" ry="22" fill="none" stroke={`${AMETHYST}45`} strokeWidth="1" />
+                  <circle cx="106" cy="56" r="2.5" fill={AMETHYST} />
+                </motion.svg>
+                <motion.svg
+                  viewBox="0 0 112 112"
+                  className="absolute inset-0"
+                  style={{ rotate: 60 }}
+                  animate={{ rotate: 420 }}
+                  transition={{ duration: 52, repeat: Infinity, ease: 'linear' }}
+                >
+                  <ellipse cx="56" cy="56" rx="50" ry="22" fill="none" stroke={`${STEEL}40`} strokeWidth="1" />
+                  <circle cx="6" cy="56" r="2" fill={STEEL} />
+                </motion.svg>
+                <motion.svg
+                  viewBox="0 0 112 112"
+                  className="absolute inset-0"
+                  style={{ rotate: -60 }}
+                  animate={{ rotate: -420 }}
+                  transition={{ duration: 44, repeat: Infinity, ease: 'linear' }}
+                >
+                  <ellipse cx="56" cy="56" rx="50" ry="22" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+                  <circle cx="106" cy="56" r="1.5" fill="rgba(255,255,255,0.6)" />
+                </motion.svg>
+                <div
+                  className="absolute inset-0 m-auto w-2 h-2 rounded-full"
+                  style={{ background: 'white', boxShadow: `0 0 10px ${AMETHYST}` }}
+                />
+              </div>
+              <p className="text-sm text-white/35 leading-relaxed mb-5 max-w-sm">
                 A reading across name etymology, numerology, and natal astrology — translated into plain language. What you were born carrying.
               </p>
               <button
@@ -156,7 +178,6 @@ export default function EsotericCard({ initialProfile, esotericName = 'Timeless 
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
     </div>
   );
 }

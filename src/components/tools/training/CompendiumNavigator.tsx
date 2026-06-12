@@ -75,10 +75,10 @@ const PILLAR_COLORS: Record<Pillar, {
 // ── Brand asset maps ─────────────────────────────────────────────────
 
 const PILLAR_RGB: Record<Pillar, string> = {
-  self:   '255,111,97',
-  space:  '107,162,146',
-  story:  '91,132,177',
-  spirit: '122,77,164',
+  self:   '232, 69, 53',
+  space:  '78, 140, 115',
+  story:  '62, 111, 163',
+  spirit: '99, 48, 160',
 };
 
 const PILLAR_LOGO: Record<Pillar, string> = {
@@ -555,7 +555,7 @@ export default function CompendiumNavigator() {
         </div>
 
         {/* ── Content card ── */}
-        <div className="bg-[#111111] rounded-t-[28px] flex flex-col min-h-[48vh]">
+        <div className="bg-ground-lift rounded-t-[28px] flex flex-col min-h-[48vh]">
 
           {/* Label + counter */}
           <div className="flex items-center justify-between px-4 pt-4 pb-3 flex-shrink-0">

@@ -82,7 +82,7 @@ export default function FeltBeatSection() {
   const introInView = useInView(introRef, { once: true, amount: 0.6 });
 
   return (
-    <section className="relative bg-[#050505]">
+    <section className="relative bg-ground-deep">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Intro */}

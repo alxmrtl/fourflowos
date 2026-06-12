@@ -59,7 +59,7 @@ export default function AdminProfilePreview() {
   const selected = assessments.find((a) => a.id === selectedId) ?? null;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-6 md:p-10">
+    <div className="min-h-screen bg-ground p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}

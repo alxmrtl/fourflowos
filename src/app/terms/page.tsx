@@ -47,19 +47,19 @@ export default function TermsPage() {
         <p className="text-gray-300 mb-4">When using our Apps, you agree to:</p>
         <ul className="space-y-2 text-gray-400">
           <li className="flex items-start gap-2">
-            <span className="text-[#E84535]">•</span>
+            <span className="text-self">•</span>
             Use the Apps only for lawful purposes
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-[#4E8C73]">•</span>
+            <span className="text-space">•</span>
             Not attempt to reverse engineer, decompile, or disassemble the Apps
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-[#3E6FA3]">•</span>
+            <span className="text-story">•</span>
             Not use the Apps in any way that could damage or impair their functionality
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-[#6330A0]">•</span>
+            <span className="text-spirit">•</span>
             Not redistribute, sublicense, or resell the Apps
           </li>
         </ul>
@@ -141,7 +141,7 @@ export default function TermsPage() {
         <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
           <a
             href="mailto:fourflowos@gmail.com"
-            className="text-[#6330A0] hover:text-[#8248C8] transition-colors font-medium"
+            className="text-spirit hover:text-spirit-light transition-colors font-medium"
           >
             fourflowos@gmail.com
           </a>
@@ -149,30 +149,30 @@ export default function TermsPage() {
       </LegalSection>
 
       {/* Summary */}
-      <section className="p-8 bg-gradient-to-br from-[#E84535]/10 via-[#4E8C73]/10 to-[#6330A0]/10 border border-white/10 rounded-2xl">
+      <section className="p-8 bg-gradient-to-br from-self/10 via-space/10 to-spirit/10 border border-white/10 rounded-2xl">
         <h2 className="text-2xl font-bold text-white mb-4">Key Points</h2>
         <ul className="space-y-3 text-gray-300">
           <li className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#E84535]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-[#E84535] text-xs">1</span>
+            <div className="w-6 h-6 rounded-full bg-self/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-self text-xs">1</span>
             </div>
             <span>Use our Apps responsibly and for their intended purpose</span>
           </li>
           <li className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#4E8C73]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-[#4E8C73] text-xs">2</span>
+            <div className="w-6 h-6 rounded-full bg-space/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-space text-xs">2</span>
             </div>
             <span>All intellectual property belongs to FourFlowOS</span>
           </li>
           <li className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#3E6FA3]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-[#3E6FA3] text-xs">3</span>
+            <div className="w-6 h-6 rounded-full bg-story/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-story text-xs">3</span>
             </div>
             <span>Apps are provided as-is for general wellness purposes</span>
           </li>
           <li className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-[#6330A0]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-[#6330A0] text-xs">4</span>
+            <div className="w-6 h-6 rounded-full bg-spirit/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-spirit text-xs">4</span>
             </div>
             <span>Contact us anytime with questions or concerns</span>
           </li>

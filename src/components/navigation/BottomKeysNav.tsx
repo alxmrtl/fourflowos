@@ -24,7 +24,7 @@ export default function BottomKeysNav({ currentDimension, currentKey }: BottomKe
   };
 
   return (
-    <div className="bg-[#111111] border-t border-white/10">
+    <div className="bg-ground-lift border-t border-white/10">
       {/* Keys Navigation Row */}
       <div className="grid grid-cols-4 gap-0 px-2 py-3 lg:px-4 lg:py-4">
         {Object.values(DIMENSIONS).map((dimension) => (

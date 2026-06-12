@@ -4,7 +4,58 @@ import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { useRef, useCallback } from 'react';
 import ParticleBackground from './ParticleBackground';
-import { GRADIENTS } from '@/styles/brand-colors';
+import { GRADIENTS, CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
+
+/**
+ * The aperture — three concentric rings breathing behind the headline,
+ * one slow conscious breath per cycle. The metaphor chain made visible:
+ * open gates widen the aperture; full aperture is flow.
+ */
+function ApertureRing() {
+  const breath = { duration: 7, repeat: Infinity, ease: 'easeInOut' as const };
+  return (
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
+      <motion.svg
+        viewBox="0 0 600 600"
+        className="w-[min(88vw,560px)] h-[min(88vw,560px)]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, delay: 0.4 }}
+      >
+        <defs>
+          <linearGradient id="aperture-sweep" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={CORAL} />
+            <stop offset="34%" stopColor={SAGE} />
+            <stop offset="67%" stopColor={STEEL} />
+            <stop offset="100%" stopColor={AMETHYST} />
+          </linearGradient>
+        </defs>
+        <motion.circle
+          cx="300" cy="300" r="285"
+          fill="none" stroke="url(#aperture-sweep)" strokeWidth="1"
+          animate={{ scale: [1, 1.035, 1], opacity: [0.10, 0.22, 0.10] }}
+          transition={breath}
+          style={{ transformOrigin: '300px 300px' }}
+        />
+        <motion.circle
+          cx="300" cy="300" r="225"
+          fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="0.6"
+          strokeDasharray="3 9"
+          animate={{ scale: [1.02, 0.975, 1.02], opacity: [0.06, 0.16, 0.06], rotate: 360 }}
+          transition={{ ...breath, rotate: { duration: 240, repeat: Infinity, ease: 'linear' } }}
+          style={{ transformOrigin: '300px 300px' }}
+        />
+        <motion.circle
+          cx="300" cy="300" r="170"
+          fill="none" stroke="url(#aperture-sweep)" strokeWidth="0.8"
+          animate={{ scale: [0.985, 1.05, 0.985], opacity: [0.07, 0.18, 0.07] }}
+          transition={{ ...breath, delay: 0.6 }}
+          style={{ transformOrigin: '300px 300px' }}
+        />
+      </motion.svg>
+    </div>
+  );
+}
 
 export default function HeroSectionV2() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -18,7 +69,7 @@ export default function HeroSectionV2() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-ground"
     >
       <ParticleBackground />
 
@@ -28,12 +79,15 @@ export default function HeroSectionV2() {
         style={{
           background: `
             radial-gradient(ellipse 50% 50% at 10% 15%, rgba(232,69,53,0.15) 0%, transparent 60%),
-            radial-gradient(ellipse 45% 45% at 90% 40%, rgba(122,77,164,0.15) 0%, transparent 60%),
-            radial-gradient(ellipse 40% 40% at 28% 92%, rgba(107,162,146,0.10) 0%, transparent 60%),
-            radial-gradient(ellipse 35% 35% at 72% 68%, rgba(91,132,177,0.08) 0%, transparent 60%)
+            radial-gradient(ellipse 45% 45% at 90% 40%, rgba(99,48,160,0.15) 0%, transparent 60%),
+            radial-gradient(ellipse 40% 40% at 28% 92%, rgba(78,140,115,0.10) 0%, transparent 60%),
+            radial-gradient(ellipse 35% 35% at 72% 68%, rgba(62,111,163,0.08) 0%, transparent 60%)
           `,
         }}
       />
+
+      {/* The breathing aperture behind the headline */}
+      <ApertureRing />
 
       {/* Dark radial vignette behind text */}
       <div
@@ -114,8 +168,8 @@ export default function HeroSectionV2() {
           }}
         >
           <Link
-            href="https://fourflowos.com/me"
-            className="font-sans inline-flex items-center gap-2 px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-105"
+            href="/me"
+            className="font-sans inline-flex items-center gap-2 px-8 py-4 text-white font-medium rounded-full hover:shadow-lg hover:shadow-spirit/20 transition-all duration-300 hover:scale-105"
             style={{ background: GRADIENTS.primaryCta }}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">

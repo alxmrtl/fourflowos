@@ -220,7 +220,7 @@ export default function SynergyConstellation() {
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] rounded-full"
           style={{
-            background: 'radial-gradient(ellipse, rgba(122,77,164,0.06) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse, rgba(99, 48, 160,0.06) 0%, transparent 70%)',
           }}
           animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.7, 0.5] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}

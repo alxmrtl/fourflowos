@@ -1,4 +1,5 @@
 import FlowZone from '@/components/tools/flowzone/FlowZone';
+import ToolShell from '@/components/ui/ToolShell';
 import AuthGate from '@/components/auth/AuthGate';
 
 export const metadata = {
@@ -9,7 +10,9 @@ export const metadata = {
 export default function FlowZonePage() {
   return (
     <AuthGate>
-      <FlowZone />
+      <ToolShell toolId="flowzone" standalone>
+        <FlowZone />
+      </ToolShell>
     </AuthGate>
   );
 }

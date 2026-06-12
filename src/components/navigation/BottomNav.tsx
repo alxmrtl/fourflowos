@@ -18,7 +18,7 @@ export default function BottomNav() {
   const getDimensionPath = (dimension: DimensionType) => `/dimension/${dimension}`;
 
   return (
-    <nav className="bg-[#0a0a0a] border-t border-white/10">
+    <nav className="bg-ground border-t border-white/10">
       <div className="grid grid-cols-4 gap-0 px-4 py-3">
         {/* Only Dimension Buttons */}
         {Object.values(DIMENSIONS).map((dimension) => (

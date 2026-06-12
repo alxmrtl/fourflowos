@@ -419,9 +419,9 @@ export default function ProfileViewPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-ground flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-white/20 border-t-[#4E8C73] rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-8 h-8 border-2 border-white/20 border-t-space rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-500 text-sm">Loading your Flow Profile...</p>
         </div>
       </div>
@@ -430,7 +430,7 @@ export default function ProfileViewPage() {
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-ground flex items-center justify-center p-6">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-white/[0.05] flex items-center justify-center">
             <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -456,7 +456,7 @@ export default function ProfileViewPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-ground">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
@@ -535,7 +535,7 @@ export default function ProfileViewPage() {
             </p>
             <a
               href="mailto:fourflowos@gmail.com?subject=Book a Live Flow Session&body=Hi, I'd like to book a facilitated Flow Session to go deeper on my profile."
-              className="inline-block px-8 py-3.5 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all duration-300 hover:scale-[1.02]"
+              className="inline-block px-8 py-3.5 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-spirit/20 transition-all duration-300 hover:scale-[1.02]"
               style={{ background: GRADIENTS.tertiaryCta }}
             >
               Book a Live Flow Session

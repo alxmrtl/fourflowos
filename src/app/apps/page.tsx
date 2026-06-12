@@ -263,7 +263,7 @@ export default function PracticePage() {
   const iosSoon = IOS_SOON.map((id) => APPS[id]).filter((a): a is App => Boolean(a));
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-ground">
       <LandingNav />
 
       {/* Hero */}
@@ -301,7 +301,7 @@ export default function PracticePage() {
             ) : (
               <Link
                 href="/map"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-semibold hover:shadow-lg hover:shadow-spirit/20 transition-all"
                 style={{ background: GRADIENTS.primaryCta }}
               >
                 Get your Flow Profile first
@@ -397,7 +397,7 @@ export default function PracticePage() {
             ) : (
               <Link
                 href="/map"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white text-sm font-semibold hover:shadow-lg hover:shadow-[#6330A0]/20 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white text-sm font-semibold hover:shadow-lg hover:shadow-spirit/20 transition-all"
                 style={{ background: GRADIENTS.primaryCta }}
               >
                 Get your Flow Profile

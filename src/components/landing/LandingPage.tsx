@@ -14,6 +14,7 @@ import ClosingSection from './ClosingSection';
 import Footer from './Footer';
 import { useReelScroll } from '@/hooks/useReelScroll';
 import SectionIndicator from '@/components/nav/SectionIndicator';
+import ThreadOfLight from './ThreadOfLight';
 
 /**
  * Wraps each section with scroll-driven opacity so sections crossfade as the
@@ -65,9 +66,10 @@ export default function LandingPage() {
   useReelScroll({ sectionSelector: '[data-reel-section]' });
 
   return (
-    <div className="bg-[#0a0a0a]">
+    <div className="bg-ground">
       <LandingNav />
       <SectionIndicator />
+      <ThreadOfLight />
 
       {/* 1. Hero — Flow is your nature. Find it where you are. */}
       <ReelSection>

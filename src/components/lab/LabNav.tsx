@@ -6,7 +6,7 @@ import TopBarUserButton from '@/components/navigation/TopBarUserButton';
 
 export default function LabNav() {
   return (
-    <nav className="sticky top-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-sm border-b border-white/[0.06]">
+    <nav className="sticky top-0 z-40 bg-ground/95 backdrop-blur-sm border-b border-white/[0.06]">
       <div className="flex items-center justify-between px-5 h-12">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="relative w-6 h-6 flex-shrink-0">

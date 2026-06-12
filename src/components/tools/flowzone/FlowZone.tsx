@@ -9,9 +9,10 @@ import SessionComplete from './SessionComplete';
 import FlowZoneLayoutB from './FlowZoneLayoutB';
 import { useAuth } from '@/hooks/useAuth';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
-import { SAGE, AMETHYST, FOUR_PILLAR_GRADIENT } from './constants';
 
-export default function FlowZone({ hideHeader }: { hideHeader?: boolean } = {}) {
+// Header is owned by ToolShell in both embedded (/me) and standalone
+// (/tools/flowzone) contexts; `embedded` only affects outer sizing.
+export default function FlowZone({ embedded }: { embedded?: boolean } = {}) {
   const store = useFlowStore();
   const { user } = useAuth();
   const [newPriority, setNewPriority] = useState('');
@@ -142,26 +143,7 @@ export default function FlowZone({ hideHeader }: { hideHeader?: boolean } = {}) 
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
-      {!hideHeader && (
-        <>
-          <header className="flex items-center justify-between px-6 py-4 pl-[68px]">
-            <h1
-              className="text-lg font-bold tracking-tight"
-              style={{
-                background: `linear-gradient(135deg, ${SAGE}, ${AMETHYST})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              FlowZone
-            </h1>
-            <div />
-          </header>
-          <div className="h-px mx-6" style={{ background: FOUR_PILLAR_GRADIENT, opacity: 0.4 }} />
-        </>
-      )}
-
+    <div className={`${embedded ? '' : 'flex-1'} text-white flex flex-col`}>
       <main className="flex-1 px-6 pb-6 pt-6 max-w-5xl mx-auto w-full">
         <FlowZoneLayoutB {...layoutProps} />
 
@@ -198,7 +180,7 @@ export default function FlowZone({ hideHeader }: { hideHeader?: boolean } = {}) 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 z-50 bg-ground/95 backdrop-blur-sm flex items-center justify-center"
           >
             <Breathwork
               label={breathworkLabel}

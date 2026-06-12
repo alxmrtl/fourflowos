@@ -3,6 +3,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
+import { COMPENDIUM_PROTOCOL_COUNT } from '@/data/compendium-meta';
 
 const featureLines = [
   { color: AMETHYST, text: 'Flow Unlock · Timeless Map — read where the pattern lives' },
@@ -29,8 +30,8 @@ const SECTIONS = [
     desc: 'Take something in',
     color: STEEL,
     tools: [
-      { name: 'FlowRead', sub: 'Focus reading trainer' },
-      { name: 'FlowCompendium', sub: '153 flow protocols' },
+      { name: 'FlowRead', sub: 'Read at full attention' },
+      { name: 'FlowCompendium', sub: `${COMPENDIUM_PROTOCOL_COUNT} flow protocols` },
     ],
     active: false,
   },
@@ -40,7 +41,7 @@ const SECTIONS = [
     desc: 'Break inertia',
     color: CORAL,
     tools: [
-      { name: 'FlowBreath', sub: 'Shift state — body first' },
+      { name: 'FlowBreath', sub: 'Change your state in two minutes' },
       { name: 'FlowSpark', sub: 'Map what pulls you' },
     ],
     active: false,
@@ -50,7 +51,7 @@ const SECTIONS = [
     label: 'CREATE',
     desc: 'Enter deep work',
     color: SAGE,
-    tools: [{ name: 'FlowZone', sub: 'Focus timer + reps' }],
+    tools: [{ name: 'FlowZone', sub: 'The deep work container' }],
     active: false,
   },
 ];
@@ -131,7 +132,7 @@ function FlowLabPreview() {
   return (
     <div className="relative w-full rounded-2xl overflow-hidden bg-[#0d0d0d] border border-white/10">
       {/* Simulated nav bar */}
-      <div className="flex items-center justify-between px-4 h-9 bg-[#0a0a0a]/95 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between px-4 h-9 bg-ground/95 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
           <div className="w-3.5 h-3.5 rounded-full bg-white/15" />
           <span className="text-[9px] font-bold text-white/35 tracking-wide">
@@ -183,7 +184,7 @@ function FlowLabPreview() {
       </div>
 
       {/* Bottom gradient mask */}
-      <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-ground-deep to-transparent pointer-events-none" />
     </div>
   );
 }
@@ -195,7 +196,7 @@ export default function ArchetypeRevealSection() {
   const previewInView = useInView(previewRef, { once: true, amount: 0.3 });
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-[#050505]">
+    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-ground-deep">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="max-w-6xl mx-auto px-6">

@@ -63,7 +63,7 @@ export default function NameBreakdownSection() {
   const nameBreakdown = isLeader ? leaderNameBreakdown : individualNameBreakdown;
 
   return (
-    <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#0a0a0a] overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-28 bg-ground overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-[0.02]">
         <div

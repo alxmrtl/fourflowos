@@ -29,7 +29,7 @@ export default function MenuButton() {
           />
 
           {/* Menu */}
-          <div className="absolute top-full right-0 mt-2 w-48 bg-[#111111] rounded-lg shadow-lg border border-white/10 z-50">
+          <div className="absolute top-full right-0 mt-2 w-48 bg-ground-lift rounded-lg shadow-lg border border-white/10 z-50">
             <div className="py-2">
               <Link
                 href="/"

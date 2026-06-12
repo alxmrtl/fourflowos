@@ -73,7 +73,7 @@ const leaderContent = {
 
 const styleClasses: Record<string, string> = {
   opener: 'text-2xl md:text-3xl lg:text-4xl text-white font-light',
-  highlight: 'text-3xl md:text-4xl lg:text-5xl font-semibold bg-gradient-to-r from-[#E84535] via-[#4E8C73] to-[#6330A0] bg-clip-text text-transparent',
+  highlight: 'text-3xl md:text-4xl lg:text-5xl font-semibold bg-gradient-to-r from-self via-space to-spirit bg-clip-text text-transparent',
   body: 'text-lg md:text-xl text-gray-400 leading-relaxed',
   emphasis: 'text-xl md:text-2xl lg:text-3xl text-white font-medium',
   closing: 'text-lg md:text-xl text-gray-300 leading-relaxed',
@@ -89,7 +89,7 @@ export default function SolutionSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-24 md:py-32 bg-[#050505] overflow-hidden"
+      className="relative py-24 md:py-32 bg-ground-deep overflow-hidden"
     >
       {/* Top border */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />

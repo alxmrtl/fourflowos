@@ -44,7 +44,7 @@ export default function ShapeSymbolismSection() {
   const isInView = useInView(sectionRef, { amount: 0.25 });
 
   return (
-    <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#050505] overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-28 bg-ground-deep overflow-hidden">
       {/* Background circle decoration */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <motion.div

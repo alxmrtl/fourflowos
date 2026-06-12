@@ -107,14 +107,14 @@ export default function SupportPage() {
 
       {/* Quick Contact */}
       <section className="mb-12">
-        <div className="p-6 bg-gradient-to-r from-[#E84535]/10 to-[#6330A0]/10 border border-white/10 rounded-xl">
+        <div className="p-6 bg-gradient-to-r from-self/10 to-spirit/10 border border-white/10 rounded-xl">
           <h2 className="text-xl font-bold text-white mb-4">Need Direct Help?</h2>
           <p className="text-gray-400 mb-4">
             We typically respond within 24-48 hours on business days.
           </p>
           <a
             href="mailto:fourflowos@gmail.com"
-            className="inline-flex items-center gap-2 px-5 py-2.5 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-spirit/25 transition-all duration-300"
             style={{ background: GRADIENTS.primaryCta }}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -137,7 +137,7 @@ export default function SupportPage() {
               onClick={() => setSelectedCategory(key)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 selectedCategory === key
-                  ? 'bg-white text-[#0a0a0a]'
+                  ? 'bg-white text-ground'
                   : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -201,7 +201,7 @@ export default function SupportPage() {
         <h2 className="text-2xl font-bold text-white mb-6">App Resources</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[#E84535]/20 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-self/20 flex items-center justify-center mb-4">
               <span className="text-2xl">🎯</span>
             </div>
             <h3 className="text-white font-semibold mb-2">FlowZone</h3>
@@ -211,7 +211,7 @@ export default function SupportPage() {
             </p>
           </div>
           <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[#4E8C73]/20 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-space/20 flex items-center justify-center mb-4">
               <span className="text-2xl">✨</span>
             </div>
             <h3 className="text-white font-semibold mb-2">FlowHabits</h3>
@@ -221,7 +221,7 @@ export default function SupportPage() {
             </p>
           </div>
           <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[#3E6FA3]/20 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-story/20 flex items-center justify-center mb-4">
               <span className="text-2xl">📖</span>
             </div>
             <h3 className="text-white font-semibold mb-2">FlowRead</h3>
@@ -231,7 +231,7 @@ export default function SupportPage() {
             </p>
           </div>
           <div className="p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-[#E84535]/20 flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-self/20 flex items-center justify-center mb-4">
               <span className="text-2xl">💪</span>
             </div>
             <h3 className="text-white font-semibold mb-2">FlowRep</h3>
@@ -272,7 +272,7 @@ export default function SupportPage() {
       </section>
 
       {/* Contact Summary */}
-      <section className="p-8 bg-gradient-to-br from-[#E84535]/10 via-[#4E8C73]/10 to-[#6330A0]/10 border border-white/10 rounded-2xl">
+      <section className="p-8 bg-gradient-to-br from-self/10 via-space/10 to-spirit/10 border border-white/10 rounded-2xl">
         <h2 className="text-2xl font-bold text-white mb-4">Still Need Help?</h2>
         <p className="text-gray-300 mb-6">
           We&apos;re here to help you get the most out of FourFlowOS. Don&apos;t hesitate to reach out!
@@ -280,7 +280,7 @@ export default function SupportPage() {
         <div className="flex flex-col sm:flex-row gap-4">
           <a
             href="mailto:fourflowos@gmail.com"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-[#0a0a0a] font-semibold rounded-full hover:bg-gray-100 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-ground font-semibold rounded-full hover:bg-gray-100 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion, useInView } from 'framer-motion';
+import { AnimatePresence, motion, useInView, useMotionValue, useSpring, useTransform, type MotionValue } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GRADIENTS } from '@/styles/brand-colors';
 import PrincipleBridge from './PrincipleBridge';
@@ -18,28 +18,93 @@ const QUESTIONS = [
   "What's pulling me forward?",
 ];
 
-const X_OFFSETS = [0, -24, 18, -32, 28, 8, -18, 32, -8, 22];
-
 interface RainItem {
   id: number;
   text: string;
-  x: number;
+  x: number;        // base horizontal offset
+  drift: number;    // how strongly this one leans away from the pointer
+  duration: number; // fall time — varied so the rain never loops visibly
 }
 
 let uid = 0;
+
+function shuffled<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/** One falling question — leans away from the pointer as it falls. */
+function FallingQuestion({ item, pointerX, onDone }: {
+  item: RainItem;
+  pointerX: MotionValue<number>;
+  onDone: (id: number) => void;
+}) {
+  const lean = useTransform(pointerX, v => v * item.drift);
+  const x = useSpring(lean, { stiffness: 50, damping: 18 });
+
+  return (
+    <motion.div
+      className="absolute left-0 right-0"
+      initial={{ y: -10, opacity: 0 }}
+      animate={{ y: 260, opacity: [0, 1, 1, 0] }}
+      transition={{
+        duration: item.duration,
+        y: { ease: 'easeIn', duration: item.duration },
+        opacity: { duration: item.duration, times: [0, 0.08, 0.82, 1], ease: 'linear' },
+      }}
+      onAnimationComplete={() => onDone(item.id)}
+    >
+      <motion.p
+        className="text-center font-display text-xl md:text-2xl italic bg-clip-text text-transparent"
+        style={{ x, marginLeft: item.x, backgroundImage: GRADIENTS.textAccent }}
+      >
+        {item.text}
+      </motion.p>
+    </motion.div>
+  );
+}
 
 function QuestionRain() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { amount: 0.3 });
   const [items, setItems] = useState<RainItem[]>([]);
+  const orderRef = useRef<string[]>([]);
   const queueRef = useRef(0);
 
+  // Pointer lean: -1 (far left) … 1 (far right), zero on touch devices.
+  const pointerX = useMotionValue(0);
+  useEffect(() => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    const onMove = (e: PointerEvent) => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      pointerX.set(Math.max(-1, Math.min(1, ((e.clientX - rect.left) / rect.width - 0.5) * 2)));
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => window.removeEventListener('pointermove', onMove);
+  }, [pointerX]);
+
   const addItem = useCallback(() => {
-    const idx = queueRef.current % QUESTIONS.length;
+    // Reshuffle each full pass so the order never repeats predictably.
+    if (queueRef.current % QUESTIONS.length === 0) {
+      orderRef.current = shuffled(QUESTIONS);
+    }
+    const text = orderRef.current[queueRef.current % QUESTIONS.length];
     queueRef.current++;
     setItems(prev => [
       ...prev,
-      { id: uid++, text: QUESTIONS[idx], x: X_OFFSETS[idx] },
+      {
+        id: uid++,
+        text,
+        x: Math.round((Math.random() - 0.5) * 72),
+        drift: -(8 + Math.random() * 20),
+        duration: 4.1 + Math.random() * 1.3,
+      },
     ]);
   }, []);
 
@@ -69,21 +134,7 @@ function QuestionRain() {
     >
       <AnimatePresence>
         {items.map(item => (
-          <motion.p
-            key={item.id}
-            className="absolute left-0 right-0 text-center font-display text-xl md:text-2xl italic bg-clip-text text-transparent"
-            style={{ x: item.x, backgroundImage: GRADIENTS.textAccent }}
-            initial={{ y: -10, opacity: 0 }}
-            animate={{ y: 260, opacity: [0, 1, 1, 0] }}
-            transition={{
-              duration: 4.5,
-              y: { ease: 'easeIn', duration: 4.5 },
-              opacity: { duration: 4.5, times: [0, 0.08, 0.82, 1], ease: 'linear' },
-            }}
-            onAnimationComplete={() => removeItem(item.id)}
-          >
-            {item.text}
-          </motion.p>
+          <FallingQuestion key={item.id} item={item} pointerX={pointerX} onDone={removeItem} />
         ))}
       </AnimatePresence>
     </div>
@@ -92,7 +143,7 @@ function QuestionRain() {
 
 export default function QuestionRainSection() {
   return (
-    <section id="anchor" className="relative min-h-screen flex flex-col justify-center py-20 md:py-24 bg-[#050505]">
+    <section id="anchor" className="relative min-h-screen flex flex-col justify-center py-20 md:py-24 bg-ground-deep">
       <div
         className="absolute inset-0 opacity-[0.04] pointer-events-none"
         style={{

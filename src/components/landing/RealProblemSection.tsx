@@ -24,7 +24,7 @@ export default function RealProblemSection() {
   const isInView = useInView(sectionRef, { amount: 0.3 });
 
   return (
-    <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#0a0a0a] overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-28 bg-ground overflow-hidden">
       {/* Tangled threads visual - background */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <svg

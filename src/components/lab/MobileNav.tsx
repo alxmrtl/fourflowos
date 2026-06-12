@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SECTIONS, sectionFromTool, useMounted } from './sections-data';
+import { SECTIONS, sectionFromTool, useMounted, AppIcon } from './sections-data';
 import type { ToolId } from './useLabState';
 
 interface MobileNavProps {
@@ -104,7 +104,7 @@ function MobileSheet({
                     border: `1px solid ${isActive ? section.color + '55' : 'rgba(255,255,255,0.12)'}`,
                   }}
                 >
-                  {tool.icon}
+                  <AppIcon src={tool.iconSrc} alt={tool.label} />
                 </span>
                 <span className="flex flex-col">
                   <span className="text-[13px] font-medium leading-tight" style={{ color: '#fff' }}>

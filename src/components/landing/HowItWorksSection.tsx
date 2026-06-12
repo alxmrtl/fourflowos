@@ -36,7 +36,7 @@ export default function HowItWorksSection() {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
 
   return (
-    <section id="how-it-works" ref={ref} className="relative py-20 md:py-28 bg-[#0a0a0a]">
+    <section id="how-it-works" ref={ref} className="relative py-20 md:py-28 bg-ground">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="max-w-3xl mx-auto px-6">

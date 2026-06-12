@@ -87,7 +87,7 @@ export default function DimensionsSection() {
   };
 
   return (
-    <section ref={sectionRef} className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-[#050505] overflow-hidden">
+    <section ref={sectionRef} className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-ground-deep overflow-hidden">
       {/* Subtle background */}
       <div className="absolute inset-0">
         <div
@@ -313,15 +313,17 @@ export default function DimensionsSection() {
                         return (
                           <motion.div
                             key={keyId}
-                            initial={{ opacity: 0, x: -20 }}
+                            initial={{ opacity: 0, x: -36, scale: 0.88 }}
                             animate={{
                               opacity: revealedDimension === dimension.id ? 1 : 0,
-                              x: revealedDimension === dimension.id ? 0 : -20
+                              x: revealedDimension === dimension.id ? 0 : -36,
+                              scale: revealedDimension === dimension.id ? 1 : 0.88,
                             }}
                             transition={{
-                              duration: 0.4,
-                              delay: revealedDimension === dimension.id ? 0.35 + keyIndex * 0.08 : 0,
-                              ease: 'easeOut'
+                              type: 'spring',
+                              stiffness: 280,
+                              damping: 24,
+                              delay: revealedDimension === dimension.id ? 0.3 + keyIndex * 0.09 : 0,
                             }}
                             className="flex items-center gap-1.5 md:gap-3 p-1.5 md:p-3 rounded-lg md:rounded-xl bg-black/30 backdrop-blur-sm"
                           >

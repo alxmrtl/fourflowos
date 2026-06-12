@@ -193,7 +193,7 @@ export default function BlogPage({ initialContent }: BlogPageProps) {
                 onClick={() => setSelectedFilter('all')}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                   selectedFilter === 'all'
-                    ? 'bg-white text-[#0a0a0a]'
+                    ? 'bg-white text-ground'
                     : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
                 }`}
               >
@@ -432,7 +432,7 @@ export default function BlogPage({ initialContent }: BlogPageProps) {
 
       {/* Bottom CTA */}
       {!loading && filteredContent.length > 0 && (
-        <section className="relative py-16 md:py-24 bg-[#050505]">
+        <section className="relative py-16 md:py-24 bg-ground-deep">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
           <div className="max-w-4xl mx-auto px-6 text-center">
@@ -451,7 +451,7 @@ export default function BlogPage({ initialContent }: BlogPageProps) {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/framework"
-                  className="px-8 py-4 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300 hover:scale-105"
+                  className="px-8 py-4 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-spirit/25 transition-all duration-300 hover:scale-105"
                   style={{ background: GRADIENTS.primaryCta }}
                 >
                   Explore Framework

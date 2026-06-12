@@ -87,9 +87,10 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35 }}
+      // Aperture reveal — the profile opens like a widening iris
+      initial={{ opacity: 0, clipPath: 'circle(10% at 50% 8%)' }}
+      animate={{ opacity: 1, clipPath: 'circle(150% at 50% 8%)' }}
+      transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
       className="space-y-6 text-white"
     >
       {/* ── Bottleneck area badge ── */}

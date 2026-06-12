@@ -375,7 +375,7 @@ function FlowHabitsCard() {
 
 function Spinner({ label }: { label: string }) {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+    <div className="min-h-screen bg-ground flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white/80 animate-spin" />
         <p className="text-[11px] text-gray-700">{label}</p>
@@ -516,7 +516,7 @@ export default function MePage() {
     const profile = data.assessment!.flow_profile_json!;
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a]">
+      <div className="min-h-screen bg-ground">
         <LandingNav />
         <div className="px-4 pt-24 pb-16">
           {/* Activity Window */}
@@ -574,7 +574,7 @@ export default function MePage() {
 
   // ── Legacy text-based layout ────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#0a0a0a] px-4 py-12 md:py-16">
+    <div className="min-h-screen bg-ground px-4 py-12 md:py-16">
       <div className="w-[92%] md:w-4/5 max-w-3xl mx-auto border border-white/[0.07] rounded-2xl p-5 md:p-8">
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">

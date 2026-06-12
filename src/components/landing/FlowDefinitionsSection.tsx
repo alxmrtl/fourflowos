@@ -77,7 +77,7 @@ function FourFlowBridge() {
     <motion.button
       ref={ref}
       onClick={() => scrollToNext(ref.current)}
-      className="group w-fit mt-5 md:mt-10 flex flex-col items-start gap-2 backdrop-blur-sm bg-white/[0.07] border border-white/[0.18] rounded-2xl px-6 py-2.5 md:px-8 md:py-4 shadow-[0_0_36px_rgba(122,77,164,0.28)] hover:shadow-[0_0_56px_rgba(122,77,164,0.45)] hover:bg-white/[0.11] hover:border-white/[0.28] transition-all duration-300 cursor-pointer"
+      className="group w-fit mt-5 md:mt-10 flex flex-col items-start gap-2 backdrop-blur-sm bg-white/[0.07] border border-white/[0.18] rounded-2xl px-6 py-2.5 md:px-8 md:py-4 shadow-[0_0_36px_rgba(99, 48, 160,0.28)] hover:shadow-[0_0_56px_rgba(99, 48, 160,0.45)] hover:bg-white/[0.11] hover:border-white/[0.28] transition-all duration-300 cursor-pointer"
       initial={{ opacity: 0, y: 16 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 1.0, ease: 'easeOut', delay: 0.3 }}
@@ -100,7 +100,7 @@ function FourFlowBridge() {
 
 export default function FlowDefinitionsSection() {
   return (
-    <section className="relative min-h-screen flex flex-col justify-center py-6 md:py-24 bg-[#050505] overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center py-6 md:py-24 bg-ground-deep overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="relative max-w-3xl mx-auto px-6">

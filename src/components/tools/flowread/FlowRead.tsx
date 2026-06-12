@@ -3,44 +3,19 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFlowReadStore } from './useFlowReadStore';
-import { SAGE, FOUR_PILLAR_GRADIENT } from './constants';
 import TrainScreen from './TrainScreen';
 import AboutScreen from './AboutScreen';
 
-export default function FlowRead({ hideHeader }: { hideHeader?: boolean } = {}) {
+// Header is owned by ToolShell in both embedded (/me) and standalone
+// (/tools/flowread) contexts; `embedded` only affects outer sizing.
+export default function FlowRead({ embedded }: { embedded?: boolean } = {}) {
   const store = useFlowReadStore();
   const [showModal, setShowModal] = useState(false);
 
   if (!store.mounted) return null;
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white flex flex-col">
-      {/* Header — only rendered on standalone route (not when embedded in ActivityArea) */}
-      {!hideHeader && (
-        <>
-          <header className="flex items-center justify-between px-6 py-5 pl-[68px]">
-            <h1
-              className="text-lg font-semibold tracking-tight"
-              style={{
-                background: `linear-gradient(135deg, ${SAGE}, #3E6FA3)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              FlowRead
-            </h1>
-          </header>
-          <div
-            className="h-px mx-6"
-            style={{
-              background: FOUR_PILLAR_GRADIENT,
-              opacity: store.isTraining ? 0.15 : 0.4,
-              transition: 'opacity 0.3s ease'
-            }}
-          />
-        </>
-      )}
-
+    <div className={`relative ${embedded ? '' : 'flex-1'} text-white flex flex-col`}>
       {/* Main content */}
       <main className="flex-1 flex flex-col px-6 pb-6 pt-6 max-w-3xl mx-auto w-full">
         <TrainScreen

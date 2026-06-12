@@ -9,7 +9,7 @@ export default function ResonanceSection() {
   const isInView = useInView(sectionRef, { amount: 0.3 });
 
   return (
-    <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#050505] overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-28 bg-ground-deep overflow-hidden">
       {/* Breathing coral orb */}
       <motion.div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]"

@@ -1,8 +1,31 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GRADIENTS } from '@/styles/brand-colors';
 import PrincipleBridge from './PrincipleBridge';
+
+// Seeded PRNG — every visitor gets their own persistent arrangement jitter.
+function mulberry32(seed: number) {
+  return () => {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function getVisitorSeed(): number {
+  try {
+    const KEY = 'ffos_constellation_seed';
+    const stored = localStorage.getItem(KEY);
+    if (stored) return parseInt(stored, 10);
+    const seed = Math.floor(Math.random() * 2 ** 31);
+    localStorage.setItem(KEY, String(seed));
+    return seed;
+  } catch {
+    return 19741975; // flow named, 1975
+  }
+}
 
 interface KeyDef {
   name: string;
@@ -102,9 +125,25 @@ const shapes = {
     }
     return arr;
   },
+  // The FourFlow form: each dimension's three keys gather into a petal in
+  // its quadrant. Personal jitter is never applied here — your scatter is
+  // yours alone; coherence is one shared form.
+  mandala: (): Point[] => {
+    const arr: Point[] = [];
+    for (let d = 0; d < 4; d++) {
+      const base = -Math.PI / 2 + d * (Math.PI / 2);
+      for (let k = 0; k < 3; k++) {
+        const angle = base + (k - 1) * 0.45;
+        const r = k === 1 ? 160 : 106;
+        arr.push([CX + r * Math.cos(angle), CY + r * Math.sin(angle) * 0.85]);
+      }
+    }
+    return arr;
+  },
 };
 
 const ARRANGEMENTS: (keyof typeof shapes)[] = ['spiral', 'cluster', 'arc', 'triangle', 'square', 'line'];
+const CLICKS_TO_COHERE = 3; // the Nth rearrangement resolves into the mandala
 
 export default function UniqueStackSection() {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -112,6 +151,7 @@ export default function UniqueStackSection() {
   const linesGRef = useRef<SVGGElement>(null);
   const ripplesGRef = useRef<SVGGElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
+  const [caption, setCaption] = useState<string | null>(null);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -237,8 +277,20 @@ export default function UniqueStackSection() {
       requestAnimationFrame(step);
     };
 
+    // Personal signature: a persistent seeded jitter on every scattered
+    // arrangement. The mandala alone is exempt — coherence is one form.
+    const rand = mulberry32(getVisitorSeed());
+    const jitter = Array.from({ length: N }, () => [
+      (rand() - 0.5) * 26,
+      (rand() - 0.5) * 26,
+    ] as Point);
+    const withSignature = (points: Point[]): Point[] =>
+      points.map(([x, y], i) => [x + jitter[i][0], y + jitter[i][1]] as Point);
+
     let arrIdx = 0;
     let firstInteraction = true;
+    let clickCount = 0;
+    let coherenceShown = false;
     const pickNextShape = (): keyof typeof shapes => {
       const choices = ARRANGEMENTS.filter((_, i) => i !== arrIdx);
       const next = choices[Math.floor(Math.random() * choices.length)];
@@ -247,8 +299,20 @@ export default function UniqueStackSection() {
     };
 
     const rearrange = (clickX: number, clickY: number) => {
+      clickCount++;
+      // The third rearrangement resolves into the FourFlow mandala —
+      // scattered keys cohering into the form.
+      if (clickCount % (CLICKS_TO_COHERE + 1) === CLICKS_TO_COHERE) {
+        morphTo(shapes.mandala(), 1600, () => {
+          if (!coherenceShown) {
+            coherenceShown = true;
+            setCaption('…and when the twelve cohere, the form appears.');
+          }
+        });
+        return;
+      }
       const name = pickNextShape();
-      const base = shapes[name]();
+      const base = withSignature(shapes[name]());
       const baseCx = base.reduce((s, [x]) => s + x, 0) / N;
       const baseCy = base.reduce((s, [, y]) => s + y, 0) / N;
       const targetCx = Math.max(220, Math.min(W - 220, clickX));
@@ -276,7 +340,10 @@ export default function UniqueStackSection() {
         entries.forEach((it) => {
           if (it.isIntersecting && !played) {
             played = true;
-            setTimeout(() => morphTo(shapes.spiral(), 2400, startBreathing), 400);
+            setTimeout(() => morphTo(withSignature(shapes.spiral()), 2400, () => {
+              startBreathing();
+              setCaption('this arrangement is yours');
+            }), 400);
           }
         });
       },
@@ -296,7 +363,7 @@ export default function UniqueStackSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-[#050505] overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center py-16 md:py-20 bg-ground-deep overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="relative max-w-3xl mx-auto px-6 text-center mb-10 md:mb-14">
@@ -357,6 +424,15 @@ export default function UniqueStackSection() {
           </div>
         </div>
       </div>
+
+      {/* Whisper caption — appears once the signature settles */}
+      <p
+        key={caption}
+        className="text-center font-display italic text-sm md:text-base text-white/35 mt-2 transition-opacity duration-1000"
+        style={{ opacity: caption ? 1 : 0, minHeight: '1.5em' }}
+      >
+        {caption ?? ' '}
+      </p>
 
       <div className="mt-8 flex flex-wrap justify-center gap-6 text-[10px] tracking-[0.18em] uppercase text-white/40">
         {[

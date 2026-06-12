@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import SpectrumSlider from '../intake-ui/SpectrumSlider';
 
-const ACCENT = '#5B84B1';
+const ACCENT = '#3E6FA3';
 
 interface Props {
   data: {

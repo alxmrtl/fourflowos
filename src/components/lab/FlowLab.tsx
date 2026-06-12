@@ -14,7 +14,7 @@ export default function FlowLab() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-ground flex items-center justify-center">
         <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white/60 animate-spin" />
       </div>
     );
@@ -22,14 +22,14 @@ export default function FlowLab() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-ground flex items-center justify-center">
         <AuthModal />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
+    <div className="min-h-screen bg-ground flex flex-col">
       <LandingNav />
       {/* Spacer for fixed nav */}
       <div className="h-20 flex-shrink-0" />

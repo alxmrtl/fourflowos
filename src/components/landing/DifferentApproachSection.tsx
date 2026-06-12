@@ -17,7 +17,7 @@ const principles = [
         />
       </svg>
     ),
-    gradient: 'from-[#E84535]/20 to-[#4E8C73]/20',
+    gradient: 'from-self/20 to-space/20',
   },
   {
     title: 'Resistance is Information',
@@ -32,7 +32,7 @@ const principles = [
         />
       </svg>
     ),
-    gradient: 'from-[#4E8C73]/20 to-[#3E6FA3]/20',
+    gradient: 'from-space/20 to-story/20',
   },
   {
     title: 'Work as Play',
@@ -53,7 +53,7 @@ const principles = [
         />
       </svg>
     ),
-    gradient: 'from-[#3E6FA3]/20 to-[#6330A0]/20',
+    gradient: 'from-story/20 to-spirit/20',
   },
 ];
 
@@ -62,7 +62,7 @@ export default function DifferentApproachSection() {
   const isInView = useInView(sectionRef, { amount: 0.25 });
 
   return (
-    <section ref={sectionRef} className="relative py-20 md:py-28 bg-[#050505] overflow-hidden">
+    <section ref={sectionRef} className="relative py-20 md:py-28 bg-ground-deep overflow-hidden">
       {/* Subtle warming gradient */}
       <motion.div
         className="absolute inset-0 opacity-[0.03]"

@@ -169,7 +169,7 @@ const audienceOptions = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     ),
-    gradient: 'from-[#3E6FA3] to-[#6330A0]',
+    gradient: 'from-story to-spirit',
   },
   {
     id: 'leader' as const,
@@ -180,7 +180,7 @@ const audienceOptions = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     ),
-    gradient: 'from-[#4E8C73] to-[#3E6FA3]',
+    gradient: 'from-space to-story',
   },
 ];
 
@@ -216,7 +216,7 @@ export default function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-ground"
     >
       {/* Particle merge background */}
       <ParticleBackground />
@@ -322,7 +322,7 @@ export default function HeroSection() {
           <motion.div
             className="absolute -inset-4 rounded-full opacity-30"
             style={{
-              background: 'radial-gradient(circle, rgba(122, 77, 164, 0.4) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(99, 48, 160, 0.4) 0%, transparent 70%)',
             }}
             animate={{
               scale: [1, 1.15, 1],
@@ -349,7 +349,7 @@ export default function HeroSection() {
           />
 
           {/* Logo image */}
-          <div className="absolute inset-1 rounded-full overflow-hidden bg-[#0a0a0a]">
+          <div className="absolute inset-1 rounded-full overflow-hidden bg-ground">
             <Image
               src="/assets/LOGOS/FOURFLOW - MAIN LOGO.png"
               alt="FourFlowOS"
@@ -460,7 +460,7 @@ export default function HeroSection() {
                   className={`
                     relative p-8 md:p-10 rounded-3xl text-left transition-all duration-300
                     ${isSelected
-                      ? 'bg-[#0a0a0a]'
+                      ? 'bg-ground'
                       : 'bg-white/[0.03] border border-white/10 group-hover:bg-white/[0.06] group-hover:border-white/20'
                     }
                   `}

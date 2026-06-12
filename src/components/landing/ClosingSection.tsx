@@ -42,7 +42,7 @@ function Door({ href, label, sub, color }: DoorProps) {
 
 export default function ClosingSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050505] py-16 md:py-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-ground-deep py-16 md:py-20">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="absolute inset-0 opacity-[0.35] pointer-events-none">

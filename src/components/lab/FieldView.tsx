@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import FrequencyField from './FrequencyField';
 import { CORAL, SAGE, STEEL, AMETHYST } from '@/styles/brand-colors';
 import type { FieldId, ToolId } from './useLabState';
+import { COMPENDIUM_PROTOCOL_COUNT } from '@/data/compendium-meta';
 
 interface ToolConfig {
   id: ToolId;
@@ -25,7 +26,7 @@ export const FIELDS: FieldConfig[] = [
     label: 'CONSUME',
     tools: [
       { id: 'flowread', label: 'FlowRead', description: 'Speed reading — paste text or a YouTube URL', color: STEEL },
-      { id: 'compendium', label: 'Compendium', description: 'Browse 153 flow qualities and techniques', color: AMETHYST },
+      { id: 'compendium', label: 'Compendium', description: `Browse ${COMPENDIUM_PROTOCOL_COUNT} flow qualities and techniques`, color: AMETHYST },
     ],
   },
   {
@@ -49,7 +50,7 @@ export const FIELDS: FieldConfig[] = [
     tools: [
       { id: 'training', label: 'Daily Reps', description: 'Spaced repetition — train the framework', color: AMETHYST },
       { id: 'flow-lens', label: 'Flow Unlock', description: 'Find your block', color: STEEL },
-      { id: 'ancestral-signal', label: 'Timeless Map', description: 'The deep architecture', color: AMETHYST },
+      { id: 'ancestral-signal', label: 'Timeless Map', description: 'What you were born carrying', color: AMETHYST },
     ],
   },
 ];
@@ -79,7 +80,7 @@ export default function FieldView({ lastField, onSelectTool, onToggleMeta }: Fie
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-[#0a0a0a] flex flex-col p-4 md:p-6"
+      className="min-h-screen bg-ground flex flex-col p-4 md:p-6"
     >
       {/* Meta toggle */}
       <div className="flex justify-end mb-3">

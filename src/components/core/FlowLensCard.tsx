@@ -63,18 +63,9 @@ export default function FlowLensCard({ initialProfile }: Props) {
     }
   }
 
+  // Renders inside ToolShell — the shell owns the header; this is body only.
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden text-white">
-      {/* Header */}
-      <div className="px-5 pt-5 pb-4 border-b border-white/[0.05]">
-        <div>
-          <p className="text-[10px] uppercase tracking-widest text-white/25 mb-0.5">Flow Unlock</p>
-          <p className="text-white font-semibold text-sm">Find your block</p>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="px-5 py-5">
+    <div className="text-white">
         <AnimatePresence mode="wait">
           {cardState === 'empty' && (
             <motion.div
@@ -143,7 +134,6 @@ export default function FlowLensCard({ initialProfile }: Props) {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
     </div>
   );
 }

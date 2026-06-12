@@ -426,7 +426,7 @@ function ForgotPasswordForm({
 function SentState({ email, onResend }: { email: string; onResend: () => void }) {
   return (
     <div className="text-center">
-      <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'rgba(107,162,146,0.15)' }}>
+      <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'rgba(78, 140, 115,0.15)' }}>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#4E8C73" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 10l5 5 9-9" />
         </svg>
@@ -451,7 +451,7 @@ function SentState({ email, onResend }: { email: string; onResend: () => void })
 function ConfirmEmailState({ email, onBack }: { email: string; onBack: () => void }) {
   return (
     <div className="text-center">
-      <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'rgba(107,162,146,0.15)' }}>
+      <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'rgba(78, 140, 115,0.15)' }}>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#4E8C73" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 10l5 5 9-9" />
         </svg>
@@ -473,7 +473,7 @@ function ConfirmEmailState({ email, onBack }: { email: string; onBack: () => voi
 function ResetSentState({ email, onBack }: { email: string; onBack: () => void }) {
   return (
     <div className="text-center">
-      <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'rgba(107,162,146,0.15)' }}>
+      <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full" style={{ background: 'rgba(78, 140, 115,0.15)' }}>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#4E8C73" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 10l5 5 9-9" />
         </svg>

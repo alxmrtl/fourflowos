@@ -23,7 +23,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "FourFlowOS - The Operating System for Flow States",
-  description: "Stop forcing focus. Start aligning the four dimensions that create it naturally. A holistic framework for achieving flow states through the integration of Self, Space, Story, and Spirit.",
+  description: "Stop forcing focus. Start aligning the four dimensions that create it naturally. FourFlow makes flow trainable — through Self, Space, Story, and Spirit.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",

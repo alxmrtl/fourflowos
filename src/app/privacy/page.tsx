@@ -9,9 +9,9 @@ export default function PrivacyPage() {
   const lastUpdated = 'February 6, 2025';
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-ground">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 py-4 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 py-4 bg-ground/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-4xl mx-auto px-6 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-10 h-10">
@@ -294,15 +294,15 @@ export default function PrivacyPage() {
               </p>
               <ul className="space-y-2 text-gray-400">
                 <li className="flex items-start gap-2">
-                  <span className="text-[#E84535]">•</span>
+                  <span className="text-self">•</span>
                   Delete individual items (habits, goals, sessions) within the app
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#4E8C73]">•</span>
+                  <span className="text-space">•</span>
                   Uninstall the app to remove all associated data
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#3E6FA3]">•</span>
+                  <span className="text-story">•</span>
                   Use iOS Settings to manage app storage
                 </li>
               </ul>
@@ -352,7 +352,7 @@ export default function PrivacyPage() {
               <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
                 <a
                   href="mailto:fourflowos@gmail.com"
-                  className="text-[#6330A0] hover:text-[#7A40C0] transition-colors font-medium"
+                  className="text-spirit hover:text-[#7A40C0] transition-colors font-medium"
                 >
                   fourflowos@gmail.com
                 </a>
@@ -360,7 +360,7 @@ export default function PrivacyPage() {
             </section>
 
             {/* Summary */}
-            <section className="p-8 bg-gradient-to-br from-[#E84535]/10 via-[#4E8C73]/10 to-[#6330A0]/10 border border-white/10 rounded-2xl">
+            <section className="p-8 bg-gradient-to-br from-self/10 via-space/10 to-spirit/10 border border-white/10 rounded-2xl">
               <h2 className="text-2xl font-bold text-white mb-4">Summary</h2>
               <ul className="space-y-3 text-gray-300">
                 <li className="flex items-start gap-3">

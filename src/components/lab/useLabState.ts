@@ -4,10 +4,10 @@ import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export type FieldId = 'core' | 'consume' | 'catalyze' | 'create';
-export type ToolId = 'flow-lens' | 'ancestral-signal' | 'flowread' | 'compendium' | 'breathwork' | 'curiosity' | 'flowzone' | 'training';
+export type ToolId = 'flow-lens' | 'ancestral-signal' | 'flowread' | 'compendium' | 'breathwork' | 'curiosity' | 'flowzone' | 'flowwrite' | 'training';
 
 const LAST_TOOL_KEY = 'flowlab_last_tool';
-const VALID_TOOLS: ToolId[] = ['flow-lens', 'ancestral-signal', 'flowread', 'compendium', 'breathwork', 'curiosity', 'flowzone', 'training'];
+const VALID_TOOLS: ToolId[] = ['flow-lens', 'ancestral-signal', 'flowread', 'compendium', 'breathwork', 'curiosity', 'flowzone', 'flowwrite', 'training'];
 
 export function useLabState() {
   const searchParams = useSearchParams();

@@ -103,7 +103,7 @@ export default function FlowSession({ priority, durationMinutes, audioSettings, 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-[#0a0a0a] flex flex-col items-center justify-center"
+      className="fixed inset-0 z-50 bg-ground flex flex-col items-center justify-center"
     >
       {/* Struggle phase indicator */}
       <AnimatePresence>
@@ -244,7 +244,7 @@ export default function FlowSession({ priority, durationMinutes, audioSettings, 
           <div className="flex items-center gap-4 mt-8">
             <button
               onClick={() => (timer.isRunning ? timer.pause() : timer.resume())}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm text-gray-400 border border-white/10 hover:text-white hover:border-[#4E8C73]/40 transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm text-gray-400 border border-white/10 hover:text-white hover:border-space/40 transition-colors"
             >
               {/* Pause/Play icon */}
               {timer.isRunning ? (

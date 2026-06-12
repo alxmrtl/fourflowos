@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AMETHYST, STEEL } from '@/styles/brand-colors';
+import { GRADIENTS } from '@/styles/brand-colors';
 import ShapePick from './intake/ShapePick';
 import WordStorm from './intake/WordStorm';
 import ImagePull from './intake/ImagePull';
@@ -190,7 +190,7 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
   function renderQ5() {
     return (
       <TextReflection
-        label="Signal"
+        label="Reflection"
         question="What's getting in the way of your best work right now?"
         placeholder="Be specific — could be internal, external, or just unclear…"
         onSelect={text => advance({ ...answers, q5: text })}
@@ -202,7 +202,7 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
   function renderQ6() {
     return (
       <TextReflection
-        label="Signal"
+        label="Reflection"
         question="Describe the last time you were fully in it. Walk me through what made it possible."
         placeholder="The last time things clicked — what were the conditions…"
         onSelect={text => advance({ ...answers, q6: text })}
@@ -214,7 +214,7 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
   function renderQ7() {
     return (
       <TextReflection
-        label="Signal"
+        label="Reflection"
         question="What do you tell yourself when you can't get started — or when you lose the thread mid-work?"
         placeholder="The actual internal voice, not the polished version…"
         onSelect={text => advance({ ...answers, q7: text })}
@@ -226,7 +226,7 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
   function renderQ8() {
     return (
       <TextReflection
-        label="Signal"
+        label="Reflection"
         question="What are you actually chasing right now? Not what you should be chasing — what is it really?"
         placeholder="Honest answer — the thing underneath the thing…"
         onSelect={text => onSubmit({ answers: { ...answers, q8: text } })}
@@ -240,7 +240,7 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
   ];
 
   // Phase label: INSTINCT for q1–q4 (indices 0–3), SIGNAL for q5–q8 (indices 4–7)
-  const phaseLabel   = current < 4 ? 'INSTINCT' : 'SIGNAL';
+  const phaseLabel   = current < 4 ? 'INSTINCT' : 'REFLECTION';
   const phaseChanged = current === 4;
 
   return (
@@ -266,7 +266,7 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
         <div className="h-px bg-white/[0.06] rounded-full overflow-hidden">
           <motion.div
             className="h-full rounded-full"
-            style={{ background: `linear-gradient(90deg, ${STEEL}, ${AMETHYST})` }}
+            style={{ background: GRADIENTS.fourPillar }}
             animate={{ width: `${progress * 100}%` }}
             transition={{ duration: 0.3 }}
           />

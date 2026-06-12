@@ -36,7 +36,7 @@ export default function AboutPage() {
       </section>
 
       {/* The Project Section */}
-      <section className="relative py-16 md:py-24 bg-[#050505]">
+      <section className="relative py-16 md:py-24 bg-ground-deep">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
         <div className="max-w-3xl mx-auto px-6">
@@ -72,7 +72,7 @@ export default function AboutPage() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/contact"
-                  className="px-6 py-3 text-white font-medium rounded-full hover:shadow-lg hover:shadow-[#6330A0]/25 transition-all duration-300 hover:scale-105"
+                  className="px-6 py-3 text-white font-medium rounded-full hover:shadow-lg hover:shadow-spirit/25 transition-all duration-300 hover:scale-105"
                   style={{ background: GRADIENTS.primaryCta }}
                 >
                   Get in Touch

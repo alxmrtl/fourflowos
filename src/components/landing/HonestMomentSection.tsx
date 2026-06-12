@@ -110,7 +110,7 @@ function ScrollParagraph({ children }: { children: React.ReactNode }) {
 
 export default function HonestMomentSection() {
   return (
-    <section id="honest-moment" className="relative py-32 md:py-44 bg-[#050505]">
+    <section id="honest-moment" className="relative py-32 md:py-44 bg-ground-deep">
 
       {/* Noise texture */}
       <div
