@@ -127,7 +127,7 @@ export default function SignalStrip({ sessions, curiosity }: Props) {
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">No sessions yet. Complete your first session to start building your signal.</p>
+              <p className="text-sm text-gray-500">No sessions yet. Complete your first session to start building your picture.</p>
               <Link href="/tools/flowzone" className="text-xs text-gray-500 hover:text-white transition-colors ml-4">
                 Open FlowZone →
               </Link>

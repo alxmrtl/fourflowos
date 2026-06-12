@@ -35,7 +35,7 @@ export default function TermsPage() {
             <strong className="text-white">FlowZone</strong> — A focus timer with breathwork integration and flow state tracking
           </div>
           <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
-            <strong className="text-white">FlowHabits</strong> — A habit tracking app aligned with the Four Pillars framework
+            <strong className="text-white">FlowHabits</strong> — A habit tracking app aligned with the Four Dimensions framework
           </div>
           <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
             <strong className="text-white">FlowRead</strong> — A speed reading trainer with flow-inducing exercises

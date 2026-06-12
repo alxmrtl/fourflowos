@@ -157,7 +157,7 @@ const PROFILE_TOOL: Anthropic.Tool = {
       },
       the_tell: {
         type: 'string',
-        description: '2-3 sentences naming the specific cross-pattern or inversion you read. This is the insight they couldn\'t see themselves — name the structure, not the surface. Use signal language.',
+        description: '2-3 sentences naming the specific cross-pattern or inversion you read. This is the insight they couldn\'t see themselves — name the structure, not the surface, in plain body-grounded language.',
       },
       the_move: {
         type: 'string',
@@ -165,7 +165,7 @@ const PROFILE_TOOL: Anthropic.Tool = {
       },
       tool_prescription: {
         type: 'string',
-        description: '1 sentence: why this specific tool for this specific person — reference something concrete from their signal, not the tool description.',
+        description: '1 sentence: why this specific tool for this specific person — reference something concrete from what they shared, not the tool description.',
       },
       technique_prescriptions: {
         type: 'array',

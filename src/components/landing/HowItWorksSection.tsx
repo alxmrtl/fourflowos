@@ -7,8 +7,8 @@ import { useRef } from 'react';
 const steps = [
   {
     number: '01',
-    title: 'Map your signal',
-    body: 'Take the intake. 12 questions across 4 dimensions. No generic advice — just a clear read of where your signal is blocked.',
+    title: 'Find your bottleneck',
+    body: 'Take the intake. 12 questions across 4 dimensions. No generic advice — just a clear read of where flow is blocked for you.',
     color: '#E84535',
     href: '/map',
     cta: 'Start now',

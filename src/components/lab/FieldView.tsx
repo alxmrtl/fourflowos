@@ -49,7 +49,7 @@ export const FIELDS: FieldConfig[] = [
     tools: [
       { id: 'training', label: 'Daily Reps', description: 'Spaced repetition — train the framework', color: AMETHYST },
       { id: 'flow-lens', label: 'Flow Unlock', description: 'Find your block', color: STEEL },
-      { id: 'ancestral-signal', label: 'Ancestral Signal', description: 'The deep architecture', color: AMETHYST },
+      { id: 'ancestral-signal', label: 'Timeless Map', description: 'The deep architecture', color: AMETHYST },
     ],
   },
 ];

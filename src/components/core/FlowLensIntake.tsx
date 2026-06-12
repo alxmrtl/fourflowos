@@ -299,7 +299,7 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
           {current === 0 ? 'Cancel' : '← Back'}
         </button>
         {submitting && (
-          <span className="text-[10px] text-white/20">Reading your signal…</span>
+          <span className="text-[10px] text-white/20">Reading your pattern…</span>
         )}
       </div>
     </div>

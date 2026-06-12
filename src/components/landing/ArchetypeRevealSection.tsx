@@ -5,8 +5,8 @@ import { useRef } from 'react';
 import { CORAL, SAGE, STEEL, AMETHYST, GRADIENTS } from '@/styles/brand-colors';
 
 const featureLines = [
-  { color: AMETHYST, text: 'Flow Unlock · Ancestral Signal — read where the pattern lives' },
-  { color: STEEL,    text: 'FlowRead · FlowCompendium — take signal in, learn the science' },
+  { color: AMETHYST, text: 'Flow Unlock · Timeless Map — read where the pattern lives' },
+  { color: STEEL,    text: 'FlowRead · FlowCompendium — take it in, learn the science' },
   { color: CORAL,    text: 'FlowBreath · FlowSpark — shift state, find what\'s pulling' },
   { color: SAGE,     text: 'FlowZone — focus reps for the moments you almost lose it' },
 ];
@@ -19,7 +19,7 @@ const SECTIONS = [
     color: AMETHYST,
     tools: [
       { name: 'Flow Unlock', sub: 'Find your block' },
-      { name: 'Ancestral Signal', sub: 'Deep architecture' },
+      { name: 'Timeless Map', sub: 'Deep architecture' },
     ],
     active: true,
   },
@@ -30,7 +30,7 @@ const SECTIONS = [
     color: STEEL,
     tools: [
       { name: 'FlowRead', sub: 'Focus reading trainer' },
-      { name: 'FlowCompendium', sub: '191 flow protocols' },
+      { name: 'FlowCompendium', sub: '153 flow protocols' },
     ],
     active: false,
   },

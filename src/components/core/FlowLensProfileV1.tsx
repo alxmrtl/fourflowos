@@ -103,7 +103,7 @@ export default function FlowLensProfileV1({ profile, onRegenerate }: Props) {
             style={{ background: `${color}45` }}
           />
           <p className="text-[9px] text-white/25 mb-3 leading-relaxed">
-            Based on your signals — a direction to test, not a verdict
+            Based on what you shared — a direction to test, not a verdict
           </p>
           <ul className="space-y-1.5">
             {blindBullets.map((b, i) => (

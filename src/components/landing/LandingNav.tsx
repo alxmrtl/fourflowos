@@ -273,7 +273,7 @@ export default function LandingNav() {
                 style={{ background: 'linear-gradient(135deg, #3E6FA3, #6330A0)' }}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Map your signal
+                Get your Flow Profile
               </Link>
             </div>
           </div>

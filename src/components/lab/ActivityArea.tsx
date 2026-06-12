@@ -23,9 +23,9 @@ const PADDED_TOOLS: ToolId[] = ['flow-lens', 'ancestral-signal', 'breathwork', '
 // Metadata for the consistent tool header bar
 const TOOL_META: Partial<Record<ToolId, { icon: string; label: string; description: string }>> = {
   'flow-lens':        { icon: '/assets/apps/flowunlock-icon.png',    label: 'Flow Unlock',     description: 'Find your block'       },
-  'ancestral-signal': { icon: '/assets/LOGOS/GROUNDING VALUES.png', label: 'Ancestral Signal', description: 'The deep architecture' },
+  'ancestral-signal': { icon: '/assets/LOGOS/GROUNDING VALUES.png', label: 'Timeless Map', description: 'The deep architecture' },
   flowread:   { icon: '/assets/apps/flowread-icon.png',          label: 'FlowRead',        description: 'Undivided attention + absorption training' },
-  compendium: { icon: '/assets/LOGOS/OPEN MIND.png',             label: 'FlowCompendium',  description: 'Browse 191 flow protocols'         },
+  compendium: { icon: '/assets/LOGOS/OPEN MIND.png',             label: 'FlowCompendium',  description: 'Browse 153 flow protocols'         },
   breathwork: { icon: '/assets/LOGOS/FOCUSED BODY.png',          label: 'FlowBreath',      description: 'Shift state — body first'          },
   curiosity:  { icon: '/assets/LOGOS/IGNITED CURIOSITY.png',     label: 'FlowSpark',       description: 'Map what pulls you'               },
   flowzone:   { icon: '/assets/apps/flowzone-icon.png',          label: 'FlowZone',        description: 'Focus timer + reps'               },

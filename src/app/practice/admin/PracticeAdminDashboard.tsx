@@ -92,7 +92,7 @@ export default function PracticeAdminDashboard() {
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-lg font-semibold">Practice Admin</h1>
-            <p className="text-xs text-white/30 mt-0.5">Flow Lens + Timeless Map profiles</p>
+            <p className="text-xs text-white/30 mt-0.5">Flow Unlock + Timeless Map profiles</p>
           </div>
           <div className="flex items-center gap-4">
             <a href="/practice/admin/prompt" className="text-xs text-white/25 hover:text-white/50 transition-colors">
@@ -120,7 +120,7 @@ export default function PracticeAdminDashboard() {
                   color: tab === t ? '#fff' : 'rgba(255,255,255,0.35)',
                 }}
               >
-                {t === 'flow_lens' ? 'Flow Lens' : 'Timeless Map'}
+                {t === 'flow_lens' ? 'Flow Unlock' : 'Timeless Map'}
               </button>
             ))}
           </div>
@@ -142,7 +142,7 @@ export default function PracticeAdminDashboard() {
             <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-semibold text-white/60 uppercase tracking-wider">
-                  {detail.type === 'flow_lens' ? 'Flow Lens Profile' : 'Timeless Map'}
+                  {detail.type === 'flow_lens' ? 'Flow Unlock Profile' : 'Timeless Map'}
                 </p>
                 <button
                   onClick={() => setDetail(null)}
@@ -181,7 +181,7 @@ function FlowLensList({
   formatDate: (s: string) => string;
 }) {
   if (rows.length === 0) {
-    return <p className="text-sm text-white/25 py-8 text-center">No Flow Lens profiles yet.</p>;
+    return <p className="text-sm text-white/25 py-8 text-center">No Flow Unlock profiles yet.</p>;
   }
 
   return (

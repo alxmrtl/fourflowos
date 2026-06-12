@@ -289,7 +289,7 @@ export default function TogetherPage() {
               href="/map"
               className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors"
             >
-              Map your signal first <span>→</span>
+              Get your Flow Profile first <span>→</span>
             </Link>
           </motion.div>
         </div>

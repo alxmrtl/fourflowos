@@ -22,7 +22,7 @@ async function getAccessToken(): Promise<string | null> {
   return session?.access_token ?? null;
 }
 
-export default function EsotericCard({ initialProfile, esotericName = 'Ancestral Signal' }: Props) {
+export default function EsotericCard({ initialProfile, esotericName = 'Timeless Map' }: Props) {
   const { user } = useAuth();
   const [cardState, setCardState] = useState<CardState>(initialProfile ? 'profile' : 'empty');
   const [profile, setProfile] = useState<EsotericProfileData | null>(initialProfile);

@@ -141,7 +141,7 @@ function ProfileTextSection({
           <p className="text-sm text-gray-500 mb-3">
             {assessment
               ? 'Your profile is being prepared. Check back soon.'
-              : 'Your baseline diagnostic across all 4 pillars. Take the assessment to get started.'}
+              : 'Your Flow Profile across all four dimensions. Take the assessment to get started.'}
           </p>
           {!assessment && (
             <Link
@@ -272,7 +272,7 @@ function FlowZoneCard({ sessions }: { sessions: SessionRow[] }) {
         </div>
       ) : (
         <p className="text-sm text-gray-500 mb-3">
-          Complete your first session to start building your signal.
+          Complete your first session to start building your picture.
         </p>
       )}
 
@@ -346,7 +346,7 @@ function FlowHabitsCard() {
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="text-gray-500 font-semibold text-base">FlowHabits</h3>
-          <p className="text-xs text-gray-600 mt-0.5">Four Pillars habit tracker</p>
+          <p className="text-xs text-gray-600 mt-0.5">Four Dimensions habit tracker</p>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-xs" style={{ color: '#666' }}>●</span>
@@ -534,7 +534,7 @@ export default function MePage() {
               className="mb-8"
             >
               <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Flow Archetype</p>
-              <h1 className="text-3xl font-light text-white mb-3">Your Signal</h1>
+              <h1 className="text-3xl font-light text-white mb-3">Your Practice</h1>
               <div
                 className="h-px"
                 style={{ background: `linear-gradient(90deg, ${CORAL}, ${SAGE}, ${STEEL}, ${AMETHYST})` }}

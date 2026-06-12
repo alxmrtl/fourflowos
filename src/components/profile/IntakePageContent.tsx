@@ -43,7 +43,7 @@ export default function IntakePageContent() {
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.8 }}
           >
-            This intake maps your consciousness across four dimensions — Self, Space, Story, and Spirit.
+            This intake builds your Flow Profile across four dimensions — Self, Space, Story, and Spirit.
             Take your time. There are no wrong answers.
           </motion.p>
         </div>

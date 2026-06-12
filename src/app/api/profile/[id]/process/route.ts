@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 // Matches the CLI script's chart summary prompt for equivalent quality
-const CHART_ARCHETYPAL_PROMPT = `You are analyzing a natal chart to extract archetypal patterns for a Flow Profile — a consciousness alignment diagnostic.
+const CHART_ARCHETYPAL_PROMPT = `You are analyzing a natal chart to extract archetypal patterns for a Flow Profile — a diagnostic of the conditions that open or block flow across four dimensions.
 
 Your task: Generate a 250-word archetypal summary that captures:
 

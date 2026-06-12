@@ -18,33 +18,35 @@ FourFlowOS is an interactive web application that embodies the FourFlow framewor
 
 ## The Four Dimensions Framework
 
-### 🟠 SELF (Coral #FF6F61) - Flow Keys #1-3
+> Canonical vocabulary: `compendium/foundations/lexicon.md` (parent repo). The four are **Dimensions**, the twelve are **Keys** — no numbering.
+
+### 🟠 SELF (Coral #FF6F61)
 **Dimension Description**: "Develop unshakeable focus and presence by integrating physical, mental, and emotional intelligence."
 
-- **FLOW KEY #1 - Tuned Emotions**: Use your feelings as signals to stay in the sweet spot between bored and overwhelmed.
-- **FLOW KEY #2 - Open Mind**: Clear mental clutter and stay flexible so new ideas can flow naturally.
-- **FLOW KEY #3 - Focused Body**: Get out of your head and into your body to stop overthinking and stay present.
+- **Tuned Emotions**: Use your feelings as guidance to stay in the sweet spot between bored and overwhelmed.
+- **Open Mind**: Clear mental clutter and stay flexible so new ideas can flow naturally.
+- **Focused Body**: Get out of your head and into your body to stop overthinking and stay present.
 
-### 🟢 SPACE (Sage Green #6BA292) - Flow Keys #4-6
+### 🟢 SPACE (Sage Green #6BA292)
 **Dimension Description**: "Build spaces and systems that multiply your leverage while removing distractions."
 
-- **FLOW KEY #4 - Intentional Space**: Set up your environment to automatically put you in focus mode without willpower.
-- **FLOW KEY #5 - Optimized Tools**: Use the right systems and tech to get more done with less effort.
-- **FLOW KEY #6 - Feedback Systems**: Build quick ways to know if you're on track and course-correct fast.
+- **Intentional Space**: Set up your environment to automatically put you in focus mode without willpower.
+- **Optimized Tools**: Use the right systems and tech to get more done with less effort.
+- **Feedback Systems**: Build quick ways to know if you're on track and course-correct fast.
 
-### 🔵 STORY (Steel Blue #5B84B1) - Flow Keys #7-9
+### 🔵 STORY (Steel Blue #5B84B1)
 **Dimension Description**: "Transform your sense of purpose into a driving force for excellence and fulfillment."
 
-- **FLOW KEY #7 - Generative Story**: Create a personal narrative that makes challenges feel like adventure, not problems.
-- **FLOW KEY #8 - Clear Mission**: Break your vision into clear goals from years to quarters to days.
-- **FLOW KEY #9 - Empowered Role**: Know what you own and why it matters so you can work with real purpose.
+- **Generative Story**: Create a personal narrative that makes challenges feel like adventure, not problems.
+- **Clear Mission**: Break your vision into clear goals from years to quarters to days.
+- **Empowered Role**: Know what you own and why it matters so you can work with real purpose.
 
-### 🟣 SPIRIT (Amethyst #7A4DA4) - Flow Keys #10-12
+### 🟣 SPIRIT (Amethyst #7A4DA4)
 **Dimension Description**: "Access unlimited energy and direction through aligned values, wonder, and vision."
 
-- **FLOW KEY #10 - Grounding Values**: Know what you stand for so decisions become obvious and doubt disappears.
-- **FLOW KEY #11 - Visualized Vision**: See your future clearly so your brain starts noticing the right opportunities.
-- **FLOW KEY #12 - Ignited Curiosity**: Stay genuinely interested in your work so focus happens without forcing it.
+- **Grounding Values**: Know what you stand for so decisions become obvious and doubt disappears.
+- **Visualized Vision**: See your future clearly so your brain starts noticing the right opportunities.
+- **Ignited Curiosity**: Stay genuinely interested in your work so focus happens without forcing it.
 
 ## Application Architecture
 

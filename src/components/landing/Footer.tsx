@@ -71,7 +71,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link href="/map" className="text-gray-500 hover:text-white transition-colors">
-                  Map Your Signal
+                  Your Flow Profile
                 </Link>
               </li>
               <li>

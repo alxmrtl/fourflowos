@@ -44,8 +44,8 @@ const faqs: FAQItem[] = [
     category: 'flowzone',
   },
   {
-    question: 'What are the Four Pillars in FlowHabits?',
-    answer: 'The Four Pillars are SELF (inner mastery), SPACE (environment design), STORY (direction setting), and SPIRIT (inner drive). Each habit you create can be assigned to a pillar, helping you maintain balance across all dimensions of your life.',
+    question: 'What are the Four Dimensions in FlowHabits?',
+    answer: 'The Four Dimensions are SELF (inner mastery), SPACE (environment design), STORY (direction setting), and SPIRIT (inner drive). Each habit you create can be assigned to a dimension, helping you maintain balance across all areas of your life.',
     category: 'flowhabits',
   },
   {

@@ -83,7 +83,7 @@ Rising: ${chartData.rising_sign ?? 'unknown'}
 Notable aspects: ${JSON.stringify(chartData.aspects ?? []).slice(0, 400)}`
     : `Natal chart not available. Sun sign from birth date: ${sunSign}${birthLocation ? ` | Born: ${birthLocation}` : ''}`;
 
-  return `You are writing a deep reading of a person based on their name etymology, numerology, and natal astrology. This is the "Ancestral Signal" — an assessment of the ancient architecture beneath a person's surface story.
+  return `You are writing a deep reading of a person based on their name etymology, numerology, and natal astrology. This is the "Timeless Map" — an assessment of the ancient architecture beneath a person's surface story.
 
 Your audience: someone who is curious and open but not steeped in esoteric traditions. Translate everything into plain language. No jargon. No "Life Path 7 people tend to..." — instead, extract the actual insight and write it as an observation about this specific person.
 

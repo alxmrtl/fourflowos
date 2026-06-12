@@ -531,7 +531,7 @@ export default function ProfileViewPage() {
               This profile is based on your intake responses. A live facilitated session reveals what sits beneath the surface.
             </p>
             <p className="text-gray-500 text-sm mb-6 max-w-lg mx-auto">
-              The blind spots, the cascades between pillars, the patterns that only emerge when someone asks the right question at the right time.
+              The blind spots, the cascades between dimensions, the patterns that only emerge when someone asks the right question at the right time.
             </p>
             <a
               href="mailto:fourflowos@gmail.com?subject=Book a Live Flow Session&body=Hi, I'd like to book a facilitated Flow Session to go deeper on my profile."

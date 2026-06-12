@@ -385,7 +385,7 @@ export default function FrameworkPage() {
               href={user ? '/me' : '/map'}
               className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors group"
             >
-              {user ? 'Explore your profile' : 'Map your signal'}
+              {user ? 'Explore your profile' : 'Get your Flow Profile'}
               <svg
                 className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
                 fill="none"

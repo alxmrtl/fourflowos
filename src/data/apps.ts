@@ -32,20 +32,20 @@ export const APPS: Record<string, App> = {
     id: 'flow-profile',
     name: 'Flow Profile',
     tagline: 'Know where flow is blocked.',
-    summary: 'Your consciousness alignment map across the 12 Flow Keys',
+    summary: 'Your Flow Profile across the 12 Flow Keys — find the bottleneck',
     description: 'A diagnostic across 12 conditions that determine whether flow is accessible. Your Flow Profile shows which keys are bottlenecks right now — and the specific cascade that will unlock access. Everything else in your practice is calibrated to what your profile reveals.',
-    fullDescription: `The Flow Profile is a diagnostic across 12 Flow Keys organized into four pillars: SELF, SPACE, STORY, and SPIRIT.
+    fullDescription: `The Flow Profile is a diagnostic across 12 Flow Keys organized into four dimensions: SELF, SPACE, STORY, and SPIRIT.
 
 Each key names a condition that must be met for flow to be accessible. The profile surfaces which of these conditions are restricting access right now — and in what order to address them.
 
-The output isn't a score. It's a map: here's where the signal is breaking down, here's the cascade that will clear it.`,
+The output isn't a score. It's a map: here's where flow is breaking down, here's the cascade that will clear it. Every other tool in the practice is a prescription against what your profile reveals.`,
     icon: '/assets/LOGOS/FOURFLOW - MAIN LOGO.png',
     screenshots: [],
     platforms: ['web'],
     webUrl: '/me?tool=profile',
     labToolId: 'profile',
     features: [
-      { title: '12 Flow Keys', description: 'Assessed across all four pillars — SELF, SPACE, STORY, SPIRIT.' },
+      { title: '12 Flow Keys', description: 'Assessed across all four dimensions — SELF, SPACE, STORY, SPIRIT.' },
       { title: 'Bottleneck Identification', description: 'See exactly which conditions are restricting access right now.' },
       { title: 'Cascade Logic', description: 'Get the specific sequence that will unlock flow for your current state.' },
       { title: 'Living Document', description: 'Your profile updates as you practice and your state shifts over time.' },
@@ -64,21 +64,21 @@ The output isn't a score. It's a map: here's where the signal is breaking down, 
     description: 'Every quality and technique in the FourFlow framework — organized, searchable, and linkable to your profile. 36 qualities, 117 actionable techniques. The Compendium is the reference layer behind everything else.',
     fullDescription: `The complete FourFlow knowledge base — two card types:
 
-**Qualities** (36) — the named conditions that compose each Flow State. Each one has a Restore, Maintain, and Concentrate mode.
+**Qualities** (36) — the named conditions that compose each Flow Key. Each one has a Restore, Maintain, and Concentrate mode.
 
 **Techniques** (117) — atomic, numbered protocols. Concrete enough to follow without reading the source. Each technique activates a specific quality.
 
-Use spaced repetition to build fluency, or browse the Signal Grid to see your mastery at a glance.`,
+Use spaced repetition to build fluency, or browse the Compendium Grid to see your mastery at a glance.`,
     icon: '/assets/LOGOS/OPEN MIND.png',
     screenshots: [],
     platforms: ['web'],
     webUrl: '/me?tool=compendium',
     labToolId: 'compendium',
     features: [
-      { title: 'Signal Grid', description: 'Visual map of all 261 cards with mastery dots and enrichment intensity.' },
+      { title: 'Compendium Grid', description: 'Visual map of all 153 cards with mastery dots and enrichment intensity.' },
       { title: 'Spaced Repetition', description: 'SM-2 algorithm surfaces the right cards at the right time.' },
       { title: 'Two Card Types', description: 'Qualities and Techniques — each with a distinct role in the framework.' },
-      { title: 'Pillar Filtering', description: 'Browse by SELF, SPACE, STORY, or SPIRIT to target specific areas.' },
+      { title: 'Dimension Filtering', description: 'Browse by SELF, SPACE, STORY, or SPIRIT to target specific areas.' },
     ],
     gradient: 'from-[#5B84B1] to-[#4E8C73]',
     accentColor: '#5B84B1',
@@ -91,7 +91,7 @@ Use spaced repetition to build fluency, or browse the Signal Grid to see your ma
     name: 'FlowBreath',
     tagline: 'Shift state — body first.',
     summary: 'Breathwork patterns to transition into focused presence',
-    description: 'State change starts in the body. FlowBreath guides you through breathwork patterns that physiologically shift your nervous system — from scattered to settled, from anxious to alert. Use it before a session, during the Struggle Phase, or whenever the signal drops.',
+    description: 'State change starts in the body. FlowBreath guides you through breathwork patterns that physiologically shift your nervous system — from scattered to settled, from anxious to alert. Use it before a session, during the Struggle Phase, or whenever focus drops. Trains the Tuned Emotions key.',
     fullDescription: `The fastest path to a different state is through the breath. FlowBreath provides guided breathwork patterns grounded in physiology:
 
 Box breathing for balanced calm. Physiological sighs for rapid nervous system reset. 4-7-8 for deep parasympathetic activation.
@@ -119,7 +119,7 @@ Each pattern is designed for a specific entry point — pre-session, mid-session
     name: 'FlowSpark',
     tagline: 'Find where your flow lives.',
     summary: 'Surface your curiosities and map the intersections where flow emerges',
-    description: 'Curiosity is the only focus that comes for free. FlowSpark surfaces what genuinely fascinates you, then maps where those interests overlap. The intersections reveal your natural flow zones — the places where deep work feels like play.',
+    description: 'Curiosity is the only focus that comes for free. FlowSpark surfaces what genuinely fascinates you, then maps where those interests overlap. The intersections reveal your natural flow zones — the places where deep work feels like play. Trains the Ignited Curiosity key.',
     fullDescription: `A guided braindump that helps you articulate what genuinely fascinates you — then visualizes the unexpected overlaps between those curiosities.
 
 Where multiple interests converge, flow tends to live. These intersection zones are where concentration arrives without effort, where work feels less like discipline and more like pull.
@@ -159,7 +159,7 @@ Use FlowSpark to orient your vision, choose projects, or simply understand yours
     name: 'FlowZone',
     tagline: 'Train your attention. One rep at a time.',
     summary: 'Build concentration strength through Focus Reps',
-    description: 'Every moment you choose focus over distraction is a rep. FlowZone makes that invisible act visible — and builds it like a physical skill. Set your intention, start the session, use breathwork to settle in. Count your reps. Come back tomorrow.',
+    description: 'Every moment you choose focus over distraction is a rep. FlowZone makes that invisible act visible — and builds it like a physical skill. Set your intention, start the session, use breathwork to settle in. Count your reps. Come back tomorrow. Trains the Focused Body and Intentional Space keys.',
     fullDescription: `FlowZone is a focus training system built into the FourFlowOS website. It uses Focus Reps — pressing a button each time you choose focus over distraction — to make concentration visible and measurable.
 
 The Struggle Phase (the first 25% of any session) gets ambient encouragement to help you push through. Integrated breathwork patterns help you transition into focused presence.
@@ -206,10 +206,10 @@ Goal linking connects sessions to your broader purpose, and statistics track you
   flowhabits: {
     id: 'flowhabits',
     name: 'FlowHabits',
-    tagline: 'Build habits across all four pillars.',
-    summary: 'Balance your habits across all four pillars',
+    tagline: 'Build habits across all four dimensions.',
+    summary: 'Balance your habits across all four dimensions',
     description: 'Standard habit trackers treat every habit the same. FlowHabits organizes yours by SELF, SPACE, STORY, and SPIRIT — so you can see which dimensions of your life need attention. Gentle streaks, no guilt. Coming to iOS.',
-    fullDescription: `Build habits organized by the four pillars—SELF, SPACE, STORY, SPIRIT—with visual balance indicators showing which dimensions need attention.
+    fullDescription: `Build habits organized by the four dimensions—SELF, SPACE, STORY, SPIRIT—with visual balance indicators showing which dimensions need attention.
 
 Tracks streaks and completion rates with gentle accountability. Miss a day? It helps you get back on track without guilt. All data stays on-device.`,
     icon: '/assets/apps/flowhabits-icon.png',
@@ -218,7 +218,7 @@ Tracks streaks and completion rates with gentle accountability. Miss a day? It h
     appStoreUrl: '#',
     features: [
       {
-        title: 'Four Pillars Organization',
+        title: 'Four Dimensions Organization',
         description: 'Categorize habits by SELF, SPACE, STORY, and SPIRIT for balanced growth.',
       },
       {
@@ -253,7 +253,7 @@ Tracks streaks and completion rates with gentle accountability. Miss a day? It h
     name: 'FlowRead',
     tagline: 'Train attentional velocity.',
     summary: 'Train reading speed and attentional focus with flow-inducing drills',
-    description: 'Speed reading is the surface. What FlowRead actually trains is attentional velocity — the ability to move through information cleanly, without drift. RSVP drills, word chunking, progressive speed. Ten minutes a day builds a different relationship with your own attention.',
+    description: 'Speed reading is the surface. What FlowRead actually trains is attentional velocity — the ability to move through information cleanly, without drift. RSVP drills, word chunking, progressive speed. Ten minutes a day builds a different relationship with your own attention. Trains the Open Mind key.',
     fullDescription: `RSVP (Rapid Serial Visual Presentation) and word chunking exercises train the same attentional quality that makes flow accessible: the capacity to process information at speed, without drag or distraction.
 
 Progressive speed training gradually increases your pace as your capacity grows. The goal isn't faster reading — it's sharper, more deliberate attention.
@@ -301,7 +301,7 @@ Regular practice helps you enter a reading flow state where words process effort
     name: 'FlowRep',
     tagline: 'Movement, accumulated.',
     summary: 'Accumulate exercise reps throughout your day',
-    description: 'The body is part of the signal chain. FlowRep tracks movement throughout the day with a single tap — push-ups, squats, pull-ups, whatever your practice. Set daily targets, build streaks, keep the physical dimension of your focus alive.',
+    description: 'Focus is built on a moving body. FlowRep tracks movement throughout the day with a single tap — push-ups, squats, pull-ups, whatever your practice. Set daily targets, build streaks, keep the physical dimension of your focus alive. Trains the Focused Body key.',
     fullDescription: `Accumulate exercise reps throughout the day rather than formal workout sessions. Set daily targets, log with a single tap, and track streaks of consecutive days hitting your goals.
 
 Minimalist by design—built for consistent movement habits without traditional workout app complexity.`,

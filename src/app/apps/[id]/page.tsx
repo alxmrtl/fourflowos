@@ -96,9 +96,9 @@ export default function AppDetailPage({ params }: { params: Promise<{ id: string
                 )}
               </div>
 
-              {/* Related Pillars */}
+              {/* Related Dimensions */}
               <div>
-                <p className="text-gray-500 text-sm mb-3">Related Pillars</p>
+                <p className="text-gray-500 text-sm mb-3">Related Dimensions</p>
                 <div className="flex gap-2">
                   {app.relatedPillars.map((pillarId) => {
                     const pillar = DIMENSIONS[pillarId];
