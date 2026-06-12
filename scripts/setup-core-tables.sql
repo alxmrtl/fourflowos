@@ -29,6 +29,12 @@ CREATE INDEX IF NOT EXISTS idx_flow_lens_intakes_user_id   ON flow_lens_intakes(
 CREATE INDEX IF NOT EXISTS idx_flow_lens_profiles_user_id  ON flow_lens_profiles(user_id);
 CREATE INDEX IF NOT EXISTS idx_flow_lens_profiles_intake   ON flow_lens_profiles(intake_id);
 
+-- V5 (June 2026): profiles are history now — one row per daily unlock, never
+-- overwritten. The latest-by-day query and the 1/day guard both read this index.
+-- Run on existing databases:
+CREATE INDEX IF NOT EXISTS idx_flow_lens_profiles_user_recency
+  ON flow_lens_profiles(user_id, generated_at DESC);
+
 -- ─── Esoteric Profile ─────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS esoteric_intakes (

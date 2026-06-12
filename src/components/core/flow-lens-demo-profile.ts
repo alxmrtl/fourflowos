@@ -1,7 +1,10 @@
 /**
- * Demo profile used for design preview of the Flow Lens output (V4).
- * Replace with real AI-generated data once live.
+ * Display types + demo data for the Flow Unlock output (V5).
+ * V4 fields are kept optional so profiles generated before the Key-level
+ * upgrade still render through the legacy branch of FlowUnlockResult.
  */
+
+import type { KeyId } from '@/data/flow-unlock-config';
 
 export interface FlowLensDisplayProfile {
   id: string;
@@ -9,14 +12,23 @@ export interface FlowLensDisplayProfile {
   blind_side_pillar: string;
   profile_text: string;
   profile_json: {
+    version?: number;
     pillar_scores?: Record<string, number>;
+    // V5 structured output (Key-level)
+    bottleneck_key?: KeyId;
+    overexposed_keys?: KeyId[];
+    pattern_read?: string[];
+    key_moves?: { key: KeyId; move: string }[];
+    technique?: { name: string; prescription: string };
+    situation?: string | null;
+    // Shared
+    the_tell?: string;
+    tool_prescription?: string;
+    // V4 legacy fields
     sections?: Record<string, string>;
-    // V4 structured output
     gravity_bullets?: string[];
     blind_side_bullets?: string[];
-    the_tell?: string;
     the_move?: string;
-    tool_prescription?: string;
     technique_prescriptions?: { name: string; prescription: string }[];
     concept_prescription?: { name: string; why: string };
   } | null;
@@ -24,50 +36,44 @@ export interface FlowLensDisplayProfile {
   generated_at: string;
 }
 
+/** Compact history row returned by /api/core/profiles. */
+export interface FlowUnlockHistoryItem {
+  id: string;
+  bottleneck_key: KeyId | null;
+  blind_side_pillar: string;
+  move: string | null;
+  generated_at: string;
+}
+
 export const DEMO_PROFILE: FlowLensDisplayProfile = {
   id: 'demo',
-  gravity_pillar: 'self',
+  gravity_pillar: 'spirit',
   blind_side_pillar: 'story',
   profile_text: '',
   profile_json: {
-    pillar_scores: { self: 18, space: 10, story: 6, spirit: 12 },
-    gravity_bullets: [
-      'You read internal state with uncommon precision — body signals, energy shifts, emotional weather all register before your conscious mind names them.',
-      'This makes you a reliable operator when you\'re right with yourself, and a near-impossible starter when you\'re not.',
-      'The constraint: felt-sense has become a permission slip. You move when the signal clears, not when the work demands it.',
+    version: 5,
+    pillar_scores: { self: 6, space: 10, story: 4, spirit: 14 },
+    bottleneck_key: 'clear-mission',
+    overexposed_keys: ['ignited-curiosity', 'optimized-tools'],
+    pattern_read: [
+      'Your effort keeps going into new ideas and a better setup — the next spark, the next system, the next almost-ready workspace.',
+      'All of it is standing in for the one decision you haven\'t made: which single thing this month is actually for.',
     ],
-    blind_side_bullets: [
-      'Direction and narrative are the last things you attend to — not because they don\'t matter, but because they don\'t feel like anything.',
-      'You sustain intense effort without checking whether the aim is still right. Output accumulates; direction drifts.',
-      'This doesn\'t cost you work. It costs you work that compounds toward something.',
+    the_tell: 'You described five projects in the present tense and the finish line in the conditional. The energy is real — it just has no address. When you can\'t say what today is for, every spark feels like progress and nothing compounds.',
+    key_moves: [
+      { key: 'ignited-curiosity', move: 'Keep the sparks — but log them in a ledger instead of starting them. A question that returns next week has earned attention; one that doesn\'t was weather.' },
+      { key: 'optimized-tools', move: 'Freeze the setup for seven days. No new tools, no rearranging — the system you have is good enough to find out what the real blocker is.' },
+      { key: 'clear-mission', move: 'Tonight, write one sentence: "This month, the only thing that matters is ___." Put it where you\'ll see it before you see your feeds.' },
     ],
-    the_tell: 'You listed every internal obstacle with clinical precision — breath, tension, the fog. But when you described your last flow state, you named the conditions almost entirely in terms of outputs: what you got done, what clicked, what moved. The body awareness is your strongest signal. The missing read is where that energy is pointed.',
-    the_move: 'Your somatic precision is functioning as a launch system — you\'re waiting for the body to clear before you commit direction. The unlock: let body awareness calibrate aim, not replace it. Thirty seconds before each session: name the state you\'re in, then name the one outcome that would make this session worth the energy.',
-    tool_prescription: 'FlowZone makes each rep directional — you set a specific deliverable before the timer starts. It routes your natural state-awareness into "is this the right thing to push on?" before you commit the energy.',
-    technique_prescriptions: [
-      {
-        name: 'One Thing Card',
-        prescription: 'Physical card, one sentence: "Today, the only thing that matters is ___." It converts the somatic readiness you\'re good at into a pointed start condition.',
-      },
-      {
-        name: 'Body State Check',
-        prescription: '60-second somatic scan followed immediately by one named outcome — marries your instinctive body read with the directional clarity you tend to defer.',
-      },
-      {
-        name: 'Reframe Via Arc',
-        prescription: 'Name the current stuckness as a story stage, not a system failure. You\'re not broken — you\'re in the ordeal. Naming it activates the narrative instead of the self-regulation loop.',
-      },
-    ],
-    concept_prescription: {
-      name: 'Default Mode Network',
-      why: 'Your brain is processing direction during rest, not during effort — understanding this changes how you use downtime and why clarity comes when you stop trying.',
+    technique: {
+      name: 'One Thing Card',
+      prescription: 'A physical card with one sentence forces the decision your tools keep deferring — and puts it in your visual field before the sparks arrive.',
     },
+    tool_prescription: 'FlowCompendium has the direction protocols you\'ve been improvising around — start with the mission section instead of another tooling rabbit hole.',
   },
   recommendations: [
-    { type: 'technique', title: 'One Thing Card',     pillar: 'story' },
-    { type: 'technique', title: 'Body State Check',   pillar: 'story' },
-    { type: 'technique', title: 'Reframe Via Arc',    pillar: 'story' },
-    { type: 'tool',      title: 'FlowCompendium',     pillar: 'story', route: '/me?tool=compendium' },
+    { type: 'technique', title: 'One Thing Card', pillar: 'story', path: 'compendium/framework/STORY/Clear-Mission/_techniques/one-thing-card.md' },
+    { type: 'tool',      title: 'FlowCompendium', pillar: 'story', route: '/me?tool=compendium' },
   ],
   generated_at: new Date().toISOString(),
 };

@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import {
-  PILLAR_TECHNIQUES,
-  PILLAR_CONCEPTS,
+  KEY_CARDS,
+  KEY_TECHNIQUES,
   PRACTICE_TOOLS,
   VOICE_RULES,
   PSYCHOLINGUISTIC_INSTRUCTIONS,
@@ -21,7 +21,7 @@ const PS: Record<Pillar, string> = {
   spirit: 'Values · Curiosity · Vision',
 };
 
-type Tab = 'tools' | 'voice' | 'analysis';
+type Tab = 'keys' | 'voice' | 'analysis';
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -57,10 +57,10 @@ function Section({ title, children, copyText }: { title: string; children: React
 }
 
 export default function FlowUnlockPromptInspector() {
-  const [tab, setTab] = useState<Tab>('tools');
+  const [tab, setTab] = useState<Tab>('keys');
 
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'tools',    label: 'Tools & Techniques' },
+    { id: 'keys',     label: 'Keys & Techniques' },
     { id: 'analysis', label: 'Analysis Instructions' },
     { id: 'voice',    label: 'Voice Rules' },
   ];
@@ -72,7 +72,7 @@ export default function FlowUnlockPromptInspector() {
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-lg font-semibold">Flow Unlock — Prompt Inspector</h1>
-            <p className="text-xs text-white/30 mt-0.5">Live view of generation config · Edit in <code className="text-white/40">src/data/flow-unlock-config.ts</code></p>
+            <p className="text-xs text-white/30 mt-0.5">Live view of generation config (V5, Key-level) · Edit in <code className="text-white/40">src/data/flow-unlock-config.ts</code></p>
           </div>
           <a href="/practice/admin" className="text-xs text-white/25 hover:text-white/50 transition-colors">← Admin</a>
         </div>
@@ -96,86 +96,56 @@ export default function FlowUnlockPromptInspector() {
           ))}
         </div>
 
-        {/* ── Tools & Techniques ── */}
-        {tab === 'tools' && (
+        {/* ── Keys & Techniques ── */}
+        {tab === 'keys' && (
           <div className="space-y-6">
             {PILLARS.map(pillar => {
               const color = PC[pillar];
               const tool = PRACTICE_TOOLS[pillar];
-              const concept = PILLAR_CONCEPTS[pillar];
-              const techniques = PILLAR_TECHNIQUES[pillar];
+              const cards = KEY_CARDS.filter(k => k.dimension === pillar);
               return (
                 <div key={pillar} className="rounded-xl border overflow-hidden" style={{ borderColor: `${color}25` }}>
-                  {/* Pillar header */}
+                  {/* Dimension header */}
                   <div className="px-4 py-3 flex items-baseline gap-2" style={{ background: `${color}0d` }}>
                     <span className="text-xs font-bold tracking-widest" style={{ color }}>{PL[pillar]}</span>
                     <span className="text-[10px] text-white/30">{PS[pillar]}</span>
-                    <span className="ml-auto text-[9px] text-white/20 uppercase tracking-wider">blind-side pillar</span>
+                    <span className="ml-auto text-[9px] text-white/20 uppercase tracking-wider">
+                      tool: {tool.title}
+                    </span>
                   </div>
 
-                  <div className="p-4 space-y-5">
-                    {/* Tool */}
-                    <div>
-                      <p className="text-[9px] uppercase tracking-widest text-white/20 mb-2">Practice Tool</p>
-                      <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-semibold text-white">{tool.title}</span>
-                          <code className="text-[9px] text-white/25">{tool.route}</code>
-                        </div>
-                        <p className="text-xs text-white/50 leading-relaxed">{tool.description}</p>
-                      </div>
-                    </div>
-
-                    {/* Concept */}
-                    <div>
-                      <p className="text-[9px] uppercase tracking-widest text-white/20 mb-2">Concept</p>
-                      <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
-                        <span className="text-sm font-semibold text-white">{concept.name}</span>
-                        <p className="text-xs text-white/45 mt-0.5">The science of {concept.domain}</p>
-                      </div>
-                    </div>
-
-                    {/* Techniques */}
-                    <div>
-                      <p className="text-[9px] uppercase tracking-widest text-white/20 mb-2">
-                        Techniques ({techniques.length} total · first 3 recommended)
-                      </p>
-                      <div className="space-y-1.5">
-                        {techniques.map((t, i) => (
-                          <div
-                            key={t.title}
-                            className="rounded-lg border p-3 flex items-start gap-3"
-                            style={{
-                              borderColor: i < 3 ? `${color}30` : 'rgba(255,255,255,0.05)',
-                              background: i < 3 ? `${color}08` : 'rgba(255,255,255,0.01)',
-                            }}
-                          >
-                            <span
-                              className="flex-shrink-0 text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center mt-0.5"
-                              style={{
-                                background: i < 3 ? `${color}25` : 'rgba(255,255,255,0.06)',
-                                color: i < 3 ? color : 'rgba(255,255,255,0.25)',
-                              }}
-                            >
-                              {i + 1}
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2 mb-0.5">
-                                <span className="text-sm text-white/80 font-medium">{t.title}</span>
-                                {i < 3 && (
-                                  <span className="text-[8px] uppercase tracking-wider px-1.5 py-px rounded"
-                                    style={{ background: `${color}20`, color }}>
-                                    Active
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-xs text-white/40 leading-snug">{t.description}</p>
-                              <code className="text-[8px] text-white/15 mt-1 block">{t.path}</code>
-                            </div>
+                  <div className="p-4 space-y-4">
+                    {cards.map(card => {
+                      const techniques = KEY_TECHNIQUES[card.id];
+                      return (
+                        <div key={card.id} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
+                          <div className="flex items-baseline gap-2 mb-2">
+                            <span className="text-sm font-semibold" style={{ color }}>{card.name}</span>
+                            <code className="text-[9px] text-white/20">{card.id}</code>
                           </div>
-                        ))}
-                      </div>
-                    </div>
+
+                          <div className="space-y-1.5 text-xs leading-relaxed mb-3">
+                            <p><span className="text-white/30 uppercase text-[9px] tracking-wider mr-1.5">governs</span><span className="text-white/60">{card.governs}</span></p>
+                            <p><span className="uppercase text-[9px] tracking-wider mr-1.5" style={{ color: `${color}90` }}>overexposed</span><span className="text-white/55">{card.overexposed}</span></p>
+                            <p><span className="text-white/30 uppercase text-[9px] tracking-wider mr-1.5">starved</span><span className="text-white/55">{card.starved}</span></p>
+                            <p><span className="text-white/30 uppercase text-[9px] tracking-wider mr-1.5">next step</span><span className="text-white/45 italic">{card.nextStep}</span></p>
+                          </div>
+
+                          <div className="space-y-1.5">
+                            {techniques.map(t => (
+                              <div key={t.title} className="flex items-start gap-2.5 rounded-md border border-white/[0.05] bg-white/[0.01] px-3 py-2">
+                                <span className="flex-shrink-0 mt-[6px] w-1 h-1 rounded-full" style={{ background: `${color}70` }} />
+                                <div className="min-w-0 flex-1">
+                                  <span className="text-xs text-white/75 font-medium">{t.title}</span>
+                                  <p className="text-[11px] text-white/35 leading-snug">{t.description}</p>
+                                  <code className="text-[8px] text-white/15 mt-0.5 block">{t.path}</code>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -185,7 +155,7 @@ export default function FlowUnlockPromptInspector() {
 
         {/* ── Analysis Instructions ── */}
         {tab === 'analysis' && (
-          <Section title="Psycholinguistic Analysis Instructions" copyText={PSYCHOLINGUISTIC_INSTRUCTIONS}>
+          <Section title="Cross-Pattern Analysis Instructions" copyText={PSYCHOLINGUISTIC_INSTRUCTIONS}>
             <pre className="text-xs text-white/55 leading-relaxed whitespace-pre-wrap font-mono">
               {PSYCHOLINGUISTIC_INSTRUCTIONS}
             </pre>

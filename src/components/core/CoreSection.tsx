@@ -5,7 +5,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { getSupabaseBrowser } from '@/lib/supabase-browser';
 import FlowLensCard from './FlowLensCard';
 import EsotericCard from './EsotericCard';
-import { type FlowLensDisplayProfile } from './flow-lens-demo-profile';
+import {
+  type FlowLensDisplayProfile,
+  type FlowUnlockHistoryItem,
+} from './flow-lens-demo-profile';
 
 interface EsotericProfile {
   id: string;
@@ -17,6 +20,7 @@ interface EsotericProfile {
 export default function CoreSection({ mode }: { mode?: 'lens' | 'esoteric' }) {
   const { user } = useAuth();
   const [flowLens, setFlowLens] = useState<FlowLensDisplayProfile | null>(null);
+  const [history, setHistory] = useState<FlowUnlockHistoryItem[]>([]);
   const [esoteric, setEsoteric] = useState<EsotericProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,6 +44,7 @@ export default function CoreSection({ mode }: { mode?: 'lens' | 'esoteric' }) {
           .then(data => {
             if (data.success) {
               setFlowLens(data.flow_lens ?? null);
+              setHistory(data.flow_lens_history ?? []);
               setEsoteric(data.esoteric ?? null);
             }
           });
@@ -58,7 +63,7 @@ export default function CoreSection({ mode }: { mode?: 'lens' | 'esoteric' }) {
 
   return (
     <div className="space-y-4">
-      {(!mode || mode === 'lens')     && <FlowLensCard initialProfile={flowLens} />}
+      {(!mode || mode === 'lens')     && <FlowLensCard initialProfile={flowLens} history={history} />}
       {(!mode || mode === 'esoteric') && <EsotericCard initialProfile={esoteric} />}
     </div>
   );

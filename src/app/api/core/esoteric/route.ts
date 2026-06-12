@@ -64,6 +64,57 @@ function getSunSignFromDate(birthDate: string): string {
   return 'Pisces';
 }
 
+// ─── Structured output tool ───────────────────────────────────────────────────
+
+interface StructuredMap {
+  archetype: string;
+  epigraph: string;
+  name_signal: string;
+  birth_code: string;
+  natal_pattern: string;
+  flow_architecture: string;
+  true_north: string;
+}
+
+const MAP_TOOL: Anthropic.Tool = {
+  name: 'generate_timeless_map',
+  description: 'Output the structured Timeless Map reading as JSON',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      archetype: {
+        type: 'string',
+        description: 'A bespoke 2-4 word archetype title for this person, e.g. "The Patient Cartographer". Must be earned: synthesized from the tensions across name, numbers, and sky — never generic. BANNED: The Seeker, The Visionary, The Creator, The Explorer, The Builder, The Dreamer, The Leader, The Healer, or any single-word archetype. No name words inside the title.',
+      },
+      epigraph: {
+        type: 'string',
+        description: 'One line under the archetype, 12 words or fewer. The archetype\'s thesis — what this person is built for, stated plainly.',
+      },
+      name_signal: {
+        type: 'string',
+        description: '2-3 sentences. What is encoded in this name — not the etymological facts, the character the name points to. What are you carrying in your name that you may not have fully recognized yet?',
+      },
+      birth_code: {
+        type: 'string',
+        description: '2-3 sentences. The core life orientation from the numerological signature — the intersection of what you\'re here to do and what you privately crave. Name any significant convergence or tension.',
+      },
+      natal_pattern: {
+        type: 'string',
+        description: '2-3 sentences. The key signature from the birth sky. If only the sun sign is available, work from the elemental and directional quality of that sign. Translate completely — no sign names unless they help the reader locate themselves.',
+      },
+      flow_architecture: {
+        type: 'string',
+        description: 'One paragraph. The single most consistent structural fact about how you are built — something that holds across name, birth code, and natal pattern even when those layers describe it differently. If the layers tell contradictory stories, the tension IS the architecture. Once named, the other details should feel like evidence of it.',
+      },
+      true_north: {
+        type: 'string',
+        description: '2-3 sentences closing the reading. What this map suggests you are built to protect (the values underneath everything), and what kind of future image actually pulls you — the picture worth building toward. Plain language, forward-leaning, no instruction-giving.',
+      },
+    },
+    required: ['archetype', 'epigraph', 'name_signal', 'birth_code', 'natal_pattern', 'flow_architecture', 'true_north'],
+  },
+};
+
 // ─── Generation prompt ────────────────────────────────────────────────────────
 
 function buildEsotericPrompt(
@@ -83,9 +134,9 @@ Rising: ${chartData.rising_sign ?? 'unknown'}
 Notable aspects: ${JSON.stringify(chartData.aspects ?? []).slice(0, 400)}`
     : `Natal chart not available. Sun sign from birth date: ${sunSign}${birthLocation ? ` | Born: ${birthLocation}` : ''}`;
 
-  return `You are writing a deep reading of a person based on their name etymology, numerology, and natal astrology. This is the "Timeless Map" — an assessment of the ancient architecture beneath a person's surface story.
+  return `You are writing a Timeless Map — a deep reading of one person from three ancient layers: name etymology, numerology, and natal astrology. This maps what is static in them: the architecture beneath the surface story, the patterns that were there before any job, project, or season.
 
-Your audience: someone who is curious and open but not steeped in esoteric traditions. Translate everything into plain language. No jargon. No "Life Path 7 people tend to..." — instead, extract the actual insight and write it as an observation about this specific person.
+Your reader is curious and open but not steeped in esoteric traditions. Translate everything into plain language. No jargon, no "Life Path 7 people tend to..." — extract the actual insight and write it as an observation about this specific person.
 
 ## SUBJECT DATA
 
@@ -106,28 +157,16 @@ ${numerology.convergenceNote ? `Convergences and tensions: ${numerology.converge
 ## NATAL PATTERN
 ${chartSection}
 
-## OUTPUT FORMAT
+## THE ARCHETYPE (write this last, even though it appears first)
 
-Write in four sections using these exact headers:
-
-**NAME SIGNAL**
-[2–3 sentences. What is encoded in this name? Not the etymological facts — the character the name points to. What is this person carrying in their name that they may not have fully recognized yet?]
-
-**BIRTH CODE**
-[2–3 sentences. What is the core life orientation from the numerological signature? Focus on the intersection of life path and soul urge — what they're here to do vs. what they privately crave. Name any significant convergence or tension.]
-
-**NATAL PATTERN**
-[2–3 sentences. What is the key signature from the birth chart? If only sun sign is available, focus on the elemental and directional quality of that sign. What is the central archetypal theme? Translate completely — no sign names in the text unless they help the reader locate themselves.]
-
-**FLOW ARCHITECTURE**
-[1 paragraph. Name the single most consistent structural fact about how this person is built — something that holds across their name, birth code, and natal pattern, even when those layers describe it differently. Not a summary. Not a list. One observation that, once named, makes the other details feel like evidence of it. If the three layers tell contradictory stories, name the tension — that is the architecture. Do not produce generic flow-open/flow-close statements.]
+Before finalizing, find the one place where all three layers point at the same structure — or where two of them pull against the third. That intersection is the archetype. Crown it with a bespoke 2-4 word title that no other person would receive: specific, earned, slightly surprising, instantly recognizable to the person as theirs. Test it: if the title could fit a thousand people, sharpen it until it fits one.
 
 ## TONE RULES
+- Write in warm second person — "you", direct and close, like someone who has read the map and is telling you what they see.
 - Do not mention numerology, astrology, or etymology as disciplines. Translate into plain observation.
-- No "people with this configuration..." — write directly to the person, but not as "you."
-- Direct, slightly literary, warmly precise. Not mystical or vague.
-- No bullet points. Flowing prose throughout.
-- Total length: ~350 words.`;
+- Direct, slightly literary, warmly precise. Not mystical, not vague, never flattering for its own sake.
+- Flowing prose. No bullet points, no headers inside fields.
+- Total length across all fields: ~420 words.`;
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
@@ -200,7 +239,7 @@ export async function POST(request: NextRequest) {
     signature: nameSignature,
   };
 
-  // Generate via Claude Haiku
+  // Generate via structured tool use
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const prompt = buildEsotericPrompt(
     full_name.trim(),
@@ -212,31 +251,54 @@ export async function POST(request: NextRequest) {
     sunSign,
   );
 
-  let profileText = '';
+  let structured: StructuredMap | null = null;
   try {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 900,
+      max_tokens: 1100,
+      tools: [MAP_TOOL],
+      tool_choice: { type: 'tool', name: 'generate_timeless_map' },
       messages: [{ role: 'user', content: prompt }],
     });
-    profileText = message.content[0].type === 'text' ? message.content[0].text : '';
+    const toolBlock = message.content.find(b => b.type === 'tool_use');
+    if (toolBlock?.type === 'tool_use') {
+      structured = toolBlock.input as StructuredMap;
+    }
   } catch (err) {
     console.error('[esoteric] Claude error:', err);
     return NextResponse.json({ success: false, error: 'Generation failed' }, { status: 500 });
   }
 
-  if (!profileText) {
+  if (!structured?.archetype || !structured.flow_architecture) {
     return NextResponse.json({ success: false, error: 'Empty generation response' }, { status: 500 });
   }
 
-  // Parse sections
+  // Assembled markdown — fallback rendering + admin readability
+  const profileText = [
+    `# ${structured.archetype}`,
+    `*${structured.epigraph}*`,
+    `\n**NAME SIGNAL**\n${structured.name_signal}`,
+    `\n**BIRTH CODE**\n${structured.birth_code}`,
+    `\n**NATAL PATTERN**\n${structured.natal_pattern}`,
+    `\n**FLOW ARCHITECTURE**\n${structured.flow_architecture}`,
+    `\n**TRUE NORTH**\n${structured.true_north}`,
+  ].join('\n');
+
   const profileJson = {
-    sections: parseEsotericSections(profileText),
+    archetype: structured.archetype,
+    epigraph: structured.epigraph,
+    sections: {
+      name_signal: structured.name_signal,
+      birth_code: structured.birth_code,
+      natal_pattern: structured.natal_pattern,
+      flow_architecture: structured.flow_architecture,
+      true_north: structured.true_north,
+    },
     sun_sign: sunSign,
     has_chart: !!chartData,
   };
 
-  // Upsert — replace previous esoteric profile for this user
+  // Upsert — the Timeless Map is one-off; regenerating redraws it
   const { data: existing } = await supabase
     .from('esoteric_profiles')
     .select('id')
@@ -294,19 +356,4 @@ export async function POST(request: NextRequest) {
       generated_at: new Date().toISOString(),
     },
   });
-}
-
-function parseEsotericSections(text: string): Record<string, string> {
-  const sections: Record<string, string> = {};
-  const patterns = [
-    { key: 'name_signal', pattern: /\*\*NAME SIGNAL\*\*\s*([\s\S]*?)(?=\*\*BIRTH CODE|\*\*NATAL PATTERN|\*\*FLOW ARCHITECTURE|$)/i },
-    { key: 'birth_code', pattern: /\*\*BIRTH CODE\*\*\s*([\s\S]*?)(?=\*\*NATAL PATTERN|\*\*FLOW ARCHITECTURE|$)/i },
-    { key: 'natal_pattern', pattern: /\*\*NATAL PATTERN\*\*\s*([\s\S]*?)(?=\*\*FLOW ARCHITECTURE|$)/i },
-    { key: 'flow_architecture', pattern: /\*\*FLOW ARCHITECTURE\*\*\s*([\s\S]*?)$/i },
-  ];
-  for (const { key, pattern } of patterns) {
-    const match = text.match(pattern);
-    if (match?.[1]) sections[key] = match[1].trim();
-  }
-  return sections;
 }

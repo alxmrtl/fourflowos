@@ -3,8 +3,11 @@ import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
 import {
   type Pillar,
-  PILLAR_TECHNIQUES,
-  PILLAR_CONCEPTS,
+  type KeyId,
+  KEY_CARDS,
+  KEY_BY_ID,
+  KEY_IDS,
+  KEY_TECHNIQUES,
   PRACTICE_TOOLS,
   PILLAR_DOMAINS,
   IMAGE_DESCRIPTIONS,
@@ -18,29 +21,25 @@ export const maxDuration = 60;
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /**
- * V4 intake answers — trimmed instinct, deep signal.
+ * V5 intake answers — instinct prior + issue-anchored reflections.
  *
- * Phase 1 (rapid instinct — 4 questions):
- *   q1  = ShapePick shape → pillar vote (+2)
- *   q2  = WordStorm: 3 words from 16, each mapped to a pillar (+1.5 each)
- *   q3  = ImagePull: 2 image IDs from 8, each mapped to a pillar (+2 each)
- *   q4  = Domain context string (no pillar score — used in prompt)
+ * Phase 1 (rapid instinct — 3 questions, Dimension prior only):
+ *   q1 = ShapePick shape → pillar vote (+2)
+ *   q2 = WordStorm: 3 words from 16, each mapped to a pillar (+1.5 each)
+ *   q3 = ImagePull: 2 image IDs from 8, each mapped to a pillar (+2 each)
  *
- * Phase 2 (open signal — 4 text questions):
- *   q5  = "What's getting in the way of your best work right now?"
- *   q6  = "Describe the last time you were fully in it."
- *   q7  = "What do you tell yourself when you can't get started?"
- *   q8  = "What are you actually chasing right now?"
+ * Phase 2 (issue-anchored reflections — 3 text questions):
+ *   q4 = "What are you bringing today?" (the situation)
+ *   q5 = "What have you already been trying?" (where the energy goes — overexposure probe)
+ *   q6 = "What do you tell yourself when it stalls?" (the voice)
  */
-interface FlowLensAnswers {
+interface FlowUnlockAnswers {
   q1?: Pillar;
   q2?: string[];
   q3?: string[];
   q4?: string;
   q5?: string;
   q6?: string;
-  q7?: string;
-  q8?: string;
 }
 
 interface AnswerMetadata {
@@ -54,14 +53,14 @@ interface PillarScores {
   spirit: number;
 }
 
-interface StructuredProfile {
-  gravity_bullets: string[];
-  blind_side_bullets: string[];
+interface StructuredUnlock {
+  bottleneck_key: KeyId;
+  overexposed_keys: KeyId[];
+  pattern_read: string[];
   the_tell: string;
-  the_move: string;
+  key_moves: { key: KeyId; move: string }[];
+  technique: { name: string; prescription: string };
   tool_prescription: string;
-  technique_prescriptions: { name: string; prescription: string }[];
-  concept_prescription: { name: string; why: string };
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -74,7 +73,7 @@ async function getUserFromRequest(request: NextRequest): Promise<{ id: string } 
   return user ?? null;
 }
 
-// ─── Scoring maps ─────────────────────────────────────────────────────────────
+// ─── Scoring maps (instinct prior — Dimension level) ──────────────────────────
 
 const WORD_PILLAR: Record<string, Pillar> = {
   ALIVE: 'self', FOGGY: 'self', GROUNDED: 'self', SCATTERED: 'self',
@@ -90,7 +89,7 @@ const IMAGE_PILLAR: Record<string, Pillar> = {
   flame: 'spirit', north: 'spirit',
 };
 
-function scorePillars(answers: FlowLensAnswers): PillarScores {
+function scorePillars(answers: FlowUnlockAnswers): PillarScores {
   const scores: PillarScores = { self: 0, space: 0, story: 0, spirit: 0 };
   if (answers.q1 && answers.q1 in scores) scores[answers.q1] += 2;
   if (answers.q2?.length) {
@@ -108,111 +107,110 @@ function scorePillars(answers: FlowLensAnswers): PillarScores {
   return scores;
 }
 
-function deriveGravityAndBlindSide(scores: PillarScores): { gravity: Pillar; blindSide: Pillar } {
-  const entries = Object.entries(scores) as [Pillar, number][];
-  entries.sort((a, b) => b[1] - a[1]);
-  return { gravity: entries[0][0], blindSide: entries[entries.length - 1][0] };
-}
+// ─── Daily limit ──────────────────────────────────────────────────────────────
 
-// ─── Recommendations ──────────────────────────────────────────────────────────
-
-interface Recommendation {
-  type: 'technique' | 'tool';
-  title: string;
-  pillar: string;
-  path?: string;
-  route?: string;
-}
-
-function getRecommendations(blindSide: Pillar): Recommendation[] {
-  const techniques = PILLAR_TECHNIQUES[blindSide].slice(0, 3);
-  const tool = PRACTICE_TOOLS[blindSide];
-  return [
-    ...techniques.map(t => ({ type: 'technique' as const, title: t.title, pillar: blindSide, path: t.path })),
-    { type: 'tool' as const, title: tool.title, pillar: blindSide, route: tool.route },
-  ];
+function localDay(iso: string | Date, timeZone: string): string {
+  try {
+    return new Date(iso).toLocaleDateString('en-CA', { timeZone });
+  } catch {
+    return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'UTC' });
+  }
 }
 
 // ─── Structured output tool ───────────────────────────────────────────────────
 
-const PROFILE_TOOL: Anthropic.Tool = {
+const KEY_ENUM = KEY_IDS as string[];
+
+const UNLOCK_TOOL: Anthropic.Tool = {
   name: 'generate_flow_unlock',
-  description: 'Output the structured Flow Unlock profile as JSON',
+  description: 'Output the structured Flow Unlock diagnosis as JSON',
   input_schema: {
     type: 'object' as const,
     properties: {
-      gravity_bullets: {
-        type: 'array',
-        description: '3 bullets about how this person is wired — written from cross-pattern analysis, not from what they literally said. Subject "You". One sentence each.',
-        items: { type: 'string' },
-        minItems: 3,
-        maxItems: 3,
+      bottleneck_key: {
+        type: 'string',
+        enum: KEY_ENUM,
+        description: 'The single starved key that, if turned, would most change this situation.',
       },
-      blind_side_bullets: {
+      overexposed_keys: {
         type: 'array',
-        description: '3 bullets naming the structural tendency that creates drag — honest, unsparing, specific to this person\'s pattern. One sentence each.',
+        items: { type: 'string', enum: KEY_ENUM },
+        minItems: 1,
+        maxItems: 2,
+        description: '1-2 keys this person keeps pulling — where their effort already goes, read from "where the energy goes" and the exposure map.',
+      },
+      pattern_read: {
+        type: 'array',
         items: { type: 'string' },
-        minItems: 3,
-        maxItems: 3,
+        minItems: 2,
+        maxItems: 2,
+        description: '2 bullets, one sentence each: the over/under shape of this pattern in plain language. First bullet names where the effort keeps going; second names what that effort is substituting for.',
       },
       the_tell: {
         type: 'string',
-        description: '2-3 sentences naming the specific cross-pattern or inversion you read. This is the insight they couldn\'t see themselves — name the structure, not the surface, in plain body-grounded language.',
+        description: '2-3 sentences naming the specific cross-pattern or inversion you read. The insight they couldn\'t see themselves — name the structure, not the surface, in plain body-grounded language.',
       },
-      the_move: {
-        type: 'string',
-        description: '2 sentences. First: how their gravity is substituting for what the blind side would provide. Second: the one concrete move that activates both. Must be specific to this person.',
-      },
-      tool_prescription: {
-        type: 'string',
-        description: '1 sentence: why this specific tool for this specific person — reference something concrete from what they shared, not the tool description.',
-      },
-      technique_prescriptions: {
+      key_moves: {
         type: 'array',
-        description: '3 items, one per technique. Each: what to do and why for this specific person.',
         items: {
           type: 'object',
           properties: {
-            name: { type: 'string', description: 'Exact technique name as provided' },
-            prescription: { type: 'string', description: '1 sentence: what to do and why for this person specifically' },
+            key: { type: 'string', enum: KEY_ENUM },
+            move: { type: 'string', description: 'Maximum 2 sentences, doable today. For an overexposed key: how to ease off or redirect that effort. For the bottleneck key: the concrete move that opens it — specific to this person and this situation.' },
           },
-          required: ['name', 'prescription'],
+          required: ['key', 'move'],
         },
-        minItems: 3,
-        maxItems: 3,
+        description: 'One entry per named key (each overexposed key + the bottleneck key). Each move must be doable today.',
       },
-      concept_prescription: {
+      technique: {
         type: 'object',
-        description: 'One concept worth sitting with — name it and explain why it\'s relevant to this person\'s specific pattern in one sentence.',
         properties: {
-          name: { type: 'string', description: 'Exact concept name as provided' },
-          why: { type: 'string', description: '1 sentence: why this concept for this person\'s specific pattern' },
+          name: { type: 'string', description: 'Exact technique name from the menu, chosen for the bottleneck key' },
+          prescription: { type: 'string', description: '1 sentence: what to do and why for this person specifically' },
         },
-        required: ['name', 'why'],
+        required: ['name', 'prescription'],
+        description: 'Exactly one technique from the bottleneck key\'s menu.',
+      },
+      tool_prescription: {
+        type: 'string',
+        description: '1 sentence: why the matching practice tool fits this person\'s specific pattern — reference something concrete from what they shared.',
       },
     },
-    required: ['gravity_bullets', 'blind_side_bullets', 'the_tell', 'the_move', 'tool_prescription', 'technique_prescriptions', 'concept_prescription'],
+    required: ['bottleneck_key', 'overexposed_keys', 'pattern_read', 'the_tell', 'key_moves', 'technique', 'tool_prescription'],
   },
 };
 
 // ─── Prompt ───────────────────────────────────────────────────────────────────
 
-function buildPrompt(
-  answers: FlowLensAnswers,
-  scores: PillarScores,
-  gravity: Pillar,
-  blindSide: Pillar,
-  recommendations: Recommendation[],
-): string {
-  const techniques = recommendations.filter(r => r.type === 'technique');
-  const toolRec    = recommendations.find(r => r.type === 'tool');
-  const domain     = answers.q4 ?? 'general';
-  const concept    = PILLAR_CONCEPTS[blindSide];
+const DIMENSION_LABELS: Record<Pillar, string> = {
+  self: 'SELF — body, emotions, and mental state',
+  space: 'SPACE — environment, tools, and feedback',
+  story: 'STORY — direction, mission, and role',
+  spirit: 'SPIRIT — values, curiosity, and vision',
+};
 
-  const techList = techniques
-    .map(r => `• ${r.title}: ${PILLAR_TECHNIQUES[blindSide].find(t => t.title === r.title)?.description ?? ''}`)
+function buildKeyCardsSection(): string {
+  const byDimension: Record<Pillar, string[]> = { self: [], space: [], story: [], spirit: [] };
+  for (const card of KEY_CARDS) {
+    byDimension[card.dimension].push(
+      `• ${card.name} [${card.id}] — governs ${card.governs}\n  overexposed: ${card.overexposed}\n  starved: ${card.starved}`,
+    );
+  }
+  return (Object.keys(byDimension) as Pillar[])
+    .map(d => `${DIMENSION_LABELS[d]}\n${byDimension[d].join('\n')}`)
+    .join('\n\n');
+}
+
+function buildTechniqueMenu(): string {
+  return KEY_IDS
+    .map(id => {
+      const lines = KEY_TECHNIQUES[id].map(t => `  - ${t.title}: ${t.description}`).join('\n');
+      return `[${id}]\n${lines}`;
+    })
     .join('\n');
+}
 
+function buildPrompt(answers: FlowUnlockAnswers, scores: PillarScores): string {
   const wordSignals = answers.q2?.length
     ? answers.q2.map(w => {
         const pillar = WORD_PILLAR[w.toUpperCase()];
@@ -224,56 +222,93 @@ function buildPrompt(
     ? answers.q3.map(id => IMAGE_DESCRIPTIONS[id] ?? id).join('; ')
     : null;
 
-  const scoredSignals = [
-    answers.q1  && `- Shape instinct: ${PILLAR_DOMAINS[answers.q1]}`,
-    wordSignals  && `- Words chosen: ${wordSignals}`,
+  const instinctSignals = [
+    answers.q1 && `- Shape instinct: ${PILLAR_DOMAINS[answers.q1]}`,
+    wordSignals && `- Words chosen: ${wordSignals}`,
     imageSignals && `- Images chosen: ${imageSignals}`,
   ].filter(Boolean).join('\n');
 
-  const blockingSignal  = answers.q5 ? `\n## SIGNAL: WHAT'S BLOCKING\n"${answers.q5}"` : '';
-  const flowSignal      = answers.q6 ? `\n## SIGNAL: LAST FLOW STATE\n"${answers.q6}"` : '';
-  const monologueSignal = answers.q7 ? `\n## SIGNAL: INTERNAL MONOLOGUE\n"${answers.q7}"` : '';
-  const chasingSignal   = answers.q8 ? `\n## SIGNAL: WHAT THEY'RE CHASING\n"${answers.q8}"` : '';
+  const situation = answers.q4 ? `\n## THE SITUATION (what they're bringing today)\n"${answers.q4}"` : '';
+  const energy = answers.q5 ? `\n## WHERE THE ENERGY GOES (what they've been trying)\n"${answers.q5}"` : '';
+  const voice = answers.q6 ? `\n## THE VOICE (what they tell themselves when it stalls)\n"${answers.q6}"` : '';
 
-  return `You are generating a Flow Unlock for someone in "${domain}" who is currently stuck.
+  return `You are generating a Flow Unlock — a key-level diagnostic of what's blocking someone on the specific issue they brought today. Not a personality profile: a read of THIS situation's pattern, and the move that breaks it.
 
-This is not a personality profile — it's a diagnostic read of what's blocking them right now, and the specific move that breaks it.
+The framework: twelve keys, three per dimension. People get stuck in a recognizable shape — they keep pulling 1-2 keys (overexposed: effort flows there by habit) while the key the situation actually needs sits starved. Your job: name that shape and the unlock.
 
-## PILLAR SCORES (instinct signals)
-- Body/emotions/mind (self): ${scores.self}
-- Environment/tools (space): ${scores.space}
-- Direction/goals (story): ${scores.story}
-- Values/purpose (spirit): ${scores.spirit}
+## THE 12 KEYS (diagnostic vocabulary)
 
-Gravity (highest): ${gravity.toUpperCase()} — ${PILLAR_DOMAINS[gravity]}
-Blind side (lowest): ${blindSide.toUpperCase()} — ${PILLAR_DOMAINS[blindSide]}
+${buildKeyCardsSection()}
 
-## INSTINCT SIGNALS
-${scoredSignals}
-${blockingSignal}
-${flowSignal}
-${monologueSignal}
-${chasingSignal}
+## INSTINCT PRIOR (weak signal — confirm or override from the text)
+Dimension scores from rapid-instinct questions:
+- self: ${scores.self} | space: ${scores.space} | story: ${scores.story} | spirit: ${scores.spirit}
+${instinctSignals}
+${situation}
+${energy}
+${voice}
 
-## YOUR TASK: PSYCHOLINGUISTIC CROSS-PATTERN ANALYSIS
+## YOUR TASK: CROSS-PATTERN ANALYSIS
 
 ${PSYCHOLINGUISTIC_INSTRUCTIONS}
 
-## PRACTICES TO RECOMMEND (for their ${blindSide.toUpperCase()} blind side)
+## TECHNIQUE MENU (choose exactly one, from the bottleneck key's list)
 
-Techniques:
-${techList}
-
-Concept to prescribe:
-${concept.name} — the science of ${concept.domain}
+${buildTechniqueMenu()}
 
 ## PRACTICE TOOL
-${toolRec ? `${toolRec.title} — ${PRACTICE_TOOLS[blindSide].description}` : ''}
-Write one sentence explaining why it fits THIS person's specific pattern. Reference something concrete from their signals. Only describe capabilities explicitly stated above — do not attribute features (like spaced repetition, progress tracking, or anything else) that aren't in the description.
+The matching tool attaches automatically by the bottleneck key's dimension: SELF → FlowZone (focus timer that makes maintaining attention visible), SPACE → FlowRead (timed reading that trains staying in feedback), STORY → FlowCompendium (browse protocols for direction and mission), SPIRIT → FlowSpark (curiosity mapping that surfaces genuine pulls). Write tool_prescription for that tool only — one sentence tied to something concrete they shared. Only describe capabilities stated here.
 
 ## VOICE RULES (non-negotiable)
 
 ${VOICE_RULES}`;
+}
+
+// ─── Validation / fallbacks ───────────────────────────────────────────────────
+
+function isKeyId(v: unknown): v is KeyId {
+  return typeof v === 'string' && (KEY_IDS as string[]).includes(v);
+}
+
+function lowestDimension(scores: PillarScores): Pillar {
+  const entries = Object.entries(scores) as [Pillar, number][];
+  entries.sort((a, b) => a[1] - b[1]);
+  return entries[0][0];
+}
+
+function sanitizeStructured(raw: StructuredUnlock, scores: PillarScores): StructuredUnlock {
+  const bottleneck: KeyId = isKeyId(raw.bottleneck_key)
+    ? raw.bottleneck_key
+    : KEY_CARDS.find(k => k.dimension === lowestDimension(scores))!.id;
+
+  const overexposed = (Array.isArray(raw.overexposed_keys) ? raw.overexposed_keys : [])
+    .filter(isKeyId)
+    .filter(k => k !== bottleneck)
+    .slice(0, 2);
+
+  const namedKeys: KeyId[] = [...overexposed, bottleneck];
+  const rawMoves = Array.isArray(raw.key_moves) ? raw.key_moves : [];
+  const key_moves = namedKeys.map(key => {
+    const found = rawMoves.find(m => m?.key === key && typeof m.move === 'string' && m.move.trim());
+    return { key, move: found?.move ?? KEY_BY_ID[key].nextStep };
+  });
+
+  const menu = KEY_TECHNIQUES[bottleneck];
+  const matched = menu.find(t => t.title === raw.technique?.name)
+    ?? menu.find(t => t.title.toLowerCase() === raw.technique?.name?.toLowerCase());
+  const technique = matched
+    ? { name: matched.title, prescription: raw.technique?.prescription?.trim() || matched.description }
+    : { name: menu[0].title, prescription: menu[0].description };
+
+  return {
+    bottleneck_key: bottleneck,
+    overexposed_keys: overexposed,
+    pattern_read: (Array.isArray(raw.pattern_read) ? raw.pattern_read : []).filter(b => typeof b === 'string').slice(0, 2),
+    the_tell: typeof raw.the_tell === 'string' ? raw.the_tell : '',
+    key_moves,
+    technique,
+    tool_prescription: typeof raw.tool_prescription === 'string' ? raw.tool_prescription : '',
+  };
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
@@ -284,7 +319,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
   }
 
-  let body: { answers: FlowLensAnswers; answer_metadata?: AnswerMetadata };
+  let body: { answers: FlowUnlockAnswers; answer_metadata?: AnswerMetadata; timezone?: string };
   try {
     body = await request.json();
   } catch {
@@ -296,9 +331,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'answers required' }, { status: 400 });
   }
 
-  const scores   = scorePillars(answers);
-  const { gravity, blindSide } = deriveGravityAndBlindSide(scores);
-  const recommendations = getRecommendations(blindSide);
+  const timeZone = typeof body.timezone === 'string' && body.timezone ? body.timezone : 'UTC';
+
+  // ── 1/day guard: one unlock per local calendar day ──
+  const { data: latest } = await supabase
+    .from('flow_lens_profiles')
+    .select('id, gravity_pillar, blind_side_pillar, profile_text, profile_json, recommendations, generated_at')
+    .eq('user_id', user.id)
+    .order('generated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (latest && localDay(latest.generated_at, timeZone) === localDay(new Date(), timeZone)) {
+    return NextResponse.json(
+      { success: false, error: 'daily_limit', profile: latest },
+      { status: 429 },
+    );
+  }
+
+  const scores = scorePillars(answers);
 
   const intakePayload: Record<string, unknown> = { user_id: user.id, answers, pillar_scores: scores };
   if (answer_metadata) intakePayload.answer_metadata = answer_metadata;
@@ -315,20 +366,20 @@ export async function POST(request: NextRequest) {
   }
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const prompt    = buildPrompt(answers, scores, gravity, blindSide, recommendations);
+  const prompt = buildPrompt(answers, scores);
 
-  let structured: StructuredProfile | null = null;
+  let structured: StructuredUnlock | null = null;
   try {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
-      tools: [PROFILE_TOOL],
+      max_tokens: 1200,
+      tools: [UNLOCK_TOOL],
       tool_choice: { type: 'tool', name: 'generate_flow_unlock' },
       messages: [{ role: 'user', content: prompt }],
     });
     const toolBlock = message.content.find(b => b.type === 'tool_use');
     if (toolBlock?.type === 'tool_use') {
-      structured = toolBlock.input as StructuredProfile;
+      structured = sanitizeStructured(toolBlock.input as StructuredUnlock, scores);
     }
   } catch (err) {
     console.error('[flow-lens] Claude error:', err);
@@ -339,65 +390,60 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Empty generation response' }, { status: 500 });
   }
 
+  const bottleneckCard = KEY_BY_ID[structured.bottleneck_key];
+  const bottleneckDimension = bottleneckCard.dimension;
+  const tool = PRACTICE_TOOLS[bottleneckDimension];
+  const techniqueEntry = KEY_TECHNIQUES[structured.bottleneck_key]
+    .find(t => t.title === structured.technique.name);
+
+  // Gravity = dimension of the strongest overexposed key (or highest instinct score).
+  const gravityDimension: Pillar = structured.overexposed_keys.length
+    ? KEY_BY_ID[structured.overexposed_keys[0]].dimension
+    : (Object.entries(scores) as [Pillar, number][]).sort((a, b) => b[1] - a[1])[0][0];
+
+  const recommendations = [
+    { type: 'technique' as const, title: structured.technique.name, pillar: bottleneckDimension, path: techniqueEntry?.path },
+    { type: 'tool' as const, title: tool.title, pillar: bottleneckDimension, route: tool.route },
+  ];
+
   const profileJson = {
-    gravity, blind_side: blindSide, pillar_scores: scores,
-    gravity_bullets:         structured.gravity_bullets,
-    blind_side_bullets:      structured.blind_side_bullets,
-    the_tell:                structured.the_tell,
-    the_move:                structured.the_move,
-    tool_prescription:       structured.tool_prescription,
-    technique_prescriptions: structured.technique_prescriptions,
-    concept_prescription:    structured.concept_prescription,
+    version: 5,
+    bottleneck_key: structured.bottleneck_key,
+    overexposed_keys: structured.overexposed_keys,
+    pillar_scores: scores,
+    pattern_read: structured.pattern_read,
+    the_tell: structured.the_tell,
+    key_moves: structured.key_moves,
+    technique: structured.technique,
+    tool_prescription: structured.tool_prescription,
+    situation: answers.q4 ?? null,
   };
 
-  const { data: existing } = await supabase
-    .from('flow_lens_profiles')
-    .select('id')
-    .eq('user_id', user.id)
-    .limit(1)
-    .maybeSingle();
-
   const MODEL = 'claude-sonnet-4-6';
-  let profileId: string;
 
-  if (existing?.id) {
-    const { error } = await supabase
-      .from('flow_lens_profiles')
-      .update({
-        intake_id: intake.id, gravity_pillar: gravity, blind_side_pillar: blindSide,
-        profile_text: JSON.stringify(structured), profile_json: profileJson,
-        recommendations, model: MODEL, generated_at: new Date().toISOString(),
-      })
-      .eq('id', existing.id);
-    if (error) {
-      console.error('[flow-lens] profile update error:', error);
-      return NextResponse.json({ success: false, error: 'Failed to save profile' }, { status: 500 });
-    }
-    profileId = existing.id;
-  } else {
-    const { data: newProfile, error } = await supabase
-      .from('flow_lens_profiles')
-      .insert({
-        user_id: user.id, intake_id: intake.id,
-        gravity_pillar: gravity, blind_side_pillar: blindSide,
-        profile_text: JSON.stringify(structured), profile_json: profileJson,
-        recommendations, model: MODEL,
-      })
-      .select('id')
-      .single();
-    if (error || !newProfile) {
-      console.error('[flow-lens] profile insert error:', error);
-      return NextResponse.json({ success: false, error: 'Failed to save profile' }, { status: 500 });
-    }
-    profileId = newProfile.id;
+  // History: every unlock is a new row.
+  const { data: newProfile, error } = await supabase
+    .from('flow_lens_profiles')
+    .insert({
+      user_id: user.id, intake_id: intake.id,
+      gravity_pillar: gravityDimension, blind_side_pillar: bottleneckDimension,
+      profile_text: JSON.stringify(structured), profile_json: profileJson,
+      recommendations, model: MODEL,
+    })
+    .select('id, generated_at')
+    .single();
+
+  if (error || !newProfile) {
+    console.error('[flow-lens] profile insert error:', error);
+    return NextResponse.json({ success: false, error: 'Failed to save profile' }, { status: 500 });
   }
 
   return NextResponse.json({
     success: true,
     profile: {
-      id: profileId, gravity_pillar: gravity, blind_side_pillar: blindSide,
+      id: newProfile.id, gravity_pillar: gravityDimension, blind_side_pillar: bottleneckDimension,
       profile_text: JSON.stringify(structured), profile_json: profileJson,
-      recommendations, generated_at: new Date().toISOString(),
+      recommendations, generated_at: newProfile.generated_at ?? new Date().toISOString(),
     },
   });
 }

@@ -378,7 +378,7 @@ export const SECTIONS: SectionDef[] = [
     Animation: CoreAnim,
     tools: [
       {
-        id: 'flow-lens', label: 'Flow Unlock', description: 'Find your block',
+        id: 'flow-lens', label: 'Flow Unlock', description: 'Find today\'s block',
         iconSrc: '/assets/apps/flowunlock-icon.png',
         padding: 'normal', width: 'normal',
       },

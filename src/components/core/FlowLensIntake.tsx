@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GRADIENTS } from '@/styles/brand-colors';
 import ShapePick from './intake/ShapePick';
@@ -10,71 +10,19 @@ import TextReflection from './intake/TextReflection';
 
 type Pillar = 'self' | 'space' | 'story' | 'spirit';
 
-interface NewAnswers {
-  // Phase 1 — rapid instinct
-  q1?: Pillar;       // ShapePick shape vote
-  q2?: string[];     // WordStorm: 3 selected words
-  q3?: string[];     // ImagePull: 2 selected image IDs
-  q4?: string;       // Domain context
-
-  // Phase 2 — open signal (4 text questions)
-  q5?: string;       // "What's getting in the way?"
-  q6?: string;       // "Describe last flow state"
-  q7?: string;       // "What do you tell yourself?"
-  q8?: string;       // "What are you actually chasing?"
+/**
+ * V5 intake — instinct prior + issue-anchored reflections.
+ * Phase 1 (instinct, ~30s): q1 shape, q2 words, q3 images.
+ * Phase 2 (the issue): q4 situation, q5 where the energy goes, q6 the voice.
+ */
+interface UnlockAnswers {
+  q1?: Pillar;
+  q2?: string[];
+  q3?: string[];
+  q4?: string;
+  q5?: string;
+  q6?: string;
 }
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// ── Domain icons ───────────────────────────────────────────────────────────────
-
-function CreativeSVG() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6,26 L10,18 L24,4 C25.1,2.9 26.9,2.9 28,4 C29.1,5.1 29.1,6.9 28,8 L14,22 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <line x1="6" y1="26" x2="12" y2="24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function CareerSVG() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3" y="12" width="26" height="17" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M11,12 L11,9 C11,7.9 11.9,7 13,7 L19,7 C20.1,7 21,7.9 21,9 L21,12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="3" y1="20" x2="29" y2="20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
-    </svg>
-  );
-}
-
-function BusinessSVG() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="4"  y="18" width="7"  height="10" rx="1.5" stroke="currentColor" strokeWidth="2" />
-      <rect x="13" y="12" width="7"  height="16" rx="1.5" stroke="currentColor" strokeWidth="2" />
-      <rect x="22" y="6"  width="7"  height="22" rx="1.5" stroke="currentColor" strokeWidth="2" />
-    </svg>
-  );
-}
-
-function GrowthSVG() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M16,28 L16,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M16,14 C16,8 10,6 8,9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M16,18 C16,12 22,10 24,13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-// ── Component ──────────────────────────────────────────────────────────────────
 
 interface FlowLensIntakeProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,20 +34,12 @@ interface FlowLensIntakeProps {
 export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowLensIntakeProps) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
-  const [answers, setAnswers] = useState<NewAnswers>({});
+  const [answers, setAnswers] = useState<UnlockAnswers>({});
 
-  const q4Options = useMemo(() => shuffle([
-    { value: 'creative work',             label: 'Creative',    icon: <CreativeSVG /> },
-    { value: 'career/professional',        label: 'Career',      icon: <CareerSVG /> },
-    { value: 'business/entrepreneurship', label: 'Building',    icon: <BusinessSVG /> },
-    { value: 'personal growth',           label: 'Growth',      icon: <GrowthSVG /> },
-  ]), []);
-
-  // 8 questions: 4 instinct + 4 signal
-  const TOTAL = 8;
+  const TOTAL = 6;
   const progress = current / TOTAL;
 
-  function advance(next: NewAnswers) {
+  function advance(next: UnlockAnswers) {
     if (current < TOTAL - 1) {
       setDirection('forward');
       setAnswers(next);
@@ -120,7 +60,7 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
 
   // ── Question renderers ─────────────────────────────────────────────────────
 
-  // Q1 — ShapePick (pillar vote)
+  // Q1 — ShapePick (dimension prior)
   function renderQ1() {
     return (
       <ShapePick
@@ -147,101 +87,50 @@ export default function FlowLensIntake({ onSubmit, onCancel, submitting }: FlowL
     );
   }
 
-  // Q4 — Domain context
+  // Q4 — The situation (anchors the unlock on today's issue)
   function renderQ4() {
     return (
-      <div className="flex flex-col">
-        <p className="text-[9px] uppercase tracking-widest text-white/25 mb-1.5">Context</p>
-        <p className="text-white text-base font-medium leading-snug mb-5">Where is the block showing up?</p>
-        <div className="grid grid-cols-2 gap-2.5">
-          {q4Options.map(opt => (
-            <motion.button
-              key={opt.value}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => advance({ ...answers, q4: opt.value })}
-              className="flex flex-col items-center justify-center gap-2 px-3 py-4 rounded-2xl border transition-all duration-200"
-              style={{
-                background:  'rgba(255,255,255,0.025)',
-                borderColor: 'rgba(255,255,255,0.07)',
-                color:       'rgba(255,255,255,0.4)',
-                minHeight:   80,
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.15)';
-                (e.currentTarget as HTMLButtonElement).style.background  = 'rgba(255,255,255,0.05)';
-                (e.currentTarget as HTMLButtonElement).style.color       = 'rgba(255,255,255,0.75)';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.07)';
-                (e.currentTarget as HTMLButtonElement).style.background  = 'rgba(255,255,255,0.025)';
-                (e.currentTarget as HTMLButtonElement).style.color       = 'rgba(255,255,255,0.4)';
-              }}
-            >
-              {opt.icon}
-              <span className="text-xs font-medium tracking-wide">{opt.label}</span>
-            </motion.button>
-          ))}
-        </div>
-      </div>
+      <TextReflection
+        label="The situation"
+        question="What are you bringing today? Name the issue, project, or stuck point on your mind."
+        placeholder="The specific thing — not the whole life, just today's knot…"
+        onSelect={text => advance({ ...answers, q4: text })}
+      />
     );
   }
 
-  // Q5 — What's blocking
+  // Q5 — Where the energy goes (overexposure probe)
   function renderQ5() {
     return (
       <TextReflection
-        label="Reflection"
-        question="What's getting in the way of your best work right now?"
-        placeholder="Be specific — could be internal, external, or just unclear…"
+        label="The effort"
+        question="What have you already been trying? Where does your effort actually go on this?"
+        placeholder="What you keep doing, fixing, researching, rearranging…"
         onSelect={text => advance({ ...answers, q5: text })}
       />
     );
   }
 
-  // Q6 — Last flow state
+  // Q6 — The voice (internal monologue)
   function renderQ6() {
     return (
       <TextReflection
-        label="Reflection"
-        question="Describe the last time you were fully in it. Walk me through what made it possible."
-        placeholder="The last time things clicked — what were the conditions…"
-        onSelect={text => advance({ ...answers, q6: text })}
-      />
-    );
-  }
-
-  // Q7 — Internal monologue
-  function renderQ7() {
-    return (
-      <TextReflection
-        label="Reflection"
-        question="What do you tell yourself when you can't get started — or when you lose the thread mid-work?"
+        label="The voice"
+        question="What do you tell yourself when it stalls — when you can't get started or lose the thread?"
         placeholder="The actual internal voice, not the polished version…"
-        onSelect={text => advance({ ...answers, q7: text })}
-      />
-    );
-  }
-
-  // Q8 — What they're really chasing
-  function renderQ8() {
-    return (
-      <TextReflection
-        label="Reflection"
-        question="What are you actually chasing right now? Not what you should be chasing — what is it really?"
-        placeholder="Honest answer — the thing underneath the thing…"
-        onSelect={text => onSubmit({ answers: { ...answers, q8: text } })}
+        onSelect={text => onSubmit({ answers: { ...answers, q6: text } })}
       />
     );
   }
 
   const RENDERERS = [
-    renderQ1, renderQ2, renderQ3, renderQ4,
-    renderQ5, renderQ6, renderQ7, renderQ8,
+    renderQ1, renderQ2, renderQ3,
+    renderQ4, renderQ5, renderQ6,
   ];
 
-  // Phase label: INSTINCT for q1–q4 (indices 0–3), SIGNAL for q5–q8 (indices 4–7)
-  const phaseLabel   = current < 4 ? 'INSTINCT' : 'REFLECTION';
-  const phaseChanged = current === 4;
+  // Phase label: INSTINCT for q1–q3 (indices 0–2), THE ISSUE for q4–q6 (indices 3–5)
+  const phaseLabel   = current < 3 ? 'INSTINCT' : 'THE ISSUE';
+  const phaseChanged = current === 3;
 
   return (
     <div className="flex flex-col">

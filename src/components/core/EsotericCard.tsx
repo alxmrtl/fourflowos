@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AMETHYST, STEEL } from '@/styles/brand-colors';
 import EsotericIntake from './EsotericIntake';
@@ -21,6 +21,89 @@ async function getAccessToken(): Promise<string | null> {
   const { data: { session } } = await getSupabaseBrowser().auth.getSession();
   return session?.access_token ?? null;
 }
+
+// ── Orbital — name, number, stars circling what you carry ─────────────────────
+
+function Orbital({ size = 112 }: { size?: number }) {
+  return (
+    <div className="relative" style={{ width: size, height: size }} aria-hidden="true">
+      <motion.svg
+        viewBox="0 0 112 112"
+        className="absolute inset-0"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 36, repeat: Infinity, ease: 'linear' }}
+      >
+        <ellipse cx="56" cy="56" rx="50" ry="22" fill="none" stroke={`${AMETHYST}45`} strokeWidth="1" />
+        <circle cx="106" cy="56" r="2.5" fill={AMETHYST} />
+      </motion.svg>
+      <motion.svg
+        viewBox="0 0 112 112"
+        className="absolute inset-0"
+        style={{ rotate: 60 }}
+        animate={{ rotate: 420 }}
+        transition={{ duration: 52, repeat: Infinity, ease: 'linear' }}
+      >
+        <ellipse cx="56" cy="56" rx="50" ry="22" fill="none" stroke={`${STEEL}40`} strokeWidth="1" />
+        <circle cx="6" cy="56" r="2" fill={STEEL} />
+      </motion.svg>
+      <motion.svg
+        viewBox="0 0 112 112"
+        className="absolute inset-0"
+        style={{ rotate: -60 }}
+        animate={{ rotate: -420 }}
+        transition={{ duration: 44, repeat: Infinity, ease: 'linear' }}
+      >
+        <ellipse cx="56" cy="56" rx="50" ry="22" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <circle cx="106" cy="56" r="1.5" fill="rgba(255,255,255,0.6)" />
+      </motion.svg>
+      <div
+        className="absolute inset-0 m-auto w-2 h-2 rounded-full"
+        style={{ background: 'white', boxShadow: `0 0 10px ${AMETHYST}` }}
+      />
+    </div>
+  );
+}
+
+// ── Generating theatre — the wait becomes part of the reading ────────────────
+
+const WHISPER_LINES = [
+  'Reading the name…',
+  'Computing the birth code…',
+  'Mapping the sky…',
+  'Finding the through-line…',
+  'Naming what holds…',
+];
+
+function GeneratingTheatre() {
+  const [lineIndex, setLineIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setLineIndex(i => Math.min(i + 1, WHISPER_LINES.length - 1));
+    }, 3200);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center justify-center py-10 gap-5">
+      <Orbital />
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={lineIndex}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.5 }}
+          className="text-sm text-white/35 tracking-wide"
+        >
+          {WHISPER_LINES[lineIndex]}
+        </motion.p>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ── Card ──────────────────────────────────────────────────────────────────────
 
 export default function EsotericCard({ initialProfile, esotericName = 'Timeless Map' }: Props) {
   const { user } = useAuth();
@@ -83,51 +166,19 @@ export default function EsotericCard({ initialProfile, esotericName = 'Timeless 
               exit={{ opacity: 0 }}
               className="flex flex-col items-center text-center"
             >
-              {/* Slow orbital — name, number, stars circling what you carry */}
-              <div className="relative w-28 h-28 mb-5" aria-hidden="true">
-                <motion.svg
-                  viewBox="0 0 112 112"
-                  className="absolute inset-0"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 36, repeat: Infinity, ease: 'linear' }}
-                >
-                  <ellipse cx="56" cy="56" rx="50" ry="22" fill="none" stroke={`${AMETHYST}45`} strokeWidth="1" />
-                  <circle cx="106" cy="56" r="2.5" fill={AMETHYST} />
-                </motion.svg>
-                <motion.svg
-                  viewBox="0 0 112 112"
-                  className="absolute inset-0"
-                  style={{ rotate: 60 }}
-                  animate={{ rotate: 420 }}
-                  transition={{ duration: 52, repeat: Infinity, ease: 'linear' }}
-                >
-                  <ellipse cx="56" cy="56" rx="50" ry="22" fill="none" stroke={`${STEEL}40`} strokeWidth="1" />
-                  <circle cx="6" cy="56" r="2" fill={STEEL} />
-                </motion.svg>
-                <motion.svg
-                  viewBox="0 0 112 112"
-                  className="absolute inset-0"
-                  style={{ rotate: -60 }}
-                  animate={{ rotate: -420 }}
-                  transition={{ duration: 44, repeat: Infinity, ease: 'linear' }}
-                >
-                  <ellipse cx="56" cy="56" rx="50" ry="22" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-                  <circle cx="106" cy="56" r="1.5" fill="rgba(255,255,255,0.6)" />
-                </motion.svg>
-                <div
-                  className="absolute inset-0 m-auto w-2 h-2 rounded-full"
-                  style={{ background: 'white', boxShadow: `0 0 10px ${AMETHYST}` }}
-                />
+              <div className="mb-5">
+                <Orbital />
               </div>
               <p className="text-sm text-white/35 leading-relaxed mb-5 max-w-sm">
-                A reading across name etymology, numerology, and natal astrology — translated into plain language. What you were born carrying.
+                One reading of what is static in you — name, numbers, and the sky you were born under,
+                drawn together into your archetype. Made once; it doesn&apos;t change when your situation does.
               </p>
               <button
                 onClick={() => setCardState('intake')}
                 className="px-5 py-2 rounded-full text-white text-sm font-medium transition-opacity hover:opacity-90"
                 style={{ background: `linear-gradient(135deg, ${AMETHYST}, ${STEEL})` }}
               >
-                Get your {esotericName}
+                Draw your {esotericName}
               </button>
             </motion.div>
           )}
@@ -154,13 +205,8 @@ export default function EsotericCard({ initialProfile, esotericName = 'Timeless 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center py-12 gap-4"
             >
-              <div
-                className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-                style={{ borderColor: `${STEEL}40`, borderTopColor: STEEL }}
-              />
-              <p className="text-sm text-white/30">Reading the deep layers...</p>
+              <GeneratingTheatre />
             </motion.div>
           )}
 

@@ -124,6 +124,7 @@ export function buildNumerologyProfile(fullName: string, birthDate: string): Num
   const soulUrge = calcSoulUrge(fullName);
   const personality = calcPersonality(fullName);
   const birthdayNumber = calcBirthdayNumber(birthDate);
+  const dayOfMonth = parseInt(birthDate.split('-')[2] ?? '1', 10);
 
   // Note convergences and tensions
   const notes: string[] = [];
@@ -150,7 +151,7 @@ export function buildNumerologyProfile(fullName: string, birthDate: string): Num
     expressionMeaning: EXPRESSION_MEANINGS[expression] ?? `Expression ${expression}`,
     soulUrgeMeaning: SOUL_URGE_MEANINGS[soulUrge] ?? `Soul Urge ${soulUrge}`,
     personalityMeaning: PERSONALITY_MEANINGS[personality] ?? `Personality ${personality}`,
-    birthdayMeaning: `Born on the ${birthdayNumber}th — ${PERSONALITY_MEANINGS[birthdayNumber] ?? `natural ${birthdayNumber} energy`}`,
+    birthdayMeaning: `Born on day ${dayOfMonth} of the month (reduces to ${birthdayNumber}) — ${PERSONALITY_MEANINGS[birthdayNumber] ?? `natural ${birthdayNumber} energy`}`,
     convergenceNote: notes.join(' '),
   };
 }
