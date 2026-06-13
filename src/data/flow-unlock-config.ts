@@ -194,30 +194,55 @@ export const KEY_TECHNIQUES: Record<KeyId, { title: string; path: string; descri
   ],
 };
 
-// ─── Practice tools (one per Dimension — tools genuinely map to Dimensions) ───
+// ─── Prescribable practice tools ──────────────────────────────────────────────
+// The unlock may prescribe at most one of these — and only when the person's
+// situation clearly matches its purpose (most unlocks need none). FlowCompendium
+// is deliberately absent: it's a browsable repository, not a prescription with a
+// clear outcome.
 
-export const PRACTICE_TOOLS: Record<Pillar, { title: string; description: string; route: string }> = {
-  self: {
-    title: 'FlowZone',
-    route: '/me?tool=flowzone',
-    description: 'Deep work focus timer. Each session you press a button when distraction pulls — makes the invisible work of maintaining focus visible. Builds body awareness through deliberate reps.',
+export interface PrescribableTool {
+  /** Stable id — matches the structured-output enum and TOOL_BY_ID lookup. */
+  id: string;
+  /** Display name — must match a TOOL_ICON key. */
+  title: string;
+  /** /me deep link — route id from sections-data. */
+  route: string;
+  /** The specific need that makes this tool the right call. */
+  prescribeWhen: string;
+}
+
+export const PRESCRIBABLE_TOOLS: PrescribableTool[] = [
+  {
+    id: 'flowzone', title: 'FlowZone', route: '/me?tool=flowzone',
+    prescribeWhen: 'they need to actually get knowledge work done and have no rigorous container for it — execution keeps slipping and sessions don\'t hold.',
   },
-  space: {
-    title: 'FlowRead',
-    route: '/me?tool=flowread',
-    description: 'Speed reading trainer. Builds sustained attention and feedback density through timed reading with comprehension checks. Trains staying in signal without drift.',
+  {
+    id: 'flowread', title: 'FlowRead', route: '/me?tool=flowread',
+    prescribeWhen: 'a clear need to train focus — short attention span, can\'t stay with one thing, or there\'s too much to read and digest and it overwhelms.',
   },
-  story: {
-    title: 'FlowCompendium',
-    route: '/me?tool=compendium',
-    description: 'Browse 338 flow protocols organized by pillar and state. Find techniques and concepts specific to where you\'re blocked — direction, mission, narrative, and role clarity.',
+  {
+    id: 'flowbreath', title: 'FlowBreath', route: '/me?tool=breathwork',
+    prescribeWhen: 'the body is the blocker — anxious and needs to settle, flat and needs energy, or wound-up and needs to drop into focus before working.',
   },
-  spirit: {
-    title: 'FlowSpark',
-    route: '/me?tool=curiosity',
-    description: 'Curiosity mapping tool. Surfaces genuine pulls through structured prompts. Reveals what actually matters vs what you think should matter.',
+  {
+    id: 'flowspark', title: 'FlowSpark', route: '/me?tool=curiosity',
+    prescribeWhen: 'no natural pull toward the work — running on "should", needs to find genuine inspiration and what actually pulls them.',
   },
-};
+  {
+    id: 'flowwrite', title: 'FlowWrite', route: '/me?tool=flowwrite',
+    prescribeWhen: 'cognitive load needs clearing, or they\'re self-censoring and stuck at the struggle phase and need to write before they think to break through.',
+  },
+  {
+    id: 'timeless-map', title: 'Timeless Map', route: '/me?tool=ancestral-signal',
+    prescribeWhen: 'an identity, values, or vision question — needs to clarify who they are and what they\'re for, or wants inspiration from a longer view.',
+  },
+];
+
+export const TOOL_BY_ID: Record<string, PrescribableTool> = Object.fromEntries(
+  PRESCRIBABLE_TOOLS.map(t => [t.id, t]),
+);
+
+export const TOOL_IDS = PRESCRIBABLE_TOOLS.map(t => t.id);
 
 // ─── Pillar domain definitions (instinct prior framing) ───────────────────────
 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import {
   KEY_CARDS,
   KEY_TECHNIQUES,
-  PRACTICE_TOOLS,
+  PRESCRIBABLE_TOOLS,
   VOICE_RULES,
   PSYCHOLINGUISTIC_INSTRUCTIONS,
   type Pillar,
@@ -101,7 +101,6 @@ export default function FlowUnlockPromptInspector() {
           <div className="space-y-6">
             {PILLARS.map(pillar => {
               const color = PC[pillar];
-              const tool = PRACTICE_TOOLS[pillar];
               const cards = KEY_CARDS.filter(k => k.dimension === pillar);
               return (
                 <div key={pillar} className="rounded-xl border overflow-hidden" style={{ borderColor: `${color}25` }}>
@@ -109,9 +108,6 @@ export default function FlowUnlockPromptInspector() {
                   <div className="px-4 py-3 flex items-baseline gap-2" style={{ background: `${color}0d` }}>
                     <span className="text-xs font-bold tracking-widest" style={{ color }}>{PL[pillar]}</span>
                     <span className="text-[10px] text-white/30">{PS[pillar]}</span>
-                    <span className="ml-auto text-[9px] text-white/20 uppercase tracking-wider">
-                      tool: {tool.title}
-                    </span>
                   </div>
 
                   <div className="p-4 space-y-4">
@@ -150,6 +146,26 @@ export default function FlowUnlockPromptInspector() {
                 </div>
               );
             })}
+
+            {/* Prescribable tool menu — optional, need-matched, at most one per unlock */}
+            <div className="rounded-xl border border-white/[0.12] overflow-hidden">
+              <div className="px-4 py-3 flex items-baseline gap-2 bg-white/[0.03]">
+                <span className="text-xs font-bold tracking-widest text-white/70">PRACTICE TOOLS</span>
+                <span className="text-[10px] text-white/30">optional — at most one per unlock, only on a clear match</span>
+              </div>
+              <div className="p-4 space-y-1.5">
+                {PRESCRIBABLE_TOOLS.map(t => (
+                  <div key={t.id} className="flex items-start gap-2.5 rounded-md border border-white/[0.05] bg-white/[0.01] px-3 py-2">
+                    <span className="flex-shrink-0 mt-[6px] w-1 h-1 rounded-full bg-white/40" />
+                    <div className="min-w-0 flex-1">
+                      <span className="text-xs text-white/75 font-medium">{t.title}</span>
+                      <p className="text-[11px] text-white/35 leading-snug">prescribe when {t.prescribeWhen}</p>
+                      <code className="text-[8px] text-white/15 mt-0.5 block">{t.route}</code>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 

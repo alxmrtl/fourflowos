@@ -8,7 +8,9 @@ import {
   KEY_BY_ID,
   KEY_IDS,
   KEY_TECHNIQUES,
-  PRACTICE_TOOLS,
+  PRESCRIBABLE_TOOLS,
+  TOOL_BY_ID,
+  TOOL_IDS,
   PILLAR_DOMAINS,
   IMAGE_DESCRIPTIONS,
   VOICE_RULES,
@@ -60,6 +62,7 @@ interface StructuredUnlock {
   the_tell: string;
   key_moves: { key: KeyId; move: string }[];
   technique: { name: string; prescription: string };
+  recommended_tool: string;
   tool_prescription: string;
 }
 
@@ -171,12 +174,17 @@ const UNLOCK_TOOL: Anthropic.Tool = {
         required: ['name', 'prescription'],
         description: 'Exactly one technique from the bottleneck key\'s menu.',
       },
+      recommended_tool: {
+        type: 'string',
+        enum: [...TOOL_IDS, 'none'],
+        description: 'The practice tool whose purpose exactly matches this person\'s need, or "none". Default to "none" unless one tool is a clear, specific fit — most unlocks need no tool.',
+      },
       tool_prescription: {
         type: 'string',
-        description: '1 sentence: why the matching practice tool fits this person\'s specific pattern — reference something concrete from what they shared.',
+        description: '1 sentence: why the recommended tool fits this person\'s specific pattern — reference something concrete from what they shared. Only when recommended_tool is not "none".',
       },
     },
-    required: ['bottleneck_key', 'overexposed_keys', 'pattern_read', 'the_tell', 'key_moves', 'technique', 'tool_prescription'],
+    required: ['bottleneck_key', 'overexposed_keys', 'pattern_read', 'the_tell', 'key_moves', 'technique', 'recommended_tool'],
   },
 };
 
@@ -207,6 +215,12 @@ function buildTechniqueMenu(): string {
       const lines = KEY_TECHNIQUES[id].map(t => `  - ${t.title}: ${t.description}`).join('\n');
       return `[${id}]\n${lines}`;
     })
+    .join('\n');
+}
+
+function buildToolMenu(): string {
+  return PRESCRIBABLE_TOOLS
+    .map(t => `- ${t.title}: prescribe when ${t.prescribeWhen}`)
     .join('\n');
 }
 
@@ -256,8 +270,10 @@ ${PSYCHOLINGUISTIC_INSTRUCTIONS}
 
 ${buildTechniqueMenu()}
 
-## PRACTICE TOOL
-The matching tool attaches automatically by the bottleneck key's dimension: SELF → FlowZone (focus timer that makes maintaining attention visible), SPACE → FlowRead (timed reading that trains staying in feedback), STORY → FlowCompendium (browse protocols for direction and mission), SPIRIT → FlowSpark (curiosity mapping that surfaces genuine pulls). Write tool_prescription for that tool only — one sentence tied to something concrete they shared. Only describe capabilities stated here.
+## PRACTICE TOOL (optional — recommend one only on a clear, specific match)
+Recommend a tool ONLY if this person's situation clearly matches one tool's purpose below. Most unlocks need no tool — the moves and the technique are the prescription. Default recommended_tool to "none". Never invent a fit to fill the slot, and never recommend browsing a library or reference. When you do recommend one, write tool_prescription as one sentence tied to something concrete they shared.
+
+${buildToolMenu()}
 
 ## VOICE RULES (non-negotiable)
 
@@ -300,6 +316,13 @@ function sanitizeStructured(raw: StructuredUnlock, scores: PillarScores): Struct
     ? { name: matched.title, prescription: raw.technique?.prescription?.trim() || matched.description }
     : { name: menu[0].title, prescription: menu[0].description };
 
+  const recommended_tool = typeof raw.recommended_tool === 'string' && raw.recommended_tool in TOOL_BY_ID
+    ? raw.recommended_tool
+    : 'none';
+  const tool_prescription = recommended_tool === 'none'
+    ? ''
+    : (typeof raw.tool_prescription === 'string' ? raw.tool_prescription : '');
+
   return {
     bottleneck_key: bottleneck,
     overexposed_keys: overexposed,
@@ -307,7 +330,8 @@ function sanitizeStructured(raw: StructuredUnlock, scores: PillarScores): Struct
     the_tell: typeof raw.the_tell === 'string' ? raw.the_tell : '',
     key_moves,
     technique,
-    tool_prescription: typeof raw.tool_prescription === 'string' ? raw.tool_prescription : '',
+    recommended_tool,
+    tool_prescription,
   };
 }
 
@@ -392,7 +416,9 @@ export async function POST(request: NextRequest) {
 
   const bottleneckCard = KEY_BY_ID[structured.bottleneck_key];
   const bottleneckDimension = bottleneckCard.dimension;
-  const tool = PRACTICE_TOOLS[bottleneckDimension];
+  const tool = structured.recommended_tool !== 'none'
+    ? TOOL_BY_ID[structured.recommended_tool] ?? null
+    : null;
   const techniqueEntry = KEY_TECHNIQUES[structured.bottleneck_key]
     .find(t => t.title === structured.technique.name);
 
@@ -403,7 +429,7 @@ export async function POST(request: NextRequest) {
 
   const recommendations = [
     { type: 'technique' as const, title: structured.technique.name, pillar: bottleneckDimension, path: techniqueEntry?.path },
-    { type: 'tool' as const, title: tool.title, pillar: bottleneckDimension, route: tool.route },
+    ...(tool ? [{ type: 'tool' as const, title: tool.title, pillar: bottleneckDimension, route: tool.route }] : []),
   ];
 
   const profileJson = {
@@ -415,6 +441,7 @@ export async function POST(request: NextRequest) {
     the_tell: structured.the_tell,
     key_moves: structured.key_moves,
     technique: structured.technique,
+    recommended_tool: structured.recommended_tool,
     tool_prescription: structured.tool_prescription,
     situation: answers.q4 ?? null,
   };

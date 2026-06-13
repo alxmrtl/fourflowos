@@ -23,6 +23,7 @@ export interface FlowLensDisplayProfile {
     situation?: string | null;
     // Shared
     the_tell?: string;
+    recommended_tool?: string;
     tool_prescription?: string;
     // V4 legacy fields
     sections?: Record<string, string>;
@@ -69,11 +70,10 @@ export const DEMO_PROFILE: FlowLensDisplayProfile = {
       name: 'One Thing Card',
       prescription: 'A physical card with one sentence forces the decision your tools keep deferring — and puts it in your visual field before the sparks arrive.',
     },
-    tool_prescription: 'FlowCompendium has the direction protocols you\'ve been improvising around — start with the mission section instead of another tooling rabbit hole.',
+    recommended_tool: 'none',
   },
   recommendations: [
     { type: 'technique', title: 'One Thing Card', pillar: 'story', path: 'compendium/framework/STORY/Clear-Mission/_techniques/one-thing-card.md' },
-    { type: 'tool',      title: 'FlowCompendium', pillar: 'story', route: '/me?tool=compendium' },
   ],
   generated_at: new Date().toISOString(),
 };
@@ -92,6 +92,8 @@ export const TOOL_ICON: Record<string, string> = {
   FlowRead:       '/assets/apps/flowread-icon.png',
   FlowBreath:     '/assets/LOGOS/FOCUSED BODY.png',
   FlowSpark:      '/assets/LOGOS/IGNITED CURIOSITY.png',
+  FlowWrite:      '/assets/LOGOS/GENERATIVE STORY.png',
+  'Timeless Map': '/assets/LOGOS/GROUNDING VALUES.png',
   FlowCompendium: '/assets/LOGOS/OPEN MIND.png',
   Training:       '/assets/LOGOS/OPEN MIND.png',
   FlowUnlock:     '/assets/apps/flowunlock-icon.png',
