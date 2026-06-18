@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, useScroll, useSpring, useTime, useTransform } from 'framer-motion';
+import { motion, useAnimationFrame, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
 
 /**
  * The thread of light — a single luminous dot that travels the whole landing
@@ -125,18 +125,28 @@ export default function ThreadOfLight() {
   const tail2Y = useSpring(rawY, { stiffness: 13, damping: 13 });
 
   // Slow idle drift so the light never fully stops — it keeps tracing a small,
-  // quiet orbit around its resting anchor even when scroll is idle. Two periods
-  // (X/Y) give an organic Lissajous float rather than a circle.
-  const time = useTime();
-  const driftX = useTransform(time, t => Math.sin(t / 4200) * 9);
-  const driftY = useTransform(time, t => Math.cos(t / 5600) * 7);
+  // quiet orbit around its resting anchor even when scroll is idle. Driven by a
+  // single per-frame loop that reads the scroll spring and adds a sine offset,
+  // so it ticks continuously regardless of scroll. Two periods (X/Y) give an
+  // organic Lissajous float rather than a circle.
+  const dx = useMotionValue(0);
+  const dy = useMotionValue(0);
+  const tdx = useMotionValue(0);
+  const tdy = useMotionValue(0);
+  const t2dx = useMotionValue(0);
+  const t2dy = useMotionValue(0);
 
-  const dx = useTransform([x, driftX], ([px, d]) => (px as number) + (d as number));
-  const dy = useTransform([y, driftY], ([py, d]) => (py as number) + (d as number));
-  const tdx = useTransform([tailX, driftX], ([px, d]) => (px as number) + (d as number));
-  const tdy = useTransform([tailY, driftY], ([py, d]) => (py as number) + (d as number));
-  const t2dx = useTransform([tail2X, driftX], ([px, d]) => (px as number) + (d as number));
-  const t2dy = useTransform([tail2Y, driftY], ([py, d]) => (py as number) + (d as number));
+  useAnimationFrame(t => {
+    const ox = Math.sin(t / 3800) * 16;
+    const oy = Math.cos(t / 5200) * 12;
+    dx.set(x.get() + ox);
+    dy.set(y.get() + oy);
+    // Tails drift a touch wider and softer so the comet breathes.
+    tdx.set(tailX.get() + ox * 1.3);
+    tdy.set(tailY.get() + oy * 1.3);
+    t2dx.set(tail2X.get() + ox * 1.6);
+    t2dy.set(tail2Y.get() + oy * 1.6);
+  });
 
   // Softer, diffuse glow rather than a hard white pixel: broader blur, lower
   // outer-white opacity. The core color carries the section hue.
