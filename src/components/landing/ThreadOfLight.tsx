@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { motion, useScroll, useSpring, useTime, useTransform } from 'framer-motion';
 
 /**
  * The thread of light — a single luminous dot that travels the whole landing
@@ -124,7 +124,23 @@ export default function ThreadOfLight() {
   const tail2X = useSpring(rawX, { stiffness: 13, damping: 13 });
   const tail2Y = useSpring(rawY, { stiffness: 13, damping: 13 });
 
-  const glow = useTransform(color, c => `0 0 12px 2px ${c}, 0 0 36px 8px rgba(255,255,255,0.12)`);
+  // Slow idle drift so the light never fully stops — it keeps tracing a small,
+  // quiet orbit around its resting anchor even when scroll is idle. Two periods
+  // (X/Y) give an organic Lissajous float rather than a circle.
+  const time = useTime();
+  const driftX = useTransform(time, t => Math.sin(t / 4200) * 9);
+  const driftY = useTransform(time, t => Math.cos(t / 5600) * 7);
+
+  const dx = useTransform([x, driftX], ([px, d]) => (px as number) + (d as number));
+  const dy = useTransform([y, driftY], ([py, d]) => (py as number) + (d as number));
+  const tdx = useTransform([tailX, driftX], ([px, d]) => (px as number) + (d as number));
+  const tdy = useTransform([tailY, driftY], ([py, d]) => (py as number) + (d as number));
+  const t2dx = useTransform([tail2X, driftX], ([px, d]) => (px as number) + (d as number));
+  const t2dy = useTransform([tail2Y, driftY], ([py, d]) => (py as number) + (d as number));
+
+  // Softer, diffuse glow rather than a hard white pixel: broader blur, lower
+  // outer-white opacity. The core color carries the section hue.
+  const glow = useTransform(color, c => `0 0 16px 5px ${c}, 0 0 50px 16px rgba(255,255,255,0.07)`);
 
   if (!enabled) return null;
 
@@ -132,15 +148,15 @@ export default function ThreadOfLight() {
     <motion.div className="fixed inset-0 pointer-events-none z-30" style={{ opacity }} aria-hidden="true">
       <motion.div
         className="absolute w-1 h-1 rounded-full"
-        style={{ x: tail2X, y: tail2Y, background: color, opacity: 0.18, translateX: '-50%', translateY: '-50%' }}
+        style={{ x: t2dx, y: t2dy, background: color, opacity: 0.18, translateX: '-50%', translateY: '-50%' }}
       />
       <motion.div
         className="absolute w-1.5 h-1.5 rounded-full"
-        style={{ x: tailX, y: tailY, background: color, opacity: 0.38, translateX: '-50%', translateY: '-50%' }}
+        style={{ x: tdx, y: tdy, background: color, opacity: 0.38, translateX: '-50%', translateY: '-50%' }}
       />
       <motion.div
-        className="absolute w-2 h-2 rounded-full bg-white"
-        style={{ x, y, boxShadow: glow, translateX: '-50%', translateY: '-50%' }}
+        className="absolute w-2 h-2 rounded-full bg-white/70"
+        style={{ x: dx, y: dy, boxShadow: glow, translateX: '-50%', translateY: '-50%' }}
       />
     </motion.div>
   );
