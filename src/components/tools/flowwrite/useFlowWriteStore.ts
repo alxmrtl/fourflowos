@@ -1,11 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { STORAGE_KEY } from './constants';
+import { DEFAULT_WORD_TARGET, STORAGE_KEY } from './constants';
 import type { FlowWriteSession, FlowWriteSettings, FlowWriteState } from './types';
 
 const DEFAULT_STATE: FlowWriteState = {
-  settings: { durationMinutes: 10, flowMode: true, fontStyle: 'serif' },
+  settings: { targetMode: 'time', durationMinutes: 10, wordTarget: DEFAULT_WORD_TARGET, flowMode: true, fontStyle: 'serif' },
   draft: '',
   sessions: [],
 };

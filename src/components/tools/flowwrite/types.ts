@@ -1,8 +1,15 @@
-export type WritePhase = 'setup' | 'writing' | 'complete';
+export type WritePhase = 'writing' | 'complete';
+
+/** What the session aims at: a stretch of time, a word count, or nothing (free write). */
+export type TargetMode = 'time' | 'words' | 'open';
 
 export interface FlowWriteSettings {
+  /** Which kind of target the writer is working toward. */
+  targetMode: TargetMode;
   durationMinutes: number;
-  /** Flow mode: the page dims when you stall; typing restores the light. */
+  /** Word goal for `words` mode. */
+  wordTarget: number;
+  /** Flow mode: text + colour respond to your momentum; off for a still surface. */
   flowMode: boolean;
   fontStyle: 'sans' | 'serif';
 }
