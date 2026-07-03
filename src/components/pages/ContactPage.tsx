@@ -322,8 +322,8 @@ export default function ContactPage() {
                 <h3 className="text-lg font-semibold text-white mb-4">Explore More</h3>
                 <div className="space-y-3">
                   {[
-                    { href: '/framework', label: 'Explore the Framework' },
-                    { href: '/blog', label: 'Browse Resources' },
+                    { href: '/framework', label: 'See How It Works' },
+                    { href: '/together', label: 'Work Together' },
                     { href: '/about', label: 'Learn About Our Mission' },
                   ].map((link, index) => (
                     <Link

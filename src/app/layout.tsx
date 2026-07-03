@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
-import NavigationWrapper from "@/components/navigation/NavigationWrapper";
 import PageTransition from "@/components/PageTransition";
-import SwipeContainer from "@/components/SwipeContainer";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { AudienceProvider } from "@/context/AudienceContext";
 import { AuthProvider } from "@/context/AuthContext";
@@ -65,13 +63,10 @@ export default function RootLayout({
         <AuthProvider>
           <AudienceProvider>
             <LayoutWrapper>
-              <SwipeContainer>
-                <PageTransition>
-                  <div id="main-content">{children}</div>
-                </PageTransition>
-              </SwipeContainer>
+              <PageTransition>
+                <div id="main-content">{children}</div>
+              </PageTransition>
             </LayoutWrapper>
-            <NavigationWrapper />
           </AudienceProvider>
         </AuthProvider>
       </body>

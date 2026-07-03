@@ -12,6 +12,9 @@ const contactSchema = z.object({
   subject: z.string().max(150).optional(),
   message: z.string().min(1).max(5000),
   form: z.enum(['contact', 'together']),
+  // Together form routing: which door was picked and what's alive right now.
+  audience: z.enum(['individual', 'team']).optional(),
+  focus: z.array(z.string().max(80)).max(6).optional(),
   // Honeypot field — real users never fill this in.
   website: z.string().optional(),
 });
@@ -61,18 +64,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Reproduce exactly what each form used to send directly to Web3Forms.
   const subject =
     data.form === 'contact'
       ? `FourFlowOS Contact: ${data.subject ?? ''}`
-      : 'FourFlow: Signal Session Request';
+      : `FourFlow: Work Together — ${data.audience === 'team' ? 'Team' : 'Individual'}`;
+
+  const messageParts = [
+    data.audience ? `For: ${data.audience === 'team' ? 'My team' : 'Just me'}` : null,
+    data.focus?.length ? `Focus: ${data.focus.join(' · ')}` : null,
+    data.message,
+  ].filter(Boolean);
 
   const payload = {
     access_key: accessKey,
     name: data.name,
     email: data.email,
     subject,
-    message: data.message,
+    message: messageParts.join('\n\n'),
     from_name: 'FourFlowOS Website',
   };
 

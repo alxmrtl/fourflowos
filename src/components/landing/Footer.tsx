@@ -70,8 +70,8 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4">Explore</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/map" className="text-gray-500 hover:text-white transition-colors">
-                  Your Flow Profile
+                <Link href="/me" className="text-gray-500 hover:text-white transition-colors">
+                  Your Practice
                 </Link>
               </li>
               <li>
@@ -80,18 +80,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/apps" className="text-gray-500 hover:text-white transition-colors">
-                  Tools
-                </Link>
-              </li>
-              <li>
                 <Link href="/together" className="text-gray-500 hover:text-white transition-colors">
                   Work Together
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-gray-500 hover:text-white transition-colors">
-                  Resources
                 </Link>
               </li>
               <li>

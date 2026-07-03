@@ -236,11 +236,14 @@ export default function SynergyConstellation() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-            Everything Connects
+          <p className="text-xs font-semibold tracking-[0.2em] uppercase mb-3 text-spirit">
+            The Alignment
+          </p>
+          <h2 className="font-display text-3xl md:text-4xl font-normal text-white leading-tight">
+            Everything connects.
           </h2>
-          <p className="text-gray-400 max-w-xl mx-auto">
-            The keys flow into each other. When aligned, they amplify your state.
+          <p className="text-sm text-gray-400 mt-3 max-w-xl mx-auto leading-relaxed">
+            The keys feed each other. Aligned, they amplify.
           </p>
         </motion.div>
 

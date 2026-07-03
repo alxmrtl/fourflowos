@@ -81,7 +81,7 @@ export default function AboutPage() {
                   href="/framework"
                   className="px-6 py-3 border border-gray-600 text-gray-300 font-medium rounded-full hover:bg-white/5 hover:border-gray-400 transition-all duration-300"
                 >
-                  Explore the Framework
+                  See How It Works
                 </Link>
               </div>
             </div>

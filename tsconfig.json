@@ -38,6 +38,7 @@
   "exclude": [
     "node_modules",
     "scripts",
-    "ARCHIVE-WEBSITE"
+    "ARCHIVE-WEBSITE",
+    "src/components/_archive"
   ]
 }

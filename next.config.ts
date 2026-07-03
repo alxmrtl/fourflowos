@@ -54,6 +54,18 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["framer-motion"],
   },
   productionBrowserSourceMaps: false,
+  async redirects() {
+    // Archived routes (framework deep-dives, blog, public practice page)
+    // fold back into the How It Works page.
+    return [
+      { source: "/dimension/:path*", destination: "/framework", permanent: true },
+      { source: "/content", destination: "/framework", permanent: true },
+      { source: "/content/:id", destination: "/framework", permanent: true },
+      { source: "/blog", destination: "/framework", permanent: true },
+      { source: "/apps", destination: "/framework", permanent: true },
+      { source: "/apps/:id", destination: "/framework", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

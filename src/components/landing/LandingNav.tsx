@@ -41,7 +41,6 @@ export default function LandingNav() {
   const mainNavLinks = [
     { ...signalLink, featured: true },
     { href: '/framework', label: 'How It Works' },
-    { href: '/apps', label: 'Practice' },
     { href: '/together', label: 'Work Together' },
   ];
 
