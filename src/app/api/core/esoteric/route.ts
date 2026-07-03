@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { z } from 'zod';
 import { supabase } from '@/lib/supabase';
 import { buildNumerologyProfile } from '@/lib/numerology';
 import { formatNameSignature, getNameEtymology } from '@/lib/name-etymology';
+import { checkRateLimit, clientIp, tooManyRequests } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -169,6 +171,38 @@ Before finalizing, find the one place where all three layers point at the same s
 - Total length across all fields: ~420 words.`;
 }
 
+// ─── Input validation ─────────────────────────────────────────────────────────
+
+/** Coerce optional values leniently: bad shapes become null, never a rejection. */
+const optionalCoordinate = (min: number, max: number) =>
+  z.unknown().transform((value): number | null => {
+    if (value === null || value === undefined || value === '') return null;
+    const n = typeof value === 'number' ? value : parseFloat(String(value));
+    if (Number.isNaN(n) || n < min || n > max) return null;
+    return n;
+  });
+
+const esotericSchema = z.object({
+  full_name: z.string().trim().min(1).max(120),
+  // <input type="date"> sends YYYY-MM-DD; require a real calendar date
+  birth_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .refine((s) => {
+      const d = new Date(`${s}T00:00:00Z`);
+      return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+    }),
+  // <input type="time"> sends HH:MM (or empty string when unknown)
+  birth_time: z.unknown().transform((v): string | null =>
+    typeof v === 'string' && /^\d{2}:\d{2}/.test(v) ? v.slice(0, 5) : null
+  ),
+  birth_location: z.unknown().transform((v): string | null =>
+    typeof v === 'string' && v.trim() ? v.trim().slice(0, 200) : null
+  ),
+  birth_lat: optionalCoordinate(-90, 90),
+  birth_lng: optionalCoordinate(-180, 180),
+});
+
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
@@ -177,25 +211,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
   }
 
-  let body: {
-    full_name: string;
-    birth_date: string;
-    birth_time?: string | null;
-    birth_location?: string | null;
-    birth_lat?: number | null;
-    birth_lng?: number | null;
-  };
+  // Cost guard: each call hits Anthropic + the chart service. Per-user daily
+  // cap plus a per-IP hourly guard (reuses the llm-flow-lens tier with a
+  // distinct key prefix so counters stay separate).
+  const dailyRl = await checkRateLimit('llm-esoteric', user.id);
+  if (!dailyRl.success) return tooManyRequests(dailyRl.retryAfterSec);
+  const ipRl = await checkRateLimit('llm-flow-lens', `esoteric-ip:${clientIp(request)}`);
+  if (!ipRl.success) return tooManyRequests(ipRl.retryAfterSec);
 
+  let rawBody: unknown;
   try {
-    body = await request.json();
+    rawBody = await request.json();
   } catch {
     return NextResponse.json({ success: false, error: 'Invalid request body' }, { status: 400 });
   }
 
-  const { full_name, birth_date } = body;
-  if (!full_name?.trim() || !birth_date) {
+  const parsedBody = esotericSchema.safeParse(rawBody);
+  if (!parsedBody.success) {
     return NextResponse.json({ success: false, error: 'full_name and birth_date are required' }, { status: 400 });
   }
+  const body = parsedBody.data;
+  const { full_name, birth_date } = body;
 
   // Save intake
   const { data: intake, error: intakeError } = await supabase

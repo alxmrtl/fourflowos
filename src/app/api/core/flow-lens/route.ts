@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
+import { checkRateLimit, clientIp, tooManyRequests } from '@/lib/rate-limit';
 import {
   type Pillar,
   type KeyId,
@@ -343,6 +344,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
   }
 
+  // Abuse guard on top of the 1/day business rule below (LLM cost per call).
+  const ipRl = await checkRateLimit('llm-flow-lens', clientIp(request));
+  if (!ipRl.success) return tooManyRequests(ipRl.retryAfterSec);
+
   let body: { answers: FlowUnlockAnswers; answer_metadata?: AnswerMetadata; timezone?: string };
   try {
     body = await request.json();
@@ -355,7 +360,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'answers required' }, { status: 400 });
   }
 
-  const timeZone = typeof body.timezone === 'string' && body.timezone ? body.timezone : 'UTC';
+  // Client-supplied timezone defines the local-day boundary; accept only
+  // valid IANA zone strings, otherwise fall back to UTC.
+  let timeZone = typeof body.timezone === 'string' && body.timezone ? body.timezone : 'UTC';
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone });
+  } catch {
+    timeZone = 'UTC';
+  }
 
   // ── 1/day guard: one unlock per local calendar day ──
   const { data: latest } = await supabase

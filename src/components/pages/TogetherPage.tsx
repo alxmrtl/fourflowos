@@ -15,6 +15,7 @@ export default function TogetherPage() {
     email: '',
     message: '',
   });
+  const [honeypot, setHoneypot] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -35,16 +36,15 @@ export default function TogetherPage() {
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          access_key: '73d66ffb-9a88-4841-8f05-a48b0219288f',
           name: formData.name,
           email: formData.email,
-          subject: 'FourFlow: Signal Session Request',
           message: formData.message,
-          from_name: 'FourFlowOS Website',
+          form: 'together',
+          website: honeypot,
         }),
       });
 
@@ -52,6 +52,7 @@ export default function TogetherPage() {
       if (result.success) {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', message: '' });
+        setHoneypot('');
       } else {
         setSubmitStatus('error');
       }
@@ -214,6 +215,22 @@ export default function TogetherPage() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Honeypot — hidden from real users, catches bots */}
+                <div
+                  aria-hidden="true"
+                  style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}
+                >
+                  <label htmlFor="website">Website</label>
+                  <input
+                    type="text"
+                    id="website"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="name" className="block text-xs font-medium text-gray-400 mb-2">Name</label>

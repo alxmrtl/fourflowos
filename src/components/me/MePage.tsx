@@ -498,7 +498,7 @@ export default function MePage() {
         }, 2000);
       }
     }).catch((err) => {
-      console.warn('[/me] data fetch error:', err?.message);
+      console.error('[/me] data fetch error:', err?.message);
     }).finally(() => {
       setFetching(false);
     });

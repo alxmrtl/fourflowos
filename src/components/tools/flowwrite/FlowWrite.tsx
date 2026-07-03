@@ -287,7 +287,7 @@ export default function FlowWrite({ embedded }: { embedded?: boolean } = {}) {
           started_at: new Date(session.startedAt).toISOString(),
         })
         .then(({ error }) => {
-          if (error) console.warn('[FlowWrite] session sync failed:', error.message);
+          if (error) console.error('[FlowWrite] session sync failed:', error.message);
         });
     }
   }, [store.addSession, user, elapsedSec]);

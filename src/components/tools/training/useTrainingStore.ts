@@ -141,7 +141,7 @@ export function useTrainingStore() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(reviewUpdate),
-    }).catch(err => console.warn('Review sync failed (will retry on next session):', err));
+    }).catch(err => console.error('Review sync failed (will retry on next session):', err));
 
     // Complete session if last card
     if (isLast) {
@@ -185,7 +185,7 @@ export function useTrainingStore() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(reviewUpdate),
-    }).catch(err => console.warn('Study sync failed:', err));
+    }).catch(err => console.error('Study sync failed:', err));
 
     // Complete session if last card
     if (isLast) {
@@ -210,7 +210,7 @@ export function useTrainingStore() {
         cards_correct: correct,
         cards_missed: missed,
       }),
-    }).catch(err => console.warn('Session complete sync failed:', err));
+    }).catch(err => console.error('Session complete sync failed:', err));
   }, []);
 
   const skipCard = useCallback(() => {

@@ -1,5 +1,3 @@
-'use client';
-
 import LegalPageLayout, { LegalSection, InfoBox } from '@/components/legal/LegalPageLayout';
 import Link from 'next/link';
 

@@ -56,12 +56,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${cormorant.variable} ${dmSans.variable} font-sans`}>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-white focus:text-black focus:text-sm"
+        >
+          Skip to main content
+        </a>
         <AuthProvider>
           <AudienceProvider>
             <LayoutWrapper>
               <SwipeContainer>
                 <PageTransition>
-                  {children}
+                  <div id="main-content">{children}</div>
                 </PageTransition>
               </SwipeContainer>
             </LayoutWrapper>

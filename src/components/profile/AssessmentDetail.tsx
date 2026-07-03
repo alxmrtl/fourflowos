@@ -73,10 +73,14 @@ interface AssessmentDetailProps {
 // ─── Markdown renderer (same logic as profile view page) ─────────────────────
 
 function markdownToHtml(md: string): string {
+  // SECURITY: input is HTML-escaped first; keep escaping FIRST if editing —
+  // every transform below assumes it operates on already-escaped text.
   let html = md
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
     .replace(/^---+$/gm, '<hr />')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
     .replace(/^## (.+)$/gm, '<h2>$1</h2>')

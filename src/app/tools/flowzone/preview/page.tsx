@@ -62,7 +62,7 @@ export default function FlowZonePreviewPage() {
           started_at: new Date(startedAt).toISOString(),
           ended_at: new Date(completedAt).toISOString(),
         })
-        .then(({ error }) => { if (error) console.warn('[FlowZone] session sync failed:', error.message); });
+        .then(({ error }) => { if (error) console.error('[FlowZone] session sync failed:', error.message); });
     }
     if (store.settings.breathworkPost) {
       setBreathworkLabel('Cooldown');

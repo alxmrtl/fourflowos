@@ -1,21 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { requireAdmin } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
-
-function isAuthorized(request: NextRequest): boolean {
-  const key = request.headers.get('x-admin-key');
-  return key === process.env.PROFILE_ADMIN_KEY;
-}
 
 // GET /api/core/admin/[id]?type=flow_lens|esoteric
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
 
   const { id } = await params;
   const type = request.nextUrl.searchParams.get('type') ?? 'flow_lens';
@@ -30,7 +25,10 @@ export async function GET(
       .eq('id', id)
       .single();
 
-    if (error) return NextResponse.json({ success: false, error: error.message }, { status: 404 });
+    if (error) {
+      console.error('[core/admin]', error);
+      return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+    }
     return NextResponse.json({ success: true, profile: data });
   }
 
@@ -43,6 +41,9 @@ export async function GET(
     .eq('id', id)
     .single();
 
-  if (error) return NextResponse.json({ success: false, error: error.message }, { status: 404 });
+  if (error) {
+    console.error('[core/admin]', error);
+    return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+  }
   return NextResponse.json({ success: true, profile: data });
 }

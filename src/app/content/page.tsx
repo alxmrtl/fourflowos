@@ -9,7 +9,6 @@ export default async function ContentRepository() {
   
   try {
     content = await CONTENT_REPOSITORY();
-    console.log('Content loaded:', content.length, 'items');
   } catch (error) {
     console.error('Failed to load content:', error);
     // Return empty state instead of crashing
@@ -36,7 +35,7 @@ export default async function ContentRepository() {
             
             // Skip rendering if dimension data is missing
             if (!dimensionData) {
-              console.warn(`Missing dimension data for: ${item.dimension}`);
+              console.error(`Missing dimension data for: ${item.dimension}`);
               return null;
             }
             

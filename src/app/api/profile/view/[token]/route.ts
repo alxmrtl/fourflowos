@@ -1,16 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { checkRateLimit, clientIp, tooManyRequests } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
+// view_token is always crypto.randomUUID() (see profile/submit route)
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
+  const rl = await checkRateLimit('token-view', clientIp(request));
+  if (!rl.success) return tooManyRequests(rl.retryAfterSec);
+
   const { token } = await params;
 
-  if (!token || token.length < 10) {
-    return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 400 });
+  // Uniform 404 for malformed and unknown tokens — no oracle for guessing.
+  if (!token || !UUID_RE.test(token)) {
+    return NextResponse.json({ success: false, error: 'Profile not found' }, { status: 404 });
   }
 
   try {

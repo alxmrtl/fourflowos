@@ -1,19 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import type { PromptTemplate } from '@/lib/supabase';
+import { requireAdmin } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
-function isAuthorized(request: NextRequest): boolean {
-  const key = request.headers.get('x-admin-key');
-  return key === process.env.PROFILE_ADMIN_KEY;
-}
-
 // GET /api/profile/prompts - List all prompt templates
 export async function GET(request: NextRequest) {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
 
   try {
     const { data: prompts, error } = await supabase
@@ -38,9 +33,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/profile/prompts - Create new prompt template
 export async function POST(request: NextRequest) {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
 
   try {
     const body = await request.json();

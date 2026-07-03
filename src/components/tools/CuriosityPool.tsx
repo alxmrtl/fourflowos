@@ -637,7 +637,7 @@ export default function CuriosityPool({
                       if (e.key === 'Escape') { setShowAddInput(false); setAddInput(''); }
                     }}
                     placeholder="New curiosity..."
-                    className="px-3 py-1.5 bg-transparent border-none text-sm text-white placeholder-gray-500 focus:outline-none"
+                    className="px-3 py-1.5 bg-transparent border-none text-sm text-white placeholder-gray-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-white/20 rounded-full"
                     autoFocus
                   />
                   <button onClick={handleAddItem} className="px-2 py-1 rounded-full text-xs font-medium" style={{ background: `${AMETHYST}30`, color: AMETHYST }}>Add</button>

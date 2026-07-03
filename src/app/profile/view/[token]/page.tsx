@@ -623,11 +623,15 @@ function ProfileMarkdown({ content }: { content: string }) {
 }
 
 function markdownToHtml(md: string): string {
+  // SECURITY: input is HTML-escaped first; keep escaping FIRST if editing —
+  // every transform below assumes it operates on already-escaped text.
   let html = md
     // Escape HTML entities
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
     // Horizontal rules
     .replace(/^---+$/gm, '<hr />')
     // Headers (process before other inline formatting)

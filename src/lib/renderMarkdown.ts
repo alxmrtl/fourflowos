@@ -30,11 +30,15 @@ export interface RenderOptions {
 
 // ── HTML helpers ────────────────────────────────────────────────────────────
 
+// SECURITY: input must be HTML-escaped (via esc) BEFORE any markdown
+// transforms below. Keep escaping FIRST if editing.
 function esc(s: string): string {
   return s
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function inline(s: string, tokens: ReturnType<typeof makeTokens>): string {

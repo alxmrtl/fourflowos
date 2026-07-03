@@ -125,7 +125,7 @@ export default function CuriosityExplorer() {
           { onConflict: 'user_id' }
         )
         .then(({ error }) => {
-          if (error) console.warn('[CuriosityExplorer] sync failed:', error.message);
+          if (error) console.error('[CuriosityExplorer] sync failed:', error.message);
         });
     }, 2000);
     return () => clearTimeout(timer);
@@ -385,7 +385,7 @@ export default function CuriosityExplorer() {
                           onKeyDown={e => handleSlotKeyDown(e, i, false)}
                           onBlur={() => setActiveSlotIndex(null)}
                           placeholder="one word or short phrase..."
-                          className="px-4 py-2 rounded-full text-sm bg-white/5 border text-white placeholder-gray-500 focus:outline-none min-w-[200px]"
+                          className="px-4 py-2 rounded-full text-sm bg-white/5 border text-white placeholder-gray-500 focus:outline-none focus:border-white/25 min-w-[200px]"
                           style={{ borderColor: AMETHYST }}
                           autoFocus
                         />
@@ -441,7 +441,7 @@ export default function CuriosityExplorer() {
                           onKeyDown={e => handleSlotKeyDown(e, i, true)}
                           onBlur={() => setActiveSlotIndex(null)}
                           placeholder="one word or short phrase..."
-                          className="px-4 py-2 rounded-full text-sm bg-white/5 border text-white placeholder-gray-500 focus:outline-none min-w-[200px]"
+                          className="px-4 py-2 rounded-full text-sm bg-white/5 border text-white placeholder-gray-500 focus:outline-none focus:border-white/25 min-w-[200px]"
                           style={{ borderColor: AMETHYST }}
                           autoFocus
                         />
@@ -470,7 +470,7 @@ export default function CuriosityExplorer() {
                           onChange={e => handleSlotChange(i, e.target.value, true)}
                           onFocus={() => setActiveSlotIndex(globalIndex)}
                           placeholder="one word or short phrase..."
-                          className="px-4 py-2 rounded-full text-sm bg-white/5 border border-dashed text-white placeholder-gray-500 focus:outline-none min-w-[200px]"
+                          className="px-4 py-2 rounded-full text-sm bg-white/5 border border-dashed text-white placeholder-gray-500 focus:outline-none focus:border-white/25 min-w-[200px]"
                           style={{ borderColor: `${AMETHYST}30` }}
                           autoFocus
                         />

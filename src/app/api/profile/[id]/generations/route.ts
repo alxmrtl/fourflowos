@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-
-function isAuthorized(request: NextRequest): boolean {
-  const key = request.headers.get('x-admin-key');
-  return key === process.env.PROFILE_ADMIN_KEY;
-}
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
 
   const { id } = await params;
 

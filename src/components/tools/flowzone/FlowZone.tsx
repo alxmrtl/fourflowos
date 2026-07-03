@@ -59,7 +59,7 @@ export default function FlowZone({ embedded }: { embedded?: boolean } = {}) {
           ended_at: new Date(completedAt).toISOString(),
         })
         .then(({ error }) => {
-          if (error) console.warn('[FlowZone] session sync failed:', error.message);
+          if (error) console.error('[FlowZone] session sync failed:', error.message);
         });
     }
 

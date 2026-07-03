@@ -5,6 +5,7 @@ import type { IntakeStructuredV2 } from '@/types/intake';
 import { buildNumerologyProfile } from '@/lib/numerology';
 import { formatNameSignature } from '@/lib/name-etymology';
 import { buildHumanDesignSignature } from '@/lib/human-design';
+import { requireAdmin } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -29,11 +30,6 @@ Write in clear, human language. No astrological jargon. Focus on HOW this person
 NATAL CHART DATA:
 
 {CHART_DATA}`;
-
-function isAuthorized(request: NextRequest): boolean {
-  const key = request.headers.get('x-admin-key');
-  return key === process.env.PROFILE_ADMIN_KEY;
-}
 
 /**
  * Calculate Life Path Number from a birth date string (YYYY-MM-DD).
@@ -202,9 +198,8 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-  }
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
 
   const { id } = await params;
   const body = await request.json().catch(() => ({})) as { prompt_template_id?: string; custom_prompt_text?: string };
