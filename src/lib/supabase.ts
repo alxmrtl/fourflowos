@@ -51,6 +51,11 @@ export interface Assessment {
   name: string;
   email: string;
 
+  // Intake source — 'deep' (full intake) | 'workshop' (Flow Map Session).
+  // Optional: columns exist after scripts/setup-workshop-intake.sql runs.
+  source?: 'deep' | 'workshop' | string;
+  cohort?: string | null;
+
   // Birth data
   birth_date: string;
   birth_time: string | null;

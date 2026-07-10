@@ -117,6 +117,40 @@ Force-pushing rewritten history breaks the parent repo's submodule pointers — 
 
 ---
 
+## 7. Workshop intake: run one SQL script (REQUIRED before the first Flow Map Session)
+
+**Added:** July 9, 2026 · **Context:** the workshop web intake (`/profile/workshop`, short URL `/flowmap`) — the "Transfer" participants complete on their phones at the end of a Flow Map Session.
+
+Supabase Dashboard → SQL Editor → paste and run:
+
+### `scripts/setup-workshop-intake.sql`
+One script, three things:
+1. Adds `source` ('deep'/'workshop') and `cohort` columns to `assessments` (+ cohort index).
+2. Makes `birth_date` and `birth_location` nullable — workshop submissions collect no birth data.
+3. Seeds the `workshop-flow-profile` prompt template (the process route auto-selects it for workshop assessments; editable afterwards at `/profile/admin/prompts`). Skipped if the row already exists.
+
+Until this runs, **every submission at `/profile/workshop` fails** (the insert references columns that don't exist yet). The existing deep intake (`/profile/intake`) is unaffected either way.
+
+### Verify (SQL Editor)
+```sql
+SELECT column_name, is_nullable FROM information_schema.columns
+WHERE table_name = 'assessments' AND column_name IN ('source','cohort','birth_date','birth_location');
+-- expect: source + cohort present; birth_date + birth_location is_nullable = YES
+
+SELECT name, is_active FROM prompt_templates WHERE name = 'workshop-flow-profile';
+-- expect: one row, is_active = true
+```
+
+### Functional verify (before the first session)
+- Open `/flowmap?c=TEST-JUL26` → redirects to `/profile/workshop` with the cohort pre-filled.
+- Submit a test intake (all 12 dials + both pickers) → confirmation email arrives; row appears in `/profile/admin` with a Workshop badge and the cohort in the dropdown filter.
+- Process it from the assessment detail page → it should report using `workshop-flow-profile` and generate without fetching a natal chart → view the profile via its token link, then delete the test row if you like.
+
+### Per-session ops reminder
+Create the cohort code (`CLIENT-MONYY`, e.g. `ACME-JUL26`) and point the QR at `/profile/workshop?c=CODE`. After the session: dashboard → filter by cohort → process each → review → deliver.
+
+---
+
 ## Deferred items (documented decisions, not forgotten)
 
 | Item | Why deferred | When to revisit |

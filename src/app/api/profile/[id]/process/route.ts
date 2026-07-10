@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '@/lib/supabase';
 import type { IntakeStructuredV2 } from '@/types/intake';
+import { WORKSHOP_DIMENSIONS, WORKSHOP_KEY_LOOKUP, WORKSHOP_DIAL_LEGEND } from '@/types/workshop-intake';
+import type { WorkshopIntakeStructured } from '@/types/workshop-intake';
 import { buildNumerologyProfile } from '@/lib/numerology';
 import { formatNameSignature } from '@/lib/name-etymology';
 import { buildHumanDesignSignature } from '@/lib/human-design';
@@ -80,6 +82,52 @@ function formatDeepSignatureData(assessment: Record<string, unknown>): string {
   lines.push('---');
   lines.push('Do not surface any of this data — no name roots, no numbers — in the profile output.');
   lines.push('Distill it into plain observations about how this person is wired.');
+
+  return lines.join('\n');
+}
+
+/**
+ * Format a workshop-v1 intake (Flow Map Session transfer) for the prompt:
+ * twelve dials + lines grouped by dimension, then the self-named map
+ * (carrying key, stuck key, cascade line, free text).
+ */
+function formatWorkshopIntakeData(assessment: Record<string, unknown>): string {
+  const s = assessment.intake_structured as WorkshopIntakeStructured | null | undefined;
+
+  if (!s || s.version !== 'workshop-v1') {
+    return `Name: ${assessment.name} | Source: workshop\n\n(No workshop-v1 intake data found on this assessment)`;
+  }
+
+  const lines: string[] = [
+    `Name: ${assessment.name} | Cohort: ${s.cohort || assessment.cohort || '—'} | Source: Flow Map Session (in-room workshop intake)`,
+    '',
+    `Dial legend — stuck: ${WORKSHOP_DIAL_LEGEND.stuck} · turning: ${WORKSHOP_DIAL_LEGEND.turning} · open: ${WORKSHOP_DIAL_LEGEND.open}`,
+    '',
+  ];
+
+  for (const dim of WORKSHOP_DIMENSIONS) {
+    lines.push(`${dim.name} — ${dim.subhead} (${dim.question})`);
+    for (const key of dim.keys) {
+      const entry = s.keys?.[key.id];
+      const dial = entry?.dial ? entry.dial.toUpperCase() : '—';
+      const line = entry?.line?.trim();
+      lines.push(`${key.name} [${dial}]: ${line ? `"${line}"` : '(no line written)'}`);
+    }
+    lines.push('');
+  }
+
+  const keyName = (id: string | undefined) =>
+    (id && WORKSHOP_KEY_LOOKUP[id as keyof typeof WORKSHOP_KEY_LOOKUP]?.name) || id || '—';
+
+  lines.push('THEIR MAP (self-named in the synthesis block)');
+  lines.push(`Carrying key (their engine — the most open): ${keyName(s.carrying_key)}`);
+  lines.push(`Stuck key (their circled bottleneck): ${keyName(s.stuck_key)}`);
+  lines.push(
+    `Cascade line ("If my stuck key turned, the first thing that would change is…"): ${s.cascade_line?.trim() ? `"${s.cascade_line.trim()}"` : '—'}`
+  );
+  lines.push(
+    `Anything the sheet doesn't capture: ${s.free_text?.trim() ? `"${s.free_text.trim()}"` : '—'}`
+  );
 
   return lines.join('\n');
 }
@@ -229,6 +277,10 @@ export async function POST(
         return;
       }
 
+      // Workshop assessments (Flow Map Session) carry no birth data — skip the
+      // numerology/etymology/natal-chart builders and prefer the workshop template.
+      const isWorkshop = assessment.source === 'workshop';
+
       // Fetch prompt template — use requested ID, or fall back to first active template
       let promptTemplate = null;
 
@@ -238,6 +290,19 @@ export async function POST(
           .select('*')
           .eq('id', body.prompt_template_id)
           .single();
+        promptTemplate = data;
+      }
+
+      // Workshop default: the 'workshop-flow-profile' template, when seeded + active
+      if (!promptTemplate && isWorkshop) {
+        const { data } = await supabase
+          .from('prompt_templates')
+          .select('*')
+          .eq('name', 'workshop-flow-profile')
+          .eq('is_active', true)
+          .order('created_at', { ascending: true })
+          .limit(1)
+          .maybeSingle();
         promptTemplate = data;
       }
 
@@ -261,38 +326,40 @@ export async function POST(
 
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-      // Resolve chart data (use cached, or fetch and cache)
-      let chartData: Record<string, unknown> | null = assessment.natal_chart_data as Record<string, unknown> | null;
-      if (!chartData) {
-        await write({ type: 'status', message: 'Fetching natal chart...' });
-        chartData = await fetchAndCacheChartData(assessment, id);
-      }
-
-      // Phase 1: Haiku generates archetypal chart summary
-      let chartContext: string;
-      if (chartData) {
-        await write({ type: 'status', message: 'Generating chart summary...' });
-        chartContext = await generateChartSummary(chartData, anthropic);
-      } else {
-        chartContext = 'No natal chart data available.';
-      }
-
-      // Phase 1b: Human Design (local calculation, no external call)
+      // Resolve chart data (use cached, or fetch and cache) — skipped for
+      // workshop assessments, which never collect birth data.
+      let chartContext = 'No natal chart data available.';
       let hdSignature: string | null = null;
-      if (assessment.birth_time_known) {
-        await write({ type: 'status', message: 'Calculating Human Design...' });
-        hdSignature = await buildHumanDesignSignature(
-          assessment.birth_date,
-          assessment.birth_time,
-          assessment.birth_time_known,
-          assessment.birth_lat,
-          assessment.birth_lng
-        );
-        if (hdSignature) {
-          await supabase
-            .from('assessments')
-            .update({ human_design_data: { signature: hdSignature } })
-            .eq('id', id);
+
+      if (!isWorkshop) {
+        let chartData: Record<string, unknown> | null = assessment.natal_chart_data as Record<string, unknown> | null;
+        if (!chartData) {
+          await write({ type: 'status', message: 'Fetching natal chart...' });
+          chartData = await fetchAndCacheChartData(assessment, id);
+        }
+
+        // Phase 1: Haiku generates archetypal chart summary
+        if (chartData) {
+          await write({ type: 'status', message: 'Generating chart summary...' });
+          chartContext = await generateChartSummary(chartData, anthropic);
+        }
+
+        // Phase 1b: Human Design (local calculation, no external call)
+        if (assessment.birth_time_known) {
+          await write({ type: 'status', message: 'Calculating Human Design...' });
+          hdSignature = await buildHumanDesignSignature(
+            assessment.birth_date,
+            assessment.birth_time,
+            assessment.birth_time_known,
+            assessment.birth_lat,
+            assessment.birth_lng
+          );
+          if (hdSignature) {
+            await supabase
+              .from('assessments')
+              .update({ human_design_data: { signature: hdSignature } })
+              .eq('id', id);
+          }
         }
       }
 
@@ -306,8 +373,10 @@ export async function POST(
       }, 5000);
 
       // Phase 2: Build final prompt — use custom text if provided, else template
-      const intakeData = formatIntakeData(assessment);
-      const deepSignatureData = formatDeepSignatureData(assessment);
+      const intakeData = isWorkshop
+        ? formatWorkshopIntakeData(assessment)
+        : formatIntakeData(assessment);
+      const deepSignatureData = isWorkshop ? '' : formatDeepSignatureData(assessment);
       const hdData = hdSignature ?? '';
       const basePromptText = body.custom_prompt_text || promptTemplate.prompt_text;
       const prompt = basePromptText

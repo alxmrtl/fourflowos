@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import type { Assessment, AssessmentStatus } from '@/lib/supabase';
@@ -29,6 +29,7 @@ const FILTER_OPTIONS: { value: string; label: string }[] = [
 export default function AdminDashboard() {
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [filter, setFilter] = useState('all');
+  const [cohortFilter, setCohortFilter] = useState('all');
   const [loading, setLoading] = useState(true);
 
   const fetchAssessments = async () => {
@@ -53,9 +54,16 @@ export default function AdminDashboard() {
     fetchAssessments();
   }, []);
 
-  const filtered = filter === 'all'
-    ? assessments
-    : assessments.filter(a => a.status === filter);
+  // Distinct cohorts across loaded assessments (workshop submissions carry one)
+  const cohorts = useMemo(
+    () =>
+      Array.from(new Set(assessments.map(a => a.cohort).filter((c): c is string => !!c))).sort(),
+    [assessments]
+  );
+
+  const filtered = assessments
+    .filter(a => filter === 'all' || a.status === filter)
+    .filter(a => cohortFilter === 'all' || a.cohort === cohortFilter);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -112,6 +120,21 @@ export default function AdminDashboard() {
               )}
             </button>
           ))}
+
+          {cohorts.length > 0 && (
+            <select
+              value={cohortFilter}
+              onChange={(e) => setCohortFilter(e.target.value)}
+              className="ml-auto px-3 py-1.5 text-sm rounded-lg bg-white/[0.03] border border-white/10 text-gray-300 focus:outline-none focus:border-white/30"
+            >
+              <option value="all">All cohorts</option>
+              {cohorts.map(cohort => (
+                <option key={cohort} value={cohort}>
+                  {cohort} ({assessments.filter(a => a.cohort === cohort).length})
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Assessment list */}
@@ -141,9 +164,16 @@ export default function AdminDashboard() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div>
-                          <h3 className="text-white font-medium group-hover:text-white/90">
-                            {assessment.name}
-                          </h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-white font-medium group-hover:text-white/90">
+                              {assessment.name}
+                            </h3>
+                            {assessment.source === 'workshop' && (
+                              <span className="px-2 py-0.5 text-[10px] rounded-full border border-space/30 bg-space/10 text-space">
+                                Workshop{assessment.cohort ? ` · ${assessment.cohort}` : ''}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-sm text-gray-500">{assessment.email}</p>
                         </div>
                       </div>

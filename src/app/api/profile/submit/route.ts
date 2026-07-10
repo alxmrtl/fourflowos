@@ -5,6 +5,8 @@ import { supabase } from '@/lib/supabase';
 import { sendConfirmationEmail } from '@/lib/email';
 import { checkRateLimit, clientIp, tooManyRequests } from '@/lib/rate-limit';
 import type { IntakeStructuredV2 } from '@/types/intake';
+import { WORKSHOP_KEY_IDS, WORKSHOP_DIALS } from '@/types/workshop-intake';
+import type { WorkshopKeyId } from '@/types/workshop-intake';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,14 +47,71 @@ const submitSchema = z.object({
   intake_structured: z.unknown(),
 });
 
+// ─── Workshop branch (Flow Map Session — source: 'workshop') ─────────────────
+// Workshop submissions carry no birth data; they carry a cohort code and the
+// workshop-v1 intake_structured payload (12 dials + optional lines) instead.
+
+const workshopKeyEntrySchema = z.object({
+  dial: z.enum(WORKSHOP_DIALS),
+  line: z.string().trim().max(500).optional().default(''),
+});
+
+const workshopKeysShape = Object.fromEntries(
+  WORKSHOP_KEY_IDS.map((id) => [id, workshopKeyEntrySchema])
+) as Record<WorkshopKeyId, typeof workshopKeyEntrySchema>;
+
+const workshopIntakeSchema = z.object({
+  version: z.literal('workshop-v1'),
+  cohort: z.string().trim().max(80).optional(),
+  keys: z.object(workshopKeysShape),
+  carrying_key: z.enum(WORKSHOP_KEY_IDS),
+  stuck_key: z.enum(WORKSHOP_KEY_IDS),
+  cascade_line: z.string().trim().max(1000).optional().default(''),
+  free_text: z.string().trim().max(2000).optional().default(''),
+});
+
+const workshopSubmitSchema = z.object({
+  source: z.literal('workshop'),
+  name: z.string().trim().min(1).max(120),
+  email: z.string().trim().min(1).max(254).pipe(z.email()),
+  cohort: z.string().trim().min(1).max(80),
+  user_id: z.union([z.uuid(), z.literal('')]).nullish(),
+  intake_structured: workshopIntakeSchema,
+});
+
 const FIELD_ERRORS: Record<string, string> = {
   name: 'Name is required',
   email: 'Invalid email address',
   birth_date: 'Invalid birth date',
   birth_time: 'Invalid birth time',
   birth_location: 'Birth location is required',
+  cohort: 'Cohort code is required',
+  intake_structured: 'Incomplete intake — every key needs a dial',
   user_id: 'Invalid user id',
 };
+
+/** Fire-and-forget admin notification via Web3Forms. Never blocks the response. */
+async function notifyAdmin(subject: string, message: string): Promise<void> {
+  try {
+    const web3formsKey = process.env.WEB3FORMS_KEY;
+    if (!web3formsKey) {
+      console.error('[profile/submit] WEB3FORMS_KEY not set — admin notification skipped');
+      return;
+    }
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: web3formsKey,
+        subject,
+        from_name: 'FourFlowOS Flow Profile',
+        message,
+      }),
+    });
+  } catch (emailError) {
+    console.error('Admin notification failed:', emailError);
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -65,6 +124,68 @@ export async function POST(request: NextRequest) {
     }
     const body = JSON.parse(raw);
 
+    // ── Workshop branch ───────────────────────────────────────────────────────
+    if (body && typeof body === 'object' && (body as { source?: unknown }).source === 'workshop') {
+      const parsed = workshopSubmitSchema.safeParse(body);
+      if (!parsed.success) {
+        const field = parsed.error.issues[0]?.path[0];
+        const message =
+          (typeof field === 'string' && FIELD_ERRORS[field]) || 'Invalid submission';
+        return NextResponse.json({ success: false, error: message }, { status: 400 });
+      }
+
+      const { name, email: rawEmail, cohort: rawCohort, user_id } = parsed.data;
+      const email = rawEmail.toLowerCase();
+      const cohort = rawCohort.toUpperCase();
+      const viewToken = randomUUID();
+
+      // Keep the payload's cohort in lockstep with the column
+      const intakeStructured = { ...parsed.data.intake_structured, cohort };
+
+      const { data, error } = await supabase
+        .from('assessments')
+        .insert({
+          name,
+          email,
+          source: 'workshop',
+          cohort,
+          birth_date: null,
+          birth_time: null,
+          birth_time_known: false,
+          birth_location: null,
+          birth_lat: null,
+          birth_lng: null,
+          intake_structured: intakeStructured,
+          status: 'intake_submitted',
+          view_token: viewToken,
+          ...(user_id ? { user_id } : {}),
+        })
+        .select('id')
+        .single();
+
+      if (error) {
+        console.error('Supabase insert error (workshop):', error);
+        return NextResponse.json(
+          { success: false, error: 'Failed to save assessment' },
+          { status: 500 }
+        );
+      }
+
+      await notifyAdmin(
+        `New Workshop Intake: ${name} (${cohort})`,
+        `New Flow Map Session intake submitted.\n\nName: ${name}\nEmail: ${email}\nCohort: ${cohort}\nStuck key: ${parsed.data.intake_structured.stuck_key}\nSchema: workshop-v1\n\nView in dashboard: /profile/admin/${data.id}`
+      );
+
+      try {
+        await sendConfirmationEmail({ to: email, name });
+      } catch (confirmError) {
+        console.error('Confirmation email failed:', confirmError);
+      }
+
+      return NextResponse.json({ success: true, id: data.id });
+    }
+
+    // ── Deep intake branch (the existing full Flow Profile intake) ────────────
     const parsed = submitSchema.safeParse(body);
     if (!parsed.success) {
       const field = parsed.error.issues[0]?.path[0];
@@ -121,25 +242,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Notify admin via Web3Forms
-    try {
-      const web3formsKey = process.env.WEB3FORMS_KEY;
-      if (!web3formsKey) {
-        console.error('[profile/submit] WEB3FORMS_KEY not set — admin notification skipped');
-      } else {
-        await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({
-            access_key: web3formsKey,
-            subject: `New Flow Profile Intake: ${name}`,
-            from_name: 'FourFlowOS Flow Profile',
-            message: `New Flow Profile intake submitted.\n\nName: ${name}\nEmail: ${email}\nBirth: ${birth_date}, ${birth_location}\nSchema: v2 structured\n\nView in dashboard: /profile/admin/${data.id}`,
-          }),
-        });
-      }
-    } catch (emailError) {
-      console.error('Admin notification failed:', emailError);
-    }
+    await notifyAdmin(
+      `New Flow Profile Intake: ${name}`,
+      `New Flow Profile intake submitted.\n\nName: ${name}\nEmail: ${email}\nBirth: ${birth_date}, ${birth_location}\nSchema: v2 structured\n\nView in dashboard: /profile/admin/${data.id}`
+    );
 
     // Confirmation email to user
     try {
