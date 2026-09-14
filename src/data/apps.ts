@@ -329,49 +329,49 @@ Regular practice helps you enter a reading flow state where words process effort
   },
   flowrep: {
     id: 'flowrep',
-    name: 'FlowRep',
-    tagline: 'Movement, accumulated.',
-    summary: 'Accumulate exercise reps throughout your day',
-    description: 'Focus is built on a moving body. FlowRep tracks movement throughout the day with a single tap — push-ups, squats, pull-ups, whatever your practice. Set daily targets, build streaks, keep the physical dimension of your focus alive. Trains the Focused Body key.',
-    fullDescription: `Accumulate exercise reps throughout the day rather than formal workout sessions. Set daily targets, log with a single tap, and track streaks of consecutive days hitting your goals.
+    name: 'Snackercise',
+    tagline: 'Tiny sets. Real progress.',
+    summary: 'Build strength and mobility in small sets throughout your day',
+    description: 'Snackercise turns spare minutes into visible movement progress. Build a daily stack, set a goal and snack size for each exercise, then log a set in one tap. Each set takes another bite out of the work. Trains the Focused Body key.',
+    fullDescription: `Exercise does not have to begin with a workout. Snackercise helps you collect small, repeatable sets throughout the day across Strength, Mobility, Power, and Conditioning.
 
-Minimalist by design—built for consistent movement habits without traditional workout app complexity.`,
+Choose your movements, set daily goals and default snack sizes, log in seconds, and watch each progress rail disappear. Your history, streak, and Best make the work visible without adding a feed or requiring an account.`,
     icon: '/assets/apps/flowrep-icon.png',
     screenshots: [],
     platforms: ['ios'],
-    appStoreUrl: 'https://apps.apple.com/us/app/flowreps/id6758522892',
+    appStoreUrl: 'https://apps.apple.com/us/app/id6758522892',
     features: [
       {
-        title: 'Daily Rep Tracking',
-        description: 'Log reps throughout the day with a single tap for each exercise.',
+        title: 'One-Tap Exercise Snacks',
+        description: 'Log your default set instantly or enter a custom amount without leaving Today.',
       },
       {
-        title: 'Daily Targets',
-        description: 'Set achievable daily goals for each exercise to build consistency.',
+        title: 'Daily Stack',
+        description: 'Choose movements from Strength, Mobility, Power, and Conditioning or add your own.',
       },
       {
-        title: 'Streak Tracking',
-        description: 'Track consecutive days of hitting your targets to stay motivated.',
+        title: 'Visible Progress',
+        description: 'Watch the remaining work disappear, then keep logging after the goal is complete.',
       },
       {
-        title: 'Custom Exercises',
-        description: 'Add your own exercises beyond the built-in presets.',
+        title: 'Goals and Snack Sizes',
+        description: 'Give each exercise a distinct daily goal and default set size.',
       },
       {
-        title: 'History View',
-        description: 'Review your progress over time with daily logs and statistics.',
+        title: 'History, Bests, and Streaks',
+        description: 'See what you completed today and how your practice is building over time.',
       },
       {
-        title: 'Minimalist Design',
-        description: 'Clean interface that stays out of the way so you can focus on movement.',
+        title: 'Private by Design',
+        description: 'No account is required, and your exercise history stays on your device.',
       },
     ],
     gradient: 'from-self to-story',
     accentColor: '#E84535',
     relatedPillars: ['self'],
-    version: '1.0',
+    version: '2.0',
     inDevelopment: false,
-    what: 'An iOS app for logging bodyweight reps throughout the day with daily targets and streaks.',
+    what: 'An iOS exercise-snacking app for logging small sets throughout the day with goals, streaks, and visible progress.',
   },
 };
 

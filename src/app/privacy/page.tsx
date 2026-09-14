@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { GRADIENTS } from '@/styles/brand-colors';
 
 export default function PrivacyPage() {
-  const lastUpdated = 'February 6, 2025';
+  const lastUpdated = 'September 14, 2026';
 
   return (
     <div className="min-h-screen bg-ground">
@@ -58,8 +58,8 @@ export default function PrivacyPage() {
             <section className="mb-12">
               <p className="text-gray-300 leading-relaxed text-lg">
                 FourFlowOS (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy.
-                This Privacy Policy explains how our apps—including <strong>FlowSpace</strong> and{' '}
-                <strong>FourFlow Habits</strong>—handle your information.
+                This Privacy Policy explains how our apps—including <strong>FlowZone</strong>,{' '}
+                <strong>FlowHabits</strong>, and <strong>Snackercise</strong>—handle your information.
               </p>
               <div className="mt-6 p-6 bg-green-500/10 border border-green-500/20 rounded-xl">
                 <div className="flex items-start gap-4">
@@ -128,15 +128,15 @@ export default function PrivacyPage() {
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800">
                       <Image
                         src="/assets/apps/flowrep-icon.png"
-                        alt="FlowRep"
+                        alt="Snackercise"
                         width={48}
                         height={48}
                         className="object-cover"
                       />
                     </div>
                     <div>
-                      <h4 className="text-white font-semibold">FlowRep</h4>
-                      <p className="text-gray-500 text-sm">Daily Rep Tracker</p>
+                      <h4 className="text-white font-semibold">Snackercise</h4>
+                      <p className="text-gray-500 text-sm">Daily Exercise Tracker</p>
                     </div>
                   </div>
                 </div>
@@ -164,6 +164,11 @@ export default function PrivacyPage() {
                 preferences) is stored exclusively on your device and is never transmitted to us or
                 any third party.
               </p>
+              <p className="text-gray-300 mt-4">
+                Snackercise can record optional anonymous product events on your device. In the current
+                release, these records are not transmitted to us or to an analytics provider. You can
+                disable this setting, export the on-device record, or delete all app data in Settings.
+              </p>
             </section>
 
             {/* Data Storage */}
@@ -178,8 +183,8 @@ export default function PrivacyPage() {
                 <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
                   <h4 className="text-white font-semibold mb-2">Local Storage Only</h4>
                   <p className="text-gray-400 text-base m-0">
-                    All app data is stored locally on your device using Apple&apos;s SwiftData framework.
-                    Your data never leaves your device.
+                    App data is stored locally on your device using Apple&apos;s platform storage.
+                    Your exercise history and preferences never leave your device.
                   </p>
                 </div>
                 <div className="p-5 bg-white/5 border border-white/10 rounded-xl">
@@ -236,6 +241,11 @@ export default function PrivacyPage() {
                   </li>
                 </ul>
               </div>
+              <p className="text-gray-300 mt-4">
+                Purchases in Snackercise are processed by Apple. We do not receive your payment-card
+                details. Apple provides the app with transaction and entitlement status so it can unlock
+                Snackercise Pro and restore purchases.
+              </p>
             </section>
 
             {/* Data Types by App */}
@@ -264,19 +274,35 @@ export default function PrivacyPage() {
                 </ul>
               </div>
 
-              {/* FourFlow Habits */}
-              <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
+              {/* FlowHabits */}
+              <div className="mb-6 p-6 bg-white/5 border border-white/10 rounded-xl">
                 <h3 className="text-white font-semibold mb-4 flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg overflow-hidden">
-                    <Image src="/assets/apps/flowhabits-icon.png" alt="FourFlow Habits" width={32} height={32} />
+                    <Image src="/assets/apps/flowhabits-icon.png" alt="FlowHabits" width={32} height={32} />
                   </div>
-                  FourFlow Habits
+                  FlowHabits
                 </h3>
                 <ul className="space-y-2 text-gray-400 text-base">
                   <li>• Habits you create (name, emoji, pillar assignment)</li>
                   <li>• Habit completion records (dates completed)</li>
                   <li>• Streak and achievement data</li>
                   <li>• App preferences and settings</li>
+                </ul>
+              </div>
+
+              {/* Snackercise */}
+              <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg overflow-hidden">
+                    <Image src="/assets/apps/flowrep-icon.png" alt="Snackercise" width={32} height={32} />
+                  </div>
+                  Snackercise
+                </h3>
+                <ul className="space-y-2 text-gray-400 text-base">
+                  <li>• Exercises in your daily stack, goals, and default snack sizes</li>
+                  <li>• Exercise-snack records, dates, rep counts, streaks, and bests</li>
+                  <li>• Fitness-goal selections, reminders, and app preferences</li>
+                  <li>• Apple purchase entitlement status</li>
                 </ul>
               </div>
             </section>

@@ -54,13 +54,18 @@ const faqs: FAQItem[] = [
     category: 'flowhabits',
   },
   {
-    question: 'How do streaks work in FlowRep?',
-    answer: 'Streaks count consecutive days where all exercise targets were met. Rest days don\'t break your streak — they\'re part of the process. Yesterday counts toward your streak, but today only counts once you hit all targets.',
+    question: 'How do streaks work in Snackercise?',
+    answer: 'A day joins your streak as soon as you log at least one exercise snack. You can keep adding sets and working toward each daily goal throughout the day.',
     category: 'flowrep',
   },
   {
-    question: 'Can I export my FlowRep data?',
-    answer: 'Yes! Go to Settings > Export Backup to save your data as a JSON file. You can import it later using Settings > Import Backup. All data stays on your device — no cloud sync required.',
+    question: 'How do I change an exercise goal or snack size?',
+    answer: 'On Today, tap the exercise icon or name. The exercise menu shows your Best and lets you change the daily goal or default snack size, or reset today\'s count.',
+    category: 'flowrep',
+  },
+  {
+    question: 'How do I restore Snackercise Pro?',
+    answer: 'Open Settings > Upgrade and tap Restore purchases. Use the same Apple Account that originally purchased the subscription or lifetime unlock.',
     category: 'flowrep',
   },
   {
@@ -84,7 +89,7 @@ export default function SupportPage() {
     flowzone: 'FlowZone',
     flowhabits: 'FlowHabits',
     flowread: 'FlowRead',
-    flowrep: 'FlowRep',
+    flowrep: 'Snackercise',
   };
 
   const categoryColors = {
@@ -96,7 +101,7 @@ export default function SupportPage() {
   };
 
   return (
-    <LegalPageLayout title="Help & Support" lastUpdated="January 2, 2025">
+    <LegalPageLayout title="Help & Support" lastUpdated="September 14, 2026">
       {/* Introduction */}
       <section className="mb-12">
         <p className="text-gray-300 leading-relaxed text-lg">
@@ -234,10 +239,10 @@ export default function SupportPage() {
             <div className="w-12 h-12 rounded-xl bg-self/20 flex items-center justify-center mb-4">
               <span className="text-2xl">💪</span>
             </div>
-            <h3 className="text-white font-semibold mb-2">FlowRep</h3>
-            <p className="text-gray-500 text-sm mb-3">Daily rep tracker</p>
+            <h3 className="text-white font-semibold mb-2">Snackercise</h3>
+            <p className="text-gray-500 text-sm mb-3">Exercise snacks that add up</p>
             <p className="text-gray-400 text-sm">
-              Best for: Tracking daily exercise reps, building streaks, making physical practice consistent
+              Best for: Logging small sets, building a daily movement stack, and making progress visible
             </p>
           </div>
         </div>
